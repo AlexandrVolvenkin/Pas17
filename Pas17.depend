@@ -1,0 +1,115 @@
+# depslib dependency file v1.0
+1701794177 source:/media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Crc.cpp
+	<stdint.h>
+	"Crc.h"
+
+1696145224 /media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Crc.h
+	<stdint.h>
+
+1718197334 source:/media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/main.cpp
+	<iostream>
+	"Dfa.h"
+	"MainProductionCycle.h"
+
+1718196595 source:/media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Dfa.cpp
+	"Dfa.h"
+
+1718196595 /media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Dfa.h
+	<stdint.h>
+	"Timer.h"
+
+1718196595 /media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Timer.h
+	<stdint.h>
+	"Platform.h"
+
+1718196595 /media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Platform.h
+	<iostream>
+	<random>
+	<iomanip>
+	<stdint.h>
+	<stdio.h>
+	<string.h>
+	<stdlib.h>
+	<errno.h>
+	<assert.h>
+	<termios.h>
+	<linux/serial.h>
+	<sys/types.h>
+	<sys/select.h>
+	<unistd.h>
+	<sys/mman.h>
+	<linux/spi/spidev.h>
+	<time.h>
+	<sys/time.h>
+	<fcntl.h>
+	<sys/stat.h>
+	<errno.h>
+	<sys/socket.h>
+	<linux/if_packet.h>
+	<net/ethernet.h>
+	<netinet/in_systm.h>
+	<netinet/in.h>
+	<netinet/ip.h>
+	<netinet/tcp.h>
+	<arpa/inet.h>
+	<poll.h>
+	<netdb.h>
+	<net/if.h>
+	<netinet/if_ether.h>
+	<netinet/ether.h>
+	<unistd.h>
+	<sys/ioctl.h>
+	"Configuration.h"
+	"Timer.h"
+
+1718196595 /media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Configuration.h
+
+1718196595 source:/media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Platform.cpp
+	<iostream>
+	<sys/time.h>
+	<stdio.h>
+	<stdlib.h>
+	<errno.h>
+	<fcntl.h>
+	<string.h>
+	"Platform.h"
+
+1718196595 source:/media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Timer.cpp
+	"Timer.h"
+	"Platform.h"
+
+1718335858 source:/media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/MainProductionCycle.cpp
+	<iostream>
+	<string.h>
+	"Platform.h"
+	"MainProductionCycle.h"
+
+1718336204 /media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/MainProductionCycle.h
+	<iostream>
+	<string.h>
+	"Platform.h"
+	"Task.h"
+	"Production.h"
+
+1718287112 /media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Task.h
+	<stdint.h>
+	<list>
+	"Dfa.h"
+
+1718286379 source:/media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Task.cpp
+	<iostream>
+	<list>
+	<string.h>
+	"Task.h"
+	"Dfa.h"
+
+1718337405 /media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Production.h
+	<stdint.h>
+	<thread>
+	<chrono>
+	<list>
+	"Task.h"
+
+1718337277 source:/media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Production.cpp
+	"Production.h"
+

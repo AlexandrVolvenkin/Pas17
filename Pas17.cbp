@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="Pas17" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/Pas17" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/Pas17" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-fexceptions" />
+		</Compiler>
+		<Unit filename="src/Configuration.h" />
+		<Unit filename="src/Crc.cpp" />
+		<Unit filename="src/Crc.h" />
+		<Unit filename="src/Dfa.cpp" />
+		<Unit filename="src/Dfa.h" />
+		<Unit filename="src/MainProductionCycle.cpp" />
+		<Unit filename="src/MainProductionCycle.h" />
+		<Unit filename="src/Platform.cpp" />
+		<Unit filename="src/Platform.h" />
+		<Unit filename="src/Production.cpp" />
+		<Unit filename="src/Production.h" />
+		<Unit filename="src/Task.cpp" />
+		<Unit filename="src/Task.h" />
+		<Unit filename="src/Timer.cpp" />
+		<Unit filename="src/Timer.h" />
+		<Unit filename="src/main.cpp" />
+		<Extensions />
+	</Project>
+</CodeBlocks_project_file>
