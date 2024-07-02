@@ -13,6 +13,9 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
+					<Add directory="src" />
+					<Add directory="src/Modbus" />
+					<Add directory="./" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
@@ -22,6 +25,9 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O2" />
+					<Add directory="src" />
+					<Add directory="src/Modbus" />
+					<Add directory="./" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -31,6 +37,8 @@
 		<Compiler>
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
+			<Add directory="src" />
+			<Add directory="src/Modbus" />
 		</Compiler>
 		<Unit filename="src/Configuration.h" />
 		<Unit filename="src/Crc.cpp" />
@@ -39,6 +47,24 @@
 		<Unit filename="src/Dfa.h" />
 		<Unit filename="src/MainProductionCycle.cpp" />
 		<Unit filename="src/MainProductionCycle.h" />
+		<Unit filename="src/Modbus/Modbus.h" />
+		<Unit filename="src/Modbus/ModbusMaster.cpp" />
+		<Unit filename="src/Modbus/ModbusMaster.h" />
+		<Unit filename="src/Modbus/ModbusMasterLinkLayer.cpp" />
+		<Unit filename="src/Modbus/ModbusMasterLinkLayer.h" />
+		<Unit filename="src/Modbus/ModbusRtuMasterLinkLayer.cpp" />
+		<Unit filename="src/Modbus/ModbusRtuMasterLinkLayer.h" />
+		<Unit filename="src/Modbus/ModbusRtuSlaveLinkLayer.cpp" />
+		<Unit filename="src/Modbus/ModbusRtuSlaveLinkLayer.h" />
+		<Unit filename="src/Modbus/ModbusSlave.cpp" />
+		<Unit filename="src/Modbus/ModbusSlave.h" />
+		<Unit filename="src/Modbus/ModbusSlaveLinkLayer.cpp" />
+		<Unit filename="src/Modbus/ModbusSlaveLinkLayer.h" />
+		<Unit filename="src/Modbus/ModbusTcpMasterLinkLayer.cpp" />
+		<Unit filename="src/Modbus/ModbusTcpMasterLinkLayer.h" />
+		<Unit filename="src/Modbus/ModbusTcpSlaveLinkLayer.cpp" />
+		<Unit filename="src/Modbus/ModbusTcpSlaveLinkLayer.h" />
+		<Unit filename="src/Modbus/errno-base.h" />
 		<Unit filename="src/Platform.cpp" />
 		<Unit filename="src/Platform.h" />
 		<Unit filename="src/Production.cpp" />

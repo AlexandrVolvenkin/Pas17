@@ -1,18 +1,19 @@
-//-----------------------------------------------------------------------------------------------------
-//  Sourse      : FileName.cpp
+//-------------------------------------------------------------------------------
+//  Source      : FileName.cpp
 //  Created     : 01.06.2022
 //  Author      : Alexandr Volvenkin
 //  email       : aav-36@mail.ru
 //  GitHub      : https://github.com/AlexandrVolvenkin
-//-----------------------------------------------------------------------------------------------------
-#ifndef CMODBUSTCP_H
-#define CMODBUSTCP_H
+//-------------------------------------------------------------------------------
+#ifndef CMODBUSTCPSLAVELINKLAYER_H
+#define CMODBUSTCPSLAVELINKLAYER_H
 
 #include <stdint.h>
 #include "Modbus.h"
 #include "Configuration.h"
 #include "Platform.h"
 #include "Timer.h"
+#include "Task.h"
 
 /* Modbus_Application_Protocol_V1_1b.pdf Chapter 4 Section 1 Page 5
  * RS232 / RS485 ADU = 253 bytes + slave (1 byte) + CRC (2 bytes) = 256 bytes
@@ -34,35 +35,62 @@
 
 #define _MODBUS_TCP_CHECKSUM_LENGTH    0
 
-//-----------------------------------------------------------------------------------------------------
-class CModbusTcp : public CModbus
+//-------------------------------------------------------------------------------
+class CModbusTcpSlaveLinkLayer : public CModbusSlaveLinkLayerInterface,
+    public CTaskInterface
 {
 public:
-    CModbusTcp();
-    virtual ~CModbusTcp();
+    enum
+    {
+        START = 0,
+        READY,
+        IDDLE,
+        STOP,
+
+        COMMUNICATION_START,
+        COMMUNICATION_RECEIVE_START,
+        COMMUNICATION_RECEIVE_CONTINUE,
+        COMMUNICATION_FRAME_RECEIVED,
+        COMMUNICATION_RECEIVE_ERROR,
+
+
+
+//        REQUEST_ENABLE,
+//        WAITING_ACCEPT,
+//        START_REQUEST,
+//        WAITING_MESSAGE_REQUEST,
+//        RECEIVE_MESSAGE_REQUEST,
+//        REQUEST_PROCESSING_REQUEST,
+//        FRAME_TRANSMIT_CONFIRMATION,
+//        WAITING_FRAME_TRANSMIT_CONFIRMATION,
+//        END_WAITING_FRAME_TRANSMIT_CONFIRMATION,
+//        STOP_REQUEST,
+//        REQUEST_ERROR,
+//
+//        RESTART,
+    };
+
+    CModbusTcpSlaveLinkLayer();
+    virtual ~CModbusTcpSlaveLinkLayer();
+
 
     void CommunicationDeviceInit(const char* pccIpAddress,
                                  uint16_t uiPort);
-    void WorkingArraysInit(uint8_t *puiCoils,
-                           uint8_t *puiDiscreteInputs,
-                           uint16_t *pui16HoldingRegisters,
-                           uint16_t *pui16InputRegisters,
-                           uint16_t uiCoilsNumber,
-                           uint16_t uiDiscreteInputsNumber,
-                           uint16_t uiHoldingRegistersNumber,
-                           uint16_t uiInputRegistersNumber);
-    void WorkingArraysInit(uint8_t *puiRxBuffer,
-                           uint8_t *puiTxBuffer,
-                           uint8_t *puiCoils,
-                           uint8_t *puiDiscreteInputs,
-                           uint16_t *pui16HoldingRegisters,
-                           uint16_t *pui16InputRegisters,
-                           uint16_t uiCoilsNumber,
-                           uint16_t uiDiscreteInputsNumber,
-                           uint16_t uiHoldingRegistersNumber,
-                           uint16_t uiInputRegistersNumber);
-    void Fsm(void);
+    uint8_t Fsm(void);
 
+    uint8_t* GetRxBuffer(void);
+    uint8_t* GetTxBuffer(void);
+    uint8_t* GetRxPdu(void);
+    uint8_t* GetTxPdu(void);
+
+    uint8_t GetSlaveAddress(void);
+    void SetSlaveAddress(uint8_t uiData);
+    uint8_t GetFunctionCode(void);
+    void SetFunctionCode(uint8_t uiData);
+    uint16_t GetDataAddress(void);
+    void SetDataAddress(uint16_t uiData);
+    uint16_t GetBitNumber(void);
+    void SetBitNumber(uint16_t uiData);
 
 protected:
 private:
@@ -77,12 +105,14 @@ private:
                           uint16_t uiAddress,
                           uint16_t uiBitNumber,
                           uint8_t *puiRequest);
-    uint16_t ResponseBasis(uint8_t , uint8_t , uint8_t * );
-    uint16_t Tail(uint8_t * , uint16_t );
-    uint16_t Send(uint8_t * , uint16_t );
-    int16_t Receive(uint8_t * , uint16_t );
+    uint16_t ResponseBasis(uint8_t, uint8_t, uint8_t * );
+    uint16_t RequestHeader(uint8_t uiSlave);
+    uint16_t ResponseHeader(uint8_t uiSlave);
+    uint16_t Tail(uint8_t *, uint16_t );
+    uint16_t Send(uint8_t *, uint16_t );
+    int16_t Receive(uint8_t *, uint16_t );
     uint16_t GetFrameLength(void);
-    int8_t FrameCheck(uint8_t * , uint16_t );
+    int8_t FrameCheck(uint8_t *, uint16_t );
 
     bool IsDataWrited(void)
     {
@@ -118,8 +148,11 @@ private:
     const static uint16_t m_uiConfirmationTimeout = 500;
     const static uint16_t m_uiTransmitDelayTimeout = 5;
 
-    uint8_t m_auiReceiveMessageBuff[MODBUS_TCP_MAX_ADU_LENGTH];
-    uint8_t m_auiTransmitMessageBuff[MODBUS_TCP_MAX_ADU_LENGTH];
+    uint8_t m_auiRxBuffer[MODBUS_TCP_MAX_ADU_LENGTH];
+    uint8_t m_auiTxBuffer[MODBUS_TCP_MAX_ADU_LENGTH];
+//    uint16_t m_uiRxBytesNumber;
+    uint16_t m_uiFrameLength;
 };
 
-#endif // CMODBUSTCP_H
+//-------------------------------------------------------------------------------
+#endif // CMODBUSTCPSLAVELINKLAYER_H

@@ -32,14 +32,14 @@ uint8_t CTask::Init(void)
     std::cout << "CTask Init"  << std::endl;
 }
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 void CTask::AddCurrentlyRunningTask(CTaskInterface* pxTask)
 {
     //std::cout << "CTask::AddCurrentlyRunningTask"  << std::endl;
 
 }
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 void CTask::AddCommonTask(CTaskInterface* pxTask)
 {
     std::cout << "CTask::AddCommonTask 1"  << std::endl;

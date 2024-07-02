@@ -1,12 +1,12 @@
 #ifndef CPRODUCTION_H
 #define CPRODUCTION_H
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 //  Source      : FileName.cpp
 //  Created     : 01.06.2022
 //  Author      : Alexandr Volvenkin
 //  email       : aav-36@mail.ru
 //  GitHub      : https://github.com/AlexandrVolvenkin
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 
 #include <stdint.h>
 #include <thread>
@@ -15,11 +15,12 @@
 
 #include "Task.h"
 //#include "MainProductionCycle.h"
+#include "ModbusSlaveLinkLayer.h"
 
 class CMainProductionCycleInterface;
 class CLedBlinker;
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 class CProductionInterface : public CTask
 {
 public:
@@ -32,9 +33,10 @@ public:
 
 private:
     static void Process(CTaskInterface* pxTask) {};
+//    static void Process(CModbusSlaveLinkLayerInterface* pxModbusSlaveLinkLayer) {};
 };
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 
 
 
@@ -43,7 +45,7 @@ private:
 
 
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 class CProduction : public CProductionInterface//, public CTask
 {
 public:
@@ -65,6 +67,7 @@ public:
     void AddTask(CTaskInterface* pxTask);
     void DeleteComletedTasks(void);
     static void Process(CTaskInterface* pxTask);
+//    static void Process(CModbusSlaveLinkLayerInterface* pxModbusSlaveLinkLayer);
     void Place(CTaskInterface* pxTask);
     uint8_t Init(void);
     uint8_t Fsm(void);
@@ -90,7 +93,7 @@ private:
     std::list<CTaskInterface*> m_lpxExecutingTasksList;
 };
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 
 
 
@@ -99,7 +102,7 @@ private:
 
 
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 class CMainThreadProduction : public CProduction
 {
 public:
@@ -118,7 +121,7 @@ protected:
 private:
 };
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 
 
 
@@ -127,7 +130,7 @@ private:
 
 
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 class CRtspThreadProduction : public CProduction
 {
 public:
@@ -141,7 +144,7 @@ protected:
 private:
 };
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 
 
 
@@ -150,7 +153,7 @@ private:
 
 
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 class CFileDescriptorEventsWaitingProduction : public CProduction
 {
 public:
@@ -193,7 +196,7 @@ protected:
 private:
 };
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 
 
 
@@ -202,7 +205,7 @@ private:
 
 
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 class CSecondThreadProduction : public CProduction
 {
 public:
@@ -232,5 +235,64 @@ private:
     std::thread* m_pxThread;
 };
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+//-------------------------------------------------------------------------------
+class CModbusTcpSlaveTopLevelProduction : public CProduction
+{
+public:
+
+    enum
+    {
+        START = 0,
+        READY,
+        IDDLE,
+        STOP,
+        MODBUS_SLAVE_LINK_LAYER,
+        LED_ON,
+        LED_ON_PERIOD_END_WAITING,
+        LED_OFF,
+        LED_OFF_PERIOD_END_WAITING,
+        LED_BLINK_ON,
+        LED_BLINK_OFF,
+
+    };
+
+    CModbusTcpSlaveTopLevelProduction();
+    virtual ~CModbusTcpSlaveTopLevelProduction();
+
+//    static void Process(CTaskInterface* pxTask);
+    static void Process(CModbusSlaveLinkLayerInterface* pxModbusSlaveLinkLayer);
+    void Place(CTaskInterface* pxTask);
+    uint8_t Fsm(void);
+
+    void SetModbusSlaveLinkLayer(CModbusSlaveLinkLayerInterface* pxModbusSlaveLinkLayer)
+    {
+        m_pxModbusSlaveLinkLayer = pxModbusSlaveLinkLayer;
+    };
+
+    void SetThread(std::thread* pxThread)
+    {
+        m_pxThread = pxThread;
+    };
+    std::thread* GetThread(void)
+    {
+        return m_pxThread;
+    };
+
+protected:
+    std::thread* m_pxThread;
+    CModbusSlaveLinkLayerInterface* m_pxModbusSlaveLinkLayer;
+
+private:
+};
+
+//-------------------------------------------------------------------------------
 #endif // CPRODUCTION_H

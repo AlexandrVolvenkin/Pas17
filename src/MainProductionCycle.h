@@ -14,6 +14,10 @@
 #include "Platform.h"
 #include "Task.h"
 #include "Production.h"
+//#include "ModbusTcp.h"
+#include "ModbusSlave.h"
+#include "ModbusSlaveLinkLayer.h"
+#include "ModbusTcpSlaveLinkLayer.h"
 
 class CLedBlinker;
 
@@ -33,6 +37,7 @@ public:
         READY,
         IDDLE,
         STOP,
+        MAIN_CYCLE_MODBUS_SLAVE,
         LED_BLINK_ON,
         LED_BLINK_OFF,
 
@@ -64,6 +69,9 @@ private:
     // создадим указатель на объект
     // "производственная площадка задачи ожидания событий"
     CProductionInterface* m_pxFileDescriptorEventsWaitingProduction;
+    CModbusTcpSlaveTopLevelProduction* m_pxModusTcpSlaveTopLevelProduction;
+    CModbusTcpSlaveLinkLayer* m_pxModbusTcpSlaveLinkLayer;
+    CModbusSlave* m_pxModbusSlave;
 
 };
 //-------------------------------------------------------------------------------

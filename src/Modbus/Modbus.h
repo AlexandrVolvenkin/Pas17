@@ -1,10 +1,10 @@
-//-----------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 //  Sourse      : FileName.cpp
 //  Created     : 01.06.2022
 //  Author      : Alexandr Volvenkin
 //  email       : aav-36@mail.ru
 //  GitHub      : https://github.com/AlexandrVolvenkin
-//-----------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 #ifndef CMODBUS_H
 #define CMODBUS_H
 
@@ -165,161 +165,332 @@ typedef enum
 #define EMBMDATA   (EMBXGTAR + 5)
 
 
-//-----------------------------------------------------------------------------------------------------
-class CModbus : public CDfa
-{
-public:
-    typedef enum
-    {
-        IDDLE  = 0,
-        START,
+////-------------------------------------------------------------------------------
+//class CModbus : public CDfa
+//{
+//public:
+//    typedef enum
+//    {
+//        IDDLE  = 0,
+//        START,
+//
+//        REQUEST_ENABLE,
+//        WAITING_ACCEPT,
+//        START_REQUEST,
+//        WAITING_MESSAGE_REQUEST,
+//        RECEIVE_MESSAGE_REQUEST,
+//        REQUEST_PROCESSING_REQUEST,
+//        FRAME_TRANSMIT_CONFIRMATION,
+//        WAITING_FRAME_TRANSMIT_CONFIRMATION,
+//        END_WAITING_FRAME_TRANSMIT_CONFIRMATION,
+//        STOP_REQUEST,
+//        REQUEST_ERROR,
+//
+////-------------------------------------------------------------------------------
+//// ModbusMaster
+//        CONFIRMATION_ENABLE,
+//        WAITING_CONNECT,
+//        START_CONFIRMATION,
+//        WAITING_MESSAGE_CONFIRMATION,
+//        RECEIVE_MESSAGE_CONFIRMATION,
+//        ANSWER_PROCESSING_CONFIRMATION,
+//        FRAME_TRANSMIT_REQUEST,
+//        WAITING_FRAME_TRANSMIT_REQUEST,
+//        END_WAITING_FRAME_TRANSMIT_REQUEST,
+//        STOP_CONFIRMATION,
+//        CONFIRMATION_ERROR,
+//
+//        RESTART,
+//    } FsmState;
+//
+//    enum
+//    {
+//        MODBUS_EXCEPTION_CODE_OFFSET = 1,
+//    };
+//
+//    CModbus();
+//    virtual ~CModbus();
+//
+//    void WorkingArraysInit(uint8_t *puiCoils,
+//                           uint8_t *puiDiscreteInputs,
+//                           uint16_t *pui16HoldingRegisters,
+//                           uint16_t *pui16InputRegisters,
+//                           uint16_t uiCoilsNumber,
+//                           uint16_t uiDiscreteInputsNumber,
+//                           uint16_t uiHoldingRegistersNumber,
+//                           uint16_t uiInputRegistersNumber);
+//    static const char *ModbusStringError(int errnum);
+//    void SlaveSet(uint8_t );
+//
+//    uint16_t ReadCoils(uint8_t *, uint8_t *, uint16_t );
+//    uint16_t ReadDiscreteInputs(uint8_t *, uint8_t *, uint16_t );
+//    uint16_t ReadHoldingRegisters(uint8_t *, uint8_t *, uint16_t );
+//    uint16_t ReadInputRegisters(uint8_t *, uint8_t *, uint16_t );
+//    uint16_t WriteSingleCoil(uint8_t *, uint8_t *, uint16_t );
+//    uint16_t WriteSingleRegister(uint8_t *, uint8_t *, uint16_t );
+//    uint16_t WriteMultipleCoils(uint8_t *, uint8_t *, uint16_t );
+//    uint16_t WriteMultipleRegisters(uint8_t *, uint8_t *, uint16_t );
+//    uint16_t ReadExceptionStatus(uint8_t *, uint8_t *, uint16_t );
+//    uint16_t ReportSlaveID(uint8_t *, uint8_t *, uint16_t );
+//    uint16_t WriteAndReadRegisters(uint8_t *, uint8_t *, uint16_t );
+//    uint16_t Programming(uint8_t *, uint8_t *, uint16_t );
+//    uint16_t PollProgramming(uint8_t *, uint8_t *, uint16_t );
+//    uint16_t RequestProcessing(uint8_t *, uint8_t *, uint16_t );
+//    uint8_t Fsm(void);
+//
+//
+//protected:
+////private:
+//
+//    uint16_t ByteToBitPack(uint16_t,
+//                           uint16_t,
+//                           uint8_t *,
+//                           uint8_t *,
+//                           uint16_t );
+//    virtual bool IsDataWrited(void) = 0;
+//    int8_t MessengerIsReady(void);
+//    virtual uint16_t Tail(uint8_t *, uint16_t ) = 0;
+//    virtual uint16_t RequestBasis(uint8_t uiSlave,
+//                                  uint8_t uiFunctionCode,
+//                                  uint16_t uiAddress,
+//                                  uint16_t uiBitNumber,
+//                                  uint8_t *puiRequest) = 0;
+//    virtual uint16_t ResponseBasis(uint8_t, uint8_t, uint8_t * ) = 0;
+//    uint16_t ResponseException(uint8_t, uint8_t, uint8_t, uint8_t * );
+//    uint16_t SendMessage(uint8_t *, uint16_t );
+//    virtual uint16_t Send(uint8_t *, uint16_t ) = 0;
+//    void SetByteFromBits(uint8_t *, uint16_t, const uint8_t );
+//    void SetBytesFromBits(uint8_t *, uint16_t, uint16_t,
+//                          const uint8_t * );
+//    uint8_t GetByteFromBits(const uint8_t *, uint16_t,
+//                            uint16_t );
+//    float GetFloat(const uint16_t * );
+//    void SetFloat(float, uint16_t * );
+//
+//public:
+////-------------------------------------------------------------------------------
+//// ModbusMaster
+////    int8_t ReadCoilsRequest(uint16_t uiAddress,
+////                            uint16_t uiBitNumber);
+////    uint16_t ReadCoilsReply(uint8_t *puiDestination);
+////    uint8_t CheckConfirmation(uint8_t *puiDestination, uint16_t uiLength);
+//    int8_t ReadDiscreteInputsRequest(uint8_t uiSlaveAddress,
+//                                     uint16_t uiAddress,
+//                                     uint16_t uiBitNumber);
+//    uint16_t ReadDiscreteInputsReceive(uint8_t *puiMessage, uint16_t uiLength);
+//
+//
+//private:
+//protected:
+//
+////    static uint8_t CheckConfirmation(uint8_t *puiResponse, uint16_t uiLength);
+//    uint16_t AnswerProcessing(uint8_t *puiResponse, uint16_t uiFrameLength);
+//
+//    virtual uint8_t GetMessageLength(void)
+//    {
+//        return m_uiMessageLength;
+//    };
+//    virtual void SetMessageLength(uint8_t uiData)
+//    {
+//        m_uiMessageLength = uiData;
+//    };
+//
+//    virtual uint16_t HEADER_LENGTH(void)
+//    {
+//        return 1;
+//    };
+//    virtual uint16_t CRC_LENGTH(void)
+//    {
+//        return 2;
+//    };
+//
+//
+////-------------------------------------------------------------------------------
+//    uint8_t m_uiOwnAddress;
+//    uint8_t m_uiSlaveAddress;
+//    uint8_t m_uiFunctionCode;
+//    uint16_t m_uiQuantity;
+//    uint16_t m_uiMessageLength;
+//
+//    uint8_t *m_puiRxBuffer;
+//    uint8_t *m_puiTxBuffer;
+//
+//    uint8_t *m_puiCoils;
+//    uint8_t *m_puiDiscreteInputs;
+//    uint16_t *m_pui16HoldingRegisters;
+//    uint16_t *m_pui16InputRegisters;
+//    uint16_t m_uiCoilsNumber;
+//    uint16_t m_uiDiscreteInputsNumber;
+//    uint16_t m_uiHoldingRegistersNumber;
+//    uint16_t m_uiInputRegistersNumber;
+//
+//    friend class CModbusRtu;
+//    friend class CModbusTcp;
+//};
+//
+////-------------------------------------------------------------------------------
 
-        REQUEST_ENABLE,
-        WAITING_ACCEPT,
-        START_REQUEST,
-        WAITING_MESSAGE_REQUEST,
-        RECEIVE_MESSAGE_REQUEST,
-        REQUEST_PROCESSING_REQUEST,
-        FRAME_TRANSMIT_CONFIRMATION,
-        WAITING_FRAME_TRANSMIT_CONFIRMATION,
-        END_WAITING_FRAME_TRANSMIT_CONFIRMATION,
-        STOP_REQUEST,
-        REQUEST_ERROR,
-
-//-----------------------------------------------------------------------------------------------------
-// ModbusMaster
-        CONFIRMATION_ENABLE,
-        WAITING_CONNECT,
-        START_CONFIRMATION,
-        WAITING_MESSAGE_CONFIRMATION,
-        RECEIVE_MESSAGE_CONFIRMATION,
-        ANSWER_PROCESSING_CONFIRMATION,
-        FRAME_TRANSMIT_REQUEST,
-        WAITING_FRAME_TRANSMIT_REQUEST,
-        END_WAITING_FRAME_TRANSMIT_REQUEST,
-        STOP_CONFIRMATION,
-        CONFIRMATION_ERROR,
-
-        RESTART,
-    } FsmState;
-
-    enum
-    {
-        MODBUS_EXCEPTION_CODE_OFFSET = 1,
-    };
-
-    CModbus();
-    virtual ~CModbus();
-
-    static const char *ModbusStringError(int errnum);
-    void SlaveSet(uint8_t );
-
-    uint16_t ReadCoils(uint8_t * , uint8_t * , uint16_t );
-    uint16_t ReadDiscreteInputs(uint8_t * , uint8_t * , uint16_t );
-    uint16_t ReadHoldingRegisters(uint8_t * , uint8_t * , uint16_t );
-    uint16_t ReadInputRegisters(uint8_t * , uint8_t * , uint16_t );
-    uint16_t WriteSingleCoil(uint8_t * , uint8_t * , uint16_t );
-    uint16_t WriteSingleRegister(uint8_t * , uint8_t * , uint16_t );
-    uint16_t WriteMultipleCoils(uint8_t * , uint8_t * , uint16_t );
-    uint16_t WriteMultipleRegisters(uint8_t * , uint8_t * , uint16_t );
-    uint16_t ReadExceptionStatus(uint8_t * , uint8_t * , uint16_t );
-    uint16_t ReportSlaveID(uint8_t * , uint8_t * , uint16_t );
-    uint16_t WriteAndReadRegisters(uint8_t * , uint8_t * , uint16_t );
-    uint16_t Programming(uint8_t * , uint8_t * , uint16_t );
-    uint16_t PollProgramming(uint8_t * , uint8_t * , uint16_t );
-    uint16_t RequestProcessing(uint8_t * , uint8_t * , uint16_t );
 
 
-protected:
-private:
-
-    uint16_t ByteToBitPack(uint16_t ,
-                           uint16_t ,
-                           uint8_t *,
-                           uint8_t *,
-                           uint16_t );
-    virtual bool IsDataWrited(void) = 0;
-    int8_t MessengerIsReady(void);
-    virtual uint16_t Tail(uint8_t * , uint16_t ) = 0;
-    virtual uint16_t RequestBasis(uint8_t uiSlave,
-                                  uint8_t uiFunctionCode,
-                                  uint16_t uiAddress,
-                                  uint16_t uiBitNumber,
-                                  uint8_t *puiRequest) = 0;
-    virtual uint16_t ResponseBasis(uint8_t , uint8_t , uint8_t * ) = 0;
-    uint16_t ResponseException(uint8_t , uint8_t , uint8_t , uint8_t * );
-    uint16_t SendMessage(uint8_t * , uint16_t );
-    virtual uint16_t Send(uint8_t * , uint16_t ) = 0;
-    void SetByteFromBits(uint8_t * , uint16_t , const uint8_t );
-    void SetBytesFromBits(uint8_t * , uint16_t , uint16_t ,
-                          const uint8_t * );
-    uint8_t GetByteFromBits(const uint8_t * , uint16_t ,
-                            uint16_t );
-    float GetFloat(const uint16_t * );
-    void SetFloat(float , uint16_t * );
-
-public:
-//-----------------------------------------------------------------------------------------------------
-// ModbusMaster
-//    int8_t ReadCoilsRequest(uint16_t uiAddress,
-//                            uint16_t uiBitNumber);
-//    uint16_t ReadCoilsReply(uint8_t *puiDestination);
-//    uint8_t CheckConfirmation(uint8_t *puiDestination, uint16_t uiLength);
-    int8_t ReadDiscreteInputsRequest(uint8_t uiSlaveAddress,
-                                     uint16_t uiAddress,
-                                     uint16_t uiBitNumber);
-    uint16_t ReadDiscreteInputsReceive(uint8_t *puiMessage, uint16_t uiLength);
 
 
-private:
-protected:
 
-//    static uint8_t CheckConfirmation(uint8_t *puiResponse, uint16_t uiLength);
-    uint16_t AnswerProcessing(uint8_t *puiResponse, uint16_t uiFrameLength);
+////-------------------------------------------------------------------------------
+//class CModbus : public CDfa
+//{
+//public:
+//    typedef enum
+//    {
+//        IDDLE  = 0,
+//        START,
+//
+//        REQUEST_ENABLE,
+//        WAITING_ACCEPT,
+//        START_REQUEST,
+//        WAITING_MESSAGE_REQUEST,
+//        RECEIVE_MESSAGE_REQUEST,
+//        REQUEST_PROCESSING_REQUEST,
+//        FRAME_TRANSMIT_CONFIRMATION,
+//        WAITING_FRAME_TRANSMIT_CONFIRMATION,
+//        END_WAITING_FRAME_TRANSMIT_CONFIRMATION,
+//        STOP_REQUEST,
+//        REQUEST_ERROR,
+//
+////-------------------------------------------------------------------------------
+//// ModbusMaster
+//        CONFIRMATION_ENABLE,
+//        WAITING_CONNECT,
+//        START_CONFIRMATION,
+//        WAITING_MESSAGE_CONFIRMATION,
+//        RECEIVE_MESSAGE_CONFIRMATION,
+//        ANSWER_PROCESSING_CONFIRMATION,
+//        FRAME_TRANSMIT_REQUEST,
+//        WAITING_FRAME_TRANSMIT_REQUEST,
+//        END_WAITING_FRAME_TRANSMIT_REQUEST,
+//        STOP_CONFIRMATION,
+//        CONFIRMATION_ERROR,
+//
+//        RESTART,
+//    } FsmState;
+//
+//    enum
+//    {
+//        MODBUS_EXCEPTION_CODE_OFFSET = 1,
+//    };
+//
+//    CModbus();
+//    virtual ~CModbus();
+//
+//    static const char *ModbusStringError(int errnum);
+//    void SlaveSet(uint8_t );
+//
+//    uint16_t ReadCoils(uint8_t * , uint8_t * , uint16_t );
+//    uint16_t ReadDiscreteInputs(uint8_t * , uint8_t * , uint16_t );
+//    uint16_t ReadHoldingRegisters(uint8_t * , uint8_t * , uint16_t );
+//    uint16_t ReadInputRegisters(uint8_t * , uint8_t * , uint16_t );
+//    uint16_t WriteSingleCoil(uint8_t * , uint8_t * , uint16_t );
+//    uint16_t WriteSingleRegister(uint8_t * , uint8_t * , uint16_t );
+//    uint16_t WriteMultipleCoils(uint8_t * , uint8_t * , uint16_t );
+//    uint16_t WriteMultipleRegisters(uint8_t * , uint8_t * , uint16_t );
+//    uint16_t ReadExceptionStatus(uint8_t * , uint8_t * , uint16_t );
+//    uint16_t ReportSlaveID(uint8_t * , uint8_t * , uint16_t );
+//    uint16_t WriteAndReadRegisters(uint8_t * , uint8_t * , uint16_t );
+//    uint16_t Programming(uint8_t * , uint8_t * , uint16_t );
+//    uint16_t PollProgramming(uint8_t * , uint8_t * , uint16_t );
+//    uint16_t RequestProcessing(uint8_t * , uint8_t * , uint16_t );
+//
+//
+//protected:
+////private:
+//
+//    uint16_t ByteToBitPack(uint16_t ,
+//                           uint16_t ,
+//                           uint8_t *,
+//                           uint8_t *,
+//                           uint16_t );
+//    virtual bool IsDataWrited(void) = 0;
+//    int8_t MessengerIsReady(void);
+//    virtual uint16_t Tail(uint8_t * , uint16_t ) = 0;
+//    virtual uint16_t RequestBasis(uint8_t uiSlave,
+//                                  uint8_t uiFunctionCode,
+//                                  uint16_t uiAddress,
+//                                  uint16_t uiBitNumber,
+//                                  uint8_t *puiRequest) = 0;
+//    virtual uint16_t ResponseBasis(uint8_t , uint8_t , uint8_t * ) = 0;
+//    uint16_t ResponseException(uint8_t , uint8_t , uint8_t , uint8_t * );
+//    uint16_t SendMessage(uint8_t * , uint16_t );
+//    virtual uint16_t Send(uint8_t * , uint16_t ) = 0;
+//    void SetByteFromBits(uint8_t * , uint16_t , const uint8_t );
+//    void SetBytesFromBits(uint8_t * , uint16_t , uint16_t ,
+//                          const uint8_t * );
+//    uint8_t GetByteFromBits(const uint8_t * , uint16_t ,
+//                            uint16_t );
+//    float GetFloat(const uint16_t * );
+//    void SetFloat(float , uint16_t * );
+//
+//public:
+////-------------------------------------------------------------------------------
+//// ModbusMaster
+////    int8_t ReadCoilsRequest(uint16_t uiAddress,
+////                            uint16_t uiBitNumber);
+////    uint16_t ReadCoilsReply(uint8_t *puiDestination);
+////    uint8_t CheckConfirmation(uint8_t *puiDestination, uint16_t uiLength);
+//    int8_t ReadDiscreteInputsRequest(uint8_t uiSlaveAddress,
+//                                     uint16_t uiAddress,
+//                                     uint16_t uiBitNumber);
+//    uint16_t ReadDiscreteInputsReceive(uint8_t *puiMessage, uint16_t uiLength);
+//
+//
+//private:
+//protected:
+//
+////    static uint8_t CheckConfirmation(uint8_t *puiResponse, uint16_t uiLength);
+//    uint16_t AnswerProcessing(uint8_t *puiResponse, uint16_t uiFrameLength);
+//
+//    virtual uint8_t GetMessageLength(void)
+//    {
+//        return m_uiMessageLength;
+//    };
+//    virtual void SetMessageLength(uint8_t uiData)
+//    {
+//        m_uiMessageLength = uiData;
+//    };
+//
+//    virtual uint16_t HEADER_LENGTH(void)
+//    {
+//        return 1;
+//    };
+//    virtual uint16_t CRC_LENGTH(void)
+//    {
+//        return 2;
+//    };
+//
+//
+////-------------------------------------------------------------------------------
+//    uint8_t m_uiOwnAddress;
+//    uint8_t m_uiSlaveAddress;
+//    uint8_t m_uiFunctionCode;
+//    uint16_t m_uiQuantity;
+//    uint16_t m_uiMessageLength;
+//
+//    uint8_t *m_puiRxBuffer;
+//    uint8_t *m_puiTxBuffer;
+//
+//    uint8_t *m_puiCoils;
+//    uint8_t *m_puiDiscreteInputs;
+//    uint16_t *m_pui16HoldingRegisters;
+//    uint16_t *m_pui16InputRegisters;
+//    uint16_t m_uiCoilsNumber;
+//    uint16_t m_uiDiscreteInputsNumber;
+//    uint16_t m_uiHoldingRegistersNumber;
+//    uint16_t m_uiInputRegistersNumber;
+//
+//    friend class CModbusRtu;
+//    friend class CModbusTcp;
+//};
+//
+////-------------------------------------------------------------------------------
 
-    virtual uint8_t GetMessageLength(void)
-    {
-        return m_uiMessageLength;
-    };
-    virtual void SetMessageLength(uint8_t uiData)
-    {
-        m_uiMessageLength = uiData;
-    };
-
-    virtual uint16_t HEADER_LENGTH(void)
-    {
-        return 1;
-    };
-    virtual uint16_t CRC_LENGTH(void)
-    {
-        return 2;
-    };
-
-
-//-----------------------------------------------------------------------------------------------------
-    uint8_t m_uiOwnAddress;
-    uint8_t m_uiSlaveAddress;
-    uint8_t m_uiFunctionCode;
-    uint16_t m_uiQuantity;
-    uint16_t m_uiMessageLength;
-
-    uint8_t *m_puiRxBuffer;
-    uint8_t *m_puiTxBuffer;
-
-    uint8_t *m_puiCoils;
-    uint8_t *m_puiDiscreteInputs;
-    uint16_t *m_pui16HoldingRegisters;
-    uint16_t *m_pui16InputRegisters;
-    uint16_t m_uiCoilsNumber;
-    uint16_t m_uiDiscreteInputsNumber;
-    uint16_t m_uiHoldingRegistersNumber;
-    uint16_t m_uiInputRegistersNumber;
-
-    friend class CModbusRtu;
-    friend class CModbusTcp;
-};
-
-//-----------------------------------------------------------------------------------------------------
 #endif // CMODBUS_H
 
 

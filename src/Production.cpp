@@ -1,10 +1,10 @@
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 //  Source      : FileName.cpp
 //  Created     : 01.06.2022
 //  Author      : Alexandr Volvenkin
 //  email       : aav-36@mail.ru
 //  GitHub      : https://github.com/AlexandrVolvenkin
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 
 #include "Production.h"
 //#include "MainProductionCycle.h"
@@ -13,7 +13,7 @@ using namespace std;
 
 class CFileDescriptorEventsWaitingProduction;
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 CProduction::CProduction()
 {
     std::cout << "CProduction constructor"  << std::endl;
@@ -21,14 +21,14 @@ CProduction::CProduction()
     SetFsmState(START);
 }
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 CProduction::~CProduction()
 {
 
 }
 \
 
-//-------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------
 uint8_t CProduction::Init(void)
 {
 //    // создадим указатель на объект "главной задачи"
@@ -39,21 +39,21 @@ uint8_t CProduction::Init(void)
 //    AddCustomer(pxMainProductionCycle);
 }
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 void CProduction::AddTask(CTaskInterface* pxTask)
 {
     //std::cout << "CProduction::AddTask"  << std::endl;
     GetExecutingTasksListPointer() -> push_back(pxTask);
 }
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 void CProduction::Place(CTaskInterface* pxTask)
 {
     //std::cout << "CProduction::Place"  << std::endl;
     Process(pxTask);
 }
 
-//-------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------
 void CProduction::DeleteComletedTasks(void)
 {
     //std::cout << "CProduction::DeleteComletedTasks 1" << endl;
@@ -74,7 +74,7 @@ void CProduction::DeleteComletedTasks(void)
 //    }
 }
 
-//-------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------
 uint8_t CProduction::Fsm(void)
 {
     //std::cout << "CProduction::Fsm 1" << endl;
@@ -156,7 +156,7 @@ uint8_t CProduction::Fsm(void)
 //    return GetFsmState();
 }
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 void CProduction::Process(CTaskInterface* pxTask)
 {
     //std::cout << "CProduction::Process 1" << endl;
@@ -168,7 +168,7 @@ void CProduction::Process(CTaskInterface* pxTask)
     }
 }
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 
 
 
@@ -179,7 +179,7 @@ void CProduction::Process(CTaskInterface* pxTask)
 
 //extern CProductionInterface* pxMainThreadProduction;
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 CMainThreadProduction::CMainThreadProduction()
 {
     std::cout << "CMainThreadProduction constructor"  << std::endl;
@@ -203,13 +203,13 @@ CMainThreadProduction::CMainThreadProduction()
 ////    Place(this);
 }
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 CMainThreadProduction::~CMainThreadProduction()
 {
 //    std::cout << "CMainThreadProduction desstructor"  << std::endl;
 }
 
-//-------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------
 uint8_t CMainThreadProduction::Init(void)
 {
     std::cout << "CMainThreadProduction::Init 1" << endl;
@@ -223,14 +223,14 @@ uint8_t CMainThreadProduction::Init(void)
 //    AddCustomer(pxMainProductionCycle);
 }
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 void CMainThreadProduction::Place(CTaskInterface* pxTask)
 {
     //std::cout << "CMainThreadProduction::Place"  << std::endl;
     Process(pxTask);
 }
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 void CMainThreadProduction::Process(CTaskInterface* pxTask)
 {
     //std::cout << "CMainThreadProduction::Process 1" << endl;
@@ -242,7 +242,7 @@ void CMainThreadProduction::Process(CTaskInterface* pxTask)
     }
 }
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 uint8_t CMainThreadProduction::MakeDeal(void)
 {
 //    std::cout << "CMainThreadProduction::MakeDeal 1"  << std::endl;
@@ -282,7 +282,7 @@ uint8_t CMainThreadProduction::MakeDeal(void)
 //    return GetFsmState();
 }
 
-//-------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------
 uint8_t CMainThreadProduction::Fsm(void)
 {
 //    std::cout << "CMainThreadProduction::Fsm 1" << endl;
@@ -325,7 +325,7 @@ uint8_t CMainThreadProduction::Fsm(void)
 //    return GetFsmState();
 }
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 
 
 
@@ -334,20 +334,20 @@ uint8_t CMainThreadProduction::Fsm(void)
 
 
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 CRtspThreadProduction::CRtspThreadProduction()
 {
 
 }
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 CRtspThreadProduction::~CRtspThreadProduction()
 {
 
     GetThread() -> join();
 }
 
-////-------------------------------------------------------------------------------------------
+////-------------------------------------------------------------------------------
 
 
 
@@ -356,7 +356,7 @@ CRtspThreadProduction::~CRtspThreadProduction()
 
 
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 CFileDescriptorEventsWaitingProduction::CFileDescriptorEventsWaitingProduction()
 {
     std::cout << "CFileDescriptorEventsWaitingProduction constructor"  << std::endl;
@@ -367,14 +367,14 @@ CFileDescriptorEventsWaitingProduction::CFileDescriptorEventsWaitingProduction()
     SetFsmState(START);
 }
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 CFileDescriptorEventsWaitingProduction::~CFileDescriptorEventsWaitingProduction()
 {
 
     GetThread() -> join();
 }
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 void CFileDescriptorEventsWaitingProduction::Place(CTaskInterface* pxTask)
 {
     std::cout << "CFileDescriptorEventsWaitingProduction::Place"  << std::endl;
@@ -385,7 +385,7 @@ void CFileDescriptorEventsWaitingProduction::Place(CTaskInterface* pxTask)
     m_xThread.detach();
 }
 
-//-------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------
 uint8_t CFileDescriptorEventsWaitingProduction::Fsm(void)
 {
 //    std::cout << "CFileDescriptorEventsWaitingProduction::Fsm 1" << endl;
@@ -483,7 +483,7 @@ uint8_t CFileDescriptorEventsWaitingProduction::Fsm(void)
 //    return GetFsmState();
 }
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 void CFileDescriptorEventsWaitingProduction::Process(CTaskInterface* pxTask)
 {
     cout << "CFileDescriptorEventsWaitingProduction::Process 1" << endl;
@@ -494,7 +494,7 @@ void CFileDescriptorEventsWaitingProduction::Process(CTaskInterface* pxTask)
     }
 }
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 
 
 
@@ -503,7 +503,7 @@ void CFileDescriptorEventsWaitingProduction::Process(CTaskInterface* pxTask)
 
 
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 CSecondThreadProduction::CSecondThreadProduction()
 //    : accTaskName{"CSecondThreadProduction"}
 {
@@ -520,7 +520,7 @@ CSecondThreadProduction::CSecondThreadProduction()
 //    m_xThread.detach();
 }
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 CSecondThreadProduction::CSecondThreadProduction(CTaskInterface* pxRootTask)
 //    : accTaskName{"CSecondThreadProduction"}
 {
@@ -536,13 +536,13 @@ CSecondThreadProduction::CSecondThreadProduction(CTaskInterface* pxRootTask)
 //    SetFsmState(START);
 }
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 CSecondThreadProduction::~CSecondThreadProduction()
 {
 
 }
 
-//-------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------
 uint8_t CSecondThreadProduction::Init(void)
 {
 //    // создадим указатель на объект "главной задачи"
@@ -553,7 +553,7 @@ uint8_t CSecondThreadProduction::Init(void)
 //    AddCustomer(pxMainProductionCycle);
 }
 
-//-------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------
 uint8_t CSecondThreadProduction::Fsm(void)
 {
     std::cout << "CSecondThreadProduction::Fsm 1" << endl;
@@ -611,7 +611,7 @@ uint8_t CSecondThreadProduction::Fsm(void)
 //    return GetFsmState();
 }
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 void CSecondThreadProduction::Place(CTaskInterface* pxTask)
 {
     //std::cout << "CMainThreadProduction::Place"  << std::endl;
@@ -621,7 +621,7 @@ void CSecondThreadProduction::Place(CTaskInterface* pxTask)
 ////    Process(pxTask);
 }
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 void CSecondThreadProduction::Process(CTaskInterface* pxTask)
 {
     cout << "CSecondThreadProduction::Process 1" << endl;
@@ -635,4 +635,172 @@ void CSecondThreadProduction::Process(CTaskInterface* pxTask)
 //    }
 }
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+//-------------------------------------------------------------------------------
+CModbusTcpSlaveTopLevelProduction::CModbusTcpSlaveTopLevelProduction()
+{
+    std::cout << "CModbusTcpSlaveTopLevelProduction constructor"  << std::endl;
+    // получим имя класса.
+    sprintf(m_acTaskName,
+            "%s",
+            typeid(*this).name());
+    SetFsmState(START);
+}
+
+//-------------------------------------------------------------------------------
+CModbusTcpSlaveTopLevelProduction::~CModbusTcpSlaveTopLevelProduction()
+{
+
+    GetThread() -> join();
+}
+
+//-------------------------------------------------------------------------------
+void CModbusTcpSlaveTopLevelProduction::Place(CTaskInterface* pxTask)
+{
+    std::cout << "CModbusTcpSlaveTopLevelProduction::Place"  << std::endl;
+//    std::thread m_xThread(CModbusTcpSlaveTopLevelProduction::Process, pxTask);
+    std::thread m_xThread(CModbusTcpSlaveTopLevelProduction::Process, m_pxModbusSlaveLinkLayer);
+    std::thread::id th_id = m_xThread.get_id();
+    //std::cout << "CModbusTcpSlaveTopLevelProduction th_id" << " " << th_id << std::endl;
+    // не ждем завершения работы функции
+    m_xThread.detach();
+}
+
+//---------------------------------------------------------------------------------
+uint8_t CModbusTcpSlaveTopLevelProduction::Fsm(void)
+{
+//    std::cout << "CModbusTcpSlaveTopLevelProduction::Fsm 1" << endl;
+    switch (GetFsmState())
+    {
+    case START:
+        std::cout << "CModbusTcpSlaveTopLevelProduction::Fsm START"  << std::endl;
+        std::cout << "m_acTaskName " << m_acTaskName << std::endl;
+        Init();
+        SetFsmState(MODBUS_SLAVE_LINK_LAYER);
+        break;
+
+    case READY:
+        //std::cout << "CModbusTcpSlaveTopLevelProduction::Fsm READY"  << std::endl;
+        break;
+
+    case IDDLE:
+        //std::cout << "CModbusTcpSlaveTopLevelProduction::Fsm IDDLE"  << std::endl;
+        break;
+
+    case STOP:
+//        //std::cout << "CModbusTcpSlaveTopLevelProduction::Fsm STOP"  << std::endl;
+        SetFsmState(START);
+        break;
+
+    case MODBUS_SLAVE_LINK_LAYER:
+        //std::cout << "CMainProductionCycle::Fsm IDDLE"  << std::endl;
+//        m_pxModbusTcpSlaveLinkLayer -> Fsm();
+        usleep(1000);
+        break;
+
+    case LED_ON:
+        std::cout << "CModbusTcpSlaveTopLevelProduction::Fsm LED_ON"  << std::endl;
+        m_xTimer.Set(500);
+        SetFsmState(LED_ON_PERIOD_END_WAITING);
+        break;
+
+    case LED_ON_PERIOD_END_WAITING:
+//        //std::cout << "CModbusTcpSlaveTopLevelProduction::Fsm LED_ON_PERIOD_END_WAITING"  << std::endl;
+        if (m_xTimer.IsOverflow())
+        {
+            SetFsmState(LED_OFF);
+        }
+        break;
+
+    case LED_OFF:
+        std::cout << "CModbusTcpSlaveTopLevelProduction::Fsm LED_OFF"  << std::endl;
+        m_xTimer.Set(500);
+        SetFsmState(LED_OFF_PERIOD_END_WAITING);
+        break;
+
+    case LED_OFF_PERIOD_END_WAITING:
+//        //std::cout << "CModbusTcpSlaveTopLevelProduction::Fsm LED_OFF_PERIOD_END_WAITING"  << std::endl;
+        if (m_xTimer.IsOverflow())
+        {
+            SetFsmState(LED_ON);
+        }
+        break;
+
+    case LED_BLINK_ON:
+//        //std::cout << "CModbusTcpSlaveTopLevelProduction::Fsm LED_BLINK_ON"  << std::endl;
+//        m_pxLedBlinker -> Fsm();
+//        usleep(1000);
+        SetFsmState(LED_ON);
+        break;
+
+    case LED_BLINK_OFF:
+//        //std::cout << "CModbusTcpSlaveTopLevelProduction::Fsm LED_BLINK_ON"  << std::endl;
+        SetFsmState(START);
+        break;
+
+    default:
+        break;
+    }
+
+        usleep(1000);
+    return GetFsmState();
+//
+////    while (1)
+////    {
+//        if (GetCustomersListPointer() -> empty())
+//        {
+//            //std::cout << "CModbusTcpSlaveTopLevelProduction::Fsm 2" << endl;
+//            usleep(500000);
+//        }
+//        else
+//        {
+//            //std::cout << "CModbusTcpSlaveTopLevelProduction::Fsm 3" << endl;
+//            std::list<CTaskInterface*>::iterator xListIterator;
+//            //	int i = 0;
+//            for(xListIterator = GetCustomersListPointer() -> begin();
+//                    xListIterator != GetCustomersListPointer() -> end();
+//                    xListIterator++)
+//            {
+//                //std::cout << "CModbusTcpSlaveTopLevelProduction::Fsm 4" << endl;
+//                (*xListIterator) -> Fsm();
+//            }
+//        }
+//    //    }
+//
+//    return GetFsmState();
+}
+
+////-------------------------------------------------------------------------------
+//void CModbusTcpSlaveTopLevelProduction::Process(CTaskInterface* pxTask)
+//{
+//    cout << "CModbusTcpSlaveTopLevelProduction::Process 1" << endl;
+//
+//    while (1)
+//    {
+////        pxTask -> Fsm();
+////        m_pxModbusSlaveLinkLayer -> Fsm();
+//        usleep(1000);
+//    }
+//}
+
+//-------------------------------------------------------------------------------
+void CModbusTcpSlaveTopLevelProduction::Process(CModbusSlaveLinkLayerInterface* pxModbusSlaveLinkLayer)
+{
+    cout << "CModbusTcpSlaveTopLevelProduction::Process 1" << endl;
+
+    while (1)
+    {
+        pxModbusSlaveLinkLayer -> Fsm();
+        usleep(1000);
+    }
+}
+
+//-------------------------------------------------------------------------------

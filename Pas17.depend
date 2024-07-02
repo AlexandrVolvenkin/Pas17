@@ -11,10 +11,10 @@
 	"Dfa.h"
 	"MainProductionCycle.h"
 
-1718196595 source:/media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Dfa.cpp
+1718370989 source:/media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Dfa.cpp
 	"Dfa.h"
 
-1718196595 /media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Dfa.h
+1718371009 /media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Dfa.h
 	<stdint.h>
 	"Timer.h"
 
@@ -22,7 +22,7 @@
 	<stdint.h>
 	"Platform.h"
 
-1718196595 /media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Platform.h
+1719405590 /media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Platform.h
 	<iostream>
 	<random>
 	<iomanip>
@@ -64,7 +64,7 @@
 
 1718196595 /media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Configuration.h
 
-1718196595 source:/media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Platform.cpp
+1719644740 source:/media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Platform.cpp
 	<iostream>
 	<sys/time.h>
 	<stdio.h>
@@ -78,38 +78,390 @@
 	"Timer.h"
 	"Platform.h"
 
-1718335858 source:/media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/MainProductionCycle.cpp
+1719687243 source:/media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/MainProductionCycle.cpp
 	<iostream>
 	<string.h>
 	"Platform.h"
 	"MainProductionCycle.h"
+	"ModbusSlaveLinkLayer.h"
+	"ModbusTcpSlaveLinkLayer.h"
 
-1718336204 /media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/MainProductionCycle.h
+1719644885 /media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/MainProductionCycle.h
 	<iostream>
 	<string.h>
 	"Platform.h"
 	"Task.h"
 	"Production.h"
+	"ModbusSlave.h"
+	"ModbusSlaveLinkLayer.h"
+	"ModbusTcpSlaveLinkLayer.h"
 
-1718287112 /media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Task.h
+1719685785 /media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Task.h
 	<stdint.h>
 	<list>
 	"Dfa.h"
 
-1718286379 source:/media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Task.cpp
+1718348001 source:/media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Task.cpp
 	<iostream>
 	<list>
 	<string.h>
 	"Task.h"
 	"Dfa.h"
 
-1718337405 /media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Production.h
+1719686966 /media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Production.h
 	<stdint.h>
 	<thread>
 	<chrono>
 	<list>
 	"Task.h"
+	"ModbusSlaveLinkLayer.h"
 
-1718337277 source:/media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Production.cpp
+1719687037 source:/media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Production.cpp
 	"Production.h"
+
+1719469518 source:/media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Modbus/Modbus.cpp
+	"Modbus.h"
+	"Platform.h"
+
+1719587343 /media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Modbus/Modbus.h
+	<stdint.h>
+	<stdio.h>
+	<stdlib.h>
+	<errno.h>
+	<string.h>
+	<assert.h>
+	<time.h>
+	"../Platform.h"
+	"../Dfa.h"
+	"../Timer.h"
+
+1718370606 /media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Modbus/ModbusTcp.h
+	<stdint.h>
+	"Modbus.h"
+	"Configuration.h"
+	"Platform.h"
+	"Timer.h"
+
+1718370665 source:/media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Modbus/ModbusRtu.cpp
+	"Crc.h"
+	"Dfa.h"
+	"Platform.h"
+	"ModbusRtu.h"
+
+1718370593 /media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Modbus/ModbusRtu.h
+	<stdint.h>
+	"Modbus.h"
+	"Configuration.h"
+	"Platform.h"
+	"Timer.h"
+
+1718370642 source:/media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Modbus/ModbusTcp.cpp
+	<Crc.h>
+	<Dfa.h>
+	"Platform.h"
+	"ModbusTcp.h"
+
+1719165712 source:/media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Modbus/ModbusMasterLinkLayer.cpp
+	"ModbusMasterLinkLayer.h"
+
+1719165712 /media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Modbus/ModbusMasterLinkLayer.h
+
+1719165824 source:/media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Modbus/ModbusRtuMasterLinkLayer.cpp
+	"ModbusRtuMasterLinkLayer.h"
+
+1719165824 /media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Modbus/ModbusRtuMasterLinkLayer.h
+
+1719165897 source:/media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Modbus/ModbusRtuSlaveLinkLayer.cpp
+	"ModbusRtuSlaveLinkLayer.h"
+
+1719165897 /media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Modbus/ModbusRtuSlaveLinkLayer.h
+
+1719220161 source:/media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Modbus/ModbusSlaveLinkLayer.cpp
+	<iostream>
+	<string.h>
+	"ModbusSlaveLinkLayer.h"
+
+1719550409 /media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Modbus/ModbusSlaveLinkLayer.h
+	<iostream>
+	<string.h>
+	"Dfa.h"
+	"Configuration.h"
+	"Platform.h"
+	"Timer.h"
+
+1719166007 source:/media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Modbus/ModbusTcpMasterLinkLayer.cpp
+	"ModbusTcpMasterLinkLayer.h"
+
+1719166007 /media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Modbus/ModbusTcpMasterLinkLayer.h
+
+1719687128 source:/media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Modbus/ModbusTcpSlaveLinkLayer.cpp
+	<iostream>
+	<string.h>
+	"ModbusSlaveLinkLayer.h"
+	"ModbusTcpSlaveLinkLayer.h"
+
+1719669868 /media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Modbus/ModbusTcpSlaveLinkLayer.h
+	<stdint.h>
+	"Modbus.h"
+	"Configuration.h"
+	"Platform.h"
+	"Timer.h"
+	"Task.h"
+
+1719469706 source:/media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Modbus/ModbusMaster.cpp
+	"ModbusMaster.h"
+
+1719469706 /media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Modbus/ModbusMaster.h
+
+1719629790 /media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Modbus/ModbusSlave.h
+	<stdint.h>
+	<stdio.h>
+	<stdlib.h>
+	<errno.h>
+	<string.h>
+	<assert.h>
+	<time.h>
+	"../Platform.h"
+	"../Dfa.h"
+	"../Timer.h"
+	"Modbus.h"
+	"ModbusSlaveLinkLayer.h"
+
+1719671201 source:/media/ghost/559787AD42546355/Projects/CurrentProjects/CautoProjects/Pas17/Pas17/src/Modbus/ModbusSlave.cpp
+	"ModbusSlave.h"
+	"Platform.h"
+
+1701794177 source:d:\projects\currentprojects\cautoprojects\pas17\pas17\src\crc.cpp
+	<stdint.h>
+	"Crc.h"
+
+1696145224 d:\projects\currentprojects\cautoprojects\pas17\pas17\src\crc.h
+	<stdint.h>
+
+1718370989 source:d:\projects\currentprojects\cautoprojects\pas17\pas17\src\dfa.cpp
+	"Dfa.h"
+
+1718371009 d:\projects\currentprojects\cautoprojects\pas17\pas17\src\dfa.h
+	<stdint.h>
+	"Timer.h"
+
+1718196595 d:\projects\currentprojects\cautoprojects\pas17\pas17\src\timer.h
+	<stdint.h>
+	"Platform.h"
+
+1719405590 d:\projects\currentprojects\cautoprojects\pas17\pas17\src\platform.h
+	<iostream>
+	<random>
+	<iomanip>
+	<stdint.h>
+	<stdio.h>
+	<string.h>
+	<stdlib.h>
+	<errno.h>
+	<assert.h>
+	<termios.h>
+	<linux/serial.h>
+	<sys/types.h>
+	<sys/select.h>
+	<unistd.h>
+	<sys/mman.h>
+	<linux/spi/spidev.h>
+	<time.h>
+	<sys/time.h>
+	<fcntl.h>
+	<sys/stat.h>
+	<errno.h>
+	<sys/socket.h>
+	<linux/if_packet.h>
+	<net/ethernet.h>
+	<netinet/in_systm.h>
+	<netinet/in.h>
+	<netinet/ip.h>
+	<netinet/tcp.h>
+	<arpa/inet.h>
+	<poll.h>
+	<netdb.h>
+	<net/if.h>
+	<netinet/if_ether.h>
+	<netinet/ether.h>
+	<unistd.h>
+	<sys/ioctl.h>
+	"Configuration.h"
+	"Timer.h"
+
+1718196595 d:\projects\currentprojects\cautoprojects\pas17\pas17\src\configuration.h
+
+1718197334 source:d:\projects\currentprojects\cautoprojects\pas17\pas17\src\main.cpp
+	<iostream>
+	"Dfa.h"
+	"MainProductionCycle.h"
+
+1719644885 d:\projects\currentprojects\cautoprojects\pas17\pas17\src\mainproductioncycle.h
+	<iostream>
+	<string.h>
+	"Platform.h"
+	"Task.h"
+	"Production.h"
+	"ModbusSlave.h"
+	"ModbusSlaveLinkLayer.h"
+	"ModbusTcpSlaveLinkLayer.h"
+
+1719685785 d:\projects\currentprojects\cautoprojects\pas17\pas17\src\task.h
+	<stdint.h>
+	<list>
+	"Dfa.h"
+
+1719686966 d:\projects\currentprojects\cautoprojects\pas17\pas17\src\production.h
+	<stdint.h>
+	<thread>
+	<chrono>
+	<list>
+	"Task.h"
+	"ModbusSlaveLinkLayer.h"
+
+1719550409 d:\projects\currentprojects\cautoprojects\pas17\pas17\src\modbus\modbusslavelinklayer.h
+	<iostream>
+	<string.h>
+	"Dfa.h"
+	"Configuration.h"
+	"Platform.h"
+	"Timer.h"
+
+1719629790 d:\projects\currentprojects\cautoprojects\pas17\pas17\src\modbus\modbusslave.h
+	<stdint.h>
+	<stdio.h>
+	<stdlib.h>
+	<errno.h>
+	<string.h>
+	<assert.h>
+	<time.h>
+	"../Platform.h"
+	"../Dfa.h"
+	"../Timer.h"
+	"Modbus.h"
+	"ModbusSlaveLinkLayer.h"
+
+1719587343 d:\projects\currentprojects\cautoprojects\pas17\pas17\src\modbus\modbus.h
+	<stdint.h>
+	<stdio.h>
+	<stdlib.h>
+	<errno.h>
+	<string.h>
+	<assert.h>
+	<time.h>
+	"../Platform.h"
+	"../Dfa.h"
+	"../Timer.h"
+
+1719669868 d:\projects\currentprojects\cautoprojects\pas17\pas17\src\modbus\modbustcpslavelinklayer.h
+	<stdint.h>
+	"Modbus.h"
+	"Configuration.h"
+	"Platform.h"
+	"Timer.h"
+	"Task.h"
+
+1719687243 source:d:\projects\currentprojects\cautoprojects\pas17\pas17\src\mainproductioncycle.cpp
+	<iostream>
+	<string.h>
+	"Platform.h"
+	"MainProductionCycle.h"
+	"ModbusSlaveLinkLayer.h"
+	"ModbusTcpSlaveLinkLayer.h"
+
+1719469706 source:d:\projects\currentprojects\cautoprojects\pas17\pas17\src\modbus\modbusmaster.cpp
+	"ModbusMaster.h"
+
+1719469706 d:\projects\currentprojects\cautoprojects\pas17\pas17\src\modbus\modbusmaster.h
+
+1719165712 source:d:\projects\currentprojects\cautoprojects\pas17\pas17\src\modbus\modbusmasterlinklayer.cpp
+	"ModbusMasterLinkLayer.h"
+
+1719165712 d:\projects\currentprojects\cautoprojects\pas17\pas17\src\modbus\modbusmasterlinklayer.h
+
+1719165824 source:d:\projects\currentprojects\cautoprojects\pas17\pas17\src\modbus\modbusrtumasterlinklayer.cpp
+	"ModbusRtuMasterLinkLayer.h"
+
+1719165824 d:\projects\currentprojects\cautoprojects\pas17\pas17\src\modbus\modbusrtumasterlinklayer.h
+
+1719165897 source:d:\projects\currentprojects\cautoprojects\pas17\pas17\src\modbus\modbusrtuslavelinklayer.cpp
+	"ModbusRtuSlaveLinkLayer.h"
+
+1719165897 d:\projects\currentprojects\cautoprojects\pas17\pas17\src\modbus\modbusrtuslavelinklayer.h
+
+1719671201 source:d:\projects\currentprojects\cautoprojects\pas17\pas17\src\modbus\modbusslave.cpp
+	"ModbusSlave.h"
+	"Platform.h"
+
+1719220161 source:d:\projects\currentprojects\cautoprojects\pas17\pas17\src\modbus\modbusslavelinklayer.cpp
+	<iostream>
+	<string.h>
+	"ModbusSlaveLinkLayer.h"
+
+1719166007 source:d:\projects\currentprojects\cautoprojects\pas17\pas17\src\modbus\modbustcpmasterlinklayer.cpp
+	"ModbusTcpMasterLinkLayer.h"
+
+1719166007 d:\projects\currentprojects\cautoprojects\pas17\pas17\src\modbus\modbustcpmasterlinklayer.h
+
+1719687442 source:d:\projects\currentprojects\cautoprojects\pas17\pas17\src\modbus\modbustcpslavelinklayer.cpp
+	<iostream>
+	<string.h>
+	"ModbusSlaveLinkLayer.h"
+	"ModbusTcpSlaveLinkLayer.h"
+
+1719644740 source:d:\projects\currentprojects\cautoprojects\pas17\pas17\src\platform.cpp
+	<iostream>
+	<sys/time.h>
+	<stdio.h>
+	<stdlib.h>
+	<errno.h>
+	<fcntl.h>
+	<string.h>
+	"Platform.h"
+
+1719687037 source:d:\projects\currentprojects\cautoprojects\pas17\pas17\src\production.cpp
+	"Production.h"
+
+1718348001 source:d:\projects\currentprojects\cautoprojects\pas17\pas17\src\task.cpp
+	<iostream>
+	<list>
+	<string.h>
+	"Task.h"
+	"Dfa.h"
+
+1718196595 source:d:\projects\currentprojects\cautoprojects\pas17\pas17\src\timer.cpp
+	"Timer.h"
+	"Platform.h"
+
+1701794177 source:d:\projects\currentprojects\cautoprojects\eclipceprojects\pas17\pas17\src\crc.cpp
+	<stdint.h>
+	"Crc.h"
+
+1696145224 d:\projects\currentprojects\cautoprojects\eclipceprojects\pas17\pas17\src\crc.h
+	<stdint.h>
+
+1719469706 source:d:\projects\currentprojects\cautoprojects\eclipceprojects\pas17\pas17\src\modbus\modbusmaster.cpp
+	"ModbusMaster.h"
+
+1719469706 d:\projects\currentprojects\cautoprojects\eclipceprojects\pas17\pas17\src\modbus\modbusmaster.h
+
+1719165712 source:d:\projects\currentprojects\cautoprojects\eclipceprojects\pas17\pas17\src\modbus\modbusmasterlinklayer.cpp
+	"ModbusMasterLinkLayer.h"
+
+1719165712 d:\projects\currentprojects\cautoprojects\eclipceprojects\pas17\pas17\src\modbus\modbusmasterlinklayer.h
+
+1719165824 source:d:\projects\currentprojects\cautoprojects\eclipceprojects\pas17\pas17\src\modbus\modbusrtumasterlinklayer.cpp
+	"ModbusRtuMasterLinkLayer.h"
+
+1719165824 d:\projects\currentprojects\cautoprojects\eclipceprojects\pas17\pas17\src\modbus\modbusrtumasterlinklayer.h
+
+1719165897 source:d:\projects\currentprojects\cautoprojects\eclipceprojects\pas17\pas17\src\modbus\modbusrtuslavelinklayer.cpp
+	"ModbusRtuSlaveLinkLayer.h"
+
+1719165897 d:\projects\currentprojects\cautoprojects\eclipceprojects\pas17\pas17\src\modbus\modbusrtuslavelinklayer.h
+
+1719166007 source:d:\projects\currentprojects\cautoprojects\eclipceprojects\pas17\pas17\src\modbus\modbustcpmasterlinklayer.cpp
+	"ModbusTcpMasterLinkLayer.h"
+
+1719166007 d:\projects\currentprojects\cautoprojects\eclipceprojects\pas17\pas17\src\modbus\modbustcpmasterlinklayer.h
 
