@@ -50,7 +50,10 @@ public:
         COMMUNICATION_START,
         COMMUNICATION_RECEIVE_START,
         COMMUNICATION_RECEIVE_CONTINUE,
+        COMMUNICATION_RECEIVE_END,
         COMMUNICATION_FRAME_RECEIVED,
+        COMMUNICATION_TRANSMIT_START,
+        COMMUNICATION_FRAME_TRANSMITED,
         COMMUNICATION_RECEIVE_ERROR,
 
 
@@ -82,6 +85,7 @@ public:
     uint8_t* GetTxBuffer(void);
     uint8_t* GetRxPdu(void);
     uint8_t* GetTxPdu(void);
+    uint8_t GetPduOffset(void);
 
     uint8_t GetSlaveAddress(void);
     void SetSlaveAddress(uint8_t uiData);
@@ -111,8 +115,16 @@ private:
     uint16_t Tail(uint8_t *, uint16_t );
     uint16_t Send(uint8_t *, uint16_t );
     int16_t Receive(uint8_t *, uint16_t );
-    uint16_t GetFrameLength(void);
     int8_t FrameCheck(uint8_t *, uint16_t );
+
+    uint16_t GetFrameLength(void)
+    {
+        return m_uiFrameLength;
+    };
+    void SetFrameLength(uint16_t uiData)
+    {
+        m_uiFrameLength = uiData;
+    };
 
     bool IsDataWrited(void)
     {

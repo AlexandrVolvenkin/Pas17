@@ -65,7 +65,7 @@ public:
                              uint16_t uiInputRegistersNumber);
     void WorkingArraysDelete(void);
     static const char *ModbusStringError(int errnum);
-    void SlaveSet(uint8_t );
+//    void SlaveSet(uint8_t );
 
     uint16_t ReadCoils(uint8_t *, uint8_t *, uint16_t );
     uint16_t ReadDiscreteInputs(uint8_t *, uint8_t *, uint16_t );
@@ -88,18 +88,18 @@ public:
         m_pxModbusSlaveLinkLayer = pxModbusSlaveLinkLayer;
     };
 
-protected:
+//protected:
 //private:
 
 //    virtual bool IsDataWrited(void) = 0;
 //    int8_t MessengerIsReady(void);
 //    virtual uint16_t Tail(uint8_t *, uint16_t ) = 0;
-    virtual uint16_t RequestBasis(uint8_t uiSlave,
-                                  uint8_t uiFunctionCode,
-                                  uint16_t uiAddress,
-                                  uint16_t uiBitNumber,
-                                  uint8_t *puiRequest);
-    virtual uint16_t ResponseBasis(uint8_t, uint8_t, uint8_t * );
+    uint16_t RequestBasis(uint8_t uiSlave,
+                          uint8_t uiFunctionCode,
+                          uint16_t uiAddress,
+                          uint16_t uiBitNumber,
+                          uint8_t *puiRequest);
+    uint16_t ResponseBasis(uint8_t, uint8_t, uint8_t * );
     uint16_t ResponseException(uint8_t, uint8_t, uint8_t, uint8_t * );
 //    uint16_t SendMessage(uint8_t *, uint16_t );
 //    virtual uint16_t Send(uint8_t *, uint16_t ) = 0;
@@ -130,17 +130,26 @@ public:
     uint16_t ReadDiscreteInputsReceive(uint8_t *puiMessage, uint16_t uiLength);
 
 
-private:
-protected:
+//private:
+//protected:
 
 //    static uint8_t CheckConfirmation(uint8_t *puiResponse, uint16_t uiLength);
     uint16_t AnswerProcessing(uint8_t *puiResponse, uint16_t uiFrameLength);
 
-    virtual uint8_t GetMessageLength(void)
+    uint8_t GetOwnAddress(void)
+    {
+        return m_uiOwnAddress;
+    };
+    void SetOwnAddress(uint8_t uiData)
+    {
+        m_uiOwnAddress = uiData;
+    };
+
+    uint8_t GetMessageLength(void)
     {
         return m_uiMessageLength;
     };
-    virtual void SetMessageLength(uint8_t uiData)
+    void SetMessageLength(uint8_t uiData)
     {
         m_uiMessageLength = uiData;
     };
@@ -163,6 +172,9 @@ protected:
     uint8_t m_uiFunctionCode;
     uint16_t m_uiQuantity;
     uint16_t m_uiMessageLength;
+    // таймоут по отсутствию подтверждения.
+    const static uint16_t m_uiConfirmationTimeout = 500;
+    const static uint16_t m_uiTransmitDelayTimeout = 5;
 
     uint8_t *m_puiRxBuffer;
     uint8_t *m_puiTxBuffer;

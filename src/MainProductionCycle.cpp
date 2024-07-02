@@ -52,6 +52,8 @@ CMainProductionCycle::CMainProductionCycle()
                         DISCRETE_INPUTS_ARRAY_LENGTH,
                         HOLDING_REGISTERS_ARRAY_LENGTH,
                         INPUT_REGISTERS_ARRAY_LENGTH);
+    m_pxModbusSlave ->
+    SetOwnAddress(17);
 
 //    m_pxRootTask ->
 //    AddCommonTask(this);

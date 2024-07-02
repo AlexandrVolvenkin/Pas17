@@ -22,10 +22,18 @@ class CModbusSlaveLinkLayerInterface : public CDfa
 public:
     enum
     {
-        COMMUNICATION_START = 0,
+        START = 0,
+        READY,
+        IDDLE,
+        STOP,
+
+        COMMUNICATION_START,
         COMMUNICATION_RECEIVE_START,
         COMMUNICATION_RECEIVE_CONTINUE,
+        COMMUNICATION_RECEIVE_END,
         COMMUNICATION_FRAME_RECEIVED,
+        COMMUNICATION_TRANSMIT_START,
+        COMMUNICATION_FRAME_TRANSMITED,
         COMMUNICATION_RECEIVE_ERROR,
     };
 
@@ -41,6 +49,8 @@ public:
     virtual uint8_t* GetRxPdu(void) {};
     virtual uint8_t* GetTxPdu(void) {};
 
+    virtual uint8_t GetPduOffset(void) {};
+
     virtual uint8_t GetSlaveAddress(void) {};
     virtual void SetSlaveAddress(uint8_t uiData) {};
     virtual uint8_t GetFunctionCode(void) {};
@@ -54,24 +64,24 @@ public:
     virtual uint16_t ResponseHeader(uint8_t uiSlave) {};
 
 
-protected:
-private:
-
 //    void ReceiveEnable(void) {};
 //    void ReceiveDisable(void) {};
 //    void TransmitEnable(void) {};
 //    void TransmitDisable(void) {};
-//    uint16_t RequestBasis(uint8_t uiSlave,
-//                          uint8_t uiFunctionCode,
-//                          uint16_t uiAddress,
-//                          uint16_t uiBitNumber,
-//                          uint8_t *puiRequest) {};
-//    uint16_t ResponseBasis(uint8_t , uint8_t , uint8_t * ) {};
-//    uint16_t Tail(uint8_t * , uint16_t ) {};
-//    uint16_t Send(uint8_t * , uint16_t ) {};
+    virtual uint16_t RequestBasis(uint8_t uiSlave,
+                                  uint8_t uiFunctionCode,
+                                  uint16_t uiAddress,
+                                  uint16_t uiBitNumber,
+                                  uint8_t *puiRequest) {};
+    virtual uint16_t ResponseBasis(uint8_t, uint8_t, uint8_t * ) {};
+    virtual uint16_t Tail(uint8_t *, uint16_t ) {};
+    virtual uint16_t Send(uint8_t *, uint16_t ) {};
 //    int16_t Receive(uint8_t * , uint16_t ) {};
 //    uint16_t GetFrameLength(void) {};
 //    int8_t FrameCheck(uint8_t * , uint16_t ) {};
+
+    virtual uint16_t GetFrameLength(void) {};
+    virtual void SetFrameLength(uint16_t uiData) {};
 //
 //    bool IsDataWrited(void)
 //    {
@@ -96,6 +106,9 @@ private:
 //        return 0;
 //    };
 
+protected:
+private:
+
 };
 //-------------------------------------------------------------------------------
 
@@ -109,13 +122,13 @@ private:
 //-------------------------------------------------------------------------------
 class CModbusSlaveLinkLayer
 {
-    public:
-        CModbusSlaveLinkLayer();
-        virtual ~CModbusSlaveLinkLayer();
+public:
+    CModbusSlaveLinkLayer();
+    virtual ~CModbusSlaveLinkLayer();
 
-    protected:
+protected:
 
-    private:
+private:
 };
 //-------------------------------------------------------------------------------
 #endif // CMODBUSSLAVELINKLAYER_H

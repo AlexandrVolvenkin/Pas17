@@ -91,6 +91,12 @@ uint8_t* CModbusTcpSlaveLinkLayer::GetTxPdu(void)
 }
 
 //-------------------------------------------------------------------------------
+uint8_t CModbusTcpSlaveLinkLayer::GetPduOffset(void)
+{
+    return 7;
+}
+
+//-------------------------------------------------------------------------------
 uint8_t CModbusTcpSlaveLinkLayer::GetSlaveAddress(void)
 {
     return m_auiRxBuffer[6];
@@ -141,12 +147,6 @@ void CModbusTcpSlaveLinkLayer::SetBitNumber(uint16_t uiData)
 }
 
 //-------------------------------------------------------------------------------
-uint16_t CModbusTcpSlaveLinkLayer::Tail(uint8_t *puiMessage, uint16_t uiLength)
-{
-    return uiLength;
-}
-
-//-------------------------------------------------------------------------------
 /* Builds a TCP request header */
 uint16_t CModbusTcpSlaveLinkLayer::RequestBasis(uint8_t uiSlave,
         uint8_t uiFunctionCode,
@@ -187,6 +187,30 @@ uint16_t CModbusTcpSlaveLinkLayer::RequestBasis(uint8_t uiSlave,
     puiRequest[11] = (static_cast<uint8_t>(uiBitNumber & 0x00ff));
 
     return _MODBUS_TCP_PRESET_REQ_LENGTH;
+}
+
+//-------------------------------------------------------------------------------
+/* Builds a TCP response header */
+uint16_t CModbusTcpSlaveLinkLayer::ResponseBasis(uint8_t uiSlave, uint8_t uiFunctionCode, uint8_t *puiResponse)
+{
+    /* Extract from MODBUS Messaging on TCP/IP Implementation
+       Guide V1.0b (page 23/46):
+       The transaction identifier is used to associate the future
+       response with the puiRequestuest. */
+    puiResponse[0] = (m_uiResponseTransactionId >> 8);
+    puiResponse[1] = (m_uiResponseTransactionId & 0x00ff);
+
+    /* Protocol Modbus */
+    puiResponse[2] = 0;
+    puiResponse[3] = 0;
+
+    /* Length will be set later by send_msg (4 and 5) */
+
+    /* The slave ID is copied from the indication */
+    puiResponse[6] = uiSlave;
+    puiResponse[7] = uiFunctionCode;
+
+    return _MODBUS_TCP_PRESET_RSP_LENGTH;
 }
 
 //-------------------------------------------------------------------------------
@@ -249,6 +273,14 @@ uint16_t CModbusTcpSlaveLinkLayer::ResponseHeader(uint8_t uiSlave)
 }
 
 //-------------------------------------------------------------------------------
+uint16_t CModbusTcpSlaveLinkLayer::Tail(uint8_t *puiMessage, uint16_t uiLength)
+{
+    m_auiTxBuffer[4] = ((m_uiFrameLength - 6) >> 8);
+    m_auiTxBuffer[5] = ((m_uiFrameLength - 6) & 0x00ff);
+    return uiLength;
+}
+
+//-------------------------------------------------------------------------------
 uint16_t CModbusTcpSlaveLinkLayer::Send(uint8_t *puiMessage, uint16_t uiLength)
 {
     return m_pxCommunicationDevice -> Write(puiMessage, uiLength);
@@ -306,6 +338,7 @@ uint8_t CModbusTcpSlaveLinkLayer::Fsm(void)
 
     case COMMUNICATION_RECEIVE_START:
         std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_START"  << std::endl;
+        m_uiFrameLength = 0;
         iBytesNumber =
             m_pxCommunicationDevice ->
             ReceiveStart((m_auiRxBuffer + m_uiFrameLength),
@@ -314,7 +347,7 @@ uint8_t CModbusTcpSlaveLinkLayer::Fsm(void)
         if (iBytesNumber > 0)
         {
             m_uiFrameLength = m_uiFrameLength + iBytesNumber;
-            SetFsmState(COMMUNICATION_RECEIVE_CONTINUE);
+            SetFsmState(COMMUNICATION_RECEIVE_END);
         }
         else if (iBytesNumber < 0)
         {
@@ -325,6 +358,51 @@ uint8_t CModbusTcpSlaveLinkLayer::Fsm(void)
 
     case COMMUNICATION_RECEIVE_CONTINUE:
         std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_CONTINUE"  << std::endl;
+        m_uiFrameLength = 0;
+        iBytesNumber =
+            m_pxCommunicationDevice ->
+            ReceiveContinue((m_auiRxBuffer + m_uiFrameLength),
+                            (MODBUS_TCP_MAX_ADU_LENGTH - m_uiFrameLength),
+                            1000000);
+//        if (iBytesNumber > 0)
+//        {
+//            m_uiFrameLength = m_uiFrameLength + iBytesNumber;
+//        }
+//        else if (iBytesNumber < 0)
+//        {
+//            SetFsmState(COMMUNICATION_RECEIVE_ERROR);
+//        }
+//        else
+//        {
+//            SetFsmState(COMMUNICATION_FRAME_RECEIVED);
+//
+//            cout << "ReceiveContinue" << endl;
+//            unsigned char *pucSourceTemp;
+//            pucSourceTemp = (unsigned char*)m_auiRxBuffer;
+//            for(int i=0; i<32; )
+//            {
+//                for(int j=0; j<8; j++)
+//                {
+//                    cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+//                }
+//                cout << endl;
+//                i += 8;
+//            }
+//        }
+        if (iBytesNumber > 0)
+        {
+            m_uiFrameLength = m_uiFrameLength + iBytesNumber;
+            SetFsmState(COMMUNICATION_RECEIVE_END);
+        }
+        else if (iBytesNumber < 0)
+        {
+            cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_CONTINUE errno " << errno << endl;
+            SetFsmState(COMMUNICATION_RECEIVE_ERROR);
+        }
+        break;
+
+    case COMMUNICATION_RECEIVE_END:
+        std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END"  << std::endl;
         iBytesNumber =
             m_pxCommunicationDevice ->
             ReceiveContinue((m_auiRxBuffer + m_uiFrameLength),
@@ -359,6 +437,8 @@ uint8_t CModbusTcpSlaveLinkLayer::Fsm(void)
 
     case COMMUNICATION_FRAME_RECEIVED:
         std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_FRAME_RECEIVED"  << std::endl;
+        m_uiResponseTransactionId = ((static_cast<uint16_t>(m_auiRxBuffer[0]) << 8) |
+                                     (static_cast<uint16_t>(m_auiRxBuffer[1])));
 
         cout << "ReceiveContinue" << endl;
         unsigned char *pucSourceTemp;
@@ -371,6 +451,46 @@ uint8_t CModbusTcpSlaveLinkLayer::Fsm(void)
             }
             cout << endl;
             i += 8;
+        }
+        break;
+
+    case COMMUNICATION_TRANSMIT_START:
+        std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_TRANSMIT_START"  << std::endl;
+
+        {
+            cout << "m_auiTxBuffer" << endl;
+            unsigned char *pucSourceTemp;
+            pucSourceTemp = (unsigned char*)m_auiTxBuffer;
+            for(int i=0; i<32; )
+            {
+                for(int j=0; j<8; j++)
+                {
+                    cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+                }
+                cout << endl;
+                i += 8;
+            }
+        }
+        std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_TRANSMIT_START m_uiFrameLength "  << (int)m_uiFrameLength << std::endl;
+        m_pxCommunicationDevice -> Write(m_auiTxBuffer, m_uiFrameLength);
+        SetFsmState(COMMUNICATION_FRAME_TRANSMITED);
+        break;
+
+    case COMMUNICATION_FRAME_TRANSMITED:
+        std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_FRAME_TRANSMITED"  << std::endl;
+        {
+            cout << "m_auiTxBuffer" << endl;
+            unsigned char *pucSourceTemp;
+            pucSourceTemp = (unsigned char*)m_auiTxBuffer;
+            for(int i=0; i<32; )
+            {
+                for(int j=0; j<8; j++)
+                {
+                    cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+                }
+                cout << endl;
+                i += 8;
+            }
         }
         break;
 
