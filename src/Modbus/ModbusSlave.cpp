@@ -330,7 +330,11 @@ uint16_t CModbusSlave::ReadCoils(uint8_t *puiRequest, uint8_t *puiResponse, uint
 //-------------------------------------------------------------------------------
 uint16_t CModbusSlave::ReadDiscreteInputs(uint8_t *puiRequest, uint8_t *puiResponse, uint16_t uiLength)
 {
-    uint16_t uiPduOffset = HEADER_LENGTH();
+    std::cout << "CModbusSlave::ReadDiscreteInputs 1" << std::endl;
+    uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
+    puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
+    puiResponse = m_pxModbusSlaveLinkLayer -> GetTxBuffer();
+//    uint16_t uiPduOffset = HEADER_LENGTH();
     int8_t uiSlave = puiRequest[uiPduOffset - 1];
     int8_t uiFunctionCode = puiRequest[uiPduOffset];
     uint16_t uiAddress = ((static_cast<uint16_t>(puiRequest[uiPduOffset + 1]) << 8) |
@@ -355,7 +359,10 @@ uint16_t CModbusSlave::ReadDiscreteInputs(uint8_t *puiRequest, uint8_t *puiRespo
     }
     else
     {
-        uiLength = ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
+//        uiLength = ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
+    std::cout << "CModbusSlave::ReadDiscreteInputs 4" << std::endl;
+        uiLength = m_pxModbusSlaveLinkLayer ->
+                   ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
 
         if (uiNumberB % 8)
         {

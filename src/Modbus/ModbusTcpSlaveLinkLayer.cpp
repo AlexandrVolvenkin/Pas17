@@ -418,6 +418,8 @@ uint8_t CModbusTcpSlaveLinkLayer::Fsm(void)
         }
         else
         {
+            m_uiResponseTransactionId = ((static_cast<uint16_t>(m_auiRxBuffer[0]) << 8) |
+                                         (static_cast<uint16_t>(m_auiRxBuffer[1])));
             SetFsmState(COMMUNICATION_FRAME_RECEIVED);
 
             cout << "ReceiveContinue" << endl;
@@ -437,21 +439,19 @@ uint8_t CModbusTcpSlaveLinkLayer::Fsm(void)
 
     case COMMUNICATION_FRAME_RECEIVED:
         std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_FRAME_RECEIVED"  << std::endl;
-        m_uiResponseTransactionId = ((static_cast<uint16_t>(m_auiRxBuffer[0]) << 8) |
-                                     (static_cast<uint16_t>(m_auiRxBuffer[1])));
 
-        cout << "ReceiveContinue" << endl;
-        unsigned char *pucSourceTemp;
-        pucSourceTemp = (unsigned char*)m_auiRxBuffer;
-        for(int i=0; i<32; )
-        {
-            for(int j=0; j<8; j++)
-            {
-                cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
-            }
-            cout << endl;
-            i += 8;
-        }
+//        cout << "ReceiveContinue" << endl;
+//        unsigned char *pucSourceTemp;
+//        pucSourceTemp = (unsigned char*)m_auiRxBuffer;
+//        for(int i=0; i<32; )
+//        {
+//            for(int j=0; j<8; j++)
+//            {
+//                cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+//            }
+//            cout << endl;
+//            i += 8;
+//        }
         break;
 
     case COMMUNICATION_TRANSMIT_START:

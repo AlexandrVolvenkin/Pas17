@@ -1202,7 +1202,7 @@ int16_t CTcpCommunicationDevice::ReceiveContinue(uint8_t *puiDestination,
             else
             {
                 std::cout << "CTcpCommunicationDevice::ReceiveContinue recv 0 " << std::endl;
-                return 0;
+                return -1;
             }
         }
     }

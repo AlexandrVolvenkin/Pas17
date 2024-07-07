@@ -40,11 +40,19 @@
 			<Add directory="src" />
 			<Add directory="src/Modbus" />
 		</Compiler>
+		<Unit filename="../Текущие задачиPas17.txt" />
+		<Unit filename="../структ и протоколы/структ и прот ПАС-17.txt" />
 		<Unit filename="src/Configuration.h" />
 		<Unit filename="src/Crc.cpp" />
 		<Unit filename="src/Crc.h" />
+		<Unit filename="src/DataStore.cpp" />
+		<Unit filename="src/DataStore.h" />
+		<Unit filename="src/DataStoreCheck.cpp" />
+		<Unit filename="src/DataStoreCheck.h" />
 		<Unit filename="src/Dfa.cpp" />
 		<Unit filename="src/Dfa.h" />
+		<Unit filename="src/HammingCodes.cpp" />
+		<Unit filename="src/HammingCodes.h" />
 		<Unit filename="src/MainProductionCycle.cpp" />
 		<Unit filename="src/MainProductionCycle.h" />
 		<Unit filename="src/Modbus/Modbus.h" />
@@ -69,6 +77,8 @@
 		<Unit filename="src/Platform.h" />
 		<Unit filename="src/Production.cpp" />
 		<Unit filename="src/Production.h" />
+		<Unit filename="src/StorageDevice.cpp" />
+		<Unit filename="src/StorageDevice.h" />
 		<Unit filename="src/Task.cpp" />
 		<Unit filename="src/Task.h" />
 		<Unit filename="src/Timer.cpp" />

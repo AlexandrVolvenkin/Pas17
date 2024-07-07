@@ -11,11 +11,35 @@
 
 #include "Platform.h"
 #include "MainProductionCycle.h"
+#include "DataStore.h"
+#include "DataStoreCheck.h"
 //#include "ModbusTcp.h"
 #include "ModbusSlaveLinkLayer.h"
 #include "ModbusTcpSlaveLinkLayer.h"
 
 //class CMainThreadProduction;
+
+using namespace std;
+
+uint8_t auiTempBlock[]
+{
+    0, 1, 2, 3, 4, 5, 6, 7,
+    8, 9, 10, 11, 12, 13, 14, 15,
+    16, 17, 18, 19, 20, 21, 22, 23,
+    24, 25, 26, 27, 28, 29, 30, 31,
+    32, 33, 34, 35, 36, 37, 38, 39,
+    40, 41, 42, 43, 44, 45, 46, 47,
+    0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
+    0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
+    0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
+    0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
+    0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
+    0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
+    0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
+    0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
+    0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
+    0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF
+};
 
 
 //-------------------------------------------------------------------------------
@@ -27,6 +51,95 @@ CMainProductionCycle::CMainProductionCycle()
             "%s",
             typeid(*this).name());
     GetCurrentlyRunningTasksListPointer() -> clear();
+
+
+
+    CDataStore* pxDataStoreFileSystem = new CDataStore(new CStorageDeviceFileSystem);
+    CDataStoreCheck* pxDataStoreCheck = new CDataStoreCheck(pxDataStoreFileSystem);
+//    CDataStoreCheck xDataStoreCheck(pxDataStoreFileSystem);
+
+    if (!(pxDataStoreCheck -> Check()))
+    {
+        cout << "DataStore check error" << endl;
+        cout << "CreateServiceSection" << endl;
+        pxDataStoreFileSystem -> CreateServiceSection();
+
+        pxDataStoreFileSystem -> WriteBlock(auiTempBlock, sizeof(auiTempBlock), 0);
+        do
+        {
+            pxDataStoreFileSystem -> Fsm();
+        }
+        while (pxDataStoreFileSystem -> GetFsmState() != CDataStore::IDDLE);
+
+
+        pxDataStoreFileSystem -> WriteBlock(auiTempBlock, sizeof(auiTempBlock), 1);
+        do
+        {
+            pxDataStoreFileSystem -> Fsm();
+        }
+        while (pxDataStoreFileSystem -> GetFsmState() != CDataStore::IDDLE);
+
+        pxDataStoreFileSystem -> WriteBlock(auiTempBlock, sizeof(auiTempBlock), 2);
+        do
+        {
+            pxDataStoreFileSystem -> Fsm();
+        }
+        while (pxDataStoreFileSystem -> GetFsmState() != CDataStore::IDDLE);
+
+        pxDataStoreFileSystem -> WriteBlock(auiTempBlock, sizeof(auiTempBlock), 3);
+        do
+        {
+            pxDataStoreFileSystem -> Fsm();
+        }
+        while (pxDataStoreFileSystem -> GetFsmState() != CDataStore::IDDLE);
+
+        pxDataStoreFileSystem -> WriteBlock(auiTempBlock, sizeof(auiTempBlock), 4);
+        do
+        {
+            pxDataStoreFileSystem -> Fsm();
+        }
+        while (pxDataStoreFileSystem -> GetFsmState() != CDataStore::IDDLE);
+
+
+        cout << "DataStore initialized ok" << endl;
+    }
+    else
+    {
+        cout << "DataStore check ok" << endl;
+    }
+
+//    if (!(pxDataStoreFileSystem -> ReadServiceSection()))
+//    {
+//        cout << "CreateServiceSection" << endl;
+//        pxDataStoreFileSystem -> CreateServiceSection();
+//    }
+
+
+
+//    pxDataStoreFileSystem -> BlockWritePrepare(auiTempBlock, sizeof(auiTempBlock), 0);
+
+////    pxDataStoreFileSystem -> SetFsmEvent(CDataStore::WRITE_IN_PROGRESS_FSM_EVENT);
+//    // Запустим процесс записи.
+//    pxDataStoreFileSystem -> SetFsmState(CDataStore::START_WRITE_TEMPORARY_SERVICE_SECTION_DATA);
+
+//    pxDataStoreFileSystem -> TemporaryServiceSectionWritePrepare();
+
+
+
+
+//    uint8_t auiTempArray[512];
+//
+//    if (pxDataStoreFileSystem -> ReadBlock(auiTempArray, 0))
+//    {
+//        cerr << "ReadBlock ok" << endl;
+//    }
+//    else
+//    {
+//        cerr << "ReadBlock error" << endl;
+//    }
+
+
+
 
     m_pxLedBlinker = new CLedBlinker();
     m_pxModbusTcpSlaveLinkLayer = new CModbusTcpSlaveLinkLayer();
