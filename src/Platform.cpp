@@ -414,6 +414,153 @@ int16_t CSerialPort::Read(uint8_t *puiDestination, uint16_t uiLength)
 }
 
 //-------------------------------------------------------------------------------
+int16_t CSerialPort::ReceiveStart(uint8_t *puiDestination,
+                                  uint16_t uiLength,
+                                  uint32_t uiReceiveTimeout)
+{
+//    std::cout << "CSerialPort::ReceiveStart 1"  << std::endl;
+
+    fd_set readfds;
+    FD_ZERO(&readfds);
+    FD_SET(m_iDeviceDescriptorServer, &readfds);
+
+    struct timeval tv;
+    tv.tv_sec = 0;
+    tv.tv_usec = uiReceiveTimeout;
+
+    int ready = select(m_iDeviceDescriptorServer + 1, &readfds, NULL, NULL, &tv);
+
+    cout << "CSerialPort::ReceiveStart 2" << endl;
+    if (ready < 0)
+    {
+        cout << "CSerialPort::ReceiveStart errno " << errno << endl;
+        if (errno == ETIMEDOUT)
+        {
+            cout << "CSerialPort::ReceiveStart ETIMEDOUT" << endl;
+            return 0;
+        }
+
+        cout << "CSerialPort::ReceiveStart 3" << endl;
+        return ready;
+    }
+    else if (FD_ISSET(m_iDeviceDescriptorServer, &readfds))
+    {
+        cout << "CSerialPort::ReceiveStart 4" << endl;
+//        struct sockaddr_in addr;
+//        socklen_t addrlen;
+//        addrlen = sizeof(addr);
+//        memset(&addr, 0, sizeof(addr));
+//
+//        m_iDeviceDescriptorClient = accept(m_iDeviceDescriptorServer, (struct sockaddr *)&addr, &addrlen);
+//
+//        if (m_iDeviceDescriptorClient < 0)
+//        {
+//            cout << "CSerialPort::ReceiveStart 5" << endl;
+////            fprintf(stderr, "Connection failed tcp bind: %s\n",
+////                    CModbus::ModbusStringError(errno));
+//            close(m_iDeviceDescriptorServer);
+//            return -1;
+//        }
+//
+//        printf("The client connection from %s is accepted\n",
+//               inet_ntoa(addr.sin_addr));
+
+//        // Сделаем не блокирующим.
+//        int flags = fcntl(m_iDeviceDescriptorClient, F_GETFL, 0);
+//        fcntl(m_iDeviceDescriptorClient, F_SETFL, flags | O_NONBLOCK);
+
+        return read(m_iDeviceDescriptorServer, puiDestination, uiLength);
+//    return recv(m_iDeviceDescriptorClient, (char*)puiDestination, uiLength, 0);
+//        return 1;
+    }
+    else
+    {
+        cout << "CSerialPort::ReceiveStart 6" << endl;
+        return 0;
+    }
+}
+
+//-------------------------------------------------------------------------------
+int16_t CSerialPort::ReceiveContinue(uint8_t *puiDestination,
+                                     uint16_t uiLength,
+                                     uint32_t uiReceiveTimeout)
+{
+//    std::cout << "CSerialPort::ReceiveContinue 1"  << std::endl;
+
+    int rc;
+    fd_set rfds;
+
+    /* Add a file descriptor to the set */
+    FD_ZERO(&rfds);
+    FD_SET(m_iDeviceDescriptorServer, &rfds);
+
+    struct timeval tv;
+    tv.tv_sec = 0;
+    tv.tv_usec = uiReceiveTimeout;
+
+    rc = select(m_iDeviceDescriptorServer + 1, &rfds, NULL, NULL, &tv);
+
+    if (rc < 0)
+    {
+        if (errno == ETIMEDOUT)
+        {
+            cout << "CSerialPort::ReceiveStart ETIMEDOUT" << endl;
+            return 0;
+        }
+
+        std::cout << "CSerialPort::ReceiveContinue timeout"  << std::endl;
+        return rc;
+    }
+    else if( FD_ISSET( m_iDeviceDescriptorServer, &rfds ) )
+    {
+        std::cout << "CSerialPort::ReceiveContinue FD_ISSET"  << std::endl;
+        rc = read(m_iDeviceDescriptorServer, (char*)puiDestination, uiLength);
+//        rc = recv(m_iDeviceDescriptorServer, (char*)puiDestination, uiLength, 0);
+
+        if (rc < 0)
+        {
+            std::cout << "CSerialPort::ReceiveContinue recv error"  << std::endl;
+            return rc;
+        }
+        else
+        {
+            if (rc)
+            {
+
+//                cout << "ReceiveContinue" << endl;
+//                unsigned char *pucSourceTemp;
+//                pucSourceTemp = (unsigned char*)puiDestination;
+//                for(int i=0; i<32; )
+//                {
+//                    for(int j=0; j<8; j++)
+//                    {
+//                        cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+//                    }
+//                    cout << endl;
+//                    i += 8;
+//                }
+
+                std::cout << "CSerialPort::ReceiveContinue recv rc "  << (int)rc  << std::endl;
+                return rc;
+            }
+            else
+            {
+                std::cout << "CSerialPort::ReceiveContinue recv 0 " << std::endl;
+                return -1;
+            }
+        }
+    }
+    else
+    {
+        cout << "CSerialPort::ReceiveStart 6" << endl;
+        return 0;
+    }
+
+//    std::cout << "CSerialPort::ReceiveContinue return 0"  << std::endl;
+//    return 0;
+}
+
+//-------------------------------------------------------------------------------
 int16_t CSerialPort::Write(uint8_t *puiSource, uint16_t uiLength)
 {
 //    std::cout << "CSerialPort::Write"  << std::endl;
@@ -1027,7 +1174,7 @@ int16_t CTcpCommunicationDevice::ReceiveStart(uint8_t *puiDestination,
         cout << "CTcpCommunicationDevice::ReceiveStart errno " << errno << endl;
         if (errno == ETIMEDOUT)
         {
-        cout << "CTcpCommunicationDevice::ReceiveStart ETIMEDOUT" << endl;
+            cout << "CTcpCommunicationDevice::ReceiveStart ETIMEDOUT" << endl;
             return 0;
         }
 
@@ -1160,7 +1307,7 @@ int16_t CTcpCommunicationDevice::ReceiveContinue(uint8_t *puiDestination,
     {
         if (errno == ETIMEDOUT)
         {
-        cout << "CTcpCommunicationDevice::ReceiveStart ETIMEDOUT" << endl;
+            cout << "CTcpCommunicationDevice::ReceiveStart ETIMEDOUT" << endl;
             return 0;
         }
 

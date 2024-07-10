@@ -194,6 +194,12 @@ public:
 //    bool IsDataAvailable(void);
     int16_t Write(uint8_t* puiDestination, uint16_t uiLength);
     int16_t Read(uint8_t* puiSource, uint16_t uiLength);
+    int16_t ReceiveStart(uint8_t *puiDestination,
+                         uint16_t uiLength,
+                         uint32_t uiReceiveTimeout);
+    int16_t ReceiveContinue(uint8_t *puiDestination,
+                            uint16_t uiLength,
+                            uint32_t uiReceiveTimeout);
     int Exchange(uint8_t uiAddress,
                  unsigned char *pucTxBuff,
                  unsigned char *pucRxBuff,
