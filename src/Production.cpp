@@ -804,3 +804,171 @@ void CModbusTcpSlaveTopLevelProduction::Process(CModbusSlaveLinkLayerInterface* 
 }
 
 //-------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+//-------------------------------------------------------------------------------
+CModbusRtuSlaveTopLevelProduction::CModbusRtuSlaveTopLevelProduction()
+{
+    std::cout << "CModbusRtuSlaveTopLevelProduction constructor"  << std::endl;
+    // получим имя класса.
+    sprintf(m_acTaskName,
+            "%s",
+            typeid(*this).name());
+    SetFsmState(START);
+}
+
+//-------------------------------------------------------------------------------
+CModbusRtuSlaveTopLevelProduction::~CModbusRtuSlaveTopLevelProduction()
+{
+
+    GetThread() -> join();
+}
+
+//-------------------------------------------------------------------------------
+void CModbusRtuSlaveTopLevelProduction::Place(CTaskInterface* pxTask)
+{
+    std::cout << "CModbusRtuSlaveTopLevelProduction::Place"  << std::endl;
+//    std::thread m_xThread(CModbusRtuSlaveTopLevelProduction::Process, pxTask);
+    std::thread m_xThread(CModbusRtuSlaveTopLevelProduction::Process, m_pxModbusSlaveLinkLayer);
+    std::thread::id th_id = m_xThread.get_id();
+    //std::cout << "CModbusRtuSlaveTopLevelProduction th_id" << " " << th_id << std::endl;
+    // не ждем завершения работы функции
+    m_xThread.detach();
+}
+
+//---------------------------------------------------------------------------------
+uint8_t CModbusRtuSlaveTopLevelProduction::Fsm(void)
+{
+//    std::cout << "CModbusRtuSlaveTopLevelProduction::Fsm 1" << endl;
+    switch (GetFsmState())
+    {
+    case START:
+        std::cout << "CModbusRtuSlaveTopLevelProduction::Fsm START"  << std::endl;
+        std::cout << "m_acTaskName " << m_acTaskName << std::endl;
+        Init();
+        SetFsmState(MODBUS_SLAVE_LINK_LAYER);
+        break;
+
+    case READY:
+        //std::cout << "CModbusRtuSlaveTopLevelProduction::Fsm READY"  << std::endl;
+        break;
+
+    case IDDLE:
+        //std::cout << "CModbusRtuSlaveTopLevelProduction::Fsm IDDLE"  << std::endl;
+        break;
+
+    case STOP:
+//        //std::cout << "CModbusRtuSlaveTopLevelProduction::Fsm STOP"  << std::endl;
+        SetFsmState(START);
+        break;
+
+    case MODBUS_SLAVE_LINK_LAYER:
+        //std::cout << "CMainProductionCycle::Fsm IDDLE"  << std::endl;
+//        m_pxModbusTcpSlaveLinkLayer -> Fsm();
+        usleep(1000);
+        break;
+
+    case LED_ON:
+        std::cout << "CModbusRtuSlaveTopLevelProduction::Fsm LED_ON"  << std::endl;
+        m_xTimer.Set(500);
+        SetFsmState(LED_ON_PERIOD_END_WAITING);
+        break;
+
+    case LED_ON_PERIOD_END_WAITING:
+//        //std::cout << "CModbusRtuSlaveTopLevelProduction::Fsm LED_ON_PERIOD_END_WAITING"  << std::endl;
+        if (m_xTimer.IsOverflow())
+        {
+            SetFsmState(LED_OFF);
+        }
+        break;
+
+    case LED_OFF:
+        std::cout << "CModbusRtuSlaveTopLevelProduction::Fsm LED_OFF"  << std::endl;
+        m_xTimer.Set(500);
+        SetFsmState(LED_OFF_PERIOD_END_WAITING);
+        break;
+
+    case LED_OFF_PERIOD_END_WAITING:
+//        //std::cout << "CModbusRtuSlaveTopLevelProduction::Fsm LED_OFF_PERIOD_END_WAITING"  << std::endl;
+        if (m_xTimer.IsOverflow())
+        {
+            SetFsmState(LED_ON);
+        }
+        break;
+
+    case LED_BLINK_ON:
+//        //std::cout << "CModbusRtuSlaveTopLevelProduction::Fsm LED_BLINK_ON"  << std::endl;
+//        m_pxLedBlinker -> Fsm();
+//        usleep(1000);
+        SetFsmState(LED_ON);
+        break;
+
+    case LED_BLINK_OFF:
+//        //std::cout << "CModbusRtuSlaveTopLevelProduction::Fsm LED_BLINK_ON"  << std::endl;
+        SetFsmState(START);
+        break;
+
+    default:
+        break;
+    }
+
+        usleep(1000);
+    return GetFsmState();
+//
+////    while (1)
+////    {
+//        if (GetCustomersListPointer() -> empty())
+//        {
+//            //std::cout << "CModbusRtuSlaveTopLevelProduction::Fsm 2" << endl;
+//            usleep(500000);
+//        }
+//        else
+//        {
+//            //std::cout << "CModbusRtuSlaveTopLevelProduction::Fsm 3" << endl;
+//            std::list<CTaskInterface*>::iterator xListIterator;
+//            //	int i = 0;
+//            for(xListIterator = GetCustomersListPointer() -> begin();
+//                    xListIterator != GetCustomersListPointer() -> end();
+//                    xListIterator++)
+//            {
+//                //std::cout << "CModbusRtuSlaveTopLevelProduction::Fsm 4" << endl;
+//                (*xListIterator) -> Fsm();
+//            }
+//        }
+//    //    }
+//
+//    return GetFsmState();
+}
+
+////-------------------------------------------------------------------------------
+//void CModbusRtuSlaveTopLevelProduction::Process(CTaskInterface* pxTask)
+//{
+//    cout << "CModbusRtuSlaveTopLevelProduction::Process 1" << endl;
+//
+//    while (1)
+//    {
+////        pxTask -> Fsm();
+////        m_pxModbusSlaveLinkLayer -> Fsm();
+//        usleep(1000);
+//    }
+//}
+
+//-------------------------------------------------------------------------------
+void CModbusRtuSlaveTopLevelProduction::Process(CModbusSlaveLinkLayerInterface* pxModbusSlaveLinkLayer)
+{
+    cout << "CModbusRtuSlaveTopLevelProduction::Process 1" << endl;
+
+    while (1)
+    {
+        pxModbusSlaveLinkLayer -> Fsm();
+        usleep(1000);
+    }
+}
+
+//-------------------------------------------------------------------------------

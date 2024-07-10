@@ -142,10 +142,10 @@ CMainProductionCycle::CMainProductionCycle()
 
 
     m_pxLedBlinker = new CLedBlinker();
-    m_pxModbusTcpSlaveLinkLayer = new CModbusTcpSlaveLinkLayer();
-    m_pxModbusSlave = new CModbusSlave();
-    m_pxModbusSlave ->
-    SetModbusSlaveLinkLayer(m_pxModbusTcpSlaveLinkLayer);
+    m_pxModbusTcpSlaveLinkLayerUpperLevel = new CModbusTcpSlaveLinkLayer();
+    m_pxModbusTcpSlaveUpperLevel = new CModbusSlave();
+    m_pxModbusTcpSlaveUpperLevel ->
+    SetModbusSlaveLinkLayer(m_pxModbusTcpSlaveLinkLayerUpperLevel);
 
 //    COILS_WORK_ARRAY_LENGTH = 128,
 //    DISCRETE_INPUTS_ARRAY_LENGTH = 128,
@@ -160,13 +160,37 @@ CMainProductionCycle::CMainProductionCycle()
 //    m_uiHoldingRegistersNumber = HOLDING_REGISTERS_ARRAY_LENGTH;
 //    m_uiInputRegistersNumber = INPUT_REGISTERS_ARRAY_LENGTH;
 
-    m_pxModbusSlave ->
+    m_pxModbusTcpSlaveUpperLevel ->
     WorkingArraysCreate(COILS_WORK_ARRAY_LENGTH,
                         DISCRETE_INPUTS_ARRAY_LENGTH,
                         HOLDING_REGISTERS_ARRAY_LENGTH,
                         INPUT_REGISTERS_ARRAY_LENGTH);
-    m_pxModbusSlave ->
+    m_pxModbusTcpSlaveUpperLevel ->
     SetOwnAddress(17);
+
+
+
+
+    m_pxModbusRtuSlaveLinkLayerUpperLevel = new CModbusRtuSlaveLinkLayer();
+    m_pxModbusRtuSlaveUpperLevel = new CModbusSlave();
+    m_pxModbusRtuSlaveUpperLevel ->
+    SetModbusSlaveLinkLayer(m_pxModbusRtuSlaveLinkLayerUpperLevel);
+
+//    m_pxModbusRtuSlaveUpperLevel ->
+//    CommunicationDeviceInit("/dev/ttyO1",
+//                            9600,
+//                            8,
+//                            'N',
+//                            2);
+
+    m_pxModbusRtuSlaveUpperLevel ->
+    WorkingArraysCreate(COILS_WORK_ARRAY_LENGTH,
+                        DISCRETE_INPUTS_ARRAY_LENGTH,
+                        HOLDING_REGISTERS_ARRAY_LENGTH,
+                        INPUT_REGISTERS_ARRAY_LENGTH);
+    m_pxModbusRtuSlaveUpperLevel ->
+    SetOwnAddress(17);
+
 
 //    m_pxRootTask ->
 //    AddCommonTask(this);
@@ -182,8 +206,12 @@ CMainProductionCycle::~CMainProductionCycle()
     delete m_pxLedBlinker;
 //    delete m_pxFileDescriptorEventsWaitingProduction;
     delete m_pxModusTcpSlaveTopLevelProduction;
-    delete m_pxModbusTcpSlaveLinkLayer;
-    delete m_pxModbusSlave;
+    delete m_pxModbusTcpSlaveLinkLayerUpperLevel;
+    delete m_pxModbusTcpSlaveUpperLevel;
+
+    delete m_pxModusRtuSlaveTopLevelProduction;
+    delete m_pxModbusRtuSlaveLinkLayerUpperLevel;
+    delete m_pxModbusRtuSlaveUpperLevel;
 }
 
 //-------------------------------------------------------------------------------
@@ -209,13 +237,22 @@ uint8_t CMainProductionCycle::Init(void)
 
     m_pxModusTcpSlaveTopLevelProduction = new CModbusTcpSlaveTopLevelProduction();
     m_pxModusTcpSlaveTopLevelProduction ->
-    SetModbusSlaveLinkLayer(m_pxModbusTcpSlaveLinkLayer);
+    SetModbusSlaveLinkLayer(m_pxModbusTcpSlaveLinkLayerUpperLevel);
     m_pxModusTcpSlaveTopLevelProduction ->
-    Place((CTaskInterface*)m_pxModbusTcpSlaveLinkLayer);
+    Place((CTaskInterface*)m_pxModbusTcpSlaveLinkLayerUpperLevel);
 
-    m_pxModbusSlave ->
+    m_pxModbusTcpSlaveUpperLevel ->
     SetFsmState(CModbusSlave::COMMUNICATION_START);
 
+
+    m_pxModusRtuSlaveTopLevelProduction = new CModbusRtuSlaveTopLevelProduction();
+    m_pxModusRtuSlaveTopLevelProduction ->
+    SetModbusSlaveLinkLayer(m_pxModbusRtuSlaveLinkLayerUpperLevel);
+    m_pxModusRtuSlaveTopLevelProduction ->
+    Place((CTaskInterface*)m_pxModbusRtuSlaveLinkLayerUpperLevel);
+
+    m_pxModbusRtuSlaveUpperLevel ->
+    SetFsmState(CModbusSlave::COMMUNICATION_START);
 }
 
 //-------------------------------------------------------------------------------
@@ -248,7 +285,8 @@ uint8_t CMainProductionCycle::Fsm(void)
 
     case MAIN_CYCLE_MODBUS_SLAVE:
         //std::cout << "CMainProductionCycle::Fsm IDDLE"  << std::endl;
-        m_pxModbusSlave -> Fsm();
+        m_pxModbusTcpSlaveUpperLevel -> Fsm();
+        m_pxModbusRtuSlaveUpperLevel -> Fsm();
         usleep(1000);
         break;
 

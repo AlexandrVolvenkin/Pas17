@@ -18,6 +18,7 @@
 #include "ModbusSlave.h"
 #include "ModbusSlaveLinkLayer.h"
 #include "ModbusTcpSlaveLinkLayer.h"
+#include "ModbusRtuSlaveLinkLayer.h"
 
 class CLedBlinker;
 
@@ -70,8 +71,12 @@ private:
     // "производственная площадка задачи ожидания событий"
     CProductionInterface* m_pxFileDescriptorEventsWaitingProduction;
     CModbusTcpSlaveTopLevelProduction* m_pxModusTcpSlaveTopLevelProduction;
-    CModbusTcpSlaveLinkLayer* m_pxModbusTcpSlaveLinkLayer;
-    CModbusSlave* m_pxModbusSlave;
+    CModbusTcpSlaveLinkLayer* m_pxModbusTcpSlaveLinkLayerUpperLevel;
+    CModbusSlave* m_pxModbusTcpSlaveUpperLevel;
+
+    CModbusRtuSlaveTopLevelProduction* m_pxModusRtuSlaveTopLevelProduction;
+    CModbusRtuSlaveLinkLayer* m_pxModbusRtuSlaveLinkLayerUpperLevel;
+    CModbusSlave* m_pxModbusRtuSlaveUpperLevel;
 
 };
 //-------------------------------------------------------------------------------

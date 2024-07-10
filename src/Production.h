@@ -294,5 +294,62 @@ protected:
 private:
 };
 
+
+
+
+
+
+
+
+//-------------------------------------------------------------------------------
+class CModbusRtuSlaveTopLevelProduction : public CProduction
+{
+public:
+
+    enum
+    {
+        START = 0,
+        READY,
+        IDDLE,
+        STOP,
+        MODBUS_SLAVE_LINK_LAYER,
+        LED_ON,
+        LED_ON_PERIOD_END_WAITING,
+        LED_OFF,
+        LED_OFF_PERIOD_END_WAITING,
+        LED_BLINK_ON,
+        LED_BLINK_OFF,
+
+    };
+
+    CModbusRtuSlaveTopLevelProduction();
+    virtual ~CModbusRtuSlaveTopLevelProduction();
+
+//    static void Process(CTaskInterface* pxTask);
+    static void Process(CModbusSlaveLinkLayerInterface* pxModbusSlaveLinkLayer);
+    void Place(CTaskInterface* pxTask);
+    uint8_t Fsm(void);
+
+    void SetModbusSlaveLinkLayer(CModbusSlaveLinkLayerInterface* pxModbusSlaveLinkLayer)
+    {
+        m_pxModbusSlaveLinkLayer = pxModbusSlaveLinkLayer;
+    };
+
+    void SetThread(std::thread* pxThread)
+    {
+        m_pxThread = pxThread;
+    };
+    std::thread* GetThread(void)
+    {
+        return m_pxThread;
+    };
+
+protected:
+    std::thread* m_pxThread;
+    CModbusSlaveLinkLayerInterface* m_pxModbusSlaveLinkLayer;
+
+private:
+};
+
 //-------------------------------------------------------------------------------
 #endif // CPRODUCTION_H
