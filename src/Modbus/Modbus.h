@@ -213,8 +213,8 @@ typedef enum
 //
 //    void WorkingArraysInit(uint8_t *puiCoils,
 //                           uint8_t *puiDiscreteInputs,
-//                           uint16_t *pui16HoldingRegisters,
-//                           uint16_t *pui16InputRegisters,
+//                           uint16_t *puiHoldingRegisters,
+//                           uint16_t *puiInputRegisters,
 //                           uint16_t uiCoilsNumber,
 //                           uint16_t uiDiscreteInputsNumber,
 //                           uint16_t uiHoldingRegistersNumber,
@@ -317,8 +317,8 @@ typedef enum
 //
 //    uint8_t *m_puiCoils;
 //    uint8_t *m_puiDiscreteInputs;
-//    uint16_t *m_pui16HoldingRegisters;
-//    uint16_t *m_pui16InputRegisters;
+//    uint16_t *m_puiHoldingRegisters;
+//    uint16_t *m_puiInputRegisters;
 //    uint16_t m_uiCoilsNumber;
 //    uint16_t m_uiDiscreteInputsNumber;
 //    uint16_t m_uiHoldingRegistersNumber;
@@ -478,8 +478,8 @@ typedef enum
 //
 //    uint8_t *m_puiCoils;
 //    uint8_t *m_puiDiscreteInputs;
-//    uint16_t *m_pui16HoldingRegisters;
-//    uint16_t *m_pui16InputRegisters;
+//    uint16_t *m_puiHoldingRegisters;
+//    uint16_t *m_puiInputRegisters;
 //    uint16_t m_uiCoilsNumber;
 //    uint16_t m_uiDiscreteInputsNumber;
 //    uint16_t m_uiHoldingRegistersNumber;

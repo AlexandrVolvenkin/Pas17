@@ -12,6 +12,8 @@
 #include <string.h>
 
 #include "Platform.h"
+#include "Resources.h"
+#include "DeviceControl.h"
 #include "Task.h"
 #include "Production.h"
 //#include "ModbusTcp.h"
@@ -66,6 +68,9 @@ private:
     std::list<CTaskInterface*> m_lpxCurrentlyRunningTasksList;
     std::list<CTaskInterface*>::iterator m_xCurrentlyRunningTasksListIterator;
 
+    CResources m_xResources;
+    CDeviceControl m_xDeviceControl;
+
     CLedBlinker* m_pxLedBlinker;
     // создадим указатель на объект
     // "производственная площадка задачи ожидания событий"
@@ -78,6 +83,14 @@ private:
     CModbusRtuSlaveLinkLayer* m_pxModbusRtuSlaveLinkLayerUpperLevel;
     CModbusSlave* m_pxModbusRtuSlaveUpperLevel;
 
+    uint8_t *m_puiCoils;
+    uint8_t *m_puiDiscreteInputs;
+    uint16_t *m_puiHoldingRegisters;
+    uint16_t *m_puiInputRegisters;
+    uint16_t m_uiCoilsNumber;
+    uint16_t m_uiDiscreteInputsNumber;
+    uint16_t m_uiHoldingRegistersNumber;
+    uint16_t m_uiInputRegistersNumber;
 };
 //-------------------------------------------------------------------------------
 

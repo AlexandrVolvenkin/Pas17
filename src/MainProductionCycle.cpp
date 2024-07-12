@@ -142,31 +142,44 @@ CMainProductionCycle::CMainProductionCycle()
 
 
     m_pxLedBlinker = new CLedBlinker();
+
+    m_uiCoilsNumber = COILS_WORK_ARRAY_LENGTH;
+    m_uiDiscreteInputsNumber = DISCRETE_INPUTS_ARRAY_LENGTH;
+    m_uiHoldingRegistersNumber = HOLDING_REGISTERS_ARRAY_LENGTH;
+    m_uiInputRegistersNumber = INPUT_REGISTERS_ARRAY_LENGTH;
+
+    m_puiCoils = new uint8_t(m_uiCoilsNumber);
+    m_puiDiscreteInputs = new uint8_t(m_uiDiscreteInputsNumber);
+    m_puiHoldingRegisters = new uint16_t(m_uiHoldingRegistersNumber);
+    m_puiInputRegisters = new uint16_t(m_uiInputRegistersNumber);
+
+    m_xResources.SetCoils(m_puiCoils);
+    m_xResources.SetCoilsNumber(m_uiCoilsNumber);
+
+    m_xResources.SetDiscreteInputs(m_puiDiscreteInputs);
+    m_xResources.SetDiscreteInputsNumber(m_uiDiscreteInputsNumber);
+
+    m_xResources.SetHoldingRegisters(m_puiHoldingRegisters);
+    m_xResources.SetHoldingRegistersNumber(m_uiHoldingRegistersNumber);
+
+    m_xResources.SetInputRegisters(m_puiInputRegisters);
+    m_xResources.SetInputRegistersNumber(m_uiInputRegistersNumber);
+
+
     m_pxModbusTcpSlaveLinkLayerUpperLevel = new CModbusTcpSlaveLinkLayer();
     m_pxModbusTcpSlaveUpperLevel = new CModbusSlave();
     m_pxModbusTcpSlaveUpperLevel ->
     SetModbusSlaveLinkLayer(m_pxModbusTcpSlaveLinkLayerUpperLevel);
 
-//    COILS_WORK_ARRAY_LENGTH = 128,
-//    DISCRETE_INPUTS_ARRAY_LENGTH = 128,
-//    HOLDING_REGISTERS_ARRAY_LENGTH = 128,
-//    INPUT_REGISTERS_ARRAY_LENGTH = 128,
-//    m_puiCoils = COILS_WORK_ARRAY_LENGTH;
-//    m_puiDiscreteInputs;
-//    m_pui16HoldingRegisters;
-//    m_pui16InputRegisters;
-//    m_uiCoilsNumber = COILS_WORK_ARRAY_LENGTH;
-//    m_uiDiscreteInputsNumber = DISCRETE_INPUTS_ARRAY_LENGTH;
-//    m_uiHoldingRegistersNumber = HOLDING_REGISTERS_ARRAY_LENGTH;
-//    m_uiInputRegistersNumber = INPUT_REGISTERS_ARRAY_LENGTH;
-
-    m_pxModbusTcpSlaveUpperLevel ->
-    WorkingArraysCreate(COILS_WORK_ARRAY_LENGTH,
-                        DISCRETE_INPUTS_ARRAY_LENGTH,
-                        HOLDING_REGISTERS_ARRAY_LENGTH,
-                        INPUT_REGISTERS_ARRAY_LENGTH);
+//    m_pxModbusTcpSlaveUpperLevel ->
+//    WorkingArraysCreate(COILS_WORK_ARRAY_LENGTH,
+//                        DISCRETE_INPUTS_ARRAY_LENGTH,
+//                        HOLDING_REGISTERS_ARRAY_LENGTH,
+//                        INPUT_REGISTERS_ARRAY_LENGTH);
     m_pxModbusTcpSlaveUpperLevel ->
     SetOwnAddress(17);
+    m_pxModbusTcpSlaveUpperLevel ->
+    SetResources(&m_xResources);
 
 
 
@@ -190,7 +203,11 @@ CMainProductionCycle::CMainProductionCycle()
                         INPUT_REGISTERS_ARRAY_LENGTH);
     m_pxModbusRtuSlaveUpperLevel ->
     SetOwnAddress(17);
+    m_pxModbusRtuSlaveUpperLevel ->
+    SetResources(&m_xResources);
 
+    m_xDeviceControl.
+    SetResources(&m_xResources);
 
 //    m_pxRootTask ->
 //    AddCommonTask(this);
@@ -205,6 +222,12 @@ CMainProductionCycle::~CMainProductionCycle()
     std::cout << "CMainProductionCycle destructor"  << std::endl;
     delete m_pxLedBlinker;
 //    delete m_pxFileDescriptorEventsWaitingProduction;
+
+    delete m_puiCoils;
+    delete m_puiDiscreteInputs;
+    delete m_puiHoldingRegisters;
+    delete m_puiInputRegisters;
+
     delete m_pxModusTcpSlaveTopLevelProduction;
     delete m_pxModbusTcpSlaveLinkLayerUpperLevel;
     delete m_pxModbusTcpSlaveUpperLevel;

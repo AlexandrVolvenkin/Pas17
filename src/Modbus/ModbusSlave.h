@@ -18,6 +18,7 @@
 #include <time.h>
 
 #include "../Platform.h"
+#include "Resources.h"
 //#include "../Task.h"
 #include "../Dfa.h"
 #include "../Timer.h"
@@ -51,10 +52,14 @@ public:
     CModbusSlave();
     virtual ~CModbusSlave();
 
+    void SetResources(CResources* pxResources);
+    CResources* GetResources(void);
+    void ResourcesInit(void);
+
     void WorkingArraysInit(uint8_t *puiCoils,
                            uint8_t *puiDiscreteInputs,
-                           uint16_t *pui16HoldingRegisters,
-                           uint16_t *pui16InputRegisters,
+                           uint16_t *puiHoldingRegisters,
+                           uint16_t *puiInputRegisters,
                            uint16_t uiCoilsNumber,
                            uint16_t uiDiscreteInputsNumber,
                            uint16_t uiHoldingRegistersNumber,
@@ -80,6 +85,8 @@ public:
     uint16_t WriteAndReadRegisters(uint8_t *, uint8_t *, uint16_t );
     uint16_t Programming(uint8_t *, uint8_t *, uint16_t );
     uint16_t PollProgramming(uint8_t *, uint8_t *, uint16_t );
+    uint16_t DataBaseRead(uint8_t *, uint8_t *, uint16_t );
+    uint16_t DataBaseWrite(uint8_t *, uint8_t *, uint16_t );
     uint16_t RequestProcessing(uint8_t *, uint8_t *, uint16_t );
     uint8_t Fsm(void);
 
@@ -166,6 +173,7 @@ public:
 
 //-------------------------------------------------------------------------------
     CModbusSlaveLinkLayerInterface* m_pxModbusSlaveLinkLayer;
+    CResources* m_pxResources;
 
     uint8_t m_uiOwnAddress;
     uint8_t m_uiSlaveAddress;
@@ -181,8 +189,8 @@ public:
 
     uint8_t *m_puiCoils;
     uint8_t *m_puiDiscreteInputs;
-    uint16_t *m_pui16HoldingRegisters;
-    uint16_t *m_pui16InputRegisters;
+    uint16_t *m_puiHoldingRegisters;
+    uint16_t *m_puiInputRegisters;
     uint16_t m_uiCoilsNumber;
     uint16_t m_uiDiscreteInputsNumber;
     uint16_t m_uiHoldingRegistersNumber;
