@@ -18,12 +18,14 @@
 #include <time.h>
 
 #include "../Platform.h"
-#include "Resources.h"
+//#include "Resources.h"
 //#include "../Task.h"
 #include "../Dfa.h"
 #include "../Timer.h"
 #include "Modbus.h"
 #include "ModbusSlaveLinkLayer.h"
+
+class CResources;
 
 //-------------------------------------------------------------------------------
 class CModbusSlave : public CDfa

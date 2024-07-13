@@ -8,6 +8,7 @@
 #include "DeviceControl.h"
 #include "Platform.h"
 #include "Resources.h"
+#include "DataStore.h"
 
 using namespace std;
 
@@ -38,7 +39,7 @@ CResources* CDeviceControl::GetResources(void)
 //-------------------------------------------------------------------------------
 uint16_t CDeviceControl::ConfigurationRead(uint8_t *puiDestination)
 {
-    std::cout << "CModbusSlave::DataBaseRead 1" << std::endl;
+    std::cout << "CDeviceControl::ConfigurationRead 1" << std::endl;
     uint8_t auiTempData[] = {1, 15, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 22, 4, 0,};
     memcpy(puiDestination, auiTempData, sizeof(auiTempData));
     return sizeof(auiTempData);
@@ -47,14 +48,21 @@ uint16_t CDeviceControl::ConfigurationRead(uint8_t *puiDestination)
 //-------------------------------------------------------------------------------
 uint16_t CDeviceControl::DataBaseBlockRead(uint8_t *puiDestination, uint8_t uiBlockIndex)
 {
-    std::cout << "CModbusSlave::DataBaseRead 1" << std::endl;
-    return 0;
+    std::cout << "CDeviceControl::DataBaseRead 1" << std::endl;
+
+    uint16_t uiLength;
+
+    uiLength = m_pxResources ->
+               m_pxDataStore ->
+               GetBlockLength(uiBlockIndex);
+    std::cout << "CDeviceControl::DataBaseRead uiLength " << (int)uiLength << std::endl;
+    return uiLength;
 }
 
 //-------------------------------------------------------------------------------
 uint16_t CDeviceControl::DataBaseBlockWrite(uint8_t *puiSource, uint8_t uiBlockIndex)
 {
-    std::cout << "CModbusSlave::DataBaseWrite 1" << std::endl;
+    std::cout << "CDeviceControl::DataBaseWrite 1" << std::endl;
     return 0;
 }
 

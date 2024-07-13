@@ -11,6 +11,7 @@
 
 #include "Platform.h"
 #include "MainProductionCycle.h"
+#include "Resources.h"
 #include "DataStore.h"
 #include "DataStoreCheck.h"
 //#include "ModbusTcp.h"
@@ -54,59 +55,61 @@ CMainProductionCycle::CMainProductionCycle()
 
 
 
-    CDataStore* pxDataStoreFileSystem = new CDataStore(new CStorageDeviceFileSystem);
-    CDataStoreCheck* pxDataStoreCheck = new CDataStoreCheck(pxDataStoreFileSystem);
-//    CDataStoreCheck xDataStoreCheck(pxDataStoreFileSystem);
+//    CDataStore* pxDataStoreFileSystem = new CDataStore(new CStorageDeviceFileSystem);
+//    CDataStoreCheck* pxDataStoreCheck = new CDataStoreCheck(pxDataStoreFileSystem);
+////    CDataStoreCheck xDataStoreCheck(pxDataStoreFileSystem);
+//
+//    if (!(pxDataStoreCheck -> Check()))
+//    {
+//        cout << "DataStore check error" << endl;
+//        cout << "CreateServiceSection" << endl;
+//        pxDataStoreFileSystem -> CreateServiceSection();
+//
+//        pxDataStoreFileSystem -> WriteBlock(auiTempBlock, sizeof(auiTempBlock), 0);
+//        do
+//        {
+//            pxDataStoreFileSystem -> Fsm();
+//        }
+//        while (pxDataStoreFileSystem -> GetFsmState() != CDataStore::IDDLE);
+//
+//
+//        pxDataStoreFileSystem -> WriteBlock(auiTempBlock, sizeof(auiTempBlock), 1);
+//        do
+//        {
+//            pxDataStoreFileSystem -> Fsm();
+//        }
+//        while (pxDataStoreFileSystem -> GetFsmState() != CDataStore::IDDLE);
+//
+//        pxDataStoreFileSystem -> WriteBlock(auiTempBlock, sizeof(auiTempBlock), 2);
+//        do
+//        {
+//            pxDataStoreFileSystem -> Fsm();
+//        }
+//        while (pxDataStoreFileSystem -> GetFsmState() != CDataStore::IDDLE);
+//
+//        pxDataStoreFileSystem -> WriteBlock(auiTempBlock, sizeof(auiTempBlock), 3);
+//        do
+//        {
+//            pxDataStoreFileSystem -> Fsm();
+//        }
+//        while (pxDataStoreFileSystem -> GetFsmState() != CDataStore::IDDLE);
+//
+//        pxDataStoreFileSystem -> WriteBlock(auiTempBlock, sizeof(auiTempBlock), 4);
+//        do
+//        {
+//            pxDataStoreFileSystem -> Fsm();
+//        }
+//        while (pxDataStoreFileSystem -> GetFsmState() != CDataStore::IDDLE);
+//
+//
+//        cout << "DataStore initialized ok" << endl;
+//    }
+//    else
+//    {
+//        cout << "DataStore check ok" << endl;
+//    }
 
-    if (!(pxDataStoreCheck -> Check()))
-    {
-        cout << "DataStore check error" << endl;
-        cout << "CreateServiceSection" << endl;
-        pxDataStoreFileSystem -> CreateServiceSection();
 
-        pxDataStoreFileSystem -> WriteBlock(auiTempBlock, sizeof(auiTempBlock), 0);
-        do
-        {
-            pxDataStoreFileSystem -> Fsm();
-        }
-        while (pxDataStoreFileSystem -> GetFsmState() != CDataStore::IDDLE);
-
-
-        pxDataStoreFileSystem -> WriteBlock(auiTempBlock, sizeof(auiTempBlock), 1);
-        do
-        {
-            pxDataStoreFileSystem -> Fsm();
-        }
-        while (pxDataStoreFileSystem -> GetFsmState() != CDataStore::IDDLE);
-
-        pxDataStoreFileSystem -> WriteBlock(auiTempBlock, sizeof(auiTempBlock), 2);
-        do
-        {
-            pxDataStoreFileSystem -> Fsm();
-        }
-        while (pxDataStoreFileSystem -> GetFsmState() != CDataStore::IDDLE);
-
-        pxDataStoreFileSystem -> WriteBlock(auiTempBlock, sizeof(auiTempBlock), 3);
-        do
-        {
-            pxDataStoreFileSystem -> Fsm();
-        }
-        while (pxDataStoreFileSystem -> GetFsmState() != CDataStore::IDDLE);
-
-        pxDataStoreFileSystem -> WriteBlock(auiTempBlock, sizeof(auiTempBlock), 4);
-        do
-        {
-            pxDataStoreFileSystem -> Fsm();
-        }
-        while (pxDataStoreFileSystem -> GetFsmState() != CDataStore::IDDLE);
-
-
-        cout << "DataStore initialized ok" << endl;
-    }
-    else
-    {
-        cout << "DataStore check ok" << endl;
-    }
 
 //    if (!(pxDataStoreFileSystem -> ReadServiceSection()))
 //    {
@@ -165,6 +168,8 @@ CMainProductionCycle::CMainProductionCycle()
     m_xResources.SetInputRegisters(m_puiInputRegisters);
     m_xResources.SetInputRegistersNumber(m_uiInputRegistersNumber);
 
+    m_xResources.m_pxDataStore = &m_xDataStore;
+    m_xResources.m_pxDeviceControl = &m_xDeviceControl;
 
     m_pxModbusTcpSlaveLinkLayerUpperLevel = new CModbusTcpSlaveLinkLayer();
     m_pxModbusTcpSlaveUpperLevel = new CModbusSlave();
@@ -206,6 +211,8 @@ CMainProductionCycle::CMainProductionCycle()
     m_pxModbusRtuSlaveUpperLevel ->
     SetResources(&m_xResources);
 
+    m_xDataStore.
+    SetResources(&m_xResources);
     m_xDeviceControl.
     SetResources(&m_xResources);
 
@@ -308,7 +315,7 @@ uint8_t CMainProductionCycle::Fsm(void)
 
     case MAIN_CYCLE_MODBUS_SLAVE:
         //std::cout << "CMainProductionCycle::Fsm IDDLE"  << std::endl;
-        m_pxModbusTcpSlaveUpperLevel -> Fsm();
+//        m_pxModbusTcpSlaveUpperLevel -> Fsm();
         m_pxModbusRtuSlaveUpperLevel -> Fsm();
         usleep(1000);
         break;

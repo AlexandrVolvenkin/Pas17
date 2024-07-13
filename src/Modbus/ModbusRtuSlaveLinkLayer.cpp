@@ -33,6 +33,7 @@ CModbusRtuSlaveLinkLayer::CModbusRtuSlaveLinkLayer()
 //-------------------------------------------------------------------------------
 CModbusRtuSlaveLinkLayer::~CModbusRtuSlaveLinkLayer()
 {
+    m_pxCommunicationDevice -> Close();
     delete m_pxCommunicationDevice;
 }
 
@@ -557,8 +558,9 @@ uint8_t CModbusRtuSlaveLinkLayer::Fsm(void)
 
     case COMMUNICATION_RECEIVE_ERROR:
         std::cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_ERROR"  << std::endl;
-        m_pxCommunicationDevice -> Close();
-        SetFsmState(COMMUNICATION_START);
+//        m_pxCommunicationDevice -> Close();
+//        SetFsmState(COMMUNICATION_START);
+        SetFsmState(COMMUNICATION_RECEIVE_CONTINUE);
         break;
 
     default:

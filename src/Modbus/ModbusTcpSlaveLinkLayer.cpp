@@ -306,7 +306,7 @@ int8_t CModbusTcpSlaveLinkLayer::FrameCheck(uint8_t *puiSourse, uint16_t uiLengt
 //-------------------------------------------------------------------------------
 uint8_t CModbusTcpSlaveLinkLayer::Fsm(void)
 {
-    std::cout << "CModbusTcpSlaveLinkLayer::Fsm 1"  << std::endl;
+//    std::cout << "CModbusTcpSlaveLinkLayer::Fsm 1"  << std::endl;
     switch (GetFsmState())
     {
         int16_t iBytesNumber;
@@ -321,7 +321,7 @@ uint8_t CModbusTcpSlaveLinkLayer::Fsm(void)
         break;
 
     case IDDLE:
-        std::cout << "CModbusTcpSlaveLinkLayer::Fsm IDDLE"  << std::endl;
+//        std::cout << "CModbusTcpSlaveLinkLayer::Fsm IDDLE"  << std::endl;
         break;
 
     case STOP:

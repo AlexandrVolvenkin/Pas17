@@ -886,19 +886,35 @@ uint16_t CModbusSlave::DataBaseRead(uint8_t *puiRequest, uint8_t *puiResponse, u
     else
     {
         std::cout << "CModbusSlave::DataBaseRead 4" << std::endl;
-        uiLength = m_pxModbusSlaveLinkLayer ->
-                   ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
-
         uiLength = m_pxResources ->
                    m_pxDeviceControl ->
                    DataBaseBlockRead(&puiResponse[uiPduOffset + 3], uiBlockIndex);
-
         // количество байт в пакете
         puiResponse[uiPduOffset + 1] = uiLength + 1;
+        uiLength ++;
+
+        uiLength += m_pxModbusSlaveLinkLayer ->
+                    ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
+
         // номер блока базы данных
         puiResponse[uiPduOffset + 2] = puiRequest[uiPduOffset + 1];
-        uiLength += 2;
+        uiLength ++;
 
+
+
+//        uiLength = m_pxResources ->
+//                   m_pxDeviceControl ->
+//                   ConfigurationRead(&puiResponse[uiPduOffset + 2]);
+//
+////    uint8_t auiTempData[] = {1, 15, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 22, 4, 0,};
+////    memcpy(&puiResponse[uiPduOffset + 2], auiTempData, sizeof(auiTempData));
+////    uiLength += sizeof(auiTempData);
+//
+//        // количество байт в прикладном сообщении массиве конфигурации, не включая остальные.
+//        puiResponse[uiPduOffset + 1] = uiLength;//sizeof(auiTempData);// + 1;
+//        uiLength ++;
+//        uiLength += m_pxModbusSlaveLinkLayer ->
+//                    ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
 
 //        if (uiNumberB % 8)
 //        {

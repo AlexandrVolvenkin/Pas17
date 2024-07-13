@@ -13,6 +13,7 @@
 
 #include "Platform.h"
 #include "Resources.h"
+#include "DataStore.h"
 #include "DeviceControl.h"
 #include "Task.h"
 #include "Production.h"
@@ -22,7 +23,10 @@
 #include "ModbusTcpSlaveLinkLayer.h"
 #include "ModbusRtuSlaveLinkLayer.h"
 
+//class CResources;
 class CLedBlinker;
+//class CDataStore;
+//class CDeviceControl;
 
 //-------------------------------------------------------------------------------
 class CMainProductionCycle : public CTask//,public CDfa
@@ -70,6 +74,7 @@ private:
 
     CResources m_xResources;
     CDeviceControl m_xDeviceControl;
+    CDataStore m_xDataStore;
 
     CLedBlinker* m_pxLedBlinker;
     // создадим указатель на объект

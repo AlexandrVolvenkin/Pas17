@@ -16,6 +16,8 @@
 #include "Timer.h"
 #include "StorageDevice.h"
 
+class CResources;
+
 using namespace std;
 
 //-------------------------------------------------------------------------------
@@ -137,6 +139,9 @@ public:
     CDataStore(CStorageDeviceInterface* pxStorageDevice);
     virtual ~CDataStore();
 
+    void SetResources(CResources* pxResources);
+    CResources* GetResources(void);
+
 //    uint8_t Check(void);
     void CreateServiceSection(void);
     uint8_t WriteBlock(uint8_t *puiSource, uint16_t uiLength, uint8_t uiBlock);
@@ -150,11 +155,12 @@ public:
         return m_puiIntermediateBuff;
     };
 
-    uint8_t GetBlockLength(uint8_t uiBlock)
-    {
-        return m_xServiseSection.xServiseSectionData.
-               axBlockPositionData[uiBlock].uiLength;
-    };
+    uint8_t GetBlockLength(uint8_t uiBlock);
+//    {
+//        return m_xServiseSection.xServiseSectionData.
+//               axBlockPositionData[uiBlock].uiLength;
+//               aucDataBaseBlockLength[CDataStore::MAX_BLOCKS_NUMBER]
+//    };
 
     uint16_t GetStoredBlocksNumber(void)
     {
@@ -190,6 +196,7 @@ public:
 
 //protected:
 private:
+    CResources* m_pxResources;
     // Данные контекста записи блока.
     uint8_t m_uiBlock;
     uint8_t* m_puiBlockSource;
