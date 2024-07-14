@@ -14,6 +14,7 @@
 #include "Resources.h"
 #include "DataStore.h"
 #include "DataStoreCheck.h"
+#include "InternalModule.h"
 //#include "ModbusTcp.h"
 #include "ModbusSlaveLinkLayer.h"
 #include "ModbusTcpSlaveLinkLayer.h"
@@ -171,6 +172,13 @@ CMainProductionCycle::CMainProductionCycle()
     m_xResources.m_pxDataStore = &m_xDataStore;
     m_xResources.m_pxDeviceControl = &m_xDeviceControl;
 
+    m_pxSpiCommunicationDevice = new CSpi();
+    m_pxInternalModule = new CInternalModule();
+    m_pxInternalModule ->
+    SetCommunicationDevice(m_pxSpiCommunicationDevice);
+    m_pxInternalModule ->
+    SetResources(&m_xResources);
+
     m_pxModbusTcpSlaveLinkLayerUpperLevel = new CModbusTcpSlaveLinkLayer();
     m_pxModbusTcpSlaveUpperLevel = new CModbusSlave();
     m_pxModbusTcpSlaveUpperLevel ->
@@ -235,6 +243,10 @@ CMainProductionCycle::~CMainProductionCycle()
     delete m_puiHoldingRegisters;
     delete m_puiInputRegisters;
 
+	CGpio::Close();
+    delete m_pxSpiCommunicationDevice;
+    delete m_pxInternalModule;
+
     delete m_pxModusTcpSlaveTopLevelProduction;
     delete m_pxModbusTcpSlaveLinkLayerUpperLevel;
     delete m_pxModbusTcpSlaveUpperLevel;
@@ -264,6 +276,13 @@ uint8_t CMainProductionCycle::Init(void)
 //    // на производственной площадке(запустим поток)
 //    m_pxFileDescriptorEventsWaitingProduction ->
 //    Place((CTaskInterface*)m_pxFileDescriptorEventsWaitingProduction);
+
+	CGpio::Init();
+	cout << "CGpio::Init" << endl;
+//	CPlatform::LedInitialization();
+//	cout << "CPlatform::LedInitialization" << endl;
+	m_pxSpiCommunicationDevice -> Init();
+	cout << "m_pxSpiCommunicationDevice -> Open" << endl;
 
     m_pxModusTcpSlaveTopLevelProduction = new CModbusTcpSlaveTopLevelProduction();
     m_pxModusTcpSlaveTopLevelProduction ->
@@ -296,6 +315,10 @@ uint8_t CMainProductionCycle::Fsm(void)
         std::cout << "CMainProductionCycle::Fsm START"  << std::endl;
         std::cout << "m_acTaskName " << m_acTaskName << std::endl;
         Init();
+
+        m_pxInternalModule ->
+        GetModuleType(0);
+
         SetFsmState(MAIN_CYCLE_MODBUS_SLAVE);
         break;
 

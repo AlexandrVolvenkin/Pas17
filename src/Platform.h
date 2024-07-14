@@ -412,7 +412,7 @@ public:
 #define SPI_MODE SPI_MODE_0
 #define SPI_MODE32 SPI_3WIRE
 #define BITS_PER_WORD 8
-#define SPEED_IN_HZ 150000UL
+#define SPEED_IN_HZ 15000UL
 #define LOW_SPEED_IN_HZ SPEED_IN_HZ
 
 #define SPI_CHIP_SELECT_PIN_0  7 /* (R2) lcd_data1.gpio2[7] A0*/

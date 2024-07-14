@@ -1732,12 +1732,15 @@ CSpi::CSpi()
 //-------------------------------------------------------------------------------
 CSpi::~CSpi()
 {
-
+    ChipSelectPinDelete();
+    Close();
 }
 
 //-------------------------------------------------------------------------------
 void CSpi::Init(void)
 {
+    Open();
+    ChipSelectPinSet();
 };
 
 //-------------------------------------------------------------------------------
@@ -1950,6 +1953,7 @@ int CSpi::Exchange(uint8_t uiAddress,
                    int iSpeed)
 {
     ChipSelectAddressSet(uiAddress);
+
 //    memset(aucSpiTxBuffer, 0, iLength);
 //    memset(aucSpiRxBuffer, 0, iLength);
 //    memset(aucSpiRxBuffer, 0, 4);
@@ -1972,7 +1976,7 @@ int CSpi::Exchange(uint8_t uiAddress,
     // send the SPI message (all of the above fields, inc. buffers)
     int iStatus = ioctl(m_iDeviceDescriptorServer, SPI_IOC_MESSAGE(1), &xTransfer);
 
-    CGpio::ClearPin(SPI_CHIP_ENABLE_PIN_PORT, SPI_CHIP_ENABLE_PIN);
+//    CGpio::ClearPin(SPI_CHIP_ENABLE_PIN_PORT, SPI_CHIP_ENABLE_PIN);
 
     if (iStatus < 0)
     {
@@ -2010,14 +2014,17 @@ TGpioControl CGpio::m_xGpioControl;
 //-------------------------------------------------------------------------------
 void CGpio::Init(void)
 {
+    Open();
 };
 
 //-------------------------------------------------------------------------------
 int8_t CGpio::Open(void)
 {
+    std::cout << "CGpio::Open 1"  << std::endl;
     m_iDeviceDescriptorServer = open("/dev/mem", O_RDWR | O_SYNC);
     if(m_iDeviceDescriptorServer < 0)
     {
+        std::cout << "CGpio::Open 2"  << std::endl;
         printf("%s\n", strerror(errno));
         close(m_iDeviceDescriptorServer);
         return -1;
@@ -2055,8 +2062,9 @@ int8_t CGpio::Open(void)
     *(m_xGpioControl.pulCmPerMap + (CM_PER_GPIO2_CLKCTRL_OFFSET / 4)) = (1 << OPTFCLKEN_GPIO_X_GDBCLK) | (1 << MODULEMODE_BIT_1);
     *(m_xGpioControl.pulCmPerMap + (CM_PER_GPIO3_CLKCTRL_OFFSET / 4)) = (1 << OPTFCLKEN_GPIO_X_GDBCLK) | (1 << MODULEMODE_BIT_1);
 
+    std::cout << "CGpio::Open 3"  << std::endl;
     return 0;
-}
+};
 
 //-------------------------------------------------------------------------------
 int8_t CGpio::Close(void)

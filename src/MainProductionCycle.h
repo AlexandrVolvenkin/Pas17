@@ -15,6 +15,7 @@
 #include "Resources.h"
 #include "DataStore.h"
 #include "DeviceControl.h"
+#include "InternalModule.h"
 #include "Task.h"
 #include "Production.h"
 //#include "ModbusTcp.h"
@@ -75,6 +76,9 @@ private:
     CResources m_xResources;
     CDeviceControl m_xDeviceControl;
     CDataStore m_xDataStore;
+
+    CSpi* m_pxSpiCommunicationDevice;
+    CInternalModuleInterface* m_pxInternalModule;
 
     CLedBlinker* m_pxLedBlinker;
     // создадим указатель на объект

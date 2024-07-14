@@ -57,6 +57,10 @@
 		<Unit filename="src/Dfa.h" />
 		<Unit filename="src/HammingCodes.cpp" />
 		<Unit filename="src/HammingCodes.h" />
+		<Unit filename="src/InternalModule.cpp" />
+		<Unit filename="src/InternalModule.h" />
+		<Unit filename="src/InternalModuleMuvr.cpp" />
+		<Unit filename="src/InternalModuleMuvr.h" />
 		<Unit filename="src/MainProductionCycle.cpp" />
 		<Unit filename="src/MainProductionCycle.h" />
 		<Unit filename="src/Modbus/Modbus.h" />
