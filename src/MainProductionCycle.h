@@ -26,6 +26,7 @@
 
 //class CResources;
 class CLedBlinker;
+class CConfigurationCreate;
 //class CDataStore;
 //class CDeviceControl;
 
@@ -79,6 +80,9 @@ private:
 
     CSpi* m_pxSpiCommunicationDevice;
     CInternalModuleInterface* m_pxInternalModule;
+    CInternalModuleInterface* m_pxInternalModuleMuvr;
+
+    CConfigurationCreate* m_pxConfigurationCreate;
 
     CLedBlinker* m_pxLedBlinker;
     // создадим указатель на объект

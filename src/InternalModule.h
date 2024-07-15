@@ -53,29 +53,29 @@
 class CResources;
 class CCommunicationDeviceInterface;
 
-    enum
-    {
-        SPI_PREAMBLE_LENGTH = 2,
-        SPI_BUFFER_LENGTH = 64,
+enum
+{
+    SPI_PREAMBLE_LENGTH = 2,
+    SPI_BUFFER_LENGTH = 64,
 //        SPI_MAX_BUS_ADDRESS = 16,
 // 2 - смещение на данные в массиве RX SPI. 0 - команда запроса, 1 - "эхо" команды запроса.
-        SPI_DATA_BYTE_OFFSET = 2,
+    SPI_DATA_BYTE_OFFSET = 2,
 // 1 - смещение на команду в массиве RX SPI.
-        SPI_COMMAND_BYTE_OFFSET = 1,
-        SPI_COMMAND_BYTE_LENGTH = 1,
-        ONE_BYTE_CRC_LENGTH = 1,
-        TWO_BYTE_CRC_LENGTH = 2,
-        GET_MODULE_TYPE_COMMAND = 0x91,
-        GET_MODULE_TYPE_COMMAND_LENGTH = 1,
-        GET_MODULE_TYPE_REQUEST_LENGTH = 4,
-        GET_MODULE_TYPE_COMMAND_ANSWER_LENGTH = 1,
-        MODULE_REQUEST_QUANTITY = 5,
-        MODULE_TYPE_OFFSET = SPI_DATA_BYTE_OFFSET,
+    SPI_COMMAND_BYTE_OFFSET = 1,
+    SPI_COMMAND_BYTE_LENGTH = 1,
+    ONE_BYTE_CRC_LENGTH = 1,
+    TWO_BYTE_CRC_LENGTH = 2,
+    GET_MODULE_TYPE_COMMAND = 0x91,
+    GET_MODULE_TYPE_COMMAND_LENGTH = 1,
+    GET_MODULE_TYPE_REQUEST_LENGTH = 4,
+    GET_MODULE_TYPE_COMMAND_ANSWER_LENGTH = 1,
+    MODULE_REQUEST_QUANTITY = 5,
+    MODULE_TYPE_OFFSET = SPI_DATA_BYTE_OFFSET,
 // начальное значение счётчика запросов модуля без ответа.
 // если равно нулю - модуль считается неисправным. его данные признаются недостоверными.
 // устанавливается флаг сигнализации в рабочем массиве aucCoilsArray[BAD_MODULES_BIT_ARRAY_OFFSET + индекс модуля].
-        BAD_MODULE_CYCLE_COUNT_DEFAULT = 10,
-    };
+    BAD_MODULE_CYCLE_COUNT_DEFAULT = 10,
+};
 
 
 //-------------------------------------------------------------------------------
@@ -110,6 +110,7 @@ public:
     virtual bool IsAbleToReplace(uint8_t uiType) {};
     virtual void SetCommunicationDevice(CCommunicationDeviceInterface* pxCommunicationDevice) {};
     virtual uint8_t GetModuleType(uint8_t uiAddress) {};
+    virtual uint8_t DataBaseRead(uint8_t uiAddress) {};
 };
 //-------------------------------------------------------------------------------
 
@@ -142,6 +143,7 @@ public:
     bool IsAbleToReplace(uint8_t uiType);
     void SetCommunicationDevice(CCommunicationDeviceInterface* pxCommunicationDevice);
     uint8_t GetModuleType(uint8_t uiAddress);
+//    uint8_t DataBaseRead(uint8_t uiAddress);
 
 private:
     uint8_t m_uiAddress;

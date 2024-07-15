@@ -15,6 +15,8 @@
 #include "DataStore.h"
 #include "DataStoreCheck.h"
 #include "InternalModule.h"
+#include "InternalModuleMuvr.h"
+#include "ConfigurationCreate.h"
 //#include "ModbusTcp.h"
 #include "ModbusSlaveLinkLayer.h"
 #include "ModbusTcpSlaveLinkLayer.h"
@@ -174,10 +176,23 @@ CMainProductionCycle::CMainProductionCycle()
 
     m_pxSpiCommunicationDevice = new CSpi();
     m_pxInternalModule = new CInternalModule();
+//    m_pxInternalModule = new CInternalModuleMuvr();
     m_pxInternalModule ->
     SetCommunicationDevice(m_pxSpiCommunicationDevice);
     m_pxInternalModule ->
     SetResources(&m_xResources);
+
+    m_pxInternalModuleMuvr = new CInternalModuleMuvr();
+    m_pxInternalModuleMuvr ->
+    SetCommunicationDevice(m_pxSpiCommunicationDevice);
+    m_pxInternalModuleMuvr ->
+    SetResources(&m_xResources);
+
+
+    m_pxConfigurationCreate = new CConfigurationCreate();
+    m_pxConfigurationCreate ->
+    SetResources(&m_xResources);
+    m_xResources.m_pxConfigurationCreate = m_pxConfigurationCreate;
 
     m_pxModbusTcpSlaveLinkLayerUpperLevel = new CModbusTcpSlaveLinkLayer();
     m_pxModbusTcpSlaveUpperLevel = new CModbusSlave();
@@ -243,9 +258,11 @@ CMainProductionCycle::~CMainProductionCycle()
     delete m_puiHoldingRegisters;
     delete m_puiInputRegisters;
 
-	CGpio::Close();
+    CGpio::Close();
     delete m_pxSpiCommunicationDevice;
     delete m_pxInternalModule;
+    delete m_pxInternalModuleMuvr;
+    delete m_pxConfigurationCreate;
 
     delete m_pxModusTcpSlaveTopLevelProduction;
     delete m_pxModbusTcpSlaveLinkLayerUpperLevel;
@@ -277,12 +294,12 @@ uint8_t CMainProductionCycle::Init(void)
 //    m_pxFileDescriptorEventsWaitingProduction ->
 //    Place((CTaskInterface*)m_pxFileDescriptorEventsWaitingProduction);
 
-	CGpio::Init();
-	cout << "CGpio::Init" << endl;
+    CGpio::Init();
+    cout << "CGpio::Init" << endl;
 //	CPlatform::LedInitialization();
 //	cout << "CPlatform::LedInitialization" << endl;
-	m_pxSpiCommunicationDevice -> Init();
-	cout << "m_pxSpiCommunicationDevice -> Open" << endl;
+    m_pxSpiCommunicationDevice -> Init();
+    cout << "m_pxSpiCommunicationDevice -> Open" << endl;
 
     m_pxModusTcpSlaveTopLevelProduction = new CModbusTcpSlaveTopLevelProduction();
     m_pxModusTcpSlaveTopLevelProduction ->
@@ -318,6 +335,21 @@ uint8_t CMainProductionCycle::Fsm(void)
 
         m_pxInternalModule ->
         GetModuleType(0);
+        {
+
+//            CInternalModuleMuvr xInternalModuleMuvr;
+////            CInternalModule xInternalModuleMuvr;
+//            xInternalModuleMuvr.
+//            GetModuleType(0);
+
+//            CInternalModuleMuvr xInternalModuleMuvr;
+////            CInternalModule xInternalModuleMuvr;
+//            xInternalModuleMuvr.
+//            DataBaseRead(0);
+            m_pxInternalModuleMuvr ->
+            DataBaseRead(0);
+
+        }
 
         SetFsmState(MAIN_CYCLE_MODBUS_SLAVE);
         break;

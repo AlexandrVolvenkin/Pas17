@@ -45,6 +45,8 @@
 		<Unit filename="../Текущие задачиPas17.txt" />
 		<Unit filename="../структ и протоколы/структ и прот ПАС-17.txt" />
 		<Unit filename="src/Configuration.h" />
+		<Unit filename="src/ConfigurationCreate.cpp" />
+		<Unit filename="src/ConfigurationCreate.h" />
 		<Unit filename="src/Crc.cpp" />
 		<Unit filename="src/Crc.h" />
 		<Unit filename="src/DataStore.cpp" />

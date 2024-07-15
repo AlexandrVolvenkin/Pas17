@@ -14,6 +14,7 @@
 
 class CDeviceControl;
 class CDataStore;
+class CConfigurationCreate;
 
 //-------------------------------------------------------------------------------------------
 class CResourcesInterface : public CDfa
@@ -92,6 +93,7 @@ public:
 
     CDeviceControl* m_pxDeviceControl;
     CDataStore* m_pxDataStore;
+    CConfigurationCreate* m_pxConfigurationCreate;
 };
 
 //-------------------------------------------------------------------------------------------
