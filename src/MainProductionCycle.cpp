@@ -11,7 +11,10 @@
 
 #include "Platform.h"
 #include "MainProductionCycle.h"
+#include "Task.h"
 #include "Resources.h"
+#include "TaskManager.h"
+#include "ServiceMarket.h"
 #include "DataStore.h"
 #include "DataStoreCheck.h"
 #include "InternalModule.h"
@@ -145,7 +148,8 @@ CMainProductionCycle::CMainProductionCycle()
 //    }
 
 
-
+//    CTask xTask;
+    CTaskManager xTaskManager(&m_xResources);
 
     m_pxLedBlinker = new CLedBlinker();
 
@@ -173,6 +177,11 @@ CMainProductionCycle::CMainProductionCycle()
 
     m_xResources.m_pxDataStore = &m_xDataStore;
     m_xResources.m_pxDeviceControl = &m_xDeviceControl;
+
+    m_pxServiceMarket = new CServiceMarket();
+    m_pxServiceMarket ->
+    SetResources(&m_xResources);
+    m_xResources.m_pxServiceMarket = m_pxServiceMarket;
 
     m_pxSpiCommunicationDevice = new CSpi();
     m_pxInternalModule = new CInternalModule();

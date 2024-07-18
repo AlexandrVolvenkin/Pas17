@@ -13,6 +13,7 @@
 
 #include "Platform.h"
 #include "Resources.h"
+#include "ServiceMarket.h"
 #include "DataStore.h"
 #include "DeviceControl.h"
 #include "InternalModule.h"
@@ -31,7 +32,7 @@ class CConfigurationCreate;
 //class CDeviceControl;
 
 //-------------------------------------------------------------------------------
-class CMainProductionCycle : public CTask//,public CDfa
+class CMainProductionCycle : public CTask, public CDfa
 {
 public:
 
@@ -84,6 +85,8 @@ private:
 
     CConfigurationCreate* m_pxConfigurationCreate;
 
+    CServiceMarket* m_pxServiceMarket;
+
     CLedBlinker* m_pxLedBlinker;
     // создадим указатель на объект
     // "производственная площадка задачи ожидания событий"
@@ -112,7 +115,7 @@ private:
 
 
 //-------------------------------------------------------------------------------
-class CLedBlinker : public CTask//,public CDfa
+class CLedBlinker : public CTask ,public CDfa
 {
 public:
 

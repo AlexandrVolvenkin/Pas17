@@ -21,7 +21,7 @@ class CMainProductionCycleInterface;
 class CLedBlinker;
 
 //-------------------------------------------------------------------------------
-class CProductionInterface : public CTask
+class CProductionInterface : public CTask ,public CDfa
 {
 public:
     virtual void AddTask(CTaskInterface* pxTask) {};
