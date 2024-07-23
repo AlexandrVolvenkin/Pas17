@@ -8,7 +8,11 @@
 
 #include <iostream>
 #include <string.h>
+#include <typeinfo>
 
+
+#include "Task.h"
+#include "Resources.h"
 #include "ModbusSlaveLinkLayer.h"
 #include "ModbusRtuSlaveLinkLayer.h"
 #include <Crc.h>
@@ -28,6 +32,24 @@ CModbusRtuSlaveLinkLayer::CModbusRtuSlaveLinkLayer()
                             'N',
                             2);
     SetFsmState(IDDLE);
+
+//    std::thread m_xThread(CModbusRtuSlaveLinkLayer::Process, this);
+    m_pxThread = new std::thread(CModbusRtuSlaveLinkLayer::Process, this);
+//    m_pxThread = &m_xThread;
+//    std::thread::id th_id = m_xThread.get_id();
+//    //std::cout << "CModbusRtuSlaveLinkLayer th_id" << " " << th_id << std::endl;
+//    // не ждем завершения работы функции
+//    m_xThread.detach();
+    std::thread::id th_id = m_pxThread -> get_id();
+    std::cout << "CModbusRtuSlaveLinkLayer th_id" << " " << th_id << std::endl;
+    // не ждем завершения работы функции
+    m_pxThread -> detach();
+}
+
+//-------------------------------------------------------------------------------
+CModbusRtuSlaveLinkLayer::CModbusRtuSlaveLinkLayer(CResources* pxResources)
+{
+
 }
 
 //-------------------------------------------------------------------------------
@@ -35,6 +57,24 @@ CModbusRtuSlaveLinkLayer::~CModbusRtuSlaveLinkLayer()
 {
     m_pxCommunicationDevice -> Close();
     delete m_pxCommunicationDevice;
+
+    if (m_pxThread -> joinable())
+    {
+        m_pxThread -> join();
+    }
+    delete m_pxThread;
+}
+
+//-------------------------------------------------------------------------------
+void CModbusRtuSlaveLinkLayer::Process(CModbusRtuSlaveLinkLayer* pxModbusSlaveLinkLayer)
+{
+    cout << "CModbusRtuSlaveLinkLayer::Process 1" << endl;
+
+    while (1)
+    {
+        pxModbusSlaveLinkLayer -> Fsm();
+        usleep(1000);
+    }
 }
 
 ////-------------------------------------------------------------------------------

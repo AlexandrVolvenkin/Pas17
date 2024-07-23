@@ -5,9 +5,14 @@
 //  email       : aav-36@mail.ru
 //  GitHub      : https://github.com/AlexandrVolvenkin
 //-------------------------------------------------------------------------------
+#include <iostream>
+#include <string.h>
+#include <typeinfo>
+
+#include "Task.h"
+#include "Resources.h"
 #include "ModbusSlave.h"
 #include "Platform.h"
-#include "Resources.h"
 #include "DataStore.h"
 #include "DeviceControl.h"
 
@@ -17,10 +22,41 @@ using namespace std;
 CModbusSlave::CModbusSlave()
 {
     std::cout << "CModbusSlave constructor"  << std::endl;
+    // получим имя класса.
+    sprintf(GetTaskNamePointer(),
+            "%s",
+            typeid(*this).name());
+    ModbusWorkingArraysInit();
 //    m_pxModbusSlaveLinkLayer = new CModbusSlaveLinkLayerInterface();
     SetFsmState(IDDLE);
 }
 
+//-------------------------------------------------------------------------------
+CModbusSlave::CModbusSlave(CResources* pxResources)
+{
+    std::cout << "CModbusSlave constructor 2"  << std::endl;
+    // получим имя класса.
+    sprintf(GetTaskNamePointer(),
+            "%s",
+            typeid(*this).name());
+    // получим имя класса.
+//    sprintf(GetTaskNamePointer(),
+//            "%s",
+//            this -> std::type_info::name());
+    SetResources(pxResources);
+    m_pxResources ->
+    AddCommonListTask(this);
+    m_pxResources ->
+    AddCommonTaskToMap("ModbusTcpSlaveUpperLevel", this);
+    m_pxResources ->
+    GetCommonListTaskPointer("CModbusSlave");
+    m_pxResources ->
+    GetCommonTaskFromMapPointer("ModbusTcpSlaveUpperLevel");
+    ModbusWorkingArraysInit();
+//    m_pxModbusSlaveLinkLayer = new CModbusSlaveLinkLayerInterface();
+    SetFsmState(IDDLE);
+}
+//std::type_info::name() или std::get_class_name().
 //-------------------------------------------------------------------------------
 CModbusSlave::~CModbusSlave()
 {
@@ -28,17 +64,17 @@ CModbusSlave::~CModbusSlave()
     WorkingArraysDelete();
 }
 
-//-------------------------------------------------------------------------------
-void CModbusSlave::SetResources(CResources* pxResources)
-{
-    m_pxResources = pxResources;
-}
-
-//-------------------------------------------------------------------------------
-CResources* CModbusSlave::GetResources(void)
-{
-    return m_pxResources;
-}
+////-------------------------------------------------------------------------------
+//void CModbusSlave::SetResources(CResources* pxResources)
+//{
+//    m_pxResources = pxResources;
+//}
+//
+////-------------------------------------------------------------------------------
+//CResources* CModbusSlave::GetResources(void)
+//{
+//    return m_pxResources;
+//}
 
 //-------------------------------------------------------------------------------
 const char *CModbusSlave::ModbusStringError(int errnum)
@@ -79,7 +115,7 @@ const char *CModbusSlave::ModbusStringError(int errnum)
 }
 
 //-------------------------------------------------------------------------------
-void CModbusSlave::ResourcesInit(void)
+void CModbusSlave::ModbusWorkingArraysInit(void)
 {
     m_puiCoils = m_pxResources -> GetCoils();
     m_uiCoilsNumber = m_pxResources -> GetCoilsNumber();

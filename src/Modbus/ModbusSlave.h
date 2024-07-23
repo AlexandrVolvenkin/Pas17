@@ -20,15 +20,16 @@
 #include "../Platform.h"
 //#include "Resources.h"
 //#include "../Task.h"
-#include "../Dfa.h"
+//#include "../Dfa.h"
 #include "../Timer.h"
 #include "Modbus.h"
 #include "ModbusSlaveLinkLayer.h"
 
+class CTask;
 class CResources;
 
 //-------------------------------------------------------------------------------
-class CModbusSlave : public CDfa
+class CModbusSlave : public CTask//, public CDfa
 {
 public:
     enum
@@ -52,11 +53,12 @@ public:
     };
 
     CModbusSlave();
+    CModbusSlave(CResources* pxResources);
     virtual ~CModbusSlave();
 
-    void SetResources(CResources* pxResources);
-    CResources* GetResources(void);
-    void ResourcesInit(void);
+//    void SetResources(CResources* pxResources);
+//    CResources* GetResources(void);
+    void ModbusWorkingArraysInit(void);
 
     void WorkingArraysInit(uint8_t *puiCoils,
                            uint8_t *puiDiscreteInputs,
@@ -175,7 +177,7 @@ public:
 
 //-------------------------------------------------------------------------------
     CModbusSlaveLinkLayerInterface* m_pxModbusSlaveLinkLayer;
-    CResources* m_pxResources;
+//    CResources* m_pxResources;
 
     uint8_t m_uiOwnAddress;
     uint8_t m_uiSlaveAddress;

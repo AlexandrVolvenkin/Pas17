@@ -1,16 +1,19 @@
 #ifndef CMODBUSTCPMASTERLINKLAYER_H
 #define CMODBUSTCPMASTERLINKLAYER_H
 
+class CTask;
+class CResources;
 
 class CModbusTcpMasterLinkLayer
 {
-    public:
-        CModbusTcpMasterLinkLayer();
-        virtual ~CModbusTcpMasterLinkLayer();
+public:
+    CModbusTcpMasterLinkLayer();
+    CModbusTcpMasterLinkLayer(CResources* pxResources);
+    virtual ~CModbusTcpMasterLinkLayer();
 
-    protected:
+protected:
 
-    private:
+private:
 };
 
 #endif // CMODBUSTCPMASTERLINKLAYER_H

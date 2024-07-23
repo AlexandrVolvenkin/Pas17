@@ -9,6 +9,7 @@
 #include <iostream>
 #include <string.h>
 
+#include "Task.h"
 #include "DataStore.h"
 #include "Crc.h"
 #include "HammingCodes.h"
@@ -198,17 +199,17 @@ CDataStore::~CDataStore()
 
 }
 
-//-------------------------------------------------------------------------------
-void CDataStore::SetResources(CResources* pxResources)
-{
-    m_pxResources = pxResources;
-}
-
-//-------------------------------------------------------------------------------
-CResources* CDataStore::GetResources(void)
-{
-    return m_pxResources;
-}
+////-------------------------------------------------------------------------------
+//void CDataStore::SetResources(CResources* pxResources)
+//{
+//    m_pxResources = pxResources;
+//}
+//
+////-------------------------------------------------------------------------------
+//CResources* CDataStore::GetResources(void)
+//{
+//    return m_pxResources;
+//}
 
 //-------------------------------------------------------------------------------
 void CDataStore::CreateServiceSection(void)

@@ -85,8 +85,6 @@
 		<Unit filename="src/Modbus/errno-base.h" />
 		<Unit filename="src/Platform.cpp" />
 		<Unit filename="src/Platform.h" />
-		<Unit filename="src/Production.cpp" />
-		<Unit filename="src/Production.h" />
 		<Unit filename="src/Resources.cpp" />
 		<Unit filename="src/Resources.h" />
 		<Unit filename="src/ServiceMarket.cpp" />

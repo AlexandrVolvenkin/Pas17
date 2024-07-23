@@ -8,6 +8,7 @@
 #include <iostream>
 #include <string.h>
 
+#include "Task.h"
 #include "DataStoreCheck.h"
 #include "DataStore.h"
 #include "Crc.h"

@@ -19,7 +19,7 @@
 
 #include "../Platform.h"
 //#include "../Task.h"
-#include "../Dfa.h"
+//#include "../Dfa.h"
 #include "../Timer.h"
 
 #define HAVE_DECL_TIOCSRS485 1

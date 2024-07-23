@@ -14,7 +14,7 @@
 #include <string.h>
 
 #include "Platform.h"
-#include "Dfa.h"
+//#include "Dfa.h"
 #include "Timer.h"
 
 
@@ -50,6 +50,7 @@
 //#define SPI_COMMAND_BYTE_OFFSET 1
 //#define SPI_COMMAND_BYTE_LENGTH 1
 
+class CTask;
 class CResources;
 class CCommunicationDeviceInterface;
 
@@ -79,7 +80,7 @@ enum
 
 
 //-------------------------------------------------------------------------------
-class CInternalModuleInterface : public CDfa
+class CInternalModuleInterface : public CTask//, public CDfa
 {
 public:
     enum
@@ -94,8 +95,8 @@ public:
     CInternalModuleInterface(uint8_t muiAddress);
     virtual ~CInternalModuleInterface();
 
-    virtual void SetResources(CResources* pxResources) {};
-    virtual CResources* GetResources(void) {};
+//    virtual void SetResources(CResources* pxResources) {};
+//    virtual CResources* GetResources(void) {};
 
     enum
     {
@@ -129,8 +130,8 @@ public:
     CInternalModule(uint8_t muiAddress);
     virtual ~CInternalModule();
 
-    void SetResources(CResources* pxResources);
-    CResources* GetResources(void);
+//    void SetResources(CResources* pxResources);
+//    CResources* GetResources(void);
 
     uint8_t GetType(void);
 
@@ -148,7 +149,7 @@ public:
 private:
     uint8_t m_uiAddress;
     CCommunicationDeviceInterface* m_pxCommunicationDevice;
-    CResources* m_pxResources;
+//    CResources* m_pxResources;
 };
 
 #endif // CINTERNALMODULE_H

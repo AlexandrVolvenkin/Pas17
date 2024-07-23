@@ -19,27 +19,27 @@
 
 #include "Platform.h"
 //#include "Resources.h"
-#include "Dfa.h"
+//#include "Dfa.h"
 #include "Timer.h"
 
 class CTask;
 class CResources;
 
 //-------------------------------------------------------------------------------
-class CServiceMarket// : public CTask// : public CDfa
+class CServiceMarket : public CTask//, public CDfa
 {
 public:
     CServiceMarket();
 //    CServiceMarket(CResources* pxResources);
     virtual ~CServiceMarket();
 
-    void SetResources(CResources* pxResources);
-    CResources* GetResources(void);
+//    void SetResources(CResources* pxResources);
+//    CResources* GetResources(void);
 
 protected:
 
 private:
-    CResources* m_pxResources;
+//    CResources* m_pxResources;
 };
 
 //-------------------------------------------------------------------------------

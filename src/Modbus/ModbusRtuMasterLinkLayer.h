@@ -1,16 +1,19 @@
 #ifndef CMODBUSRTUMASTERLINKLAYER_H
 #define CMODBUSRTUMASTERLINKLAYER_H
 
+class CTask;
+class CResources;
 
 class CModbusRtuMasterLinkLayer
 {
-    public:
-        CModbusRtuMasterLinkLayer();
-        virtual ~CModbusRtuMasterLinkLayer();
+public:
+    CModbusRtuMasterLinkLayer();
+    CModbusRtuMasterLinkLayer(CResources* pxResources);
+    virtual ~CModbusRtuMasterLinkLayer();
 
-    protected:
+protected:
 
-    private:
+private:
 };
 
 #endif // CMODBUSRTUMASTERLINKLAYER_H

@@ -11,7 +11,8 @@
 
 #include <iostream>
 
-#include "Dfa.h"
+#include "Task.h"
+//#include "Dfa.h"
 #include "MainProductionCycle.h"
 
 //-------------------------------------------------------------------------------

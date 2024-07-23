@@ -9,18 +9,27 @@
 //-------------------------------------------------------------------------------------------
 
 #include <stdint.h>
+#include <list>
+#include <map>
+#include <string>
 
-#include "Dfa.h"
+//#include "Dfa.h"
 
+class CTask;
 class CDeviceControl;
 class CDataStore;
 class CConfigurationCreate;
 class CServiceMarket;
 
 //-------------------------------------------------------------------------------------------
-class CResourcesInterface : public CDfa
+class CResourcesInterface : public CTask//, public CDfa
 {
 public:
+    virtual void AddCommonListTask(CTaskInterface* pxTask) {};
+    virtual CTaskInterface* GetCommonListTaskPointer(char* pcTaskName) {};
+    virtual void AddCommonTaskToMap(std::string sTaskName, CTaskInterface* pxTask) {};
+    virtual CTaskInterface* GetCommonTaskFromMapPointer(std::string sTaskName) {};
+    virtual std::list<CTaskInterface*>* GetCommonTasksListPointer(void) {};
 
 };
 
@@ -42,6 +51,15 @@ public:
     CResources();
     virtual ~CResources();
 
+    void AddCommonListTask(CTaskInterface* pxTask);
+    CTaskInterface* GetCommonListTaskPointer(char* pcTaskName);
+    void AddCommonTaskToMap(std::string sTaskName, CTaskInterface* pxTask);
+    CTaskInterface* GetCommonTaskFromMapPointer(std::string sTaskName);
+
+    void ModbusWorkingArraysCreate(uint16_t uiCoilsNumber,
+                                   uint16_t uiDiscreteInputsNumber,
+                                   uint16_t uiHoldingRegistersNumber,
+                                   uint16_t uiInputRegistersNumber);
     void SetCoils(uint8_t* puiPointer);
     uint8_t* GetCoils(void);
     void SetCoilsNumber(uint16_t uiData);
@@ -62,9 +80,22 @@ public:
     void SetInputRegistersNumber(uint16_t uiData);
     uint16_t GetInputRegistersNumber(void);
 
+
+    std::list<CTaskInterface*>* GetCommonTasksListPointer(void)
+    {
+        return &m_lpxCommonTasksList;
+    };
+
 //protected:
 //
 //private:
+    std::list<CTaskInterface*> m_lpxCommonTasksList;
+    std::list<CTaskInterface*>::iterator m_xCommonTasksListIterator;
+
+    // Создаем std::map, где ключ - строка, значение - указатель на объект
+    std::map<std::string, CTaskInterface*> m_mxCommonTaskMap;
+    std::string m_sTaskName;
+
     uint8_t m_uiAddress;
     uint8_t *m_puiRxBuffer;
     uint8_t *m_puiTxBuffer;

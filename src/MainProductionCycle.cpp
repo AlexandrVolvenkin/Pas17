@@ -9,9 +9,9 @@
 #include <iostream>
 #include <string.h>
 
+#include "Task.h"
 #include "Platform.h"
 #include "MainProductionCycle.h"
-#include "Task.h"
 #include "Resources.h"
 #include "TaskManager.h"
 #include "ServiceMarket.h"
@@ -153,27 +153,27 @@ CMainProductionCycle::CMainProductionCycle()
 
     m_pxLedBlinker = new CLedBlinker();
 
-    m_uiCoilsNumber = COILS_WORK_ARRAY_LENGTH;
-    m_uiDiscreteInputsNumber = DISCRETE_INPUTS_ARRAY_LENGTH;
-    m_uiHoldingRegistersNumber = HOLDING_REGISTERS_ARRAY_LENGTH;
-    m_uiInputRegistersNumber = INPUT_REGISTERS_ARRAY_LENGTH;
-
-    m_puiCoils = new uint8_t(m_uiCoilsNumber);
-    m_puiDiscreteInputs = new uint8_t(m_uiDiscreteInputsNumber);
-    m_puiHoldingRegisters = new uint16_t(m_uiHoldingRegistersNumber);
-    m_puiInputRegisters = new uint16_t(m_uiInputRegistersNumber);
-
-    m_xResources.SetCoils(m_puiCoils);
-    m_xResources.SetCoilsNumber(m_uiCoilsNumber);
-
-    m_xResources.SetDiscreteInputs(m_puiDiscreteInputs);
-    m_xResources.SetDiscreteInputsNumber(m_uiDiscreteInputsNumber);
-
-    m_xResources.SetHoldingRegisters(m_puiHoldingRegisters);
-    m_xResources.SetHoldingRegistersNumber(m_uiHoldingRegistersNumber);
-
-    m_xResources.SetInputRegisters(m_puiInputRegisters);
-    m_xResources.SetInputRegistersNumber(m_uiInputRegistersNumber);
+//    m_uiCoilsNumber = COILS_WORK_ARRAY_LENGTH;
+//    m_uiDiscreteInputsNumber = DISCRETE_INPUTS_ARRAY_LENGTH;
+//    m_uiHoldingRegistersNumber = HOLDING_REGISTERS_ARRAY_LENGTH;
+//    m_uiInputRegistersNumber = INPUT_REGISTERS_ARRAY_LENGTH;
+//
+//    m_puiCoils = new uint8_t(m_uiCoilsNumber);
+//    m_puiDiscreteInputs = new uint8_t(m_uiDiscreteInputsNumber);
+//    m_puiHoldingRegisters = new uint16_t(m_uiHoldingRegistersNumber);
+//    m_puiInputRegisters = new uint16_t(m_uiInputRegistersNumber);
+//
+//    m_xResources.SetCoils(m_puiCoils);
+//    m_xResources.SetCoilsNumber(m_uiCoilsNumber);
+//
+//    m_xResources.SetDiscreteInputs(m_puiDiscreteInputs);
+//    m_xResources.SetDiscreteInputsNumber(m_uiDiscreteInputsNumber);
+//
+//    m_xResources.SetHoldingRegisters(m_puiHoldingRegisters);
+//    m_xResources.SetHoldingRegistersNumber(m_uiHoldingRegistersNumber);
+//
+//    m_xResources.SetInputRegisters(m_puiInputRegisters);
+//    m_xResources.SetInputRegistersNumber(m_uiInputRegistersNumber);
 
     m_xResources.m_pxDataStore = &m_xDataStore;
     m_xResources.m_pxDeviceControl = &m_xDeviceControl;
@@ -203,45 +203,51 @@ CMainProductionCycle::CMainProductionCycle()
     SetResources(&m_xResources);
     m_xResources.m_pxConfigurationCreate = m_pxConfigurationCreate;
 
-    m_pxModbusTcpSlaveLinkLayerUpperLevel = new CModbusTcpSlaveLinkLayer();
-    m_pxModbusTcpSlaveUpperLevel = new CModbusSlave();
-    m_pxModbusTcpSlaveUpperLevel ->
-    SetModbusSlaveLinkLayer(m_pxModbusTcpSlaveLinkLayerUpperLevel);
 
+
+//
+//    m_pxModbusTcpSlaveLinkLayerUpperLevel = new CModbusTcpSlaveLinkLayer();
+//    m_pxModbusTcpSlaveUpperLevel = new CModbusSlave();
 //    m_pxModbusTcpSlaveUpperLevel ->
+//    SetModbusSlaveLinkLayer(m_pxModbusTcpSlaveLinkLayerUpperLevel);
+//
+////    m_pxModbusTcpSlaveUpperLevel ->
+////    WorkingArraysCreate(COILS_WORK_ARRAY_LENGTH,
+////                        DISCRETE_INPUTS_ARRAY_LENGTH,
+////                        HOLDING_REGISTERS_ARRAY_LENGTH,
+////                        INPUT_REGISTERS_ARRAY_LENGTH);
+//    m_pxModbusTcpSlaveUpperLevel ->
+//    SetOwnAddress(17);
+//    m_pxModbusTcpSlaveUpperLevel ->
+//    SetResources(&m_xResources);
+//
+//
+//
+
+//    m_pxModbusRtuSlaveLinkLayerUpperLevel = new CModbusRtuSlaveLinkLayer();
+//    m_pxModbusRtuSlaveUpperLevel = new CModbusSlave();
+//    m_pxModbusRtuSlaveUpperLevel ->
+//    SetModbusSlaveLinkLayer(m_pxModbusRtuSlaveLinkLayerUpperLevel);
+//
+////    m_pxModbusRtuSlaveUpperLevel ->
+////    CommunicationDeviceInit("/dev/ttyO1",
+////                            9600,
+////                            8,
+////                            'N',
+////                            2);
+//
+//    m_pxModbusRtuSlaveUpperLevel ->
 //    WorkingArraysCreate(COILS_WORK_ARRAY_LENGTH,
 //                        DISCRETE_INPUTS_ARRAY_LENGTH,
 //                        HOLDING_REGISTERS_ARRAY_LENGTH,
 //                        INPUT_REGISTERS_ARRAY_LENGTH);
-    m_pxModbusTcpSlaveUpperLevel ->
-    SetOwnAddress(17);
-    m_pxModbusTcpSlaveUpperLevel ->
-    SetResources(&m_xResources);
-
-
-
-
-    m_pxModbusRtuSlaveLinkLayerUpperLevel = new CModbusRtuSlaveLinkLayer();
-    m_pxModbusRtuSlaveUpperLevel = new CModbusSlave();
-    m_pxModbusRtuSlaveUpperLevel ->
-    SetModbusSlaveLinkLayer(m_pxModbusRtuSlaveLinkLayerUpperLevel);
-
 //    m_pxModbusRtuSlaveUpperLevel ->
-//    CommunicationDeviceInit("/dev/ttyO1",
-//                            9600,
-//                            8,
-//                            'N',
-//                            2);
+//    SetOwnAddress(17);
+//    m_pxModbusRtuSlaveUpperLevel ->
+//    SetResources(&m_xResources);
 
-    m_pxModbusRtuSlaveUpperLevel ->
-    WorkingArraysCreate(COILS_WORK_ARRAY_LENGTH,
-                        DISCRETE_INPUTS_ARRAY_LENGTH,
-                        HOLDING_REGISTERS_ARRAY_LENGTH,
-                        INPUT_REGISTERS_ARRAY_LENGTH);
-    m_pxModbusRtuSlaveUpperLevel ->
-    SetOwnAddress(17);
-    m_pxModbusRtuSlaveUpperLevel ->
-    SetResources(&m_xResources);
+
+
 
     m_xDataStore.
     SetResources(&m_xResources);
@@ -273,11 +279,11 @@ CMainProductionCycle::~CMainProductionCycle()
     delete m_pxInternalModuleMuvr;
     delete m_pxConfigurationCreate;
 
-    delete m_pxModusTcpSlaveTopLevelProduction;
+//    delete m_pxModusTcpSlaveTopLevelProduction;
     delete m_pxModbusTcpSlaveLinkLayerUpperLevel;
     delete m_pxModbusTcpSlaveUpperLevel;
 
-    delete m_pxModusRtuSlaveTopLevelProduction;
+//    delete m_pxModusRtuSlaveTopLevelProduction;
     delete m_pxModbusRtuSlaveLinkLayerUpperLevel;
     delete m_pxModbusRtuSlaveUpperLevel;
 }
@@ -310,21 +316,68 @@ uint8_t CMainProductionCycle::Init(void)
     m_pxSpiCommunicationDevice -> Init();
     cout << "m_pxSpiCommunicationDevice -> Open" << endl;
 
-    m_pxModusTcpSlaveTopLevelProduction = new CModbusTcpSlaveTopLevelProduction();
-    m_pxModusTcpSlaveTopLevelProduction ->
+//    m_pxModusTcpSlaveTopLevelProduction = new CModbusTcpSlaveTopLevelProduction();
+//    m_pxModusTcpSlaveTopLevelProduction ->
+//    SetModbusSlaveLinkLayer(m_pxModbusTcpSlaveLinkLayerUpperLevel);
+//    m_pxModusTcpSlaveTopLevelProduction ->
+//    Place((CTaskInterface*)m_pxModbusTcpSlaveLinkLayerUpperLevel);
+
+    m_pxModbusTcpSlaveLinkLayerUpperLevel = new CModbusTcpSlaveLinkLayer();
+//    m_pxModbusTcpSlaveUpperLevel = new CModbusSlave();
+//    m_pxModbusTcpSlaveLinkLayerUpperLevel = new CModbusTcpSlaveLinkLayer(&m_xResources);
+    m_pxModbusTcpSlaveUpperLevel = new CModbusSlave(&m_xResources);
+    m_pxModbusTcpSlaveUpperLevel ->
     SetModbusSlaveLinkLayer(m_pxModbusTcpSlaveLinkLayerUpperLevel);
-    m_pxModusTcpSlaveTopLevelProduction ->
-    Place((CTaskInterface*)m_pxModbusTcpSlaveLinkLayerUpperLevel);
+
+//    m_pxModbusTcpSlaveUpperLevel ->
+//    WorkingArraysCreate(COILS_WORK_ARRAY_LENGTH,
+//                        DISCRETE_INPUTS_ARRAY_LENGTH,
+//                        HOLDING_REGISTERS_ARRAY_LENGTH,
+//                        INPUT_REGISTERS_ARRAY_LENGTH);
+    m_pxModbusTcpSlaveUpperLevel ->
+    SetOwnAddress(17);
+    m_pxModbusTcpSlaveUpperLevel ->
+    SetResources(&m_xResources);
+
 
     m_pxModbusTcpSlaveUpperLevel ->
     SetFsmState(CModbusSlave::COMMUNICATION_START);
 
 
-    m_pxModusRtuSlaveTopLevelProduction = new CModbusRtuSlaveTopLevelProduction();
-    m_pxModusRtuSlaveTopLevelProduction ->
+
+
+//    m_pxModusRtuSlaveTopLevelProduction = new CModbusRtuSlaveTopLevelProduction();
+//    m_pxModusRtuSlaveTopLevelProduction ->
+//    SetModbusSlaveLinkLayer(m_pxModbusRtuSlaveLinkLayerUpperLevel);
+//    m_pxModusRtuSlaveTopLevelProduction ->
+//    Place((CTaskInterface*)m_pxModbusRtuSlaveLinkLayerUpperLevel);
+
+
+    m_pxModbusRtuSlaveLinkLayerUpperLevel = new CModbusRtuSlaveLinkLayer();
+//    m_pxModbusRtuSlaveUpperLevel = new CModbusSlave();
+//    m_pxModbusRtuSlaveLinkLayerUpperLevel = new CModbusRtuSlaveLinkLayer(&m_xResources);
+    m_pxModbusRtuSlaveUpperLevel = new CModbusSlave(&m_xResources);
+    m_pxModbusRtuSlaveUpperLevel ->
     SetModbusSlaveLinkLayer(m_pxModbusRtuSlaveLinkLayerUpperLevel);
-    m_pxModusRtuSlaveTopLevelProduction ->
-    Place((CTaskInterface*)m_pxModbusRtuSlaveLinkLayerUpperLevel);
+
+//    m_pxModbusRtuSlaveUpperLevel ->
+//    CommunicationDeviceInit("/dev/ttyO1",
+//                            9600,
+//                            8,
+//                            'N',
+//                            2);
+
+//    m_pxModbusRtuSlaveUpperLevel ->
+//    WorkingArraysCreate(COILS_WORK_ARRAY_LENGTH,
+//                        DISCRETE_INPUTS_ARRAY_LENGTH,
+//                        HOLDING_REGISTERS_ARRAY_LENGTH,
+//                        INPUT_REGISTERS_ARRAY_LENGTH);
+    m_pxModbusRtuSlaveUpperLevel ->
+    SetOwnAddress(17);
+    m_pxModbusRtuSlaveUpperLevel ->
+    SetResources(&m_xResources);
+
+
 
     m_pxModbusRtuSlaveUpperLevel ->
     SetFsmState(CModbusSlave::COMMUNICATION_START);
@@ -379,7 +432,7 @@ uint8_t CMainProductionCycle::Fsm(void)
 
     case MAIN_CYCLE_MODBUS_SLAVE:
         //std::cout << "CMainProductionCycle::Fsm IDDLE"  << std::endl;
-//        m_pxModbusTcpSlaveUpperLevel -> Fsm();
+        m_pxModbusTcpSlaveUpperLevel -> Fsm();
         m_pxModbusRtuSlaveUpperLevel -> Fsm();
         usleep(1000);
         break;
@@ -453,13 +506,13 @@ uint8_t CLedBlinker::Fsm(void)
 
     case LED_ON:
         std::cout << "CLedBlinker::Fsm LED_ON"  << std::endl;
-        m_xTimer.Set(500);
+        GetTimerPointer() -> Set(500);
         SetFsmState(LED_ON_PERIOD_END_WAITING);
         break;
 
     case LED_ON_PERIOD_END_WAITING:
 //        //std::cout << "CLedBlinker::Fsm LED_ON_PERIOD_END_WAITING"  << std::endl;
-        if (m_xTimer.IsOverflow())
+        if (GetTimerPointer() -> IsOverflow())
         {
             SetFsmState(LED_OFF);
         }
@@ -467,13 +520,13 @@ uint8_t CLedBlinker::Fsm(void)
 
     case LED_OFF:
         std::cout << "CLedBlinker::Fsm LED_OFF"  << std::endl;
-        m_xTimer.Set(500);
+        GetTimerPointer() -> Set(500);
         SetFsmState(LED_OFF_PERIOD_END_WAITING);
         break;
 
     case LED_OFF_PERIOD_END_WAITING:
 //        //std::cout << "CLedBlinker::Fsm LED_OFF_PERIOD_END_WAITING"  << std::endl;
-        if (m_xTimer.IsOverflow())
+        if (GetTimerPointer() -> IsOverflow())
         {
             SetFsmState(LED_ON);
         }

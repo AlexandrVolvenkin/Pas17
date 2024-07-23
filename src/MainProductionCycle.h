@@ -17,14 +17,15 @@
 #include "DataStore.h"
 #include "DeviceControl.h"
 #include "InternalModule.h"
-#include "Task.h"
-#include "Production.h"
+//#include "Task.h"
+//#include "Production.h"
 //#include "ModbusTcp.h"
 #include "ModbusSlave.h"
 #include "ModbusSlaveLinkLayer.h"
 #include "ModbusTcpSlaveLinkLayer.h"
 #include "ModbusRtuSlaveLinkLayer.h"
 
+class CTask;
 //class CResources;
 class CLedBlinker;
 class CConfigurationCreate;
@@ -32,7 +33,7 @@ class CConfigurationCreate;
 //class CDeviceControl;
 
 //-------------------------------------------------------------------------------
-class CMainProductionCycle : public CTask, public CDfa
+class CMainProductionCycle : public CTask//, public CDfa
 {
 public:
 
@@ -90,12 +91,12 @@ private:
     CLedBlinker* m_pxLedBlinker;
     // создадим указатель на объект
     // "производственная площадка задачи ожидания событий"
-    CProductionInterface* m_pxFileDescriptorEventsWaitingProduction;
-    CModbusTcpSlaveTopLevelProduction* m_pxModusTcpSlaveTopLevelProduction;
+//    CProductionInterface* m_pxFileDescriptorEventsWaitingProduction;
+//    CModbusTcpSlaveTopLevelProduction* m_pxModusTcpSlaveTopLevelProduction;
     CModbusTcpSlaveLinkLayer* m_pxModbusTcpSlaveLinkLayerUpperLevel;
     CModbusSlave* m_pxModbusTcpSlaveUpperLevel;
 
-    CModbusRtuSlaveTopLevelProduction* m_pxModusRtuSlaveTopLevelProduction;
+//    CModbusRtuSlaveTopLevelProduction* m_pxModusRtuSlaveTopLevelProduction;
     CModbusRtuSlaveLinkLayer* m_pxModbusRtuSlaveLinkLayerUpperLevel;
     CModbusSlave* m_pxModbusRtuSlaveUpperLevel;
 
@@ -115,7 +116,7 @@ private:
 
 
 //-------------------------------------------------------------------------------
-class CLedBlinker : public CTask ,public CDfa
+class CLedBlinker : public CTask//, public CDfa
 {
 public:
 

@@ -8,7 +8,13 @@
 
 #include <iostream>
 #include <string.h>
+#include <typeinfo>
 
+#include <iostream>
+#include <string.h>
+
+#include "Task.h"
+#include "Resources.h"
 #include "ModbusSlaveLinkLayer.h"
 #include "ModbusTcpSlaveLinkLayer.h"
 
@@ -23,12 +29,56 @@ CModbusTcpSlaveLinkLayer::CModbusTcpSlaveLinkLayer()
                             502);
 //    SetFsmState(COMMUNICATION_START);
     SetFsmState(IDDLE);
+
+//    std::thread m_xThread(CModbusTcpSlaveLinkLayer::Process, this);
+//    m_pxThread = &m_xThread;
+//    std::thread::id th_id = m_xThread.get_id();
+//    //std::cout << "CModbusTcpSlaveLinkLayer th_id" << " " << th_id << std::endl;
+//    // не ждем завершения работы функции
+//    m_xThread.detach();
+
+//    std::thread m_xThread(CModbusTcpSlaveLinkLayer::Process, this);
+    m_pxThread = new std::thread(CModbusTcpSlaveLinkLayer::Process, this);
+//    m_pxThread = &m_xThread;
+//    std::thread::id th_id = m_xThread.get_id();
+//    //std::cout << "CModbusTcpSlaveLinkLayer th_id" << " " << th_id << std::endl;
+//    // не ждем завершения работы функции
+//    m_xThread.detach();
+
+    std::thread::id th_id = m_pxThread -> get_id();
+    std::cout << "CModbusTcpSlaveLinkLayer th_id" << " " << th_id << std::endl;
+    // не ждем завершения работы функции
+    m_pxThread -> detach();
+}
+
+//-------------------------------------------------------------------------------
+CModbusTcpSlaveLinkLayer::CModbusTcpSlaveLinkLayer(CResources* pxResources)
+{
+
 }
 
 //-------------------------------------------------------------------------------
 CModbusTcpSlaveLinkLayer::~CModbusTcpSlaveLinkLayer()
 {
     delete m_pxCommunicationDevice;
+
+    if (m_pxThread -> joinable())
+    {
+        m_pxThread -> join();
+    }
+    delete m_pxThread;
+}
+
+//-------------------------------------------------------------------------------
+void CModbusTcpSlaveLinkLayer::Process(CModbusTcpSlaveLinkLayer* pxModbusSlaveLinkLayer)
+{
+    cout << "CModbusTcpSlaveLinkLayer::Process 1" << endl;
+
+    while (1)
+    {
+        pxModbusSlaveLinkLayer -> Fsm();
+        usleep(1000);
+    }
 }
 
 //-------------------------------------------------------------------------------

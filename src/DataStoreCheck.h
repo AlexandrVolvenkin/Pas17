@@ -12,15 +12,17 @@
 #include <iostream>
 #include <fstream>
 
-#include "Dfa.h"
+//#include "Dfa.h"
 #include "Timer.h"
 #include "StorageDevice.h"
 #include "DataStore.h"
 
+class CTask;
+
 using namespace std;
 
 //-------------------------------------------------------------------------------
-class CDataStoreCheck : public CDfa
+class CDataStoreCheck : public CTask//, public CDfa
 {
 public:
 

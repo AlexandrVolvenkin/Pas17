@@ -5,6 +5,7 @@
 //  email       : aav-36@mail.ru
 //  GitHub      : https://github.com/AlexandrVolvenkin
 //-------------------------------------------------------------------------------
+#include "Task.h"
 #include "DeviceControl.h"
 #include "Platform.h"
 #include "Resources.h"
@@ -24,17 +25,17 @@ CDeviceControl::~CDeviceControl()
     //dtor
 }
 
-//-------------------------------------------------------------------------------
-void CDeviceControl::SetResources(CResources* pxResources)
-{
-    m_pxResources = pxResources;
-}
-
-//-------------------------------------------------------------------------------
-CResources* CDeviceControl::GetResources(void)
-{
-    return m_pxResources;
-}
+////-------------------------------------------------------------------------------
+//void CDeviceControl::SetResources(CResources* pxResources)
+//{
+//    m_pxResources = pxResources;
+//}
+//
+////-------------------------------------------------------------------------------
+//CResources* CDeviceControl::GetResources(void)
+//{
+//    return m_pxResources;
+//}
 
 //-------------------------------------------------------------------------------
 uint16_t CDeviceControl::ConfigurationRead(uint8_t *puiDestination)

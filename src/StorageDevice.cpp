@@ -10,6 +10,7 @@
 #include <iostream>
 #include <string.h>
 
+#include "Task.h"
 #include "DataStore.h"
 #include "StorageDevice.h"
 

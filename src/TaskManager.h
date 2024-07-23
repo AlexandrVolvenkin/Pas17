@@ -27,7 +27,7 @@ class CTaskInterface;
 class CResources;
 
 //-------------------------------------------------------------------------------
-class CTaskManager : public CTask
+class CTaskManager : public CTask//, public CDfa
 {
 public:
     CTaskManager();

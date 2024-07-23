@@ -14,7 +14,7 @@
 #include <string.h>
 
 #include "Platform.h"
-#include "Dfa.h"
+//#include "Dfa.h"
 #include "Timer.h"
 
 // MUVR
@@ -125,6 +125,7 @@ enum
 // (sizeof(struct TAnalogueInputDescriptionDataBase) * ANALOG_MODULE_INPUT_QUANTITY)// 28х6=168.
 #define ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_LENGTH 168
 
+class CTask;
 class CInternalModule;
 class CResources;
 class CCommunicationDeviceInterface;
@@ -137,8 +138,8 @@ public:
     CInternalModuleMuvr(uint8_t muiAddress);
     virtual ~CInternalModuleMuvr();
 
-    void SetResources(CResources* pxResources);
-    CResources* GetResources(void);
+//    void SetResources(CResources* pxResources);
+//    CResources* GetResources(void);
 
     uint8_t GetType(void);
 
@@ -156,7 +157,7 @@ public:
 private:
     uint8_t m_uiAddress;
     CCommunicationDeviceInterface* m_pxCommunicationDevice;
-    CResources* m_pxResources;
+//    CResources* m_pxResources;
 };
 
 #endif // CINTERNALMODULEMUVR_H

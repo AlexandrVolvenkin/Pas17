@@ -15,12 +15,13 @@
 
 
 #include <stdint.h>
+#include <thread>
+
 #include "Modbus.h"
 #include "ModbusSlaveLinkLayer.h"
 #include "Configuration.h"
 #include "Platform.h"
 #include "Timer.h"
-#include "Task.h"
 
 /* Modbus_Application_Protocol_V1_1b.pdf Chapter 4 Section 1 Page 5
  * RS232 / RS485 ADU = 253 bytes + slave (1 byte) + CRC (2 bytes) = 256 bytes
@@ -38,9 +39,11 @@
 #define MODBUS_RTU_RS232 0
 #define MODBUS_RTU_RS485 1
 
+class CTask;
+class CResources;
+
 //-------------------------------------------------------------------------------
-class CModbusRtuSlaveLinkLayer : public CModbusSlaveLinkLayerInterface,
-    public CTaskInterface
+class CModbusRtuSlaveLinkLayer : public CModbusSlaveLinkLayerInterface
 {
 public:
     enum
@@ -77,9 +80,10 @@ public:
     };
 
     CModbusRtuSlaveLinkLayer();
+    CModbusRtuSlaveLinkLayer(CResources* pxResources);
     virtual ~CModbusRtuSlaveLinkLayer();
 
-
+    static void Process(CModbusRtuSlaveLinkLayer* pxModbusSlaveLinkLayer);
 //    void CommunicationDeviceInit(const char* pccIpAddress,
 //                                 uint16_t uiPort);
     void CommunicationDeviceInit(const char* pccDeviceName,
@@ -172,6 +176,7 @@ private:
     uint8_t m_auiTxBuffer[MODBUS_RTU_MAX_ADU_LENGTH];
 //    uint16_t m_uiRxBytesNumber;
     uint16_t m_uiFrameLength;
+    std::thread* m_pxThread;
 };
 
 //-------------------------------------------------------------------------------

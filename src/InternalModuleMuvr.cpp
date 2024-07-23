@@ -5,6 +5,7 @@
 //  email       : aav-36@mail.ru
 //  GitHub      : https://github.com/AlexandrVolvenkin
 //-------------------------------------------------------------------------------
+#include "Task.h"
 #include "InternalModule.h"
 #include "InternalModuleMuvr.h"
 #include "Platform.h"
@@ -26,17 +27,17 @@ CInternalModuleMuvr::~CInternalModuleMuvr()
     //dtor
 }
 
-//-------------------------------------------------------------------------------
-void CInternalModuleMuvr::SetResources(CResources* pxResources)
-{
-    m_pxResources = pxResources;
-}
-
-//-------------------------------------------------------------------------------
-CResources* CInternalModuleMuvr::GetResources(void)
-{
-    return m_pxResources;
-}
+////-------------------------------------------------------------------------------
+//void CInternalModuleMuvr::SetResources(CResources* pxResources)
+//{
+//    m_pxResources = pxResources;
+//}
+//
+////-------------------------------------------------------------------------------
+//CResources* CInternalModuleMuvr::GetResources(void)
+//{
+//    return m_pxResources;
+//}
 
 //-------------------------------------------------------------------------------
 uint8_t CInternalModuleMuvr::GetType(void)

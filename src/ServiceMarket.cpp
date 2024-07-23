@@ -5,9 +5,9 @@
 //  email       : aav-36@mail.ru
 //  GitHub      : https://github.com/AlexandrVolvenkin
 //-------------------------------------------------------------------------------
+#include "Task.h"
 #include "ServiceMarket.h"
 #include "Platform.h"
-#include "Task.h"
 #include "Resources.h"
 #include "DataStore.h"
 
@@ -25,16 +25,16 @@ CServiceMarket::~CServiceMarket()
     //dtor
 }
 
-//-------------------------------------------------------------------------------
-void CServiceMarket::SetResources(CResources* pxResources)
-{
-    m_pxResources = pxResources;
-}
-
-//-------------------------------------------------------------------------------
-CResources* CServiceMarket::GetResources(void)
-{
-    return m_pxResources;
-}
+////-------------------------------------------------------------------------------
+//void CServiceMarket::SetResources(CResources* pxResources)
+//{
+//    m_pxResources = pxResources;
+//}
+//
+////-------------------------------------------------------------------------------
+//CResources* CServiceMarket::GetResources(void)
+//{
+//    return m_pxResources;
+//}
 
 //-------------------------------------------------------------------------------

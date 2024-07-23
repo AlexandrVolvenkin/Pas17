@@ -10,8 +10,8 @@
 #include <list>
 #include <string.h>
 
+//#include "Dfa.h"
 #include "Task.h"
-#include "Dfa.h"
 #include "Resources.h"
 
 //-------------------------------------------------------------------------------
@@ -33,17 +33,17 @@ CTask::~CTask()
     std::cout << "CTask destructor"  << std::endl;
 }
 
-////-------------------------------------------------------------------------------
-//void CTask::SetResources(CResources* pxResources)
-//{
-//    m_pxResources = pxResources;
-//}
-//
-////-------------------------------------------------------------------------------
-//CResources* CTask::GetResources(void)
-//{
-//    return m_pxResources;
-//}
+//-------------------------------------------------------------------------------
+void CTask::SetResources(CResources* pxResources)
+{
+    m_pxResources = pxResources;
+}
+
+//-------------------------------------------------------------------------------
+CResources* CTask::GetResources(void)
+{
+    return m_pxResources;
+}
 
 //-------------------------------------------------------------------------------
 uint8_t CTask::Init(void)
@@ -57,7 +57,7 @@ uint8_t CTask::Init(void)
 //    //std::cout << "CTask::AddCurrentlyRunningTask"  << std::endl;
 //
 //}
-//
+
 ////-------------------------------------------------------------------------------
 //void CTask::AddCommonTask(CTaskInterface* pxTask)
 //{
@@ -146,3 +146,24 @@ uint8_t CTask::Init(void)
 
 //-------------------------------------------------------------------------------
 
+//есть выражение:
+//void ThreadPool::startup(const size_t threads)
+//{
+//    for (size_t i = 0; i < threads; ++i)
+//        workers.emplace_back( [this]
+//    {
+//
+//    },
+//                        );
+//}
+//
+//будет ли оно так же работать как это:
+//void ThreadPool::startup(const size_t threads)
+//{
+//    ThreadPool* local_this = this;
+//
+//    for (size_t i = 0; i < threads; ++i)
+//    {
+//        workers.emplace_back([local_this]);
+//    }
+//}

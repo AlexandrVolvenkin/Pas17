@@ -14,13 +14,13 @@
 #include <fstream>
 
 //#include "DataTypes.h"
-#include "Dfa.h"
+//#include "Dfa.h"
 #include "Timer.h"
 
 using namespace std;
 
 //-------------------------------------------------------------------------------
-class CStorageDeviceInterface : public CDfa
+class CStorageDeviceInterface : public CTask//, public CDfa
 {
 public:
     enum
@@ -74,7 +74,7 @@ public:
 
 
 //-------------------------------------------------------------------------------
-class CStorageDevice : public CDfa
+class CStorageDevice : public CTask//, public CDfa
 {
 public:
 //    virtual uint8_t PassingDataAndStartWrite(uint16_t uiOffset, uint8_t *puiSource, uint16_t uiLength) = 0;

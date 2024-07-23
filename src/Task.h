@@ -10,23 +10,23 @@
 
 #include <stdint.h>
 #include <list>
-//#include "Dfa.h"
+
+#include "Dfa.h"
 //class CDfa;
 
+//class CDfa;
 class CResources;
 
 //-------------------------------------------------------------------------------
-class CTaskInterface
+class CTaskInterface : public CDfa
 {
 public:
 
+    virtual char* GetTaskNamePointer(void) {};
+    virtual void SetResources(CResources* pxResources) {};
+    virtual CResources* GetResources(void) {};
     virtual uint8_t Init(void) {};
-    virtual uint8_t Fsm(void) {};
-
-//    virtual void AddCurrentlyRunningTask(CTaskInterface* pxTask) {};
-//    virtual void AddCommonTask(CTaskInterface* pxTask) {};
-//    virtual std::list<CTaskInterface*>* GetCommonTasksListPointer(void) {};
-//    virtual std::list<CTaskInterface*>* GetCurrentlyRunningTasksListPointer(void) {};
+//    virtual uint8_t Fsm(void) {};
 };
 
 //-------------------------------------------------------------------------------
@@ -57,8 +57,8 @@ public:
     CTask(CResources* pxResources);
     virtual ~CTask();
 
-//    void SetResources(CResources* pxResources);
-//    CResources* GetResources(void);
+    void SetResources(CResources* pxResources);
+    CResources* GetResources(void);
     uint8_t Init(void);
 //    uint8_t Fsm(void);
 //    void AddCurrentlyRunningTask(CTaskInterface* pxTask);
@@ -71,6 +71,7 @@ public:
 
 public:
     char m_acTaskName[TASK_NAME_LENGTH] = {0};
+//    std::string m_sTaskName;
 //    CTimer m_xTimer;
     CResources* m_pxResources;
 

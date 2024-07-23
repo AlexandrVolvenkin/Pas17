@@ -1,16 +1,19 @@
 #ifndef CMODBUSMASTER_H
 #define CMODBUSMASTER_H
 
+class CTask;
+class CResources;
 
 class CModbusMaster
 {
-    public:
-        CModbusMaster();
-        virtual ~CModbusMaster();
+public:
+    CModbusMaster();
+    CModbusMaster(CResources* pxResources);
+    virtual ~CModbusMaster();
 
-    protected:
+protected:
 
-    private:
+private:
 };
 
 #endif // CMODBUSMASTER_H

@@ -11,13 +11,16 @@
 #include <iostream>
 #include <string.h>
 
-#include "Dfa.h"
+//#include "Dfa.h"
 #include "Configuration.h"
 #include "Platform.h"
 #include "Timer.h"
 
+class CTask;
+class CResources;
+
 //-------------------------------------------------------------------------------
-class CModbusSlaveLinkLayerInterface : public CDfa
+class CModbusSlaveLinkLayerInterface : public CTask//, public CDfa
 {
 public:
     enum
@@ -124,6 +127,7 @@ class CModbusSlaveLinkLayer
 {
 public:
     CModbusSlaveLinkLayer();
+    CModbusSlaveLinkLayer(CResources* pxResources);
     virtual ~CModbusSlaveLinkLayer();
 
 protected:

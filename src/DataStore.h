@@ -12,10 +12,11 @@
 #include <iostream>
 #include <fstream>
 
-#include "Dfa.h"
+//#include "Dfa.h"
 #include "Timer.h"
 #include "StorageDevice.h"
 
+class CTask;
 class CResources;
 
 using namespace std;
@@ -30,7 +31,7 @@ using namespace std;
 // 2 - дублирующий блок для записи временных служебных данных.
 // 3 - временная копия записываемого блока.
 // 4 - пространство с последовательно расположенными хранимыми блоками.
-class CDataStore : public CDfa
+class CDataStore : public CTask//, public CDfa
 {
 public:
     enum
@@ -139,8 +140,8 @@ public:
     CDataStore(CStorageDeviceInterface* pxStorageDevice);
     virtual ~CDataStore();
 
-    void SetResources(CResources* pxResources);
-    CResources* GetResources(void);
+//    void SetResources(CResources* pxResources);
+//    CResources* GetResources(void);
 
 //    uint8_t Check(void);
     void CreateServiceSection(void);
@@ -196,7 +197,7 @@ public:
 
 //protected:
 private:
-    CResources* m_pxResources;
+//    CResources* m_pxResources;
     // Данные контекста записи блока.
     uint8_t m_uiBlock;
     uint8_t* m_puiBlockSource;
