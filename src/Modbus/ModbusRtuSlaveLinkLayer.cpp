@@ -13,6 +13,7 @@
 
 #include "Task.h"
 #include "Resources.h"
+#include "CommunicationDevice.h"
 #include "ModbusSlaveLinkLayer.h"
 #include "ModbusRtuSlaveLinkLayer.h"
 #include <Crc.h>
@@ -23,14 +24,14 @@ using namespace std;
 CModbusRtuSlaveLinkLayer::CModbusRtuSlaveLinkLayer()
 {
     std::cout << "CModbusRtuSlaveLinkLayer constructor"  << std::endl;
-    m_pxCommunicationDevice = new CSerialPort();
-//    CommunicationDeviceInit("127.0.0.1",
-//                            502);
-    CommunicationDeviceInit("/dev/ttyO1",
-                            9600,
-                            8,
-                            'N',
-                            2);
+//    m_pxCommunicationDevice = new CSerialPort();
+////    CommunicationDeviceInit("127.0.0.1",
+////                            502);
+//    CommunicationDeviceInit("/dev/ttyO1",
+//                            9600,
+//                            8,
+//                            'N',
+//                            2);
     SetFsmState(IDDLE);
 
 //    std::thread m_xThread(CModbusRtuSlaveLinkLayer::Process, this);
@@ -408,22 +409,26 @@ int8_t CModbusRtuSlaveLinkLayer::FrameCheck(uint8_t *puiSourse, uint16_t uiLengt
 //-------------------------------------------------------------------------------
 uint8_t CModbusRtuSlaveLinkLayer::Fsm(void)
 {
-    std::cout << "CModbusRtuSlaveLinkLayer::Fsm 1"  << std::endl;
+//    std::cout << "CModbusRtuSlaveLinkLayer::Fsm 1"  << std::endl;
     switch (GetFsmState())
     {
         int16_t iBytesNumber;
 
+    case IDDLE:
+//        std::cout << "CModbusRtuSlaveLinkLayer::Fsm IDDLE"  << std::endl;
+        break;
+
     case START:
         std::cout << "CModbusRtuSlaveLinkLayer::Fsm START"  << std::endl;
+        std::cout << "CModbusRtuSlaveLinkLayer::Fsm m_sCommunicationDeviceName" << " " << (m_sCommunicationDeviceName) << std::endl;
+        SetCommunicationDevice((CCommunicationDeviceInterfaceNew*)
+                               (GetResources() ->
+                                GetCommonTaskFromMapPointer(m_sCommunicationDeviceName)));
         SetFsmState(COMMUNICATION_START);
         break;
 
     case READY:
         std::cout << "CModbusRtuSlaveLinkLayer::Fsm READY"  << std::endl;
-        break;
-
-    case IDDLE:
-        std::cout << "CModbusRtuSlaveLinkLayer::Fsm IDDLE"  << std::endl;
         break;
 
     case STOP:
@@ -449,6 +454,20 @@ uint8_t CModbusRtuSlaveLinkLayer::Fsm(void)
         if (iBytesNumber > 0)
         {
             m_uiFrameLength = m_uiFrameLength + iBytesNumber;
+            {
+                cout << "m_auiRxBuffer" << endl;
+                unsigned char *pucSourceTemp;
+                pucSourceTemp = (unsigned char*)m_auiRxBuffer;
+                for(int i=0; i<32; )
+                {
+                    for(int j=0; j<8; j++)
+                    {
+                        cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+                    }
+                    cout << endl;
+                    i += 8;
+                }
+            }
             SetFsmState(COMMUNICATION_RECEIVE_END);
         }
         else if (iBytesNumber < 0)
@@ -494,6 +513,20 @@ uint8_t CModbusRtuSlaveLinkLayer::Fsm(void)
         if (iBytesNumber > 0)
         {
             m_uiFrameLength = m_uiFrameLength + iBytesNumber;
+            {
+                cout << "m_auiRxBuffer" << endl;
+                unsigned char *pucSourceTemp;
+                pucSourceTemp = (unsigned char*)m_auiRxBuffer;
+                for(int i=0; i<32; )
+                {
+                    for(int j=0; j<8; j++)
+                    {
+                        cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+                    }
+                    cout << endl;
+                    i += 8;
+                }
+            }
             SetFsmState(COMMUNICATION_RECEIVE_END);
         }
         else if (iBytesNumber < 0)
@@ -524,17 +557,19 @@ uint8_t CModbusRtuSlaveLinkLayer::Fsm(void)
 //                                         (static_cast<uint16_t>(m_auiRxBuffer[1])));
             SetFsmState(COMMUNICATION_FRAME_RECEIVED);
 
-            cout << "ReceiveContinue" << endl;
-            unsigned char *pucSourceTemp;
-            pucSourceTemp = (unsigned char*)m_auiRxBuffer;
-            for(int i=0; i<32; )
             {
-                for(int j=0; j<8; j++)
+                cout << "m_auiRxBuffer" << endl;
+                unsigned char *pucSourceTemp;
+                pucSourceTemp = (unsigned char*)m_auiRxBuffer;
+                for(int i=0; i<32; )
                 {
-                    cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+                    for(int j=0; j<8; j++)
+                    {
+                        cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+                    }
+                    cout << endl;
+                    i += 8;
                 }
-                cout << endl;
-                i += 8;
             }
         }
         break;

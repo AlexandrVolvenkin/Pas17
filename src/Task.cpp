@@ -45,11 +45,11 @@ CResources* CTask::GetResources(void)
     return m_pxResources;
 }
 
-//-------------------------------------------------------------------------------
-uint8_t CTask::Init(void)
-{
-    std::cout << "CTask Init"  << std::endl;
-}
+////-------------------------------------------------------------------------------
+//uint8_t CTask::Init(void)
+//{
+//    std::cout << "CTask Init"  << std::endl;
+//}
 
 ////-------------------------------------------------------------------------------
 //void CTask::AddCurrentlyRunningTask(CTaskInterface* pxTask)

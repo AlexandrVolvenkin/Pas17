@@ -44,14 +44,14 @@ CModbusSlave::CModbusSlave(CResources* pxResources)
 //            "%s",
 //            this -> std::type_info::name());
     SetResources(pxResources);
-    m_pxResources ->
-    AddCommonListTask(this);
-    m_pxResources ->
-    AddCommonTaskToMap("ModbusTcpSlaveUpperLevel", this);
-    m_pxResources ->
-    GetCommonListTaskPointer("CModbusSlave");
-    m_pxResources ->
-    GetCommonTaskFromMapPointer("ModbusTcpSlaveUpperLevel");
+//    m_pxResources ->
+//    AddCommonListTask(this);
+//    m_pxResources ->
+//    AddCommonTaskToMap("ModbusTcpSlaveUpperLevel", this);
+//    m_pxResources ->
+//    GetCommonListTaskPointer("CModbusSlave");
+//    m_pxResources ->
+//    GetCommonTaskFromMapPointer("ModbusTcpSlaveUpperLevel");
     ModbusWorkingArraysInit();
 //    m_pxModbusSlaveLinkLayer = new CModbusSlaveLinkLayerInterface();
     SetFsmState(IDDLE);
@@ -1296,8 +1296,10 @@ uint8_t CModbusSlave::Fsm(void)
 
     case COMMUNICATION_START:
         std::cout << "CModbusSlave::Fsm COMMUNICATION_START"  << std::endl;
+//        m_pxModbusSlaveLinkLayer ->
+//        SetFsmState(CModbusSlaveLinkLayerInterface::COMMUNICATION_START);
         m_pxModbusSlaveLinkLayer ->
-        SetFsmState(CModbusSlaveLinkLayerInterface::COMMUNICATION_START);
+        SetFsmState(CModbusSlaveLinkLayerInterface::START);
         SetFsmState(MESSAGE_RECEIVE_WAITING);
         break;
 

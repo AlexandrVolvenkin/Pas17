@@ -13,6 +13,7 @@
 
 #include "Task.h"
 #include "Resources.h"
+#include "CommunicationDevice.h"
 #include "ModbusSlaveLinkLayer.h"
 
 
@@ -32,4 +33,16 @@ CModbusSlaveLinkLayer::CModbusSlaveLinkLayer(CResources* pxResources)
 CModbusSlaveLinkLayer::~CModbusSlaveLinkLayer()
 {
     //dtor
+}
+
+//-------------------------------------------------------------------------------
+void CModbusSlaveLinkLayer::SetCommunicationDeviceName(std::string sName)
+{
+    m_sCommunicationDeviceName = sName;
+}
+
+//-------------------------------------------------------------------------------
+void CModbusSlaveLinkLayer::SetCommunicationDevice(CCommunicationDeviceInterfaceNew* pxCommunicationDevice)
+{
+    m_pxCommunicationDevice = pxCommunicationDevice;
 }

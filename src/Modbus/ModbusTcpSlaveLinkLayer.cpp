@@ -361,6 +361,10 @@ uint8_t CModbusTcpSlaveLinkLayer::Fsm(void)
     {
         int16_t iBytesNumber;
 
+    case IDDLE:
+//        std::cout << "CModbusTcpSlaveLinkLayer::Fsm IDDLE"  << std::endl;
+        break;
+
     case START:
         std::cout << "CModbusTcpSlaveLinkLayer::Fsm START"  << std::endl;
         SetFsmState(COMMUNICATION_START);
@@ -368,10 +372,6 @@ uint8_t CModbusTcpSlaveLinkLayer::Fsm(void)
 
     case READY:
         std::cout << "CModbusTcpSlaveLinkLayer::Fsm READY"  << std::endl;
-        break;
-
-    case IDDLE:
-//        std::cout << "CModbusTcpSlaveLinkLayer::Fsm IDDLE"  << std::endl;
         break;
 
     case STOP:
@@ -472,17 +472,19 @@ uint8_t CModbusTcpSlaveLinkLayer::Fsm(void)
                                          (static_cast<uint16_t>(m_auiRxBuffer[1])));
             SetFsmState(COMMUNICATION_FRAME_RECEIVED);
 
-            cout << "ReceiveContinue" << endl;
-            unsigned char *pucSourceTemp;
-            pucSourceTemp = (unsigned char*)m_auiRxBuffer;
-            for(int i=0; i<32; )
             {
-                for(int j=0; j<8; j++)
+                cout << "m_auiRxBuffer" << endl;
+                unsigned char *pucSourceTemp;
+                pucSourceTemp = (unsigned char*)m_auiRxBuffer;
+                for(int i=0; i<32; )
                 {
-                    cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+                    for(int j=0; j<8; j++)
+                    {
+                        cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+                    }
+                    cout << endl;
+                    i += 8;
                 }
-                cout << endl;
-                i += 8;
             }
         }
         break;

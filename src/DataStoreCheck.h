@@ -14,10 +14,14 @@
 
 //#include "Dfa.h"
 #include "Timer.h"
-#include "StorageDevice.h"
-#include "DataStore.h"
+//#include "StorageDevice.h"
+//#include "DataStore.h"
 
 class CTask;
+class CResources;
+class CStorageDeviceInterface;
+class CStorageDeviceFileSystem;
+class CDataStore;
 
 using namespace std;
 
@@ -29,6 +33,9 @@ public:
     enum
     {
         IDDLE = 0,
+        START,
+        READY,
+        STOP,
 
         DATA_STORE_CHECK_START,
         TEMPORARY_SERVICE_SECTION_DATA_CHECK,
@@ -58,12 +65,16 @@ public:
     CDataStoreCheck();
     CDataStoreCheck(CDataStore* pxDataStore);
     virtual ~CDataStoreCheck();
+
+    void SetDataStoreName(std::string sName);
+    void SetDataStore(CDataStore* pxDataStore);
     uint8_t Check(void);
     uint8_t Fsm(void);
 
 protected:
 
 private:
+    std::string m_sDataStoreName;
     CDataStore* m_pxDataStore;
     uint8_t m_uiRecoveryAttemptCounter;
 };

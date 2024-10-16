@@ -41,16 +41,18 @@
 
 class CTask;
 class CResources;
+class CCommunicationDeviceNew;
+class CCommunicationDeviceInterfaceNew;
 
 //-------------------------------------------------------------------------------
-class CModbusRtuSlaveLinkLayer : public CModbusSlaveLinkLayerInterface
+class CModbusRtuSlaveLinkLayer : public CModbusSlaveLinkLayer
 {
 public:
     enum
     {
-        START = 0,
+        IDDLE = 0,
+        START,
         READY,
-        IDDLE,
         STOP,
 
         COMMUNICATION_START,
@@ -138,10 +140,10 @@ private:
         m_uiFrameLength = uiData;
     };
 
-    bool IsDataWrited(void)
-    {
-        return m_pxCommunicationDevice -> IsDataWrited();
-    };
+//    bool IsDataWrited(void)
+//    {
+//        return m_pxCommunicationDevice -> IsDataWrited();
+//    };
 
     uint16_t GetGuardTimeout(void)
     {
@@ -161,7 +163,7 @@ private:
         return 0;
     };
 
-    CSerialPort* m_pxCommunicationDevice;
+//    CSerialPort* m_pxCommunicationDevice;
     uint16_t m_uiRequestTransactionId = 0;
     uint16_t m_uiResponseTransactionId = 0;
     // таймоут по отсутствию следующего байта 3.5 бода.

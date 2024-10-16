@@ -465,3 +465,10 @@
 
 1719166007 d:\projects\currentprojects\cautoprojects\eclipceprojects\pas17\pas17\src\modbus\modbustcpmasterlinklayer.h
 
+1720229939 source:d:\projects\currentprojects\cautoprojects\eclipceprojects\pas17\pas17\src\hammingcodes.cpp
+	"HammingCodes.h"
+	"Crc.h"
+
+1720229939 d:\projects\currentprojects\cautoprojects\eclipceprojects\pas17\pas17\src\hammingcodes.h
+	<stdint.h>
+

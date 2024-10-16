@@ -10,6 +10,8 @@
 #include <string.h>
 
 #include "Task.h"
+#include "Resources.h"
+#include "StorageDevice.h"
 #include "DataStore.h"
 #include "Crc.h"
 #include "HammingCodes.h"
@@ -197,6 +199,18 @@ CDataStore::~CDataStore()
     delete m_puiIntermediateBuff;
     delete m_pxStorageDevice;
 
+}
+
+//-------------------------------------------------------------------------------
+void CDataStore::SetStorageDeviceName(std::string sName)
+{
+    m_sStorageDeviceName = sName;
+}
+
+//-------------------------------------------------------------------------------
+void CDataStore::SetStorageDevice(CStorageDeviceInterface* pxStorageDevice)
+{
+    m_pxStorageDevice = pxStorageDevice;
 }
 
 ////-------------------------------------------------------------------------------
@@ -1061,6 +1075,23 @@ uint8_t CDataStore::Fsm(void)
     switch (GetFsmState())
     {
     case IDDLE:
+        break;
+
+    case START:
+        std::cout << "CDataStore::Fsm START"  << std::endl;
+        std::cout << "CDataStore::Fsm m_sStorageDeviceName" << " " << (m_sStorageDeviceName) << std::endl;
+        SetStorageDevice((CStorageDeviceInterface*)
+                         (GetResources() ->
+                          GetCommonTaskFromMapPointer(m_sStorageDeviceName)));
+        SetFsmState(READY);
+        break;
+
+    case READY:
+        std::cout << "CDataStore::Fsm READY"  << std::endl;
+        break;
+
+    case STOP:
+        std::cout << "CDataStore::Fsm STOP"  << std::endl;
         break;
 
 

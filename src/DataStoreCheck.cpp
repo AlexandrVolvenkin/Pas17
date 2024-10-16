@@ -9,8 +9,10 @@
 #include <string.h>
 
 #include "Task.h"
-#include "DataStoreCheck.h"
+#include "Resources.h"
+#include "StorageDevice.h"
 #include "DataStore.h"
+#include "DataStoreCheck.h"
 #include "Crc.h"
 #include "HammingCodes.h"
 
@@ -35,6 +37,18 @@ CDataStoreCheck::~CDataStoreCheck()
 }
 
 //-------------------------------------------------------------------------------
+void CDataStoreCheck::SetDataStoreName(std::string sName)
+{
+    m_sDataStoreName = sName;
+}
+
+//-------------------------------------------------------------------------------
+void CDataStoreCheck::SetDataStore(CDataStore* pxDataStore)
+{
+    m_pxDataStore = pxDataStore;
+}
+
+//-------------------------------------------------------------------------------
 // Проверяет целостность данных хранилища.
 // Восстанавлмвает повреждённые данные с помощью алгоритма Хемминга.
 // Восстанавливает данные записываемого блока при сбое питания и т.д.
@@ -47,13 +61,32 @@ uint8_t CDataStoreCheck::Check(void)
 //-------------------------------------------------------------------------------
 uint8_t CDataStoreCheck::Fsm(void)
 {
+    uint8_t auiTempArray[CDataStore::MAX_BLOCK_LENGTH];
+
     switch (GetFsmState())
     {
-        uint8_t auiTempArray[CDataStore::MAX_BLOCK_LENGTH];
-
     case IDDLE:
         break;
 
+    case START:
+        std::cout << "CDataStoreCheck::Fsm START"  << std::endl;
+        std::cout << "CDataStoreCheck::Fsm m_sDataStoreName" << " " << (m_sDataStoreName) << std::endl;
+        SetDataStore((CDataStore*)
+                         (GetResources() ->
+                          GetCommonTaskFromMapPointer(m_sDataStoreName)));
+        SetFsmState(READY);
+        break;
+
+    case READY:
+        std::cout << "CDataStoreCheck::Fsm READY"  << std::endl;
+        break;
+
+    case STOP:
+        std::cout << "CDataStoreCheck::Fsm STOP"  << std::endl;
+        break;
+
+
+//-------------------------------------------------------------------------------
     case DATA_STORE_CHECK_START:
         // Сбросим ошибки декодирования алгоритмом Хемминга.
         CHammingCodes::SetErrorCode(CHammingCodes::NONE_ERROR);

@@ -45,8 +45,8 @@ public:
     virtual uint8_t Write(void) {};
     virtual bool ReadBlock(uint8_t *puiDestination, uint16_t uiOffset, uint16_t uiLength) {};
     virtual uint8_t Read(void) {};
-    virtual void SetIsDataWrited(bool bStatus) {};
-    virtual bool IsDataWrited(void) {};
+//    virtual void SetIsDataWrited(bool bStatus) {};
+//    virtual bool IsDataWrited(void) {};
     virtual bool IsReadyToWrite(void) {};
 
     virtual void SetBufferPointer(uint8_t* puiBuffer) {};
@@ -80,8 +80,8 @@ public:
 //    virtual uint8_t PassingDataAndStartWrite(uint16_t uiOffset, uint8_t *puiSource, uint16_t uiLength) = 0;
     virtual uint8_t Write(void) = 0;
     virtual uint8_t ReadBlock(uint8_t *puiDestination, uint16_t uiOffset, uint16_t uiLength) = 0;
-    virtual void SetIsDataWrited(bool bStatus) = 0;
-    virtual bool IsDataWrited(void) = 0;
+//    virtual void SetIsDataWrited(bool bStatus) = 0;
+//    virtual bool IsDataWrited(void) = 0;
     virtual bool IsReadyToWrite(void) = 0;
 
     virtual void SetBufferPointer(uint8_t* puiBuffer)
@@ -160,14 +160,14 @@ public:
         // В случае записи средствами ОС проверка не проводится.
         return true;
     };
-    void SetIsDataWrited(bool bStatus)
-    {
-        m_bDataIsWrited = bStatus;
-    };
-    bool IsDataWrited(void)
-    {
-        return m_bDataIsWrited;
-    };
+//    void SetIsDataWrited(bool bStatus)
+//    {
+//        m_bDataIsWrited = bStatus;
+//    };
+//    bool IsDataWrited(void)
+//    {
+//        return m_bDataIsWrited;
+//    };
     uint8_t Fsm(void);
 
     virtual void SetBufferPointer(uint8_t* puiBuffer)

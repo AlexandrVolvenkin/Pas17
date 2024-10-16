@@ -8,15 +8,6 @@
 //  GitHub      : https://github.com/AlexandrVolvenkin
 //-------------------------------------------------------------------------------
 
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <errno.h>
-//#include <fcntl.h>
-#include <string.h>
-#include <assert.h>
-#include <time.h>
-
 #include "Platform.h"
 //#include "Resources.h"
 //#include "Dfa.h"

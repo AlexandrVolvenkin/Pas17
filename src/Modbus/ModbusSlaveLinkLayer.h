@@ -18,6 +18,8 @@
 
 class CTask;
 class CResources;
+class CCommunicationDeviceNew;
+class CCommunicationDeviceInterfaceNew;
 
 //-------------------------------------------------------------------------------
 class CModbusSlaveLinkLayerInterface : public CTask//, public CDfa
@@ -25,9 +27,9 @@ class CModbusSlaveLinkLayerInterface : public CTask//, public CDfa
 public:
     enum
     {
-        START = 0,
+        IDDLE = 0,
+        START,
         READY,
-        IDDLE,
         STOP,
 
         COMMUNICATION_START,
@@ -43,6 +45,8 @@ public:
 //    CModbusSlaveLinkLayerInterface();
 //    virtual ~CModbusSlaveLinkLayerInterface();
 
+    virtual void SetCommunicationDeviceName(std::string sName) {};
+    virtual void SetCommunicationDevice(CCommunicationDeviceInterfaceNew* pxCommunicationDevice) {};
     void CommunicationDeviceInit(const char* pccIpAddress,
                                  uint16_t uiPort) {};
     uint8_t Fsm(void) {};
@@ -123,15 +127,19 @@ private:
 
 
 //-------------------------------------------------------------------------------
-class CModbusSlaveLinkLayer
+class CModbusSlaveLinkLayer : public CModbusSlaveLinkLayerInterface
 {
 public:
     CModbusSlaveLinkLayer();
     CModbusSlaveLinkLayer(CResources* pxResources);
     virtual ~CModbusSlaveLinkLayer();
 
-protected:
+    void SetCommunicationDeviceName(std::string sName);
+    void SetCommunicationDevice(CCommunicationDeviceInterfaceNew* pxCommunicationDevice);
 
+protected:
+    std::string m_sCommunicationDeviceName;
+    CCommunicationDeviceInterfaceNew* m_pxCommunicationDevice;
 private:
 };
 //-------------------------------------------------------------------------------

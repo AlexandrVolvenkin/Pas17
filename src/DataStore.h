@@ -14,10 +14,12 @@
 
 //#include "Dfa.h"
 #include "Timer.h"
-#include "StorageDevice.h"
+//#include "StorageDevice.h"
 
 class CTask;
 class CResources;
+class CStorageDeviceInterface;
+class CStorageDeviceFileSystem;
 
 using namespace std;
 
@@ -53,6 +55,9 @@ public:
     enum
     {
         IDDLE = 0,
+        START,
+        READY,
+        STOP,
 
         START_WRITE_BLOCK_DATA,
         READY_TO_WRITE_WAITING_BLOCK_DATA,
@@ -140,6 +145,8 @@ public:
     CDataStore(CStorageDeviceInterface* pxStorageDevice);
     virtual ~CDataStore();
 
+    void SetStorageDeviceName(std::string sName);
+    void SetStorageDevice(CStorageDeviceInterface* pxStorageDevice);
 //    void SetResources(CResources* pxResources);
 //    CResources* GetResources(void);
 
@@ -203,6 +210,7 @@ private:
     uint8_t* m_puiBlockSource;
     uint16_t m_uiBlockLength;
 
+    std::string m_sStorageDeviceName;
     // Указатель на объект класса устройства хранения.
     CStorageDeviceInterface* m_pxStorageDevice;
     // Служебные данные системы хранения.

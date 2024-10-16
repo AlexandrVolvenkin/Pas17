@@ -222,7 +222,7 @@ CTaskInterface* CResources::GetCommonTaskFromMapPointer(std::string sTaskName)
     std::cout << "CResources::GetCommonTaskFromMapPointer 1"  << std::endl;
 
     std::cout << "CResources::GetCommonTaskFromMapPointer this name" << " " << (this -> GetTaskNamePointer()) << std::endl;
-    std::cout << "CResources::AddCommonTaskToMap sTaskName" << " " << (sTaskName) << std::endl;
+    std::cout << "CResources::GetCommonTaskFromMapPointer sTaskName" << " " << (sTaskName) << std::endl;
 
     // Пытаемся получить значение по ключу 1
     std::map<std::string, CTaskInterface*>::iterator it = m_mxCommonTaskMap.find(sTaskName);
@@ -231,7 +231,7 @@ CTaskInterface* CResources::GetCommonTaskFromMapPointer(std::string sTaskName)
     {
         // ключ найден
         std::cout << "CResources::GetCommonTaskFromMapPointer 2"  << std::endl;
-    std::cout << "CResources::GetCommonTaskFromMapPointer this name" << " " << ((it -> second) -> GetTaskNamePointer()) << std::endl;
+        std::cout << "CResources::GetCommonTaskFromMapPointer this name" << " " << ((it -> second) -> GetTaskNamePointer()) << std::endl;
         return it -> second;
     }
     else

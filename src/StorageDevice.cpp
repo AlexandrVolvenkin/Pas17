@@ -100,7 +100,7 @@ uint8_t CStorageDeviceFileSystem::Write(void)
         // закроем файл.
         outdata.close();
 
-        SetIsDataWrited(true);
+//        SetIsDataWrited(true);
         return 1;
     }
     else

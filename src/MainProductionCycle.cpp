@@ -11,10 +11,13 @@
 
 #include "Task.h"
 #include "Platform.h"
+#include "CommunicationDevice.h"
+#include "SerialPortCommunicationDevice.h"
 #include "MainProductionCycle.h"
 #include "Resources.h"
 #include "TaskManager.h"
 #include "ServiceMarket.h"
+#include "StorageDevice.h"
 #include "DataStore.h"
 #include "DataStoreCheck.h"
 #include "InternalModule.h"
@@ -23,6 +26,8 @@
 //#include "ModbusTcp.h"
 #include "ModbusSlaveLinkLayer.h"
 #include "ModbusTcpSlaveLinkLayer.h"
+
+#include "EVE_HAL.h"
 
 //class CMainThreadProduction;
 
@@ -47,6 +52,8 @@ uint8_t auiTempBlock[]
     0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
     0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF
 };
+
+CSpi xSpiCommunicationDevice;
 
 
 //-------------------------------------------------------------------------------
@@ -114,28 +121,28 @@ CMainProductionCycle::CMainProductionCycle()
 //    {
 //        cout << "DataStore check ok" << endl;
 //    }
-
-
-
+//
+//
+//
 //    if (!(pxDataStoreFileSystem -> ReadServiceSection()))
 //    {
 //        cout << "CreateServiceSection" << endl;
 //        pxDataStoreFileSystem -> CreateServiceSection();
 //    }
-
-
-
-//    pxDataStoreFileSystem -> BlockWritePrepare(auiTempBlock, sizeof(auiTempBlock), 0);
-
-////    pxDataStoreFileSystem -> SetFsmEvent(CDataStore::WRITE_IN_PROGRESS_FSM_EVENT);
-//    // Запустим процесс записи.
-//    pxDataStoreFileSystem -> SetFsmState(CDataStore::START_WRITE_TEMPORARY_SERVICE_SECTION_DATA);
-
-//    pxDataStoreFileSystem -> TemporaryServiceSectionWritePrepare();
-
-
-
-
+//
+//
+//
+////    pxDataStoreFileSystem -> BlockWritePrepare(auiTempBlock, sizeof(auiTempBlock), 0);
+////
+//////    pxDataStoreFileSystem -> SetFsmEvent(CDataStore::WRITE_IN_PROGRESS_FSM_EVENT);
+////    // Запустим процесс записи.
+////    pxDataStoreFileSystem -> SetFsmState(CDataStore::START_WRITE_TEMPORARY_SERVICE_SECTION_DATA);
+////
+////    pxDataStoreFileSystem -> TemporaryServiceSectionWritePrepare();
+//
+//
+//
+//
 //    uint8_t auiTempArray[512];
 //
 //    if (pxDataStoreFileSystem -> ReadBlock(auiTempArray, 0))
@@ -175,7 +182,7 @@ CMainProductionCycle::CMainProductionCycle()
 //    m_xResources.SetInputRegisters(m_puiInputRegisters);
 //    m_xResources.SetInputRegistersNumber(m_uiInputRegistersNumber);
 
-    m_xResources.m_pxDataStore = &m_xDataStore;
+//    m_xResources.m_pxDataStore = &m_xDataStore;
     m_xResources.m_pxDeviceControl = &m_xDeviceControl;
 
     m_pxServiceMarket = new CServiceMarket();
@@ -183,7 +190,8 @@ CMainProductionCycle::CMainProductionCycle()
     SetResources(&m_xResources);
     m_xResources.m_pxServiceMarket = m_pxServiceMarket;
 
-    m_pxSpiCommunicationDevice = new CSpi();
+//    m_pxSpiCommunicationDevice = new CSpi();
+    m_pxSpiCommunicationDevice = &xSpiCommunicationDevice;//new CSpi();
     m_pxInternalModule = new CInternalModule();
 //    m_pxInternalModule = new CInternalModuleMuvr();
     m_pxInternalModule ->
@@ -316,71 +324,118 @@ uint8_t CMainProductionCycle::Init(void)
     m_pxSpiCommunicationDevice -> Init();
     cout << "m_pxSpiCommunicationDevice -> Open" << endl;
 
-//    m_pxModusTcpSlaveTopLevelProduction = new CModbusTcpSlaveTopLevelProduction();
-//    m_pxModusTcpSlaveTopLevelProduction ->
-//    SetModbusSlaveLinkLayer(m_pxModbusTcpSlaveLinkLayerUpperLevel);
-//    m_pxModusTcpSlaveTopLevelProduction ->
-//    Place((CTaskInterface*)m_pxModbusTcpSlaveLinkLayerUpperLevel);
 
-    m_pxModbusTcpSlaveLinkLayerUpperLevel = new CModbusTcpSlaveLinkLayer();
-//    m_pxModbusTcpSlaveUpperLevel = new CModbusSlave();
-//    m_pxModbusTcpSlaveLinkLayerUpperLevel = new CModbusTcpSlaveLinkLayer(&m_xResources);
-    m_pxModbusTcpSlaveUpperLevel = new CModbusSlave(&m_xResources);
-    m_pxModbusTcpSlaveUpperLevel ->
-    SetModbusSlaveLinkLayer(m_pxModbusTcpSlaveLinkLayerUpperLevel);
 
+//-------------------------------------------------------------------------------
+    CStorageDeviceFileSystem* pxStorageDeviceFileSystem = new CStorageDeviceFileSystem();
+    m_xResources.AddCommonTaskToMap("StorageDeviceFileSystem",
+                                    pxStorageDeviceFileSystem);
+    pxStorageDeviceFileSystem ->
+    SetResources(&m_xResources);
+
+    CDataStore* pxDataStoreFileSystem = new CDataStore();
+    m_xResources.AddCommonTaskToMap("DataStoreFileSystem",
+                                    pxDataStoreFileSystem);
+    pxDataStoreFileSystem ->
+    SetResources(&m_xResources);
+    pxDataStoreFileSystem ->
+    SetStorageDeviceName("StorageDeviceFileSystem");
+
+    CDataStoreCheck* pxDataStoreCheck = new CDataStoreCheck();
+    m_xResources.AddCommonTaskToMap("DataStoreCheck",
+                                    pxDataStoreCheck);
+    pxDataStoreCheck ->
+    SetResources(&m_xResources);
+    pxDataStoreCheck ->
+    SetDataStoreName("DataStoreFileSystem");
+
+
+
+//-------------------------------------------------------------------------------
+////    m_pxModusTcpSlaveTopLevelProduction = new CModbusTcpSlaveTopLevelProduction();
+////    m_pxModusTcpSlaveTopLevelProduction ->
+////    SetModbusSlaveLinkLayer(m_pxModbusTcpSlaveLinkLayerUpperLevel);
+////    m_pxModusTcpSlaveTopLevelProduction ->
+////    Place((CTaskInterface*)m_pxModbusTcpSlaveLinkLayerUpperLevel);
+//
+//    m_pxModbusTcpSlaveLinkLayerUpperLevel = new CModbusTcpSlaveLinkLayer();
+////    m_pxModbusTcpSlaveUpperLevel = new CModbusSlave();
+////    m_pxModbusTcpSlaveLinkLayerUpperLevel = new CModbusTcpSlaveLinkLayer(&m_xResources);
+//    m_pxModbusTcpSlaveUpperLevel = new CModbusSlave(&m_xResources);
 //    m_pxModbusTcpSlaveUpperLevel ->
-//    WorkingArraysCreate(COILS_WORK_ARRAY_LENGTH,
-//                        DISCRETE_INPUTS_ARRAY_LENGTH,
-//                        HOLDING_REGISTERS_ARRAY_LENGTH,
-//                        INPUT_REGISTERS_ARRAY_LENGTH);
-    m_pxModbusTcpSlaveUpperLevel ->
-    SetOwnAddress(17);
-    m_pxModbusTcpSlaveUpperLevel ->
+//    SetModbusSlaveLinkLayer(m_pxModbusTcpSlaveLinkLayerUpperLevel);
+//
+////    m_pxModbusTcpSlaveUpperLevel ->
+////    WorkingArraysCreate(COILS_WORK_ARRAY_LENGTH,
+////                        DISCRETE_INPUTS_ARRAY_LENGTH,
+////                        HOLDING_REGISTERS_ARRAY_LENGTH,
+////                        INPUT_REGISTERS_ARRAY_LENGTH);
+//    m_pxModbusTcpSlaveUpperLevel ->
+//    SetOwnAddress(17);
+//    m_pxModbusTcpSlaveUpperLevel ->
+//    SetResources(&m_xResources);
+//
+//
+//    m_pxModbusTcpSlaveUpperLevel ->
+//    SetFsmState(CModbusSlave::COMMUNICATION_START);
+
+
+
+//-------------------------------------------------------------------------------
+    CSerialPortCommunicationDevice* pxSerialPortCommunicationDeviceCom1 =
+        new CSerialPortCommunicationDevice();
+    m_xResources.AddCommonTaskToMap("SerialPortCommunicationDeviceCom1",
+                                    pxSerialPortCommunicationDeviceCom1);
+    pxSerialPortCommunicationDeviceCom1 ->
+    SetResources(&m_xResources);
+    pxSerialPortCommunicationDeviceCom1 -> Init();
+    pxSerialPortCommunicationDeviceCom1 -> SetDeviceName("/dev/ttyO1");
+    pxSerialPortCommunicationDeviceCom1 -> SetBaudRate(9600);
+    pxSerialPortCommunicationDeviceCom1 -> SetDataBits(8);
+    pxSerialPortCommunicationDeviceCom1 -> SetParity('N');
+    pxSerialPortCommunicationDeviceCom1 -> SetStopBit(2);
+
+//    m_uiGuardTimeout = ((((1000000UL / uiBaudRate) * 8UL * 4UL) / 1000UL) + 1);
+
+//-------------------------------------------------------------------------------
+    CModbusRtuSlaveLinkLayer* pxModbusRtuSlaveLinkLayerUpperLevel =
+        new CModbusRtuSlaveLinkLayer();
+    m_xResources.AddCommonTaskToMap("ModbusRtuSlaveLinkLayerUpperLevel",
+                                    pxModbusRtuSlaveLinkLayerUpperLevel);
+    pxModbusRtuSlaveLinkLayerUpperLevel ->
+    SetResources(&m_xResources);
+    pxModbusRtuSlaveLinkLayerUpperLevel ->
+    SetCommunicationDeviceName("SerialPortCommunicationDeviceCom1");
+////    pxModbusRtuSlaveLinkLayerUpperLevel ->
+////    SetCommunicationDevice(pxSerialPortCommunicationDeviceCom1);
+//    pxModbusRtuSlaveLinkLayerUpperLevel ->
+//    SetCommunicationDevice((CCommunicationDeviceInterfaceNew*)
+//                           (pxModbusRtuSlaveLinkLayerUpperLevel ->
+//                            GetResources() ->
+//                            GetCommonTaskFromMapPointer("SerialPortCommunicationDeviceCom1")))
+
+//-------------------------------------------------------------------------------
+//    CModbusSlave* pxModbusRtuSlaveUpperLevel =
+//        new CModbusSlave();
+    CModbusSlave* pxModbusRtuSlaveUpperLevel =
+        new CModbusSlave(&m_xResources);
+    m_xResources.AddCommonTaskToMap("ModbusRtuSlaveUpperLevel",
+                                    pxModbusRtuSlaveUpperLevel);
+    pxModbusRtuSlaveUpperLevel ->
     SetResources(&m_xResources);
 
-
-    m_pxModbusTcpSlaveUpperLevel ->
-    SetFsmState(CModbusSlave::COMMUNICATION_START);
-
-
-
-
-//    m_pxModusRtuSlaveTopLevelProduction = new CModbusRtuSlaveTopLevelProduction();
-//    m_pxModusRtuSlaveTopLevelProduction ->
-//    SetModbusSlaveLinkLayer(m_pxModbusRtuSlaveLinkLayerUpperLevel);
-//    m_pxModusRtuSlaveTopLevelProduction ->
-//    Place((CTaskInterface*)m_pxModbusRtuSlaveLinkLayerUpperLevel);
-
-
-    m_pxModbusRtuSlaveLinkLayerUpperLevel = new CModbusRtuSlaveLinkLayer();
-//    m_pxModbusRtuSlaveUpperLevel = new CModbusSlave();
-//    m_pxModbusRtuSlaveLinkLayerUpperLevel = new CModbusRtuSlaveLinkLayer(&m_xResources);
-    m_pxModbusRtuSlaveUpperLevel = new CModbusSlave(&m_xResources);
-    m_pxModbusRtuSlaveUpperLevel ->
-    SetModbusSlaveLinkLayer(m_pxModbusRtuSlaveLinkLayerUpperLevel);
-
-//    m_pxModbusRtuSlaveUpperLevel ->
-//    CommunicationDeviceInit("/dev/ttyO1",
-//                            9600,
-//                            8,
-//                            'N',
-//                            2);
-
-//    m_pxModbusRtuSlaveUpperLevel ->
-//    WorkingArraysCreate(COILS_WORK_ARRAY_LENGTH,
-//                        DISCRETE_INPUTS_ARRAY_LENGTH,
-//                        HOLDING_REGISTERS_ARRAY_LENGTH,
-//                        INPUT_REGISTERS_ARRAY_LENGTH);
-    m_pxModbusRtuSlaveUpperLevel ->
+//    pxModbusRtuSlaveUpperLevel ->
+//    SetModbusSlaveLinkLayer(pxModbusRtuSlaveLinkLayerUpperLevel);
+    pxModbusRtuSlaveUpperLevel ->
+    SetModbusSlaveLinkLayer((CModbusSlaveLinkLayerInterface*)
+                            (pxModbusRtuSlaveUpperLevel ->
+                             GetResources() ->
+                             GetCommonTaskFromMapPointer("ModbusRtuSlaveLinkLayerUpperLevel")));
+    pxModbusRtuSlaveUpperLevel ->
     SetOwnAddress(17);
-    m_pxModbusRtuSlaveUpperLevel ->
-    SetResources(&m_xResources);
-
-
-
-    m_pxModbusRtuSlaveUpperLevel ->
+    pxModbusRtuSlaveUpperLevel ->
     SetFsmState(CModbusSlave::COMMUNICATION_START);
+    m_pxModbusRtuSlaveUpperLevel = pxModbusRtuSlaveUpperLevel;
 }
 
 //-------------------------------------------------------------------------------
@@ -395,23 +450,25 @@ uint8_t CMainProductionCycle::Fsm(void)
         std::cout << "m_acTaskName " << m_acTaskName << std::endl;
         Init();
 
-        m_pxInternalModule ->
-        GetModuleType(0);
-        {
-
-//            CInternalModuleMuvr xInternalModuleMuvr;
-////            CInternalModule xInternalModuleMuvr;
-//            xInternalModuleMuvr.
-//            GetModuleType(0);
-
-//            CInternalModuleMuvr xInternalModuleMuvr;
-////            CInternalModule xInternalModuleMuvr;
-//            xInternalModuleMuvr.
+//        m_pxInternalModule ->
+//        GetModuleType(0);
+//        {
+//
+////            CInternalModuleMuvr xInternalModuleMuvr;
+//////            CInternalModule xInternalModuleMuvr;
+////            xInternalModuleMuvr.
+////            GetModuleType(0);
+//
+////            CInternalModuleMuvr xInternalModuleMuvr;
+//////            CInternalModule xInternalModuleMuvr;
+////            xInternalModuleMuvr.
+////            DataBaseRead(0);
+//            m_pxInternalModuleMuvr ->
 //            DataBaseRead(0);
-            m_pxInternalModuleMuvr ->
-            DataBaseRead(0);
+//
+//        }
 
-        }
+//        EVE_HAL::InitializeNEW(true);
 
         SetFsmState(MAIN_CYCLE_MODBUS_SLAVE);
         break;
@@ -432,7 +489,7 @@ uint8_t CMainProductionCycle::Fsm(void)
 
     case MAIN_CYCLE_MODBUS_SLAVE:
         //std::cout << "CMainProductionCycle::Fsm IDDLE"  << std::endl;
-        m_pxModbusTcpSlaveUpperLevel -> Fsm();
+//        m_pxModbusTcpSlaveUpperLevel -> Fsm();
         m_pxModbusRtuSlaveUpperLevel -> Fsm();
         usleep(1000);
         break;

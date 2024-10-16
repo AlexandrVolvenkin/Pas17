@@ -25,7 +25,7 @@ public:
     virtual char* GetTaskNamePointer(void) {};
     virtual void SetResources(CResources* pxResources) {};
     virtual CResources* GetResources(void) {};
-    virtual uint8_t Init(void) {};
+//    virtual uint8_t Init(void) {};
 //    virtual uint8_t Fsm(void) {};
 };
 
@@ -42,9 +42,9 @@ class CTask : public CTaskInterface//, public CDfa
 public:
     enum
     {
-        START = 0,
+        IDDLE = 0,
+        START,
         READY,
-        IDDLE,
         STOP,
     };
 
@@ -59,7 +59,7 @@ public:
 
     void SetResources(CResources* pxResources);
     CResources* GetResources(void);
-    uint8_t Init(void);
+//    uint8_t Init(void);
 //    uint8_t Fsm(void);
 //    void AddCurrentlyRunningTask(CTaskInterface* pxTask);
 //    void AddCommonTask(CTaskInterface* pxTask);

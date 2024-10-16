@@ -45,9 +45,9 @@ class CModbusTcpSlaveLinkLayer : public CModbusSlaveLinkLayerInterface
 public:
     enum
     {
-        START = 0,
+        IDDLE = 0,
+        START,
         READY,
-        IDDLE,
         STOP,
 
         COMMUNICATION_START,
@@ -130,10 +130,10 @@ private:
         m_uiFrameLength = uiData;
     };
 
-    bool IsDataWrited(void)
-    {
-        return m_pxCommunicationDevice -> IsDataWrited();
-    };
+//    bool IsDataWrited(void)
+//    {
+//        return m_pxCommunicationDevice -> IsDataWrited();
+//    };
 
     uint16_t GetGuardTimeout(void)
     {
