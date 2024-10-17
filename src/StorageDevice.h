@@ -26,9 +26,10 @@ public:
     enum
     {
         START = 0,
+        INIT,
         READY,
-        IDDLE,
         STOP,
+        IDDLE,
 
         WRITE_DATA_START,
         WRITE_DATA_END,

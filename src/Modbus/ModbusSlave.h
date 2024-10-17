@@ -35,9 +35,10 @@ public:
     enum
     {
         START = 0,
+        INIT,
         READY,
-        IDDLE,
         STOP,
+        IDDLE,
 
         COMMUNICATION_START,
         MESSAGE_RECEIVE_WAITING,
@@ -56,6 +57,8 @@ public:
     CModbusSlave(CResources* pxResources);
     virtual ~CModbusSlave();
 
+    void SetModbusSlaveLinkLayerName(std::string sName);
+    void SetModbusSlaveLinkLayer(CModbusSlaveLinkLayer* pxModbusSlaveLinkLayer);
 //    void SetResources(CResources* pxResources);
 //    CResources* GetResources(void);
     void ModbusWorkingArraysInit(void);
@@ -176,6 +179,7 @@ public:
 
 
 //-------------------------------------------------------------------------------
+    std::string m_sModbusSlaveLinkLayerName;
     CModbusSlaveLinkLayerInterface* m_pxModbusSlaveLinkLayer;
 //    CResources* m_pxResources;
 

@@ -42,15 +42,17 @@ class CTask : public CTaskInterface//, public CDfa
 public:
     enum
     {
-        IDDLE = 0,
-        START,
+        START = 0,
+        INIT,
         READY,
         STOP,
+        IDDLE,
     };
 
     enum
     {
         TASK_NAME_LENGTH = 32,
+        TASK_READY_WAITING_TIME = 1000,
     };
 
     CTask();

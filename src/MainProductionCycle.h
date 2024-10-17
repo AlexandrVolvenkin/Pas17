@@ -45,9 +45,11 @@ public:
     enum
     {
         START = 0,
+        INIT,
         READY,
-        IDDLE,
         STOP,
+        IDDLE,
+
         MAIN_CYCLE_MODBUS_SLAVE,
         LED_BLINK_ON,
         LED_BLINK_OFF,
@@ -67,7 +69,8 @@ public:
         return &m_lpxCurrentlyRunningTasksList;
     };
 
-    uint8_t Init(void);
+    uint8_t CreateTasks(void);
+    uint8_t InitTasks(void);
     uint8_t Fsm(void);
 
 private:
@@ -128,9 +131,11 @@ public:
     enum
     {
         START = 0,
+        INIT,
         READY,
-        IDDLE,
         STOP,
+        IDDLE,
+
         LED_ON,
         LED_ON_PERIOD_END_WAITING,
         LED_OFF,

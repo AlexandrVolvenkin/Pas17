@@ -24,6 +24,7 @@ using namespace std;
 CModbusRtuSlaveLinkLayer::CModbusRtuSlaveLinkLayer()
 {
     std::cout << "CModbusRtuSlaveLinkLayer constructor"  << std::endl;
+    m_pxCommunicationDevice = 0;
 //    m_pxCommunicationDevice = new CSerialPort();
 ////    CommunicationDeviceInit("127.0.0.1",
 ////                            502);

@@ -22,19 +22,21 @@ using namespace std;
 CModbusSlave::CModbusSlave()
 {
     std::cout << "CModbusSlave constructor"  << std::endl;
+    m_pxModbusSlaveLinkLayer = 0;
     // получим имя класса.
     sprintf(GetTaskNamePointer(),
             "%s",
             typeid(*this).name());
     ModbusWorkingArraysInit();
 //    m_pxModbusSlaveLinkLayer = new CModbusSlaveLinkLayerInterface();
-    SetFsmState(IDDLE);
+    SetFsmState(START);
 }
 
 //-------------------------------------------------------------------------------
 CModbusSlave::CModbusSlave(CResources* pxResources)
 {
     std::cout << "CModbusSlave constructor 2"  << std::endl;
+    m_pxModbusSlaveLinkLayer = 0;
     // получим имя класса.
     sprintf(GetTaskNamePointer(),
             "%s",
@@ -54,7 +56,7 @@ CModbusSlave::CModbusSlave(CResources* pxResources)
 //    GetCommonTaskFromMapPointer("ModbusTcpSlaveUpperLevel");
     ModbusWorkingArraysInit();
 //    m_pxModbusSlaveLinkLayer = new CModbusSlaveLinkLayerInterface();
-    SetFsmState(IDDLE);
+    SetFsmState(START);
 }
 //std::type_info::name() или std::get_class_name().
 //-------------------------------------------------------------------------------
@@ -62,6 +64,18 @@ CModbusSlave::~CModbusSlave()
 {
 //    delete pxModbusSlaveLinkLayer;
     WorkingArraysDelete();
+}
+
+//-------------------------------------------------------------------------------
+void CModbusSlave::SetModbusSlaveLinkLayerName(std::string sName)
+{
+    m_sModbusSlaveLinkLayerName = sName;
+}
+
+//-------------------------------------------------------------------------------
+void CModbusSlave::SetModbusSlaveLinkLayer(CModbusSlaveLinkLayer* pxModbusSlaveLinkLayer)
+{
+    m_pxModbusSlaveLinkLayer = pxModbusSlaveLinkLayer;
 }
 
 ////-------------------------------------------------------------------------------
@@ -1292,6 +1306,24 @@ uint8_t CModbusSlave::Fsm(void)
     {
     case IDDLE:
         std::cout << "CModbusSlave::Fsm IDDLE"  << std::endl;
+        break;
+
+    case START:
+        std::cout << "CModbusSlave::Fsm START"  << std::endl;
+        std::cout << "CModbusSlave::Fsm m_sCommunicationDeviceName" << " " << (m_sModbusSlaveLinkLayerName) << std::endl;
+        SetModbusSlaveLinkLayer((CModbusSlaveLinkLayerInterface*)
+                                (GetResources() ->
+                                 GetCommonTaskFromMapPointer(m_sModbusSlaveLinkLayerName)));
+        SetFsmState(COMMUNICATION_START);
+        break;
+
+    case READY:
+        std::cout << "CModbusSlave::Fsm READY"  << std::endl;
+        break;
+
+    case STOP:
+        std::cout << "CModbusSlave::Fsm STOP"  << std::endl;
+        SetFsmState(START);
         break;
 
     case COMMUNICATION_START:

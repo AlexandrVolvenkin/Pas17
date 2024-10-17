@@ -179,6 +179,7 @@ const unsigned char aucDataBaseBlockLength[CDataStore::MAX_BLOCKS_NUMBER] =
 //-------------------------------------------------------------------------------
 CDataStore::CDataStore()
 {
+    m_pxStorageDevice = 0;
     m_puiIntermediateBuff = new uint8_t[MAX_ENCODED_BLOCK_LENGTH];
     SetFsmState(IDDLE);
 //    SetSavedFsmState(IDDLE);
@@ -1080,10 +1081,24 @@ uint8_t CDataStore::Fsm(void)
     case START:
         std::cout << "CDataStore::Fsm START"  << std::endl;
         std::cout << "CDataStore::Fsm m_sStorageDeviceName" << " " << (m_sStorageDeviceName) << std::endl;
-        SetStorageDevice((CStorageDeviceInterface*)
-                         (GetResources() ->
-                          GetCommonTaskFromMapPointer(m_sStorageDeviceName)));
-        SetFsmState(READY);
+        if (GetResources() ->
+                GetCommonTaskFromMapPointer(m_sStorageDeviceName) != 0)
+        {
+            SetStorageDevice((CStorageDeviceInterface*)
+                             (GetResources() ->
+                              GetCommonTaskFromMapPointer(m_sStorageDeviceName)));
+            SetFsmState(READY);
+        }
+        else
+        {
+
+            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
+        }
+
+        if (GetTimerPointer() -> IsOverflow())
+        {
+            SetFsmState(STOP);
+        }
         break;
 
     case READY:

@@ -54,10 +54,11 @@ public:
 
     enum
     {
-        IDDLE = 0,
-        START,
+        START = 0,
+        INIT,
         READY,
         STOP,
+        IDDLE,
 
         START_WRITE_BLOCK_DATA,
         READY_TO_WRITE_WAITING_BLOCK_DATA,

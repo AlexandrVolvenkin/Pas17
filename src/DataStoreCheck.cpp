@@ -20,6 +20,7 @@
 //-------------------------------------------------------------------------------
 CDataStoreCheck::CDataStoreCheck()
 {
+    m_pxDataStore = 0;
     SetFsmState(IDDLE);
 }
 

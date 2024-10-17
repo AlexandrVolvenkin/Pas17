@@ -32,10 +32,11 @@ public:
 
     enum
     {
-        IDDLE = 0,
-        START,
+        START = 0,
+        INIT,
         READY,
         STOP,
+        IDDLE,
 
         DATA_STORE_CHECK_START,
         TEMPORARY_SERVICE_SECTION_DATA_CHECK,
