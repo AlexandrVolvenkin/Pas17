@@ -8,6 +8,7 @@
 //-------------------------------------------------------------------------------
 #include <iostream>
 #include <string.h>
+#include <typeinfo>
 
 #include "Task.h"
 #include "Resources.h"
@@ -179,10 +180,14 @@ const unsigned char aucDataBaseBlockLength[CDataStore::MAX_BLOCKS_NUMBER] =
 //-------------------------------------------------------------------------------
 CDataStore::CDataStore()
 {
+    std::cout << "CDataStore constructor"  << std::endl;
+    // получим имя класса.
+    sprintf(GetTaskNamePointer(),
+            "%s",
+            typeid(*this).name());
     m_pxStorageDevice = 0;
     m_puiIntermediateBuff = new uint8_t[MAX_ENCODED_BLOCK_LENGTH];
     SetFsmState(IDDLE);
-//    SetSavedFsmState(IDDLE);
 }
 
 //-------------------------------------------------------------------------------

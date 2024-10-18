@@ -80,8 +80,8 @@ private:
 //    std::list<CTaskInterface*>::iterator m_xCurrentlyRunningTasksListIterator;
 
     CResources m_xResources;
-    CDeviceControl m_xDeviceControl;
-    CDataStore m_xDataStore;
+//    CDeviceControl m_xDeviceControl;
+//    CDataStore m_xDataStore;
 
     CSpi* m_pxSpiCommunicationDevice;
     CInternalModuleInterface* m_pxInternalModule;

@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <string.h>
+#include <typeinfo>
 
 #include "Task.h"
 #include "DataStore.h"
@@ -17,6 +18,11 @@
 //-------------------------------------------------------------------------------
 CStorageDeviceFileSystem::CStorageDeviceFileSystem()
 {
+    std::cout << "CStorageDeviceFileSystem constructor"  << std::endl;
+    // получим имя класса.
+    sprintf(GetTaskNamePointer(),
+            "%s",
+            typeid(*this).name());
     SetFsmState(IDDLE);
 }
 

@@ -5,6 +5,8 @@
 //  email       : aav-36@mail.ru
 //  GitHub      : https://github.com/AlexandrVolvenkin
 //-------------------------------------------------------------------------------
+#include <typeinfo>
+
 #include "Task.h"
 #include "Platform.h"
 #include "Resources.h"
@@ -17,6 +19,10 @@ using namespace std;
 CSerialPortCommunicationDevice::CSerialPortCommunicationDevice()
 {
     std::cout << "CSerialPortCommunicationDevice constructor"  << std::endl;
+    // получим имя класса.
+    sprintf(GetTaskNamePointer(),
+            "%s",
+            typeid(*this).name());
 
 }
 //-------------------------------------------------------------------------------

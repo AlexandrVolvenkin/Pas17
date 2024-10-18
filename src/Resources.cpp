@@ -17,6 +17,7 @@
 //-------------------------------------------------------------------------------------------
 CResources::CResources()
 {
+    std::cout << "CResources constructor"  << std::endl;
     // получим имя класса.
     sprintf(GetTaskNamePointer(),
             "%s",
@@ -26,7 +27,7 @@ CResources::CResources()
     m_mpxCommonTaskMap.clear();
 
     SetResources(this);
-    m_pxResources -> AddCommonListTask(this);
+//    m_pxResources -> AddCommonListTask(this);
 
     ModbusWorkingArraysCreate(COILS_WORK_ARRAY_LENGTH,
                               DISCRETE_INPUTS_ARRAY_LENGTH,
