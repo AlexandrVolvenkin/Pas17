@@ -23,7 +23,7 @@ CResources::CResources()
             typeid(*this).name());
 
     m_lpxCommonTasksList.clear();
-    m_mxCommonTaskMap.clear();
+    m_mpxCommonTaskMap.clear();
 
     SetResources(this);
     m_pxResources -> AddCommonListTask(this);
@@ -38,7 +38,7 @@ CResources::CResources()
 CResources::~CResources()
 {
     // Освобождаем память
-    for (auto& pair : m_mxCommonTaskMap)
+    for (auto& pair : m_mpxCommonTaskMap)
     {
         delete pair.second; // Удаляем указатели на объекты
     }
@@ -172,6 +172,17 @@ void CResources::AddCommonListTask(CTaskInterface* pxTask)
 }
 
 //-------------------------------------------------------------------------------------------
+void CResources::AddCurrentlyRunningTasksList(CTaskInterface* pxTask)
+{
+    std::cout << "CResources::AddCurrentlyRunningTasksList 1"  << std::endl;
+
+    std::cout << "CResources::AddCurrentlyRunningTasksList this name" << " " << (this -> GetTaskNamePointer()) << std::endl;
+    std::cout << "CResources::AddCurrentlyRunningTasksList pxTask name" << " " << (pxTask -> GetTaskNamePointer()) << std::endl;
+
+    m_lpxCurrentlyRunningTasksList.push_back(pxTask);
+}
+
+//-------------------------------------------------------------------------------------------
 CTaskInterface* CResources::GetCommonListTaskPointer(char* pcTaskName)
 {
     std::cout << "CResources::GetCommonListTaskPointer 1"  << std::endl;
@@ -212,8 +223,8 @@ void CResources::AddCommonTaskToMap(std::string sTaskName, CTaskInterface* pxTas
     std::cout << "CResources::AddCommonTaskToMap sTaskName" << " " << (sTaskName) << std::endl;
 
 //    m_lpxCommonTasksList.push_back(pxTask);
-//    m_mxCommonTaskMap[sTaskName].push_back(pxTask);
-    m_mxCommonTaskMap[sTaskName] = pxTask;
+//    m_mpxCommonTaskMap[sTaskName].push_back(pxTask);
+    m_mpxCommonTaskMap[sTaskName] = pxTask;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -225,9 +236,9 @@ CTaskInterface* CResources::GetCommonTaskFromMapPointer(std::string sTaskName)
     std::cout << "CResources::GetCommonTaskFromMapPointer sTaskName" << " " << (sTaskName) << std::endl;
 
     // Пытаемся получить значение по ключу 1
-    std::map<std::string, CTaskInterface*>::iterator it = m_mxCommonTaskMap.find(sTaskName);
+    std::map<std::string, CTaskInterface*>::iterator it = m_mpxCommonTaskMap.find(sTaskName);
 
-    if (it != m_mxCommonTaskMap.end())
+    if (it != m_mpxCommonTaskMap.end())
     {
         // ключ найден
         std::cout << "CResources::GetCommonTaskFromMapPointer 2"  << std::endl;

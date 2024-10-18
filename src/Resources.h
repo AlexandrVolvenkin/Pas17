@@ -52,6 +52,7 @@ public:
     virtual ~CResources();
 
     void AddCommonListTask(CTaskInterface* pxTask);
+    void AddCurrentlyRunningTasksList(CTaskInterface* pxTask);
     CTaskInterface* GetCommonListTaskPointer(char* pcTaskName);
     void AddCommonTaskToMap(std::string sTaskName, CTaskInterface* pxTask);
     CTaskInterface* GetCommonTaskFromMapPointer(std::string sTaskName);
@@ -86,14 +87,21 @@ public:
         return &m_lpxCommonTasksList;
     };
 
+    std::list<CTaskInterface*>* GetCurrentlyRunningTasksListPointer(void)
+    {
+        return &m_lpxCurrentlyRunningTasksList;
+    };
+
 //protected:
 //
 //private:
     std::list<CTaskInterface*> m_lpxCommonTasksList;
     std::list<CTaskInterface*>::iterator m_xCommonTasksListIterator;
+    std::list<CTaskInterface*> m_lpxCurrentlyRunningTasksList;
+    std::list<CTaskInterface*>::iterator m_xCurrentlyRunningTasksListIterator;
 
     // Создаем std::map, где ключ - строка, значение - указатель на объект
-    std::map<std::string, CTaskInterface*> m_mxCommonTaskMap;
+    std::map<std::string, CTaskInterface*> m_mpxCommonTaskMap;
     std::string m_sTaskName;
 
     uint8_t m_uiAddress;

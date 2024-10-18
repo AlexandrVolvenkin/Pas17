@@ -59,25 +59,25 @@ public:
     CMainProductionCycle();
     virtual ~CMainProductionCycle();
 
-    std::list<CTaskInterface*>* GetCommonTasksListPointer(void)
-    {
-        return &m_lpxCommonTasksList;
-    };
-
-    std::list<CTaskInterface*>* GetCurrentlyRunningTasksListPointer(void)
-    {
-        return &m_lpxCurrentlyRunningTasksList;
-    };
+//    std::list<CTaskInterface*>* GetCommonTasksListPointer(void)
+//    {
+//        return &m_lpxCommonTasksList;
+//    };
+//
+//    std::list<CTaskInterface*>* GetCurrentlyRunningTasksListPointer(void)
+//    {
+//        return &m_lpxCurrentlyRunningTasksList;
+//    };
 
     uint8_t CreateTasks(void);
     uint8_t InitTasks(void);
     uint8_t Fsm(void);
 
 private:
-    std::list<CTaskInterface*> m_lpxCommonTasksList;
-    std::list<CTaskInterface*>::iterator m_xCommonTasksListIterator;
-    std::list<CTaskInterface*> m_lpxCurrentlyRunningTasksList;
-    std::list<CTaskInterface*>::iterator m_xCurrentlyRunningTasksListIterator;
+//    std::list<CTaskInterface*> m_lpxCommonTasksList;
+//    std::list<CTaskInterface*>::iterator m_xCommonTasksListIterator;
+//    std::list<CTaskInterface*> m_lpxCurrentlyRunningTasksList;
+//    std::list<CTaskInterface*>::iterator m_xCurrentlyRunningTasksListIterator;
 
     CResources m_xResources;
     CDeviceControl m_xDeviceControl;
