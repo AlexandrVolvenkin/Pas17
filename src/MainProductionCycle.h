@@ -29,6 +29,7 @@ class CTask;
 //class CResources;
 class CLedBlinker;
 class CConfigurationCreate;
+class CDataStoreCheck;
 //class CDataStore;
 //class CDeviceControl;
 
@@ -44,16 +45,17 @@ public:
 
     enum
     {
-        START = 0,
-        INIT,
-        READY,
-        STOP,
-        IDDLE,
+        DATABASE_CHECK_TASK_READY_CHECK = NEXT_STEP,
+        DATABASE_CHECK_TASK_READY_WAITING,
+        DATABASE_CHECK_BEGIN,
+        DATABASE_CHECK_END_WAITING,
+        DATABASE_CHECK_RECAVERY_END_WAITING,
+        DATABASE_CHECK_END_OK,
+        DATABASE_CHECK_END_ERROR,
 
         MAIN_CYCLE_MODBUS_SLAVE,
         LED_BLINK_ON,
         LED_BLINK_OFF,
-
     };
 
     CMainProductionCycle();
@@ -71,6 +73,7 @@ public:
 
     uint8_t CreateTasks(void);
     uint8_t InitTasks(void);
+    void CurrentlyRunningTasksExecution(void);
     uint8_t Fsm(void);
 
 private:
@@ -81,7 +84,8 @@ private:
 
     CResources m_xResources;
 //    CDeviceControl m_xDeviceControl;
-//    CDataStore m_xDataStore;
+    CDataStore* m_pxDataStoreFileSystem;
+    CDataStoreCheck* m_pxDataStoreCheck;
 
     CSpi* m_pxSpiCommunicationDevice;
     CInternalModuleInterface* m_pxInternalModule;
@@ -130,13 +134,7 @@ public:
 
     enum
     {
-        START = 0,
-        INIT,
-        READY,
-        STOP,
-        IDDLE,
-
-        LED_ON,
+        LED_ON = NEXT_STEP,
         LED_ON_PERIOD_END_WAITING,
         LED_OFF,
         LED_OFF_PERIOD_END_WAITING,

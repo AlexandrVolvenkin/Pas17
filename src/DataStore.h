@@ -54,13 +54,7 @@ public:
 
     enum
     {
-        START = 0,
-        INIT,
-        READY,
-        STOP,
-        IDDLE,
-
-        START_WRITE_BLOCK_DATA,
+        START_WRITE_BLOCK_DATA = NEXT_STEP,
         READY_TO_WRITE_WAITING_BLOCK_DATA,
         WRITE_END_WAITING_BLOCK_DATA,
 

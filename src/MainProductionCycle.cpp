@@ -13,7 +13,6 @@
 #include "Platform.h"
 #include "CommunicationDevice.h"
 #include "SerialPortCommunicationDevice.h"
-#include "MainProductionCycle.h"
 #include "Resources.h"
 #include "TaskManager.h"
 #include "ServiceMarket.h"
@@ -28,6 +27,7 @@
 #include "ModbusTcpSlaveLinkLayer.h"
 
 #include "EVE_HAL.h"
+#include "MainProductionCycle.h"
 
 //class CMainThreadProduction;
 
@@ -64,6 +64,7 @@ CMainProductionCycle::CMainProductionCycle()
     sprintf(m_acTaskName,
             "%s",
             typeid(*this).name());
+    SetResources(&m_xResources);
     SetFsmState(START);
 }
 
@@ -99,6 +100,7 @@ uint8_t CMainProductionCycle::CreateTasks(void)
 {
     std::cout << "CMainProductionCycle CreateTasks"  << std::endl;
 
+    m_pxSpiCommunicationDevice = new CSpi();
 //-------------------------------------------------------------------------------
     CStorageDeviceFileSystem* pxStorageDeviceFileSystem = new CStorageDeviceFileSystem();
     m_xResources.AddCommonTaskToMap("StorageDeviceFileSystem",
@@ -115,6 +117,7 @@ uint8_t CMainProductionCycle::CreateTasks(void)
     pxDataStoreFileSystem ->
     SetStorageDeviceName("StorageDeviceFileSystem");
     m_xResources.AddCurrentlyRunningTasksList(pxDataStoreFileSystem);
+    m_pxDataStoreFileSystem = pxDataStoreFileSystem;
 
     CDataStoreCheck* pxDataStoreCheck = new CDataStoreCheck();
     m_xResources.AddCommonTaskToMap("DataStoreCheck",
@@ -124,6 +127,7 @@ uint8_t CMainProductionCycle::CreateTasks(void)
     pxDataStoreCheck ->
     SetDataStoreName("DataStoreFileSystem");
     m_xResources.AddCurrentlyRunningTasksList(pxDataStoreCheck);
+    m_pxDataStoreCheck = pxDataStoreCheck;
 
 
 ////-------------------------------------------------------------------------------
@@ -161,12 +165,12 @@ uint8_t CMainProductionCycle::InitTasks(void)
     std::cout << "CMainProductionCycle Init"  << std::endl;
 
 
-//    CGpio::Init();
-//    cout << "CGpio::Init" << endl;
-////	CPlatform::LedInitialization();
-////	cout << "CPlatform::LedInitialization" << endl;
-//    m_pxSpiCommunicationDevice -> Init();
-//    cout << "m_pxSpiCommunicationDevice -> Open" << endl;
+    CGpio::Init();
+    cout << "CGpio::Init" << endl;
+//	CPlatform::LedInitialization();
+//	cout << "CPlatform::LedInitialization" << endl;
+    m_pxSpiCommunicationDevice -> Init();
+    cout << "m_pxSpiCommunicationDevice -> Open" << endl;
 
 
 ////-------------------------------------------------------------------------------
@@ -213,12 +217,48 @@ uint8_t CMainProductionCycle::InitTasks(void)
 }
 
 //-------------------------------------------------------------------------------
+void CMainProductionCycle::CurrentlyRunningTasksExecution(void)
+{
+//    std::cout << "CMainProductionCycle CurrentlyRunningTasksExecution"  << std::endl;
+
+//        std::list<CTaskInterface*>::iterator xListIterator;
+//
+//        for(xListIterator =
+//                    GetResources() -> m_lpxCurrentlyRunningTasksList.begin();
+//                xListIterator !=
+//                GetResources() -> m_lpxCurrentlyRunningTasksList.end();
+//                xListIterator++)
+//        {
+//            (*xListIterator) -> Fsm();
+//        }
+
+    for(GetResources() -> m_xCurrentlyRunningTasksListIterator =
+                GetResources() -> m_lpxCurrentlyRunningTasksList.begin();
+            GetResources() -> m_xCurrentlyRunningTasksListIterator !=
+            GetResources() -> m_lpxCurrentlyRunningTasksList.end();
+            GetResources() -> m_xCurrentlyRunningTasksListIterator++)
+    {
+        (*(GetResources() -> m_xCurrentlyRunningTasksListIterator)) -> Fsm();
+    }
+}
+
+//-------------------------------------------------------------------------------
 uint8_t CMainProductionCycle::Fsm(void)
 {
 //        std::cout << "CMainProductionCycle::Fsm 1"  << std::endl;
 
     switch (GetFsmState())
     {
+    case IDDLE:
+        //std::cout << "CMainProductionCycle::Fsm IDDLE"  << std::endl;
+        usleep(1000);
+        break;
+
+    case STOP:
+//        //std::cout << "CMainProductionCycle::Fsm STOP"  << std::endl;
+//        SetFsmState(START);
+        break;
+
     case START:
         std::cout << "CMainProductionCycle::Fsm START"  << std::endl;
         std::cout << "m_acTaskName " << m_acTaskName << std::endl;
@@ -252,56 +292,157 @@ uint8_t CMainProductionCycle::Fsm(void)
         std::cout << "CMainProductionCycle::Fsm INIT"  << std::endl;
         InitTasks();
         SetFsmState(READY);
-
-//        if (GetTimerPointer() -> IsOverflow())
-//        {
-//            SetFsmState(STOP);
-//        }
         break;
 
     case READY:
-        //std::cout << "CMainProductionCycle::Fsm READY"  << std::endl;
-        SetFsmState(MAIN_CYCLE_MODBUS_SLAVE);
+        std::cout << "CMainProductionCycle::Fsm READY"  << std::endl;
+        SetFsmState(DATABASE_CHECK_TASK_READY_CHECK);
         break;
 
-    case IDDLE:
-        //std::cout << "CMainProductionCycle::Fsm IDDLE"  << std::endl;
-        usleep(1000);
+    case DATABASE_CHECK_TASK_READY_CHECK:
+//        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_TASK_READY_CHECK"  << std::endl;
+        CurrentlyRunningTasksExecution();
+
+        if ((m_pxDataStoreCheck -> GetFsmState()) == READY)
+        {
+            SetFsmState(DATABASE_CHECK_BEGIN);
+            std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_TASK_READY_CHECK 1"  << std::endl;
+        }
+        else
+        {
+            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
+            SetFsmState(DATABASE_CHECK_TASK_READY_WAITING);
+            std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_TASK_READY_CHECK 2"  << std::endl;
+        }
         break;
 
-    case STOP:
-//        //std::cout << "CMainProductionCycle::Fsm STOP"  << std::endl;
-//        SetFsmState(START);
+    case DATABASE_CHECK_TASK_READY_WAITING:
+//        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_TASK_READY_WAITING"  << std::endl;
+        CurrentlyRunningTasksExecution();
+
+        if ((m_pxDataStoreCheck -> GetFsmState()) == READY)
+        {
+            SetFsmState(DATABASE_CHECK_BEGIN);
+            std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_TASK_READY_WAITING 1"  << std::endl;
+        }
+        else
+        {
+            if (GetTimerPointer() -> IsOverflow())
+            {
+                SetFsmState(STOP);
+            std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_TASK_READY_WAITING 2"  << std::endl;
+            }
+        }
+        break;
+
+    case DATABASE_CHECK_BEGIN:
+        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_BEGIN"  << std::endl;
+        CurrentlyRunningTasksExecution();
+//        m_pxDataStoreCheck -> Check();
+        GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
+        SetFsmState(DATABASE_CHECK_END_WAITING);
+
+            m_pxDataStoreFileSystem -> CreateServiceSection();
+            m_pxDataStoreFileSystem -> WriteBlock(auiTempBlock, sizeof(auiTempBlock), 0);
+//        if (!(m_pxDataStoreCheck -> Check()))
+//        {
+//            cout << "DataStore check error" << endl;
+//            cout << "CreateServiceSection" << endl;
+//            m_pxDataStoreFileSystem -> CreateServiceSection();
+//
+//            m_pxDataStoreFileSystem -> WriteBlock(auiTempBlock, sizeof(auiTempBlock), 0);
+//            do
+//            {
+//                m_pxDataStoreFileSystem -> Fsm();
+//            }
+//            while (m_pxDataStoreFileSystem -> GetFsmState() != READY);
+//
+//
+//            cout << "DataStore initialized ok" << endl;
+//        }
+//        else
+//        {
+//            cout << "DataStore check ok" << endl;
+//        }
+//        usleep(1000);
+        break;
+
+    case DATABASE_CHECK_END_WAITING:
+//        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_END_WAITING"  << std::endl;
+        CurrentlyRunningTasksExecution();
+
+//        if ((m_pxDataStoreCheck -> GetFsmState()) == CDataStoreCheck::DATA_STORE_CHECK_ERROR)
+//        {
+//        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_END_WAITING 1"  << std::endl;
+//            m_pxDataStoreFileSystem -> CreateServiceSection();
+//            m_pxDataStoreFileSystem -> WriteBlock(auiTempBlock, sizeof(auiTempBlock), 0);
+//            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
+//            SetFsmState(DATABASE_CHECK_RECAVERY_END_WAITING);
+////            std::cout << "CDataStore::Fsm DATABASE_CHECK_END_ERROR"  << std::endl;
+//        }
+//        else if (((m_pxDataStoreCheck -> GetFsmState()) == CDataStoreCheck::DATA_STORE_NEW_VERSION_ACCEPTED) ||
+//                 ((m_pxDataStoreCheck -> GetFsmState()) == CDataStoreCheck::DATA_STORE_OLD_VERSION_ACCEPTED) ||
+//                 ((m_pxDataStoreCheck -> GetFsmState()) == CDataStoreCheck::DATA_STORE_CHECK_OK))
+//        {
+//        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_END_WAITING 2"  << std::endl;
+//            SetFsmState(DATABASE_CHECK_END_OK);
+////            std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_END_OK"  << std::endl;
+//        }
+//        else
+//        {
+//            if (GetTimerPointer() -> IsOverflow())
+//            {
+//                SetFsmState(STOP);
+////                std::cout << "CMainProductionCycle::Fsm STOP"  << std::endl;
+//        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_END_WAITING 3"  << std::endl;
+//            }
+//        }
+        break;
+
+    case DATABASE_CHECK_RECAVERY_END_WAITING:
+        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_RECAVERY_END_WAITING"  << std::endl;
+        CurrentlyRunningTasksExecution();
+
+        if ((m_pxDataStoreCheck -> GetFsmState()) == CDataStoreCheck::DATA_STORE_CHECK_ERROR)
+        {
+            SetFsmState(DATABASE_CHECK_END_ERROR);
+        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_RECAVERY_END_WAITING 1"  << std::endl;
+        }
+        else if (((m_pxDataStoreCheck -> GetFsmState()) == CDataStoreCheck::DATA_STORE_NEW_VERSION_ACCEPTED) ||
+                 ((m_pxDataStoreCheck -> GetFsmState()) == CDataStoreCheck::DATA_STORE_OLD_VERSION_ACCEPTED) ||
+                 ((m_pxDataStoreCheck -> GetFsmState()) == CDataStoreCheck::DATA_STORE_CHECK_OK))
+        {
+            SetFsmState(DATABASE_CHECK_END_OK);
+        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_RECAVERY_END_WAITING 2"  << std::endl;
+        }
+        else
+        {
+            if (GetTimerPointer() -> IsOverflow())
+            {
+                SetFsmState(DATABASE_CHECK_END_ERROR);
+        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_RECAVERY_END_WAITING 3"  << std::endl;
+            }
+        }
+        break;
+
+    case DATABASE_CHECK_END_OK:
+//        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_END_OK"  << std::endl;
+        CurrentlyRunningTasksExecution();
+        break;
+
+    case DATABASE_CHECK_END_ERROR:
+//        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_END_ERROR"  << std::endl;
+        CurrentlyRunningTasksExecution();
         break;
 
     case MAIN_CYCLE_MODBUS_SLAVE:
-        //std::cout << "CMainProductionCycle::Fsm IDDLE"  << std::endl;
+//        std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_MODBUS_SLAVE"  << std::endl;
 //        m_pxModbusTcpSlaveUpperLevel -> Fsm();
 //        m_pxModbusRtuSlaveUpperLevel -> Fsm();
-    {
-//        std::list<CTaskInterface*>::iterator xListIterator;
-//
-//        for(xListIterator =
-//                    GetResources() -> m_lpxCurrentlyRunningTasksList.begin();
-//                xListIterator !=
-//                GetResources() -> m_lpxCurrentlyRunningTasksList.end();
-//                xListIterator++)
-//        {
-//            (*xListIterator) -> Fsm();
-//        }
+        CurrentlyRunningTasksExecution();
 
-        for(GetResources() -> m_xCurrentlyRunningTasksListIterator =
-                    GetResources() -> m_lpxCurrentlyRunningTasksList.begin();
-                GetResources() -> m_xCurrentlyRunningTasksListIterator !=
-                GetResources() -> m_lpxCurrentlyRunningTasksList.end();
-                GetResources() -> m_xCurrentlyRunningTasksListIterator++)
-        {
-            (*(GetResources() -> m_xCurrentlyRunningTasksListIterator)) -> Fsm();
-        }
-    }
-
-    usleep(1000);
-    break;
+        usleep(1000);
+        break;
 
     case LED_BLINK_ON:
 //        //std::cout << "CMainProductionCycle::Fsm LED_BLINK_ON"  << std::endl;

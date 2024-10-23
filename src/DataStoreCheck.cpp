@@ -27,7 +27,7 @@ CDataStoreCheck::CDataStoreCheck()
             "%s",
             typeid(*this).name());
     m_pxDataStore = 0;
-    SetFsmState(IDDLE);
+    SetFsmState(START);
 }
 
 //-------------------------------------------------------------------------------
@@ -63,35 +63,74 @@ uint8_t CDataStoreCheck::Check(void)
 {
     // Запустим процесс проверки и восстановления хранилища.
     SetFsmState(DATA_STORE_CHECK_START);
+    //    if (GetFsmState() == READY)
+//    {
+//        SetFsmState(DATA_STORE_CHECK_START);
+//    }
+//    else
+//    {
+//        m_uiFsmNextState = DATA_STORE_CHECK_START;
+//    }
 }
 
 //-------------------------------------------------------------------------------
 uint8_t CDataStoreCheck::Fsm(void)
 {
+//        std::cout << "CDataStoreCheck::Fsm 1"  << std::endl;
     uint8_t auiTempArray[CDataStore::MAX_BLOCK_LENGTH];
 
     switch (GetFsmState())
     {
     case IDDLE:
+//        std::cout << "CDataStoreCheck::Fsm IDDLE"  << std::endl;
+        break;
+
+    case STOP:
+//        std::cout << "CDataStoreCheck::Fsm STOP"  << std::endl;
         break;
 
     case START:
         std::cout << "CDataStoreCheck::Fsm START"  << std::endl;
         std::cout << "CDataStoreCheck::Fsm m_sDataStoreName" << " " << (m_sDataStoreName) << std::endl;
-        SetDataStore((CDataStore*)
-                         (GetResources() ->
-                          GetCommonTaskFromMapPointer(m_sDataStoreName)));
-        SetFsmState(READY);
+        GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
+        SetFsmState(INIT);
         break;
+
+    case INIT:
+//        std::cout << "CDataStoreCheck::Fsm INIT"  << std::endl;
+    {
+        CTaskInterface* pxTask =
+            GetResources() ->
+            GetCommonTaskFromMapPointer(m_sDataStoreName);
+
+        if (pxTask != 0)
+        {
+            if (pxTask -> GetFsmState() >= READY)
+            {
+                SetDataStore((CDataStore*)pxTask);
+                SetFsmState(READY);
+                std::cout << "CDataStoreCheck::Fsm READY"  << std::endl;
+            }
+        }
+        else
+        {
+            if (GetTimerPointer() -> IsOverflow())
+            {
+                SetFsmState(STOP);
+                std::cout << "CDataStoreCheck::Fsm STOP"  << std::endl;
+            }
+        }
+    }
+    break;
 
     case READY:
-        std::cout << "CDataStoreCheck::Fsm READY"  << std::endl;
+//        std::cout << "CDataStoreCheck::Fsm READY"  << std::endl;
+//        if (m_uiFsmNextState)
+//        {
+//            SetFsmState(m_uiFsmNextState);
+//            m_uiFsmNextState = 0;
+//        }
         break;
-
-    case STOP:
-        std::cout << "CDataStoreCheck::Fsm STOP"  << std::endl;
-        break;
-
 
 //-------------------------------------------------------------------------------
     case DATA_STORE_CHECK_START:
@@ -186,7 +225,7 @@ uint8_t CDataStoreCheck::Fsm(void)
         if (m_pxDataStore -> Fsm() ==
                 CDataStore::DATA_WRITED_SUCCESSFULLY)
         {
-            m_pxDataStore -> SetFsmState(CDataStore::IDDLE);
+            m_pxDataStore -> SetFsmState(CDataStore::READY);
             SetFsmState(DATA_STORE_CHECK_REPEAT);
         }
         // При записи блока произошла ошибка?
@@ -195,7 +234,7 @@ uint8_t CDataStoreCheck::Fsm(void)
         else if (m_pxDataStore -> Fsm() ==
                  CDataStore::WRITE_ERROR)
         {
-            m_pxDataStore -> SetFsmState(CDataStore::IDDLE);
+            m_pxDataStore -> SetFsmState(CDataStore::READY);
             SetFsmState(DATA_STORE_CHECK_REPEAT);
         }
         break;
@@ -219,7 +258,7 @@ uint8_t CDataStoreCheck::Fsm(void)
         if (m_pxDataStore -> Fsm() ==
                 CDataStore::DATA_WRITED_SUCCESSFULLY)
         {
-            m_pxDataStore -> SetFsmState(CDataStore::IDDLE);
+            m_pxDataStore -> SetFsmState(CDataStore::READY);
             // Служебный блок не повреждён?
             if (m_pxDataStore -> ReadServiceSection())
             {
@@ -236,7 +275,7 @@ uint8_t CDataStoreCheck::Fsm(void)
         else if (m_pxDataStore -> Fsm() ==
                  CDataStore::WRITE_ERROR)
         {
-            m_pxDataStore -> SetFsmState(CDataStore::IDDLE);
+            m_pxDataStore -> SetFsmState(CDataStore::READY);
             SetFsmState(DATA_STORE_CHECK_REPEAT);
         }
         break;
@@ -251,7 +290,11 @@ uint8_t CDataStoreCheck::Fsm(void)
         }
         else
         {
+            std::cout << "CDataStoreCheck::Fsm 1"  << std::endl;
+//            std::cout << "CreateServiceSection" << std::endl;
+//            m_pxDataStore -> CreateServiceSection();
             SetFsmState(DATA_STORE_CHECK_ERROR);
+//            SetFsmState(DATA_STORE_CHECK_START);
         }
         break;
 
@@ -298,20 +341,25 @@ uint8_t CDataStoreCheck::Fsm(void)
 
     case DATA_STORE_NEW_VERSION_ACCEPTED:
         // Хранилище обновлено.
-        cerr << "DATA_STORE_NEW_VERSION_ACCEPTED" << endl;
+//        cerr << "DATA_STORE_NEW_VERSION_ACCEPTED" << endl;
+//        SetFsmState(READY);
         break;
 
     case DATA_STORE_OLD_VERSION_ACCEPTED:
         // Хранилище не обновлено.
-        cerr << "DATA_STORE_OLD_VERSION_ACCEPTED" << endl;
+//        cerr << "DATA_STORE_OLD_VERSION_ACCEPTED" << endl;
+//        SetFsmState(READY);
         break;
 
     case DATA_STORE_CHECK_OK:
+//        cerr << "DATA_STORE_CHECK_OK" << endl;
+//        SetFsmState(READY);
         break;
 
     case DATA_STORE_CHECK_ERROR:
         // Хранилище повреждено.
-        cerr << "DATA_STORE_CHECK_ERROR" << endl;
+//        cerr << "DATA_STORE_CHECK_ERROR" << endl;
+//        SetFsmState(STOP);
         break;
 
     case DATA_STORE_CHECK_REPEAT:

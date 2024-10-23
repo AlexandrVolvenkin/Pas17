@@ -25,13 +25,7 @@ class CStorageDeviceInterface : public CTask//, public CDfa
 public:
     enum
     {
-        START = 0,
-        INIT,
-        READY,
-        STOP,
-        IDDLE,
-
-        WRITE_DATA_START,
+        WRITE_DATA_START = NEXT_STEP,
         WRITE_DATA_END,
         DATA_WRITED_SUCCESSFULLY,
         WRITE_DATA_ERROR,

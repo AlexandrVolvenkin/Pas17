@@ -34,15 +34,6 @@ enum
     MUVR_FSM_STATE_TRANSFER = 0x02,
 };
 
-enum
-{
-    MUVR_IDDLE = 0,
-    MUVR_CHANGE_PROTOCOL,
-    MUVR_WRITE_DATA_BASE,
-    MUVR_WRITE_DATA_BASE_CHECK,
-    MUVR_DATA_EXCHANGE,
-};
-
 #define MAX_MUVR_MODULES_QUANTITY 8
 #define MUVR_ANALOG_INPUT_QUANTITY 6
 // количество дискретных сигналов порождаемое одним аналоговым входом.
@@ -134,6 +125,15 @@ class CCommunicationDeviceInterface;
 class CInternalModuleMuvr : public CInternalModule
 {
 public:
+    enum
+    {
+        MUVR_IDDLE = NEXT_STEP,
+        MUVR_CHANGE_PROTOCOL,
+        MUVR_WRITE_DATA_BASE,
+        MUVR_WRITE_DATA_BASE_CHECK,
+        MUVR_DATA_EXCHANGE,
+    };
+
     CInternalModuleMuvr();
     CInternalModuleMuvr(uint8_t muiAddress);
     virtual ~CInternalModuleMuvr();

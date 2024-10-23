@@ -7,6 +7,10 @@
 //  email       : aav-36@mail.ru
 //  GitHub      : https://github.com/AlexandrVolvenkin
 //-------------------------------------------------------------------------------
+#include <iostream>
+#include <string.h>
+#include <typeinfo>
+
 #include "HammingCodes.h"
 #include "Crc.h"
 
@@ -118,6 +122,7 @@ uint8_t CHammingCodes::Recovery(uint16_t uiHammingData)
 // Вычисляет длину закодированных данных.
 uint16_t CHammingCodes::CalculateEncodedDataLength(uint16_t uiLength)
 {
+    std::cout << "CHammingCodes::CalculateEncodedDataLength uiLength " << (int)uiLength  << std::endl;
     // Длина нечётная?
     if (uiLength & 1)
     {
@@ -125,6 +130,8 @@ uint16_t CHammingCodes::CalculateEncodedDataLength(uint16_t uiLength)
         uiLength += 1;
     }
 
+    std::cout << "CHammingCodes::CalculateEncodedDataLength uiLength 2 " << (int)uiLength  << std::endl;
+    std::cout << "CHammingCodes::CalculateEncodedDataLength uiLength 3 " << (int)(uiLength + (uiLength / 2))  << std::endl;
     // uiLength * 1.5 (HammingCodes 8 + 4 на один байт приходится 12 закодированных бит).
     return (uiLength + (uiLength / 2));
 }

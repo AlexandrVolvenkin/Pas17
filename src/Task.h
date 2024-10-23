@@ -21,6 +21,15 @@ class CResources;
 class CTaskInterface : public CDfa
 {
 public:
+    enum
+    {
+        IDDLE = 0,
+        STOP,
+        START,
+        INIT,
+        READY,
+        NEXT_STEP,
+    };
 
     virtual char* GetTaskNamePointer(void) {};
     virtual void SetResources(CResources* pxResources) {};
@@ -40,15 +49,6 @@ public:
 class CTask : public CTaskInterface//, public CDfa
 {
 public:
-    enum
-    {
-        START = 0,
-        INIT,
-        READY,
-        STOP,
-        IDDLE,
-    };
-
     enum
     {
         TASK_NAME_LENGTH = 32,

@@ -51,7 +51,7 @@ uint16_t usCrc16(const unsigned char *puiSource, uint16_t uiLength)
 //        usCrc  ^= usCRCTable[ucTemp];
 //    }
 
-    for (uint8_t i = 0; i < uiLength; i++)
+    for (uint16_t i = 0; i < uiLength; i++)
     {
         uiTemp = *puiSource++ ^ usCrc;
         usCrc >>= 8;

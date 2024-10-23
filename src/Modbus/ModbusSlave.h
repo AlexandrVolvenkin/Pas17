@@ -34,13 +34,7 @@ class CModbusSlave : public CTask//, public CDfa
 public:
     enum
     {
-        START = 0,
-        INIT,
-        READY,
-        STOP,
-        IDDLE,
-
-        COMMUNICATION_START,
+        COMMUNICATION_START = NEXT_STEP,
         MESSAGE_RECEIVE_WAITING,
         REQUEST_PROCESSING,
         BEFORE_ANSWERING_WAITING,

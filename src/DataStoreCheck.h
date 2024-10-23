@@ -32,13 +32,7 @@ public:
 
     enum
     {
-        START = 0,
-        INIT,
-        READY,
-        STOP,
-        IDDLE,
-
-        DATA_STORE_CHECK_START,
+        DATA_STORE_CHECK_START = NEXT_STEP,
         TEMPORARY_SERVICE_SECTION_DATA_CHECK,
         TEMPORARY_SERVICE_SECTION_LINKED_BLOCKS_CHECK,
 

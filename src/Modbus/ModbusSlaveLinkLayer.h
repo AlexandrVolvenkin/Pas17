@@ -27,13 +27,7 @@ class CModbusSlaveLinkLayerInterface : public CTask//, public CDfa
 public:
     enum
     {
-        START = 0,
-        INIT,
-        READY,
-        STOP,
-        IDDLE,
-
-        COMMUNICATION_START,
+        COMMUNICATION_START = NEXT_STEP,
         COMMUNICATION_RECEIVE_START,
         COMMUNICATION_RECEIVE_CONTINUE,
         COMMUNICATION_RECEIVE_END,
