@@ -1,20 +1,20 @@
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 //  Source      : FileName.cpp
 //  Created     : 01.06.2022
 //  Author      : Alexandr Volvenkin
 //  email       : aav-36@mail.ru
 //  GitHub      : https://github.com/AlexandrVolvenkin
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 #include <iostream>
 #include <map>
 #include <string>
 #include <typeinfo>
 
 #include "Task.h"
-#include "Resources.h"
 #include "DeviceControl.h"
+#include "Resources.h"
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 CResources::CResources()
 {
     std::cout << "CResources constructor"  << std::endl;
@@ -35,7 +35,7 @@ CResources::CResources()
                               INPUT_REGISTERS_ARRAY_LENGTH);
 }
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 CResources::~CResources()
 {
     // Освобождаем память
@@ -62,106 +62,106 @@ void CResources::ModbusWorkingArraysCreate(uint16_t uiCoilsNumber,
     m_uiInputRegistersNumber = uiInputRegistersNumber;
 }
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 void CResources::SetCoils(uint8_t* puiPointer)
 {
     m_puiCoils = puiPointer;
 }
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 uint8_t* CResources::GetCoils(void)
 {
     return m_puiCoils;
 }
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 void CResources::SetCoilsNumber(uint16_t uiData)
 {
     m_uiCoilsNumber = uiData;
 }
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 uint16_t CResources::GetCoilsNumber(void)
 {
     return m_uiCoilsNumber;
 }
 
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 void CResources::SetDiscreteInputs(uint8_t* puiPointer)
 {
     m_puiDiscreteInputs = puiPointer;
 }
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 uint8_t* CResources::GetDiscreteInputs(void)
 {
     return m_puiDiscreteInputs;
 }
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 void CResources::SetDiscreteInputsNumber(uint16_t uiData)
 {
     m_uiDiscreteInputsNumber = uiData;
 }
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 uint16_t CResources::GetDiscreteInputsNumber(void)
 {
     return m_uiDiscreteInputsNumber;
 }
 
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 void CResources::SetHoldingRegisters(uint16_t* puiPointer)
 {
     m_puiHoldingRegisters = puiPointer;
 }
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 uint16_t* CResources::GetHoldingRegisters(void)
 {
     return m_puiHoldingRegisters;
 }
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 void CResources::SetHoldingRegistersNumber(uint16_t uiData)
 {
     m_uiHoldingRegistersNumber = uiData;
 }
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 uint16_t CResources::GetHoldingRegistersNumber(void)
 {
     return m_uiHoldingRegistersNumber;
 }
 
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 void CResources::SetInputRegisters(uint16_t* puiPointer)
 {
     m_puiInputRegisters = puiPointer;
 }
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 uint16_t* CResources::GetInputRegisters(void)
 {
     return m_puiInputRegisters;
 }
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 void CResources::SetInputRegistersNumber(uint16_t uiData)
 {
     m_uiInputRegistersNumber = uiData;
 }
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 uint16_t CResources::GetInputRegistersNumber(void)
 {
     return m_uiInputRegistersNumber;
 }
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 void CResources::AddCommonListTask(CTaskInterface* pxTask)
 {
     std::cout << "CResources::AddCommonListTask 1"  << std::endl;
@@ -172,7 +172,7 @@ void CResources::AddCommonListTask(CTaskInterface* pxTask)
     m_lpxCommonTasksList.push_back(pxTask);
 }
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 void CResources::AddCurrentlyRunningTasksList(CTaskInterface* pxTask)
 {
     std::cout << "CResources::AddCurrentlyRunningTasksList 1"  << std::endl;
@@ -183,7 +183,7 @@ void CResources::AddCurrentlyRunningTasksList(CTaskInterface* pxTask)
     m_lpxCurrentlyRunningTasksList.push_back(pxTask);
 }
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 CTaskInterface* CResources::GetCommonListTaskPointer(char* pcTaskName)
 {
     std::cout << "CResources::GetCommonListTaskPointer 1"  << std::endl;
@@ -215,7 +215,7 @@ CTaskInterface* CResources::GetCommonListTaskPointer(char* pcTaskName)
     return 0;
 }
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 void CResources::AddCommonTaskToMap(std::string sTaskName, CTaskInterface* pxTask)
 {
     std::cout << "CResources::AddCommonTaskToMap 1"  << std::endl;
@@ -228,7 +228,7 @@ void CResources::AddCommonTaskToMap(std::string sTaskName, CTaskInterface* pxTas
     m_mpxCommonTaskMap[sTaskName] = pxTask;
 }
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 CTaskInterface* CResources::GetCommonTaskFromMapPointer(std::string sTaskName)
 {
     std::cout << "CResources::GetCommonTaskFromMapPointer 1"  << std::endl;
@@ -287,7 +287,7 @@ CTaskInterface* CResources::GetCommonTaskFromMapPointer(std::string sTaskName)
 //    return 0;
 }
 
-//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 
 
 //#include <iostream>

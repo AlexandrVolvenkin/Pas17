@@ -1,40 +1,41 @@
+
 //-------------------------------------------------------------------------------
-//  Sourse      : FileName.cpp
+//  Source      : FileName.cpp
 //  Created     : 01.06.2022
 //  Author      : Alexandr Volvenkin
 //  email       : aav-36@mail.ru
 //  GitHub      : https://github.com/AlexandrVolvenkin
 //-------------------------------------------------------------------------------
-#include "Task.h"
-#include "Resources.h"
-#include "Platform.h"
-#include "DataStore.h"
-#include "ConfigurationCreate.h"
+#include <iostream>
 
-using namespace std;
+#include "DataContainer.h"
 
 //-------------------------------------------------------------------------------
-CConfigurationCreate::CConfigurationCreate()
+CDataContainerDataBase::CDataContainerDataBase()
 {
     //ctor
 }
 
 //-------------------------------------------------------------------------------
-CConfigurationCreate::~CConfigurationCreate()
+CDataContainerDataBase::~CDataContainerDataBase()
 {
     //dtor
 }
 
+//-------------------------------------------------------------------------------
+
+
+
+
+
 ////-------------------------------------------------------------------------------
-//void CConfigurationCreate::SetResources(CResources* pxResources)
+//CDataContainerDataBase::CDataContainerDataBase()
 //{
-//    m_pxResources = pxResources;
+//    //ctor
 //}
 //
 ////-------------------------------------------------------------------------------
-//CResources* CConfigurationCreate::GetResources(void)
+//CDataContainerDataBase::~CDataContainerDataBase()
 //{
-//    return m_pxResources;
+//    //dtor
 //}
-
-//-------------------------------------------------------------------------------

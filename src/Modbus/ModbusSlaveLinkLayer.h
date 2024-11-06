@@ -13,9 +13,9 @@
 
 //#include "Dfa.h"
 #include "Configuration.h"
-#include "Platform.h"
-#include "Timer.h"
 
+class CTimer;
+class CPlatform;
 class CTask;
 class CResources;
 class CCommunicationDeviceNew;

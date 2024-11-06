@@ -10,9 +10,11 @@
 #include <list>
 #include <string.h>
 
-//#include "Dfa.h"
-#include "Task.h"
+#include "Timer.h"
+#include "Dfa.h"
 #include "Resources.h"
+#include "DataContainer.h"
+#include "Task.h"
 
 //-------------------------------------------------------------------------------
 CTask::CTask()
@@ -34,6 +36,42 @@ CTask::~CTask()
 }
 
 //-------------------------------------------------------------------------------
+uint8_t CTask::Fsm(void)
+{
+
+}
+
+//-------------------------------------------------------------------------------
+uint8_t CTask::GetFsmState(void)
+{
+    return m_uiFsmState;
+}
+
+//-------------------------------------------------------------------------------
+void CTask::SetFsmState(uint8_t uiData)
+{
+    m_uiFsmState = uiData;
+}
+
+//-------------------------------------------------------------------------------
+CTimer* CTask::GetTimerPointer(void)
+{
+    return &m_xTimer;
+}
+
+//-------------------------------------------------------------------------------
+char* CTask::GetTaskNamePointer(void)
+{
+    return m_acTaskName;
+};
+
+//-------------------------------------------------------------------------------
+std::shared_ptr<TArgumentData> CTask::GetArgumentDataPointer(void)
+{
+    return m_pxArgumentData;
+};
+
+//-------------------------------------------------------------------------------
 void CTask::SetResources(CResources* pxResources)
 {
     m_pxResources = pxResources;
@@ -43,6 +81,12 @@ void CTask::SetResources(CResources* pxResources)
 CResources* CTask::GetResources(void)
 {
     return m_pxResources;
+}
+
+//-------------------------------------------------------------------------------
+void CTask::SetTaskCustomerName(std::string sName)
+{
+    m_sTaskCustomerName = sName;
 }
 
 ////-------------------------------------------------------------------------------

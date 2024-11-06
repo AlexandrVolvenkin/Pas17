@@ -11,12 +11,13 @@
 #include <typeinfo>
 
 
+#include "Platform.h"
 #include "Task.h"
 #include "Resources.h"
 #include "CommunicationDevice.h"
-#include "ModbusSlaveLinkLayer.h"
 #include "ModbusRtuSlaveLinkLayer.h"
 #include <Crc.h>
+#include "ModbusSlaveLinkLayer.h"
 
 using namespace std;
 

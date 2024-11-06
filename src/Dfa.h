@@ -9,70 +9,65 @@
 #define CDFA_H
 
 #include <stdint.h>
-#include "Timer.h"
+
+//#include "Timer.h"
+//class CTimer;
 
 //-------------------------------------------------------------------------------
-class CDfaLite
-{
-public:
-    CDfaLite();
-    virtual ~CDfaLite();
-    virtual uint8_t Fsm(void) {};
-    virtual uint8_t GetFsmState(void)
-    {
-        return m_uiFsmState;
-    };
-
-//protected:
-    virtual void SetFsmState(uint8_t uiData)
-    {
-        m_uiFsmState = uiData;
-    };
-
-    uint8_t m_uiFsmState;
-//    uint8_t m_uiFsmNextState;
-};
-
-//-------------------------------------------------------------------------------
-
-
-
-
-
-//-------------------------------------------------------------------------------
-class CDfa : public CDfaLite
+class CDfa
 {
 public:
     CDfa();
     virtual ~CDfa();
-//    uint8_t GetSavedFsmState(void)
-//    {
-//        return m_uiSavedFsmState;
-//    };
-//
-//    uint8_t GetFsmEvent(void)
-//    {
-//        return m_uiFsmEvent;
-//    };
-//
-////protected:
-//    void SetSavedFsmState(uint8_t uiData)
-//    {
-//        m_uiSavedFsmState = uiData;
-//    };
-//    void SetFsmEvent(uint8_t uiData)
-//    {
-//        m_uiFsmEvent = uiData;
-//    };
-    CTimer* GetTimerPointer(void)
-    {
-        return &m_xTimer;
-    };
+    uint8_t Fsm(void) {};
+    uint8_t GetFsmState(void) {};
+    void SetFsmState(uint8_t uiData) {};
+//    virtual CTimer* GetTimerPointer(void);
 
-//    uint8_t m_uiSavedFsmState;
-//    uint8_t m_uiFsmEvent;
-    CTimer m_xTimer;
+    uint8_t m_uiFsmState;
+//    uint8_t m_uiFsmNextState;
+    uint8_t m_uiFsmCommandState;
+    uint8_t m_uiFsmAnswerState;
+//    CTimer m_xTimer;
 };
+
+//-------------------------------------------------------------------------------
+
+
+
+
+
+////-------------------------------------------------------------------------------
+//class CDfa : public CDfaLite
+//{
+//public:
+//    CDfa();
+//    virtual ~CDfa();
+////    uint8_t GetSavedFsmState(void)
+////    {
+////        return m_uiSavedFsmState;
+////    };
+////
+////    uint8_t GetFsmEvent(void)
+////    {
+////        return m_uiFsmEvent;
+////    };
+////
+//////protected:
+////    void SetSavedFsmState(uint8_t uiData)
+////    {
+////        m_uiSavedFsmState = uiData;
+////    };
+////    void SetFsmEvent(uint8_t uiData)
+////    {
+////        m_uiFsmEvent = uiData;
+////    };
+//    virtual CTimer* GetTimerPointer(void);
+//
+////    uint8_t m_uiSavedFsmState;
+////    uint8_t m_uiFsmEvent;
+//    CTimer m_xTimer;
+//};
 
 
 //-------------------------------------------------------------------------------

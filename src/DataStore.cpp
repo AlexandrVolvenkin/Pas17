@@ -9,44 +9,46 @@
 #include <iostream>
 #include <string.h>
 #include <typeinfo>
+#include <memory>
 
 #include "Task.h"
 #include "Resources.h"
 #include "StorageDevice.h"
-#include "DataStore.h"
 #include "Crc.h"
 #include "HammingCodes.h"
+#include "DataContainer.h"
+#include "DataStore.h"
 
 
-// (sizeof(struct TAnalogueInputDescriptionDataBase) * ANALOG_MODULE_INPUT_QUANTITY)// 28х6=168.
+// (sizeof(struct TAnalogueInputDescriptionDataBase) * ANALOG_MODULE_INPUT_QUANTITY)// 28С…6=168.
 #define ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_LENGTH 168
-// (sizeof(struct TMrXXOneChannelDataBase) * DISCRETE_OUTPUT_MODULE_RELAY_OUTPUT_QUANTITY)// 3х64=192.
+// (sizeof(struct TMrXXOneChannelDataBase) * DISCRETE_OUTPUT_MODULE_RELAY_OUTPUT_QUANTITY)// 3С…64=192.
 #define DISCRETE_OUTPUT_MODULE_DATA_BASE_BLOCK_LENGTH 192
-// (sizeof(struct TMbmFunction1234PackOne) * EXTERNAL_MODULE_FUNCTION_1234_QUANTITY) + 1// 13х16=208.
+// (sizeof(struct TMbmFunction1234PackOne) * EXTERNAL_MODULE_FUNCTION_1234_QUANTITY) + 1// 13С…16=208.
 #define MBM_FUNCTION_1234_BLOCK_DATA_BASE_BLOCK_LENGTH (208 + 1)
-// (sizeof(struct TMbmFunction15Sourse) * EXTERNAL_MODULE_FUNCTION_15_QUANTITY)// 72х3=216.
+// (sizeof(struct TMbmFunction15Sourse) * EXTERNAL_MODULE_FUNCTION_15_QUANTITY)// 72С…3=216.
 #define MBM_FUNCTION_15_BLOCK_DATA_BASE_BLOCK_LENGTH 216
-// (sizeof(struct TDiscreteInputDescriptionWork) * DISCRETE_INPUT_SYGNALS_DATA_BASE_BLOCKS_IN_BLOCK_QUANTITY)// 11х18=198.
+// (sizeof(struct TDiscreteInputDescriptionWork) * DISCRETE_INPUT_SYGNALS_DATA_BASE_BLOCKS_IN_BLOCK_QUANTITY)// 11С…18=198.
 #define DISCRETE_INPUT_SYGNALS_DATA_BASE_BLOCK_LENGTH 192
-// (sizeof(struct TAnalogueOutputRegulatorDescriptionDataBase) * ANALOG_OUTPUT_MODULE_REGULATORS_QUANTITY)// 28х6=168.
+// (sizeof(struct TAnalogueOutputRegulatorDescriptionDataBase) * ANALOG_OUTPUT_MODULE_REGULATORS_QUANTITY)// 28С…6=168.
 #define CURRENT_OUTPUT_MODULE_REGULATOR_DATA_BASE_BLOCK_LENGTH 56
 #define CURRENT_OUTPUT_MODULE_PSP_DATA_BASE_BLOCK_LENGTH 56
-// DIMENSIONS_PARAMETERS_DATA_BLOCKS_IN_BLOCK_QUANTITY * 6// 6х16=96.
+// DIMENSIONS_PARAMETERS_DATA_BLOCKS_IN_BLOCK_QUANTITY * 6// 6С…16=96.
 #define DIMENSIONS_PARAMETERS_DATA_BASE_BLOCK_LENGTH 96
-// TEXT_TITLES_DATA_BASE_BLOCKS_IN_BLOCK_QUANTITY * TEXT_TITLES_DATA_LENGTH// (384 ТР, 24 блока).
+// TEXT_TITLES_DATA_BASE_BLOCKS_IN_BLOCK_QUANTITY * TEXT_TITLES_DATA_LENGTH// (384 РўР , 24 Р±Р»РѕРєР°).
 #define TEXT_TITLES_DATA_BASE_BLOCK_LENGTH 224
-// (sizeof(struct TFunctionBlockDescriptionWork) * FUNCTION_BLOCK_DATA_BASE_BLOCKS_IN_BLOCK_QUANTITY)// 19х10=190.
-#define FUNCTION_BLOCK_DATA_BASE_BLOCK_LENGTH 160// 19х10=190 (120 ФБЛ, 12 блоков)
-#define MATHEMATICAL_BLOCK_DATA_BASE_BLOCK_LENGTH 208// 82 – 84 (48 ФБМ, 3 блока 13*16=208 )
-#define DISCRETE_INPUT_MODULE_DATA_BASE_BLOCK_LENGTH 32// 2х16=32.
+// (sizeof(struct TFunctionBlockDescriptionWork) * FUNCTION_BLOCK_DATA_BASE_BLOCKS_IN_BLOCK_QUANTITY)// 19С…10=190.
+#define FUNCTION_BLOCK_DATA_BASE_BLOCK_LENGTH 160// 19С…10=190 (120 Р¤Р‘Р›, 12 Р±Р»РѕРєРѕРІ)
+#define MATHEMATICAL_BLOCK_DATA_BASE_BLOCK_LENGTH 208// 82 вЂ“ 84 (48 Р¤Р‘Рњ, 3 Р±Р»РѕРєР° 13*16=208 )
+#define DISCRETE_INPUT_MODULE_DATA_BASE_BLOCK_LENGTH 32// 2С…16=32.
 #define NETWORK_ADDRESS_DATA_BASE_BLOCK_LENGTH 1
 #define RESERVED_DATA_BASE_BLOCK_LENGTH 1
 #define REFERENCE_POINTS_ADC_CODES_DATA_BASE_BLOCK_LENGTH 42
 
-// массив содержит размеры блоков базы данных.
-// массив базы данных состоит из 100 блоков по 256 байт.
-// когда программатор запрашивает нужный ему блок, (в функции - modbus_reply() - case _FC_DATA_BASE_READ:),
-// из этого массива, по номеру, программатору выдаётся размер блока.
+// РјР°СЃСЃРёРІ СЃРѕРґРµСЂР¶РёС‚ СЂР°Р·РјРµСЂС‹ Р±Р»РѕРєРѕРІ Р±Р°Р·С‹ РґР°РЅРЅС‹С….
+// РјР°СЃСЃРёРІ Р±Р°Р·С‹ РґР°РЅРЅС‹С… СЃРѕСЃС‚РѕРёС‚ РёР· 100 Р±Р»РѕРєРѕРІ РїРѕ 256 Р±Р°Р№С‚.
+// РєРѕРіРґР° РїСЂРѕРіСЂР°РјРјР°С‚РѕСЂ Р·Р°РїСЂР°С€РёРІР°РµС‚ РЅСѓР¶РЅС‹Р№ РµРјСѓ Р±Р»РѕРє, (РІ С„СѓРЅРєС†РёРё - modbus_reply() - case _FC_DATA_BASE_READ:),
+// РёР· СЌС‚РѕРіРѕ РјР°СЃСЃРёРІР°, РїРѕ РЅРѕРјРµСЂСѓ, РїСЂРѕРіСЂР°РјРјР°С‚РѕСЂСѓ РІС‹РґР°С‘С‚СЃСЏ СЂР°Р·РјРµСЂ Р±Р»РѕРєР°.
 const unsigned char aucDataBaseBlockLength[CDataStore::MAX_BLOCKS_NUMBER] =
 {
     RESERVED_DATA_BASE_BLOCK_LENGTH,
@@ -181,12 +183,13 @@ const unsigned char aucDataBaseBlockLength[CDataStore::MAX_BLOCKS_NUMBER] =
 CDataStore::CDataStore()
 {
     std::cout << "CDataStore constructor"  << std::endl;
-    // получим имя класса.
+    // РїРѕР»СѓС‡РёРј РёРјСЏ РєР»Р°СЃСЃР°.
     sprintf(GetTaskNamePointer(),
             "%s",
             typeid(*this).name());
     m_pxStorageDevice = 0;
-    m_puiIntermediateBuff = new uint8_t[25600];
+    m_puiIntermediateBuff = new uint8_t[CDataStore::MAX_SERVICE_SECTION_DATA_LENGTH];
+//    m_pxArgumentData = std::make_shared<TArgumentData>();// = new TArgumentData;
     SetFsmState(START);
 }
 
@@ -194,7 +197,7 @@ CDataStore::CDataStore()
 CDataStore::CDataStore(CStorageDeviceInterface* pxStorageDevice) :
     m_pxStorageDevice(pxStorageDevice)
 {
-    m_puiIntermediateBuff = new uint8_t[25600];
+    m_puiIntermediateBuff = new uint8_t[CDataStore::MAX_SERVICE_SECTION_DATA_LENGTH];
     SetFsmState(IDDLE);
 //    SetSavedFsmState(IDDLE);
 }
@@ -219,6 +222,24 @@ void CDataStore::SetStorageDevice(CStorageDeviceInterface* pxStorageDevice)
     m_pxStorageDevice = pxStorageDevice;
 }
 
+//-------------------------------------------------------------------------------
+void CDataStore::SetArgumentData(uint8_t *puiDataPointer,
+                                 uint16_t uiDataOffset,
+                                 uint16_t uiDataLength)
+{
+    GetArgumentDataPointer() -> m_uiDataPointer = puiDataPointer;
+    GetArgumentDataPointer() -> m_uiDataOffset = uiDataOffset;
+    GetArgumentDataPointer() -> m_uiDataLength = uiDataLength;
+}
+
+//-------------------------------------------------------------------------------
+void CDataStore::GetArgumentData(void)
+{
+//    m_puiBuffer = m_pxTaskCustomer -> GetArgumentDataPointer() -> m_uiDataPointer;
+//    m_uiOffset = m_pxTaskCustomer -> GetArgumentDataPointer() -> m_uiDataOffset;
+//    m_uiLength = m_pxTaskCustomer -> GetArgumentDataPointer() -> m_uiDataLength;
+}
+
 ////-------------------------------------------------------------------------------
 //void CDataStore::SetResources(CResources* pxResources)
 //{
@@ -237,119 +258,458 @@ void CDataStore::CreateServiceSection(void)
     std::cout << "CDataStore::CreateServiceSection 1"  << std::endl;
     SetFsmState(READY);
 
-    // Очистим служебный контекст.
+    // РћС‡РёСЃС‚РёРј СЃР»СѓР¶РµР±РЅС‹Р№ РєРѕРЅС‚РµРєСЃС‚.
     memset(reinterpret_cast<uint8_t*>(&m_xServiseSection.xServiseSectionData),
            0,
            sizeof(struct TServiseSectionData));
 
-    // Установим размер первичных данных.
+    // РЈСЃС‚Р°РЅРѕРІРёРј СЂР°Р·РјРµСЂ РїРµСЂРІРёС‡РЅС‹С… РґР°РЅРЅС‹С….
     m_xServiseSection.xServiseSectionData.uiLength = sizeof(struct TServiseSectionData);
-    // Количество байт служебного контекста
-    // должно быть известно заранее.
-    // Так как по нему извлекаются начальные данные.
-    // Используется самовосстанавливающийся код Хемминга(8,4).
-    // Коэффициент - 1.5: один байт преобразуется в кодовое слово 12 бит,
-    // из двух байт полезных данных получается три байта кодированных.
-    // Установим размер закодированных данных.
+    // РљРѕР»РёС‡РµСЃС‚РІРѕ Р±Р°Р№С‚ СЃР»СѓР¶РµР±РЅРѕРіРѕ РєРѕРЅС‚РµРєСЃС‚Р°
+    // РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ РёР·РІРµСЃС‚РЅРѕ Р·Р°СЂР°РЅРµРµ.
+    // РўР°Рє РєР°Рє РїРѕ РЅРµРјСѓ РёР·РІР»РµРєР°СЋС‚СЃСЏ РЅР°С‡Р°Р»СЊРЅС‹Рµ РґР°РЅРЅС‹Рµ.
+    // РСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ СЃР°РјРѕРІРѕСЃСЃС‚Р°РЅР°РІР»РёРІР°СЋС‰РёР№СЃСЏ РєРѕРґ РҐРµРјРјРёРЅРіР°(8,4).
+    // РљРѕСЌС„С„РёС†РёРµРЅС‚ - 1.5: РѕРґРёРЅ Р±Р°Р№С‚ РїСЂРµРѕР±СЂР°Р·СѓРµС‚СЃСЏ РІ РєРѕРґРѕРІРѕРµ СЃР»РѕРІРѕ 12 Р±РёС‚,
+    // РёР· РґРІСѓС… Р±Р°Р№С‚ РїРѕР»РµР·РЅС‹С… РґР°РЅРЅС‹С… РїРѕР»СѓС‡Р°РµС‚СЃСЏ С‚СЂРё Р±Р°Р№С‚Р° РєРѕРґРёСЂРѕРІР°РЅРЅС‹С….
+    // РЈСЃС‚Р°РЅРѕРІРёРј СЂР°Р·РјРµСЂ Р·Р°РєРѕРґРёСЂРѕРІР°РЅРЅС‹С… РґР°РЅРЅС‹С….
     m_xServiseSection.xServiseSectionData.uiEncodedLength =
         (CHammingCodes::CalculateEncodedDataLength(sizeof(struct TServiseSection)));
-    // Установим смещение на начало данных блоков.
+    // РЈСЃС‚Р°РЅРѕРІРёРј СЃРјРµС‰РµРЅРёРµ РЅР° РЅР°С‡Р°Р»Рѕ РґР°РЅРЅС‹С… Р±Р»РѕРєРѕРІ.
     m_xServiseSection.xServiseSectionData.uiFreeSpaceOffset =
         (SERVICE_SECTION_DATA_BEGIN +
          m_xServiseSection.xServiseSectionData.uiEncodedLength);
-    // Хранилище пусто.
+    // РҐСЂР°РЅРёР»РёС‰Рµ РїСѓСЃС‚Рѕ.
     m_xServiseSection.xServiseSectionData.uiStoredBlocksNumber = 0;
-    // Установим признак - хранилище не подписано.
+    // РЈСЃС‚Р°РЅРѕРІРёРј РїСЂРёР·РЅР°Рє - С…СЂР°РЅРёР»РёС‰Рµ РЅРµ РїРѕРґРїРёСЃР°РЅРѕ.
     m_xServiseSection.xServiseSectionData.uiCrcOfBlocksCrc = 0;
 }
 
 //-------------------------------------------------------------------------------
-// Готовит данные временного служебного блока к записи.
-// Кодирует по алгоритму Хемминга и
-// передаёт автомату записи устройства хранения.
+// Р“РѕС‚РѕРІРёС‚ РґР°РЅРЅС‹Рµ РІСЂРµРјРµРЅРЅРѕРіРѕ СЃР»СѓР¶РµР±РЅРѕРіРѕ Р±Р»РѕРєР° Рє Р·Р°РїРёСЃРё.
+// РљРѕРґРёСЂСѓРµС‚ РїРѕ Р°Р»РіРѕСЂРёС‚РјСѓ РҐРµРјРјРёРЅРіР° Рё
+// РїРµСЂРµРґР°С‘С‚ Р°РІС‚РѕРјР°С‚Сѓ Р·Р°РїРёСЃРё СѓСЃС‚СЂРѕР№СЃС‚РІР° С…СЂР°РЅРµРЅРёСЏ.
 uint8_t CDataStore::TemporaryServiceSectionWritePrepare(void)
 {
     std::cout << "CDataStore::TemporaryServiceSectionWritePrepare 1"  << std::endl;
-    // Вычислим контрольную сумму.
+    // Р’С‹С‡РёСЃР»РёРј РєРѕРЅС‚СЂРѕР»СЊРЅСѓСЋ СЃСѓРјРјСѓ.
     m_xServiseSection.uiCrc =
         usCrc16(reinterpret_cast<uint8_t*>(&m_xServiseSection.xServiseSectionData),
                 sizeof(struct TServiseSectionData));
 
     std::cout << "CDataStore::TemporaryServiceSectionWritePrepare 2"  << std::endl;
-    // Звкодируем данные алгоритмом Хемминга.
+    // Р—РІРєРѕРґРёСЂСѓРµРј РґР°РЅРЅС‹Рµ Р°Р»РіРѕСЂРёС‚РјРѕРј РҐРµРјРјРёРЅРіР°.
     uint16_t uiEncodedByteCounter =
         CHammingCodes::BytesToHammingCodes(m_puiIntermediateBuff,
                                            reinterpret_cast<uint8_t*>(&m_xServiseSection),
                                            sizeof(struct TServiseSection));
 
     std::cout << "CDataStore::TemporaryServiceSectionWritePrepare 3"  << std::endl;
-    if (m_pxStorageDevice -> WriteBlock(m_puiIntermediateBuff,
-                                        TEMPORARY_SERVICE_SECTION_DATA_BEGIN,
-                                        uiEncodedByteCounter))
-    {
-        std::cout << "CDataStore::TemporaryServiceSectionWritePrepare 4"  << std::endl;
-        return 1;
-    }
-    else
-    {
-        std::cout << "CDataStore::TemporaryServiceSectionWritePrepare 5"  << std::endl;
-        return 0;
-    }
+
+    SetArgumentData(m_puiIntermediateBuff,
+                    TEMPORARY_SERVICE_SECTION_DATA_BEGIN,
+                    uiEncodedByteCounter);
+
+    return 1;
+//    if (m_pxStorageDevice -> WriteBlock(m_puiIntermediateBuff,
+//                                        TEMPORARY_SERVICE_SECTION_DATA_BEGIN,
+//                                        uiEncodedByteCounter))
+//    {
+//        std::cout << "CDataStore::TemporaryServiceSectionWritePrepare 4"  << std::endl;
+//        return 1;
+//    }
+//    else
+//    {
+//        std::cout << "CDataStore::TemporaryServiceSectionWritePrepare 5"  << std::endl;
+//        return 0;
+//    }
 }
 
 //-------------------------------------------------------------------------------
-// Готовит данные служебного блока к записи.
-// Кодирует по алгоритму Хемминга и
-// передаёт автомату записи устройства хранения.
+// Р“РѕС‚РѕРІРёС‚ РґР°РЅРЅС‹Рµ СЃР»СѓР¶РµР±РЅРѕРіРѕ Р±Р»РѕРєР° Рє Р·Р°РїРёСЃРё.
+// РљРѕРґРёСЂСѓРµС‚ РїРѕ Р°Р»РіРѕСЂРёС‚РјСѓ РҐРµРјРјРёРЅРіР° Рё
+// РїРµСЂРµРґР°С‘С‚ Р°РІС‚РѕРјР°С‚Сѓ Р·Р°РїРёСЃРё СѓСЃС‚СЂРѕР№СЃС‚РІР° С…СЂР°РЅРµРЅРёСЏ.
 uint8_t CDataStore::ServiceSectionWritePrepare(void)
 {
-    // Вычислим контрольную сумму.
+    // Р’С‹С‡РёСЃР»РёРј РєРѕРЅС‚СЂРѕР»СЊРЅСѓСЋ СЃСѓРјРјСѓ.
     m_xServiseSection.uiCrc =
         usCrc16(reinterpret_cast<uint8_t*>(&m_xServiseSection.xServiseSectionData),
                 sizeof(struct TServiseSectionData));
 
-    // Звкодируем данные алгоритмом Хемминга.
+    // Р—РІРєРѕРґРёСЂСѓРµРј РґР°РЅРЅС‹Рµ Р°Р»РіРѕСЂРёС‚РјРѕРј РҐРµРјРјРёРЅРіР°.
     uint16_t uiEncodedByteCounter =
         CHammingCodes::BytesToHammingCodes(m_puiIntermediateBuff,
                                            reinterpret_cast<uint8_t*>(&m_xServiseSection),
                                            sizeof(struct TServiseSection));
 
-    if (m_pxStorageDevice -> WriteBlock(m_puiIntermediateBuff,
-                                        SERVICE_SECTION_DATA_BEGIN,
-                                        uiEncodedByteCounter))
-    {
-        return 1;
-    }
-    else
-    {
-        return 0;
-    }
+    SetArgumentData(m_puiIntermediateBuff,
+                    SERVICE_SECTION_DATA_BEGIN,
+                    uiEncodedByteCounter);
+
+    return 1;
+
+    //    if (m_pxStorageDevice -> WriteBlock(m_puiIntermediateBuff,
+//                                        SERVICE_SECTION_DATA_BEGIN,
+//                                        uiEncodedByteCounter))
+//    {
+//        return 1;
+//    }
+//    else
+//    {
+//        return 0;
+//    }
 }
 
 //-------------------------------------------------------------------------------
-// Считывает и проверяет целостность временного служебного блока.
+// Р“РѕС‚РѕРІРёС‚ РґР°РЅРЅС‹Рµ Р±Р»РѕРєР° Рє Р·Р°РїРёСЃРё РІРѕ РІСЂРµРјРµРЅРЅС‹Р№ Р±СѓС„РµСЂ.
+// РљРѕРґРёСЂСѓРµС‚ РїРѕ Р°Р»РіРѕСЂРёС‚РјСѓ РҐРµРјРјРёРЅРіР°, СЂР°Р·РјРµС‡Р°РµС‚ РјРµСЃС‚Рѕ РґР»СЏ С…СЂР°РЅРµРЅРёСЏ Рё
+// РїРµСЂРµРґР°С‘С‚ Р°РІС‚РѕРјР°С‚Сѓ Р·Р°РїРёСЃРё СѓСЃС‚СЂРѕР№СЃС‚РІР° С…СЂР°РЅРµРЅРёСЏ.
+uint8_t CDataStore::TemporaryBlockWritePrepare(void)
+{
+    std::cout << "CDataStore::TemporaryBlockWritePrepare 1"  << std::endl;
+    uint8_t uiBlock = m_uiBlockIndex;
+    uint8_t* puiSource = m_puiBlockDataPointer;
+    uint16_t uiLength = m_uiBlockLength;
+
+    // Р—РІРєРѕРґРёСЂСѓРµРј РґР°РЅРЅС‹Рµ Р°Р»РіРѕСЂРёС‚РјРѕРј РҐРµРјРјРёРЅРіР°.
+    uint16_t uiEncodedByteCounter =
+        CHammingCodes::BytesToHammingCodes(m_puiIntermediateBuff, puiSource, uiLength);
+
+    // Р”Р°РЅРЅС‹Рµ С‚РµРєСѓС‰РµРіРѕ Р±Р»РѕРєР° РґР°РЅРЅС‹С… - uiBlock СЃРѕС…СЂР°РЅСЏСЋС‚СЃСЏ РІРїРµСЂРІС‹Рµ?
+    if ((m_xServiseSection.xServiseSectionData.
+            axBlockPositionData[uiBlock].uiLength == 0) &&
+            (m_xServiseSection.xServiseSectionData.
+             axBlockPositionData[uiBlock].uiEncodedLength == 0))
+    {
+        std::cout << "CDataStore::TemporaryBlockWritePrepare 2"  << std::endl;
+        // Р”РѕР±Р°РІРёР»Рё РЅРѕРІС‹Р№ Р±Р»РѕРє РґР°РЅРЅС‹С….
+        // РЎРѕС…СЂР°РЅРёРј СЃРјРµС‰РµРЅРёРµ РЅР° Р±Р»РѕРє.
+        m_xServiseSection.xServiseSectionData.
+        axBlockPositionData[uiBlock].uiOffset = m_xServiseSection.xServiseSectionData.uiFreeSpaceOffset;
+        // РР·РјРµРЅРёРј СЃРјРµС‰РµРЅРёРµ РЅР° СЃРІРѕР±РѕРґРЅРѕРµ РјРµСЃС‚Рѕ.
+        m_xServiseSection.xServiseSectionData.uiFreeSpaceOffset += uiEncodedByteCounter;
+        // РЎРѕС…СЂР°РЅРёРј СЂР°Р·РјРµСЂ РїРµСЂРІРёС‡РЅС‹С… РґР°РЅРЅС‹С….
+        m_xServiseSection.xServiseSectionData.
+        axBlockPositionData[uiBlock].uiLength = uiLength;
+        // РЎРѕС…СЂР°РЅРёРј СЂР°Р·РјРµСЂ Р·Р°РєРѕРґРёСЂРѕРІР°РЅРЅС‹С… РґР°РЅРЅС‹С….
+        m_xServiseSection.xServiseSectionData.
+        axBlockPositionData[uiBlock].uiEncodedLength = uiEncodedByteCounter;
+        // РЈРІРµР»РёС‡РёРј РєРѕР»РёС‡РµСЃС‚РІРѕ Р±Р»РѕРєРѕРІ РЅР°С…РѕРґСЏС‰РёС…СЃСЏ РІ С…СЂР°РЅРёР»РёС‰Рµ.
+        m_xServiseSection.xServiseSectionData.uiStoredBlocksNumber += 1;
+    }
+
+    // Р’С‹С‡РёСЃР»РёРј РєРѕРЅС‚СЂРѕР»СЊРЅСѓСЋ СЃСѓРјРјСѓ РїРѕСЃС‚СѓРїРёРІС€РёС… РґР°РЅРЅС‹С….
+    m_xServiseSection.xServiseSectionData.
+    axBlockPositionData[uiBlock].uiCrc =
+        usCrc16(puiSource, uiLength);
+
+    SetArgumentData(m_puiIntermediateBuff,
+                    TEMPORARY_BLOCK_DATA_BEGIN,
+                    uiEncodedByteCounter);
+
+    return 1;
+    //    if (m_pxStorageDevice -> WriteBlock(m_puiIntermediateBuff,
+//                                        TEMPORARY_BLOCK_DATA_BEGIN,
+//                                        uiEncodedByteCounter))
+//    {
+//        std::cout << "CDataStore::TemporaryBlockWritePrepare 3"  << std::endl;
+//        return 1;
+//    }
+//    else
+//    {
+//        std::cout << "CDataStore::TemporaryBlockWritePrepare 4"  << std::endl;
+//        return 0;
+//    }
+}
+
+//-------------------------------------------------------------------------------
+// Р“РѕС‚РѕРІРёС‚ РґР°РЅРЅС‹Рµ Р±Р»РѕРєР° Рє Р·Р°РїРёСЃРё.
+// РљРѕРґРёСЂСѓРµС‚ РїРѕ Р°Р»РіРѕСЂРёС‚РјСѓ РҐРµРјРјРёРЅРіР°, СЂР°Р·РјРµС‡Р°РµС‚ РјРµСЃС‚Рѕ РґР»СЏ С…СЂР°РЅРµРЅРёСЏ Рё
+// РїРµСЂРµРґР°С‘С‚ Р°РІС‚РѕРјР°С‚Сѓ Р·Р°РїРёСЃРё СѓСЃС‚СЂРѕР№СЃС‚РІР° С…СЂР°РЅРµРЅРёСЏ.
+uint8_t CDataStore::BlockWritePrepare(void)
+{
+    uint8_t uiBlock = m_uiBlockIndex;
+    uint8_t* puiSource = m_puiBlockDataPointer;
+    uint16_t uiLength = m_uiBlockLength;
+
+    // Р—РІРєРѕРґРёСЂСѓРµРј РґР°РЅРЅС‹Рµ Р°Р»РіРѕСЂРёС‚РјРѕРј РҐРµРјРјРёРЅРіР°.
+    uint16_t uiEncodedByteCounter =
+        CHammingCodes::BytesToHammingCodes(m_puiIntermediateBuff, puiSource, uiLength);
+
+    // Р”Р°РЅРЅС‹Рµ С‚РµРєСѓС‰РµРіРѕ Р±Р»РѕРєР° РґР°РЅРЅС‹С… - uiBlock СЃРѕС…СЂР°РЅСЏСЋС‚СЃСЏ РІРїРµСЂРІС‹Рµ?
+    if ((m_xServiseSection.xServiseSectionData.
+            axBlockPositionData[uiBlock].uiLength == 0) &&
+            (m_xServiseSection.xServiseSectionData.
+             axBlockPositionData[uiBlock].uiEncodedLength == 0))
+    {
+        // Р”РѕР±Р°РІРёР»Рё РЅРѕРІС‹Р№ Р±Р»РѕРє РґР°РЅРЅС‹С….
+        // РЎРѕС…СЂР°РЅРёРј СЃРјРµС‰РµРЅРёРµ РЅР° Р±Р»РѕРє.
+        m_xServiseSection.xServiseSectionData.
+        axBlockPositionData[uiBlock].uiOffset = m_xServiseSection.xServiseSectionData.uiFreeSpaceOffset;
+        // РР·РјРµРЅРёРј СЃРјРµС‰РµРЅРёРµ РЅР° СЃРІРѕР±РѕРґРЅРѕРµ РјРµСЃС‚Рѕ.
+        m_xServiseSection.xServiseSectionData.uiFreeSpaceOffset += uiEncodedByteCounter;
+        // РЎРѕС…СЂР°РЅРёРј СЂР°Р·РјРµСЂ РїРµСЂРІРёС‡РЅС‹С… РґР°РЅРЅС‹С….
+        m_xServiseSection.xServiseSectionData.
+        axBlockPositionData[uiBlock].uiLength = uiLength;
+        // РЎРѕС…СЂР°РЅРёРј СЂР°Р·РјРµСЂ Р·Р°РєРѕРґРёСЂРѕРІР°РЅРЅС‹С… РґР°РЅРЅС‹С….
+        m_xServiseSection.xServiseSectionData.
+        axBlockPositionData[uiBlock].uiEncodedLength = uiEncodedByteCounter;
+//        // РЈРІРµР»РёС‡РёРј РєРѕР»РёС‡РµСЃС‚РІРѕ Р±Р»РѕРєРѕРІ РЅР°С…РѕРґСЏС‰РёС…СЃСЏ РІ С…СЂР°РЅРёР»РёС‰Рµ.
+//        m_xServiseSection.xServiseSectionData.uiStoredBlocksNumber += 1;
+    }
+
+    // Р’С‹С‡РёСЃР»РёРј РєРѕРЅС‚СЂРѕР»СЊРЅСѓСЋ СЃСѓРјРјСѓ РїРѕСЃС‚СѓРїРёРІС€РёС… РґР°РЅРЅС‹С….
+    m_xServiseSection.xServiseSectionData.
+    axBlockPositionData[uiBlock].uiCrc =
+        usCrc16(puiSource, uiLength);
+//    // РЎРѕС…СЂР°РЅРёРј РёРЅРґРµРєСЃ РїРѕСЃР»РµРґРЅРµРіРѕ Р·Р°РїРёСЃС‹РІР°РµРјРѕРіРѕ Р±Р»РѕРєР°.
+//    m_xServiseSection.xServiseSectionData.uiLastWritedBlockNumber = uiBlock;
+
+    SetArgumentData(m_puiIntermediateBuff,
+                    m_xServiseSection.xServiseSectionData.
+                    axBlockPositionData[uiBlock].uiOffset,
+                    uiEncodedByteCounter);
+
+    return 1;
+
+//    if (m_pxStorageDevice -> WriteBlock(m_puiIntermediateBuff,
+//                                        m_xServiseSection.xServiseSectionData.
+//                                        axBlockPositionData[uiBlock].uiOffset,
+//                                        uiEncodedByteCounter))
+//    {
+//        return 1;
+//    }
+//    else
+//    {
+//        return 0;
+//    }
+}
+
+//-------------------------------------------------------------------------------
+// Р—Р°РїРёСЃСЊ Р±Р»РѕРєР° РІ С…СЂР°РЅРёР»РёС‰Рµ РїСЂРѕС…РѕРґРёС‚ РїРѕСЌС‚Р°РїРЅРѕ.
+// 1 - CDataStore::WriteBlock(uint8_t *puiSource, uint16_t uiLength, uint8_t uiBlock).
+// 2 - CDataStore::BlockWritePrepare(void).
+// 3 - CStorageDevice::WriteBlock(uint16_t uiOffset, uint8_t *puiSource, uint16_t uiLength).
+
+// РџРµСЂРµРґР°С‘С‚ РґР°РЅРЅС‹Рµ РєРѕРЅС‚РµРєСЃС‚Р° Р·Р°РїРёСЃРё Р±Р»РѕРєР° Р°РІС‚РѕРјР°С‚Сѓ С…СЂР°РЅРёР»РёС‰Р° РґР°РЅРЅС‹С… Рё Р·Р°РїСѓСЃРєР°РµС‚ РїСЂРѕС†РµСЃСЃ Р·Р°РїРёСЃРё.
+uint8_t CDataStore::WriteBlock(uint8_t *puiSource, uint16_t uiLength, uint8_t uiBlock)
+{
+    std::cout << "CDataStore::WriteBlock 1"  << std::endl;
+    // РџСЂРѕРёР·РѕС€С‘Р» РІС‹С…РѕРґ Р·Р° РіСЂР°РЅРёС†С‹ Р±СѓС„РµСЂР°?
+    if (uiBlock >= (MAX_BLOCKS_NUMBER + SERVICE_SECTION_BLOCK_NUMBER))
+    {
+        // РќРµС‚ РґР°РЅРЅС‹С….
+        return 0;
+    }
+
+    // РџРѕР»СѓС‡РёРј РґР°РЅРЅС‹Рµ РєРѕРЅС‚РµРєСЃС‚Р° Р·Р°РїРёСЃРё Р±Р»РѕРєР°.
+    m_puiBlockDataPointer = puiSource;
+    m_uiBlockLength = uiLength;
+    m_uiBlockIndex = uiBlock;
+    return 1;
+
+//    // РџСЂРѕРёР·РѕС€С‘Р» РІС‹С…РѕРґ Р·Р° РіСЂР°РЅРёС†С‹ Р±СѓС„РµСЂР°?
+//    if (uiBlock >= (MAX_BLOCKS_NUMBER + SERVICE_SECTION_BLOCK_NUMBER))
+//    {
+//        // РќРµС‚ РґР°РЅРЅС‹С….
+//        return 0;
+//    }
+//
+//
+//    // Р±Р»РѕРє РЅРµ СЃР»СѓР¶РµР±РЅС‹Р№?
+//    if (uiBlock < MAX_BLOCKS_NUMBER)
+//    {
+//        // Р—РІРєРѕРґРёСЂСѓРµРј РґР°РЅРЅС‹Рµ Р°Р»РіРѕСЂРёС‚РјРѕРј РҐРµРјРјРёРЅРіР°.
+//        m_uiBlockEncodedLength =
+//            CHammingCodes::BytesToHammingCodes(m_puiIntermediateBuff,
+//                                               puiSource,
+//                                               uiLength);
+//        // Р‘Р»РѕРє СЃСѓС‰РµСЃС‚РІСѓРµС‚?
+//        if ((m_xServiseSection.xServiseSectionData.
+//                axBlockPositionData[uiBlock].uiLength != 0) &&
+//                (m_xServiseSection.xServiseSectionData.
+//                 axBlockPositionData[uiBlock].uiEncodedLength != 0))
+//        {
+//            // Р”РѕР±Р°РІРёР»Рё РЅРѕРІС‹Р№ Р±Р»РѕРє РґР°РЅРЅС‹С….
+//            // РЎРѕС…СЂР°РЅРёРј СЃРјРµС‰РµРЅРёРµ РЅР° Р±Р»РѕРє.
+//            m_xServiseSection.xServiseSectionData.
+//            axBlockPositionData[uiBlock].uiOffset = m_xServiseSection.xServiseSectionData.uiFreeSpaceOffset;
+//            // РР·РјРµРЅРёРј СЃРјРµС‰РµРЅРёРµ РЅР° СЃРІРѕР±РѕРґРЅРѕРµ РјРµСЃС‚Рѕ.
+//            m_xServiseSection.xServiseSectionData.uiFreeSpaceOffset += m_uiBlockEncodedLength;
+//            // РЎРѕС…СЂР°РЅРёРј СЂР°Р·РјРµСЂ РїРµСЂРІРёС‡РЅС‹С… РґР°РЅРЅС‹С….
+//            m_xServiseSection.xServiseSectionData.
+//            axBlockPositionData[uiBlock].uiLength = uiLength;
+//            // РЎРѕС…СЂР°РЅРёРј СЂР°Р·РјРµСЂ Р·Р°РєРѕРґРёСЂРѕРІР°РЅРЅС‹С… РґР°РЅРЅС‹С….
+//            m_xServiseSection.xServiseSectionData.
+//            axBlockPositionData[uiBlock].uiEncodedLength = m_uiBlockEncodedLength;
+//
+//            // РџРѕР»СѓС‡РёРј РёРЅРґРµРєСЃ Р±Р»РѕРєР°.
+//            m_uiBlockIndex = uiBlock;
+//            // РџРѕР»СѓС‡РёРј СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РґР°РЅРЅС‹Рµ Р±Р»РѕРєР°.
+//            m_puiBlockDataPointer = puiSource;
+//            m_uiBlockOffset = m_xServiseSection.xServiseSectionData.
+//                              axBlockPositionData[uiBlock].uiOffset;
+//            // РџРѕР»СѓС‡РёРј СЂР°Р·РјРµСЂ Р±Р»РѕРєР°.
+//            m_uiBlockLength = uiLength;
+//
+//            // Р’С‹С‡РёСЃР»РёРј РєРѕРЅС‚СЂРѕР»СЊРЅСѓСЋ СЃСѓРјРјСѓ РїРѕСЃС‚СѓРїРёРІС€РёС… РґР°РЅРЅС‹С….
+//            m_xServiseSection.xServiseSectionData.
+//            axBlockPositionData[uiBlock].uiCrc =
+//                usCrc16(puiSource, uiLength);
+//
+//            SetArgumentData(m_puiIntermediateBuff,
+//                            m_uiBlockOffset,
+//                            m_uiBlockEncodedLength);
+//            return 1;
+//        }
+//        else
+//        {
+//            // РќРµС‚ РґР°РЅРЅС‹С….
+//            return 0;
+//        }
+//    }
+//    else
+//    {
+//        switch (uiBlock)
+//        {
+//        case TEMPORARY_BLOCK_INDEX:
+//            // Р—РІРєРѕРґРёСЂСѓРµРј РґР°РЅРЅС‹Рµ Р°Р»РіРѕСЂРёС‚РјРѕРј РҐРµРјРјРёРЅРіР°.
+//            m_uiBlockEncodedLength =
+//                CHammingCodes::BytesToHammingCodes(m_puiIntermediateBuff,
+//                                                   puiSource,
+//                                                   uiLength);
+//
+//            // Р”Р°РЅРЅС‹Рµ С‚РµРєСѓС‰РµРіРѕ Р±Р»РѕРєР° РґР°РЅРЅС‹С… - uiBlock СЃРѕС…СЂР°РЅСЏСЋС‚СЃСЏ РІРїРµСЂРІС‹Рµ?
+//            if ((m_xServiseSection.xServiseSectionData.
+//                    axBlockPositionData[uiBlock].uiLength == 0) &&
+//                    (m_xServiseSection.xServiseSectionData.
+//                     axBlockPositionData[uiBlock].uiEncodedLength == 0))
+//            {
+//                std::cout << "CDataStore::WriteBlock 2"  << std::endl;
+//                // Р”РѕР±Р°РІРёР»Рё РЅРѕРІС‹Р№ Р±Р»РѕРє РґР°РЅРЅС‹С….
+//                // РЎРѕС…СЂР°РЅРёРј СЃРјРµС‰РµРЅРёРµ РЅР° Р±Р»РѕРє.
+//                m_xServiseSection.xServiseSectionData.
+//                axBlockPositionData[uiBlock].uiOffset = m_xServiseSection.xServiseSectionData.uiFreeSpaceOffset;
+//                // РР·РјРµРЅРёРј СЃРјРµС‰РµРЅРёРµ РЅР° СЃРІРѕР±РѕРґРЅРѕРµ РјРµСЃС‚Рѕ.
+//                m_xServiseSection.xServiseSectionData.uiFreeSpaceOffset += m_uiBlockEncodedLength;
+//                // РЎРѕС…СЂР°РЅРёРј СЂР°Р·РјРµСЂ РїРµСЂРІРёС‡РЅС‹С… РґР°РЅРЅС‹С….
+//                m_xServiseSection.xServiseSectionData.
+//                axBlockPositionData[uiBlock].uiLength = uiLength;
+//                // РЎРѕС…СЂР°РЅРёРј СЂР°Р·РјРµСЂ Р·Р°РєРѕРґРёСЂРѕРІР°РЅРЅС‹С… РґР°РЅРЅС‹С….
+//                m_xServiseSection.xServiseSectionData.
+//                axBlockPositionData[uiBlock].uiEncodedLength = m_uiBlockEncodedLength;
+//                // РЈРІРµР»РёС‡РёРј РєРѕР»РёС‡РµСЃС‚РІРѕ Р±Р»РѕРєРѕРІ РЅР°С…РѕРґСЏС‰РёС…СЃСЏ РІ С…СЂР°РЅРёР»РёС‰Рµ.
+//                m_xServiseSection.xServiseSectionData.uiStoredBlocksNumber += 1;
+//            }
+//
+//            // РџРѕР»СѓС‡РёРј РёРЅРґРµРєСЃ Р±Р»РѕРєР°.
+//            m_uiBlockIndex = uiBlock;
+//            // РџРѕР»СѓС‡РёРј СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РґР°РЅРЅС‹Рµ Р±Р»РѕРєР°.
+//            m_puiBlockDataPointer = puiSource;
+//            // РџРѕР»СѓС‡РёРј Р°РґСЂРµСЃ Р±Р»РѕРєР° РІ EEPROM.
+//            m_uiBlockOffset = TEMPORARY_BLOCK_DATA_BEGIN;
+//            // РџРѕР»СѓС‡РёРј СЂР°Р·РјРµСЂ Р±Р»РѕРєР°.
+//            m_uiBlockLength = uiLength;
+//
+//            // Р’С‹С‡РёСЃР»РёРј РєРѕРЅС‚СЂРѕР»СЊРЅСѓСЋ СЃСѓРјРјСѓ РїРѕСЃС‚СѓРїРёРІС€РёС… РґР°РЅРЅС‹С….
+//            m_xServiseSection.xServiseSectionData.
+//            axBlockPositionData[uiBlock].uiCrc =
+//                usCrc16(puiSource, uiLength);
+//
+//            SetArgumentData(m_puiIntermediateBuff,
+//                            m_uiBlockOffset,
+//                            m_uiBlockEncodedLength);
+//
+//            return 1;
+//            break;
+//
+//        case TEMPORARY_SERVICE_SECTION_INDEX:
+//            // РџРѕР»СѓС‡РёРј РёРЅРґРµРєСЃ Р±Р»РѕРєР°.
+//            m_uiBlockIndex = uiBlock;
+//            // РџРѕР»СѓС‡РёРј СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РґР°РЅРЅС‹Рµ Р±Р»РѕРєР°.
+//            m_puiBlockDataPointer =
+//                (reinterpret_cast<uint8_t*>(&m_xServiseSection.xServiseSectionData));
+//            // РџРѕР»СѓС‡РёРј Р°РґСЂРµСЃ Р±Р»РѕРєР° РІ EEPROM.
+//            m_uiBlockOffset = TEMPORARY_SERVICE_SECTION_DATA_BEGIN;
+//            // РџРѕР»СѓС‡РёРј СЂР°Р·РјРµСЂ Р±Р»РѕРєР°.
+//            m_uiBlockLength = sizeof(struct TServiseSectionData);
+//
+//            // Р’С‹С‡РёСЃР»РёРј РєРѕРЅС‚СЂРѕР»СЊРЅСѓСЋ СЃСѓРјРјСѓ РїРѕСЃС‚СѓРїРёРІС€РёС… РґР°РЅРЅС‹С….
+//            m_xServiseSection.uiCrc =
+//                usCrc16(m_puiBlockDataPointer, m_uiBlockLength);
+//
+//            // Р—РІРєРѕРґРёСЂСѓРµРј РґР°РЅРЅС‹Рµ Р°Р»РіРѕСЂРёС‚РјРѕРј РҐРµРјРјРёРЅРіР°.
+//            m_uiBlockEncodedLength =
+//                CHammingCodes::BytesToHammingCodes(m_puiIntermediateBuff,
+//                                                   m_puiBlockDataPointer,
+//                                                   m_uiBlockLength);
+//
+//            SetArgumentData(m_puiIntermediateBuff,
+//                            m_uiBlockOffset,
+//                            m_uiBlockEncodedLength);
+//
+//            return 1;
+//            break;
+//
+//        case SERVICE_SECTION_INDEX:
+//            // РџРѕР»СѓС‡РёРј РёРЅРґРµРєСЃ Р±Р»РѕРєР°.
+//            m_uiBlockIndex = uiBlock;
+//            // РџРѕР»СѓС‡РёРј СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РґР°РЅРЅС‹Рµ Р±Р»РѕРєР°.
+//            m_puiBlockDataPointer =
+//                (reinterpret_cast<uint8_t*>(&m_xServiseSection.xServiseSectionData));
+//            // РџРѕР»СѓС‡РёРј Р°РґСЂРµСЃ Р±Р»РѕРєР° РІ EEPROM.
+//            m_uiBlockOffset = SERVICE_SECTION_DATA_BEGIN;
+//            // РџРѕР»СѓС‡РёРј СЂР°Р·РјРµСЂ Р±Р»РѕРєР°.
+//            m_uiBlockLength = sizeof(struct TServiseSectionData);
+//
+//            // Р’С‹С‡РёСЃР»РёРј РєРѕРЅС‚СЂРѕР»СЊРЅСѓСЋ СЃСѓРјРјСѓ РїРѕСЃС‚СѓРїРёРІС€РёС… РґР°РЅРЅС‹С….
+//            m_xServiseSection.uiCrc =
+//                usCrc16(m_puiBlockDataPointer, m_uiBlockLength);
+//
+//            // Р—РІРєРѕРґРёСЂСѓРµРј РґР°РЅРЅС‹Рµ Р°Р»РіРѕСЂРёС‚РјРѕРј РҐРµРјРјРёРЅРіР°.
+//            m_uiBlockEncodedLength =
+//                CHammingCodes::BytesToHammingCodes(m_puiIntermediateBuff,
+//                                                   m_puiBlockDataPointer,
+//                                                   m_uiBlockLength);
+//
+//            SetArgumentData(m_puiIntermediateBuff,
+//                            m_uiBlockOffset,
+//                            m_uiBlockEncodedLength);
+//
+//            return 1;
+//            break;
+//
+//        default:
+//            // РќРµС‚ РґР°РЅРЅС‹С….
+//            return 0;
+//            break;
+//        }
+//    }
+}
+
+//-------------------------------------------------------------------------------
+// РЎС‡РёС‚С‹РІР°РµС‚ Рё РїСЂРѕРІРµСЂСЏРµС‚ С†РµР»РѕСЃС‚РЅРѕСЃС‚СЊ РІСЂРµРјРµРЅРЅРѕРіРѕ СЃР»СѓР¶РµР±РЅРѕРіРѕ Р±Р»РѕРєР°.
 uint8_t CDataStore::ReadTemporaryServiceSection(void)
 {
     uint16_t uiEncodedLength =
         (CHammingCodes::CalculateEncodedDataLength(sizeof(struct TServiseSection)));
     std::cout << "CDataStore::ReadTemporaryServiceSection 1 " << (int)uiEncodedLength  << std::endl;
-    // Прочитаем закодированные данные.
-    // При чтении данных возникла ошибка?
+    // РџСЂРѕС‡РёС‚Р°РµРј Р·Р°РєРѕРґРёСЂРѕРІР°РЅРЅС‹Рµ РґР°РЅРЅС‹Рµ.
+    // РџСЂРё С‡С‚РµРЅРёРё РґР°РЅРЅС‹С… РІРѕР·РЅРёРєР»Р° РѕС€РёР±РєР°?
     if (!(m_pxStorageDevice -> ReadBlock(m_puiIntermediateBuff,
                                          TEMPORARY_SERVICE_SECTION_DATA_BEGIN,
                                          uiEncodedLength)))
     {
         std::cout << "CDataStore::ReadTemporaryServiceSection 2"  << std::endl;
-        // Нет данных.
+        // РќРµС‚ РґР°РЅРЅС‹С….
         return 0;
     }
 
-    // Декодируем прочитанные данные.
+    // Р”РµРєРѕРґРёСЂСѓРµРј РїСЂРѕС‡РёС‚Р°РЅРЅС‹Рµ РґР°РЅРЅС‹Рµ.
     CHammingCodes::HammingCodesToBytes(reinterpret_cast<uint8_t*>(&m_xServiseSection),
                                        m_puiIntermediateBuff,
                                        uiEncodedLength);
 
-    // Блок не повреждён?
+    // Р‘Р»РѕРє РЅРµ РїРѕРІСЂРµР¶РґС‘РЅ?
     if (m_xServiseSection.uiCrc ==
             usCrc16(reinterpret_cast<uint8_t*>(&m_xServiseSection.xServiseSectionData),
                     sizeof(struct TServiseSectionData)))
@@ -360,34 +720,34 @@ uint8_t CDataStore::ReadTemporaryServiceSection(void)
     else
     {
         std::cout << "CDataStore::ReadTemporaryServiceSection 4"  << std::endl;
-        // Нет данных.
+        // РќРµС‚ РґР°РЅРЅС‹С….
         return 0;
     }
 }
 
 //-------------------------------------------------------------------------------
-// Считывает и проверяет целостность служебного блока.
+// РЎС‡РёС‚С‹РІР°РµС‚ Рё РїСЂРѕРІРµСЂСЏРµС‚ С†РµР»РѕСЃС‚РЅРѕСЃС‚СЊ СЃР»СѓР¶РµР±РЅРѕРіРѕ Р±Р»РѕРєР°.
 uint8_t CDataStore::ReadServiceSection(void)
 {
     uint16_t uiEncodedLength =
         (CHammingCodes::CalculateEncodedDataLength(sizeof(struct TServiseSection)));
 
-    // Прочитаем закодированные данные.
-    // При чтении данных возникла ошибка?
+    // РџСЂРѕС‡РёС‚Р°РµРј Р·Р°РєРѕРґРёСЂРѕРІР°РЅРЅС‹Рµ РґР°РЅРЅС‹Рµ.
+    // РџСЂРё С‡С‚РµРЅРёРё РґР°РЅРЅС‹С… РІРѕР·РЅРёРєР»Р° РѕС€РёР±РєР°?
     if (!(m_pxStorageDevice -> ReadBlock(m_puiIntermediateBuff,
                                          SERVICE_SECTION_DATA_BEGIN,
                                          uiEncodedLength)))
     {
-        // Нет данных.
+        // РќРµС‚ РґР°РЅРЅС‹С….
         return 0;
     }
 
-    // Декодируем прочитанные данные.
+    // Р”РµРєРѕРґРёСЂСѓРµРј РїСЂРѕС‡РёС‚Р°РЅРЅС‹Рµ РґР°РЅРЅС‹Рµ.
     CHammingCodes::HammingCodesToBytes(reinterpret_cast<uint8_t*>(&m_xServiseSection),
                                        m_puiIntermediateBuff,
                                        uiEncodedLength);
 
-    // Блок не повреждён?
+    // Р‘Р»РѕРє РЅРµ РїРѕРІСЂРµР¶РґС‘РЅ?
     if (m_xServiseSection.uiCrc ==
             usCrc16(reinterpret_cast<uint8_t*>(&m_xServiseSection.xServiseSectionData),
                     sizeof(struct TServiseSectionData)))
@@ -396,21 +756,21 @@ uint8_t CDataStore::ReadServiceSection(void)
     }
     else
     {
-        // Нет данных.
+        // РќРµС‚ РґР°РЅРЅС‹С….
         return 0;
     }
 }
 
 //-------------------------------------------------------------------------------
-// Считывает и проверяет целостность временного буфера блока.
+// РЎС‡РёС‚С‹РІР°РµС‚ Рё РїСЂРѕРІРµСЂСЏРµС‚ С†РµР»РѕСЃС‚РЅРѕСЃС‚СЊ РІСЂРµРјРµРЅРЅРѕРіРѕ Р±СѓС„РµСЂР° Р±Р»РѕРєР°.
 uint8_t CDataStore::CheckTemporaryBlock(void)
 {
-    uint8_t uiBlock = m_uiBlock;
+    uint8_t uiBlock = m_uiBlockIndex;
 
-    // Произошёл выход за границы буфера?
+    // РџСЂРѕРёР·РѕС€С‘Р» РІС‹С…РѕРґ Р·Р° РіСЂР°РЅРёС†С‹ Р±СѓС„РµСЂР°?
     if (uiBlock >= MAX_BLOCKS_NUMBER)
     {
-        // Нет данных.
+        // РќРµС‚ РґР°РЅРЅС‹С….
         return 0;
     }
 
@@ -418,42 +778,44 @@ uint8_t CDataStore::CheckTemporaryBlock(void)
     uint16_t uiEncodedLength;
     uint16_t uiSourceOffset;
 
-    // Блок существует?
+    // Р‘Р»РѕРє СЃСѓС‰РµСЃС‚РІСѓРµС‚?
     if ((m_xServiseSection.xServiseSectionData.
             axBlockPositionData[uiBlock].uiLength != 0) &&
             (m_xServiseSection.xServiseSectionData.
              axBlockPositionData[uiBlock].uiEncodedLength != 0))
     {
-        // Получим адрес блока в EEPROM.
+        // РџРѕР»СѓС‡РёРј Р°РґСЂРµСЃ Р±Р»РѕРєР° РІ EEPROM.
         uiSourceOffset = m_xServiseSection.xServiseSectionData.
                          axBlockPositionData[uiBlock].uiOffset;
-        // Получим размер блока.
+        // РџРѕР»СѓС‡РёРј СЂР°Р·РјРµСЂ Р±Р»РѕРєР°.
         uiLength = m_xServiseSection.xServiseSectionData.
                    axBlockPositionData[uiBlock].uiLength;
-        // Получим размер закодированного блока.
+        // РџРѕР»СѓС‡РёРј СЂР°Р·РјРµСЂ Р·Р°РєРѕРґРёСЂРѕРІР°РЅРЅРѕРіРѕ Р±Р»РѕРєР°.
         uiEncodedLength = m_xServiseSection.xServiseSectionData.
                           axBlockPositionData[uiBlock].uiEncodedLength;
     }
     else
     {
-        // Нет данных.
+        // РќРµС‚ РґР°РЅРЅС‹С….
         return 0;
     }
 
-    // Прочитаем закодированные данные.
-    // При чтении данных возникла ошибка?
+    // РџСЂРѕС‡РёС‚Р°РµРј Р·Р°РєРѕРґРёСЂРѕРІР°РЅРЅС‹Рµ РґР°РЅРЅС‹Рµ.
+    // РџСЂРё С‡С‚РµРЅРёРё РґР°РЅРЅС‹С… РІРѕР·РЅРёРєР»Р° РѕС€РёР±РєР°?
     if (!(m_pxStorageDevice -> ReadBlock(m_puiIntermediateBuff,
                                          TEMPORARY_BLOCK_DATA_BEGIN,
                                          uiEncodedLength)))
     {
-        // Нет данных.
+        // РќРµС‚ РґР°РЅРЅС‹С….
         return 0;
     }
 
-    // Декодируем прочитанные данные.
-    CHammingCodes::HammingCodesToBytes(m_puiIntermediateBuff, m_puiIntermediateBuff, uiEncodedLength);
+    // Р”РµРєРѕРґРёСЂСѓРµРј РїСЂРѕС‡РёС‚Р°РЅРЅС‹Рµ РґР°РЅРЅС‹Рµ.
+    CHammingCodes::HammingCodesToBytes(m_puiIntermediateBuff,
+                                       m_puiIntermediateBuff,
+                                       uiEncodedLength);
 
-    // Блок не повреждён?
+    // Р‘Р»РѕРє РЅРµ РїРѕРІСЂРµР¶РґС‘РЅ?
     if (m_xServiseSection.xServiseSectionData.
             axBlockPositionData[uiBlock].uiCrc ==
             usCrc16(m_puiIntermediateBuff, uiLength))
@@ -462,21 +824,21 @@ uint8_t CDataStore::CheckTemporaryBlock(void)
     }
     else
     {
-        // Нет данных.
+        // РќРµС‚ РґР°РЅРЅС‹С….
         return 0;
     }
 }
 
 //-------------------------------------------------------------------------------
-// Считывает и проверяет целостность блока.
+// РЎС‡РёС‚С‹РІР°РµС‚ Рё РїСЂРѕРІРµСЂСЏРµС‚ С†РµР»РѕСЃС‚РЅРѕСЃС‚СЊ Р±Р»РѕРєР°.
 uint8_t CDataStore::CheckBlock(void)
 {
-    uint8_t uiBlock = m_uiBlock;
+    uint8_t uiBlock = m_uiBlockIndex;
 
-    // Произошёл выход за границы буфера?
+    // РџСЂРѕРёР·РѕС€С‘Р» РІС‹С…РѕРґ Р·Р° РіСЂР°РЅРёС†С‹ Р±СѓС„РµСЂР°?
     if (uiBlock >= MAX_BLOCKS_NUMBER)
     {
-        // Нет данных.
+        // РќРµС‚ РґР°РЅРЅС‹С….
         return 0;
     }
 
@@ -484,42 +846,44 @@ uint8_t CDataStore::CheckBlock(void)
     uint16_t uiEncodedLength;
     uint16_t uiSourceOffset;
 
-    // Блок существует?
+    // Р‘Р»РѕРє СЃСѓС‰РµСЃС‚РІСѓРµС‚?
     if ((m_xServiseSection.xServiseSectionData.
             axBlockPositionData[uiBlock].uiLength != 0) &&
             (m_xServiseSection.xServiseSectionData.
              axBlockPositionData[uiBlock].uiEncodedLength != 0))
     {
-        // Получим адрес блока в EEPROM.
+        // РџРѕР»СѓС‡РёРј Р°РґСЂРµСЃ Р±Р»РѕРєР° РІ EEPROM.
         uiSourceOffset = m_xServiseSection.xServiseSectionData.
                          axBlockPositionData[uiBlock].uiOffset;
-        // Получим размер блока.
+        // РџРѕР»СѓС‡РёРј СЂР°Р·РјРµСЂ Р±Р»РѕРєР°.
         uiLength = m_xServiseSection.xServiseSectionData.
                    axBlockPositionData[uiBlock].uiLength;
-        // Получим размер закодированного блока.
+        // РџРѕР»СѓС‡РёРј СЂР°Р·РјРµСЂ Р·Р°РєРѕРґРёСЂРѕРІР°РЅРЅРѕРіРѕ Р±Р»РѕРєР°.
         uiEncodedLength = m_xServiseSection.xServiseSectionData.
                           axBlockPositionData[uiBlock].uiEncodedLength;
     }
     else
     {
-        // Нет данных.
+        // РќРµС‚ РґР°РЅРЅС‹С….
         return 0;
     }
 
-    // Прочитаем закодированные данные.
-    // При чтении данных возникла ошибка?
+    // РџСЂРѕС‡РёС‚Р°РµРј Р·Р°РєРѕРґРёСЂРѕРІР°РЅРЅС‹Рµ РґР°РЅРЅС‹Рµ.
+    // РџСЂРё С‡С‚РµРЅРёРё РґР°РЅРЅС‹С… РІРѕР·РЅРёРєР»Р° РѕС€РёР±РєР°?
     if (!(m_pxStorageDevice -> ReadBlock(m_puiIntermediateBuff,
                                          uiSourceOffset,
                                          uiEncodedLength)))
     {
-        // Нет данных.
+        // РќРµС‚ РґР°РЅРЅС‹С….
         return 0;
     }
 
-    // Декодируем прочитанные данные.
-    CHammingCodes::HammingCodesToBytes(m_puiIntermediateBuff, m_puiIntermediateBuff, uiEncodedLength);
+    // Р”РµРєРѕРґРёСЂСѓРµРј РїСЂРѕС‡РёС‚Р°РЅРЅС‹Рµ РґР°РЅРЅС‹Рµ.
+    CHammingCodes::HammingCodesToBytes(m_puiIntermediateBuff,
+                                       m_puiIntermediateBuff,
+                                       uiEncodedLength);
 
-    // Блок не повреждён?
+    // Р‘Р»РѕРє РЅРµ РїРѕРІСЂРµР¶РґС‘РЅ?
     if (m_xServiseSection.xServiseSectionData.
             axBlockPositionData[uiBlock].uiCrc ==
             usCrc16(m_puiIntermediateBuff, uiLength))
@@ -528,236 +892,213 @@ uint8_t CDataStore::CheckBlock(void)
     }
     else
     {
-        // Нет данных.
+        // РќРµС‚ РґР°РЅРЅС‹С….
         return 0;
     }
 }
 
 //-------------------------------------------------------------------------------
-// Считывает и проверяет целостность блока.
+// РЎС‡РёС‚С‹РІР°РµС‚ Рё РїСЂРѕРІРµСЂСЏРµС‚ С†РµР»РѕСЃС‚РЅРѕСЃС‚СЊ Р±Р»РѕРєР°.
 uint16_t CDataStore::ReadBlock(uint8_t *puiDestination, uint8_t uiBlock)
 {
-    // Произошёл выход за границы буфера?
-    if (uiBlock >= MAX_BLOCKS_NUMBER)
+    // РџСЂРѕРёР·РѕС€С‘Р» РІС‹С…РѕРґ Р·Р° РіСЂР°РЅРёС†С‹ Р±СѓС„РµСЂР°?
+    if (uiBlock >= (MAX_BLOCKS_NUMBER + SERVICE_SECTION_BLOCK_NUMBER))
     {
-        // Нет данных.
+        // РќРµС‚ РґР°РЅРЅС‹С….
         return 0;
     }
-
-    uint16_t uiLength;
-    uint16_t uiEncodedLength;
-    uint16_t uiSourceOffset;
-
-    // Блок существует?
-    if ((m_xServiseSection.xServiseSectionData.
-            axBlockPositionData[uiBlock].uiLength != 0) &&
-            (m_xServiseSection.xServiseSectionData.
-             axBlockPositionData[uiBlock].uiEncodedLength != 0))
+    // Р±Р»РѕРє РЅРµ СЃР»СѓР¶РµР±РЅС‹Р№?
+    if (uiBlock < MAX_BLOCKS_NUMBER)
     {
-        // Получим адрес блока в EEPROM.
-        uiSourceOffset = m_xServiseSection.xServiseSectionData.
-                         axBlockPositionData[uiBlock].uiOffset;
-        // Получим размер блока.
-        uiLength = m_xServiseSection.xServiseSectionData.
-                   axBlockPositionData[uiBlock].uiLength;
-        // Получим размер закодированного блока.
-        uiEncodedLength = m_xServiseSection.xServiseSectionData.
-                          axBlockPositionData[uiBlock].uiEncodedLength;
-    }
-    else
-    {
-        // Нет данных.
-        return 0;
-    }
-
-    // Прочитаем закодированные данные.
-    m_pxStorageDevice -> ReadBlock(m_puiIntermediateBuff, uiSourceOffset, uiEncodedLength);
-
-    // Декодируем прочитанные данные.
-    CHammingCodes::HammingCodesToBytes(m_puiIntermediateBuff, m_puiIntermediateBuff, uiEncodedLength);
-
-    // Блок не повреждён?
-    if (m_xServiseSection.xServiseSectionData.
-            axBlockPositionData[uiBlock].uiCrc ==
-            usCrc16(m_puiIntermediateBuff, uiLength))
-    {
-        memcpy(puiDestination, m_puiIntermediateBuff, uiLength);
-        return uiLength;
-    }
-    else
-    {
-        // Нет данных.
-        return 0;
-    }
-}
-
-//-------------------------------------------------------------------------------
-// Готовит данные блока к записи во временный буфер.
-// Кодирует по алгоритму Хемминга, размечает место для хранения и
-// передаёт автомату записи устройства хранения.
-uint8_t CDataStore::TemporaryBlockWritePrepare(void)
-{
-    std::cout << "CDataStore::TemporaryBlockWritePrepare 1"  << std::endl;
-    uint8_t uiBlock = m_uiBlock;
-    uint8_t* puiSource = m_puiBlockSource;
-    uint16_t uiLength = m_uiBlockLength;
-
-    // Звкодируем данные алгоритмом Хемминга.
-    uint16_t uiEncodedByteCounter =
-        CHammingCodes::BytesToHammingCodes(m_puiIntermediateBuff, puiSource, uiLength);
-
-    // Данные текущего блока данных - uiBlock сохраняются впервые?
-    if ((m_xServiseSection.xServiseSectionData.
-            axBlockPositionData[uiBlock].uiLength == 0) &&
-            (m_xServiseSection.xServiseSectionData.
-             axBlockPositionData[uiBlock].uiEncodedLength == 0))
-    {
-        std::cout << "CDataStore::TemporaryBlockWritePrepare 2"  << std::endl;
-        // Добавили новый блок данных.
-        // Сохраним смещение на блок.
-        m_xServiseSection.xServiseSectionData.
-        axBlockPositionData[uiBlock].uiOffset = m_xServiseSection.xServiseSectionData.uiFreeSpaceOffset;
-        // Изменим смещение на свободное место.
-        m_xServiseSection.xServiseSectionData.uiFreeSpaceOffset += uiEncodedByteCounter;
-        // Сохраним размер первичных данных.
-        m_xServiseSection.xServiseSectionData.
-        axBlockPositionData[uiBlock].uiLength = uiLength;
-        // Сохраним размер закодированных данных.
-        m_xServiseSection.xServiseSectionData.
-        axBlockPositionData[uiBlock].uiEncodedLength = uiEncodedByteCounter;
-        // Увеличим количество блоков находящихся в хранилище.
-        m_xServiseSection.xServiseSectionData.uiStoredBlocksNumber += 1;
-    }
-
-    // Вычислим контрольную сумму поступивших данных.
-    m_xServiseSection.xServiseSectionData.
-    axBlockPositionData[uiBlock].uiCrc =
-        usCrc16(puiSource, uiLength);
-
-    if (m_pxStorageDevice -> WriteBlock(m_puiIntermediateBuff,
-                                        TEMPORARY_BLOCK_DATA_BEGIN,
-                                        uiEncodedByteCounter))
-    {
-        std::cout << "CDataStore::TemporaryBlockWritePrepare 3"  << std::endl;
-        return 1;
-    }
-    else
-    {
-        std::cout << "CDataStore::TemporaryBlockWritePrepare 4"  << std::endl;
-        return 0;
-    }
-}
-
-//-------------------------------------------------------------------------------
-// Готовит данные блока к записи.
-// Кодирует по алгоритму Хемминга, размечает место для хранения и
-// передаёт автомату записи устройства хранения.
-uint8_t CDataStore::BlockWritePrepare(void)
-{
-    uint8_t uiBlock = m_uiBlock;
-    uint8_t* puiSource = m_puiBlockSource;
-    uint16_t uiLength = m_uiBlockLength;
-
-    // Звкодируем данные алгоритмом Хемминга.
-    uint16_t uiEncodedByteCounter =
-        CHammingCodes::BytesToHammingCodes(m_puiIntermediateBuff, puiSource, uiLength);
-
-    // Данные текущего блока данных - uiBlock сохраняются впервые?
-    if ((m_xServiseSection.xServiseSectionData.
-            axBlockPositionData[uiBlock].uiLength == 0) &&
-            (m_xServiseSection.xServiseSectionData.
-             axBlockPositionData[uiBlock].uiEncodedLength == 0))
-    {
-        // Добавили новый блок данных.
-        // Сохраним смещение на блок.
-        m_xServiseSection.xServiseSectionData.
-        axBlockPositionData[uiBlock].uiOffset = m_xServiseSection.xServiseSectionData.uiFreeSpaceOffset;
-        // Изменим смещение на свободное место.
-        m_xServiseSection.xServiseSectionData.uiFreeSpaceOffset += uiEncodedByteCounter;
-        // Сохраним размер первичных данных.
-        m_xServiseSection.xServiseSectionData.
-        axBlockPositionData[uiBlock].uiLength = uiLength;
-        // Сохраним размер закодированных данных.
-        m_xServiseSection.xServiseSectionData.
-        axBlockPositionData[uiBlock].uiEncodedLength = uiEncodedByteCounter;
-//        // Увеличим количество блоков находящихся в хранилище.
-//        m_xServiseSection.xServiseSectionData.uiStoredBlocksNumber += 1;
-    }
-
-    // Вычислим контрольную сумму поступивших данных.
-    m_xServiseSection.xServiseSectionData.
-    axBlockPositionData[uiBlock].uiCrc =
-        usCrc16(puiSource, uiLength);
-//    // Сохраним индекс последнего записываемого блока.
-//    m_xServiseSection.xServiseSectionData.uiLastWritedBlockNumber = uiBlock;
-
-    if (m_pxStorageDevice -> WriteBlock(m_puiIntermediateBuff,
-                                        m_xServiseSection.xServiseSectionData.
-                                        axBlockPositionData[uiBlock].uiOffset,
-                                        uiEncodedByteCounter))
-    {
-        return 1;
-    }
-    else
-    {
-        return 0;
-    }
-}
-
-//-------------------------------------------------------------------------------
-// Запись блока в хранилище проходит поэтапно.
-// 1 - CDataStore::WriteBlock(uint8_t *puiSource, uint16_t uiLength, uint8_t uiBlock).
-// 2 - CDataStore::BlockWritePrepare(void).
-// 3 - CStorageDevice::WriteBlock(uint16_t uiOffset, uint8_t *puiSource, uint16_t uiLength).
-
-// Передаёт данные контекста записи блока автомату хранилища данных и запускает процесс записи.
-uint8_t CDataStore::WriteBlock(uint8_t *puiSource, uint16_t uiLength, uint8_t uiBlock)
-{
-    std::cout << "CDataStore::WriteBlock 1"  << std::endl;
-    // Автомат не готов к записи?
-    if ((GetFsmState() == READY) ||
-            (GetFsmState() == DATA_WRITED_SUCCESSFULLY) ||
-            (GetFsmState() == WRITE_ERROR))
-    {
-        // Произошёл выход за границы буфера?
-        if (uiBlock >= MAX_BLOCKS_NUMBER)
+        // Р‘Р»РѕРє СЃСѓС‰РµСЃС‚РІСѓРµС‚?
+        if ((m_xServiseSection.xServiseSectionData.
+                axBlockPositionData[uiBlock].uiLength != 0) &&
+                (m_xServiseSection.xServiseSectionData.
+                 axBlockPositionData[uiBlock].uiEncodedLength != 0))
         {
-            std::cout << "CDataStore::WriteBlock 2"  << std::endl;
-            // Нет данных.
+            // РџРѕР»СѓС‡РёРј РёРЅРґРµРєСЃ Р±Р»РѕРєР°.
+            m_uiBlockIndex = uiBlock;
+            // РџРѕР»СѓС‡РёРј СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РґР°РЅРЅС‹Рµ Р±Р»РѕРєР°.
+            m_puiBlockDataPointer = puiDestination;
+            // РџРѕР»СѓС‡РёРј Р°РґСЂРµСЃ Р±Р»РѕРєР° РІ EEPROM.
+            m_uiBlockOffset = m_xServiseSection.xServiseSectionData.
+                              axBlockPositionData[uiBlock].uiOffset;
+            // РџРѕР»СѓС‡РёРј СЂР°Р·РјРµСЂ Р±Р»РѕРєР°.
+            m_uiBlockLength = m_xServiseSection.xServiseSectionData.
+                              axBlockPositionData[uiBlock].uiLength;
+            // РџРѕР»СѓС‡РёРј СЂР°Р·РјРµСЂ Р·Р°РєРѕРґРёСЂРѕРІР°РЅРЅРѕРіРѕ Р±Р»РѕРєР°.
+            m_uiBlockEncodedLength = m_xServiseSection.xServiseSectionData.
+                                     axBlockPositionData[uiBlock].uiEncodedLength;
+
+            SetArgumentData(m_puiIntermediateBuff,
+                            m_uiBlockOffset,
+                            m_uiBlockEncodedLength);
+            return 1;
+        }
+        else
+        {
+            // РќРµС‚ РґР°РЅРЅС‹С….
             return 0;
         }
-
-        // Получим данные контекста записи блока.
-        m_puiBlockSource = puiSource;
-        m_uiBlockLength = uiLength;
-        m_uiBlock = uiBlock;
-
-        std::cout << "CDataStore::WriteBlock 3"  << std::endl;
-//    SetFsmEvent(WRITE_IN_PROGRESS_FSM_EVENT);
-        // Запустим процесс записи.
-        SetFsmState(START_WRITE_TEMPORARY_BLOCK_DATA);
-        return 1;
     }
     else
     {
-        std::cout << "CDataStore::WriteBlock 4"  << std::endl;
-//        SetFsmEvent(WRITE_ERROR_FSM_EVENT);
+        // РџРѕР»СѓС‡РёРј СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РґР°РЅРЅС‹Рµ Р±Р»РѕРєР°.
+        m_puiBlockDataPointer = puiDestination;
+        // РџРѕР»СѓС‡РёРј СЂР°Р·РјРµСЂ Р·Р°РєРѕРґРёСЂРѕРІР°РЅРЅРѕРіРѕ Р±Р»РѕРєР°.
+        m_uiBlockEncodedLength =
+            (CHammingCodes::CalculateEncodedDataLength(sizeof(struct TServiseSection)));
+
+        switch (uiBlock)
+        {
+        case TEMPORARY_BLOCK_INDEX:
+            // РџРѕР»СѓС‡РёРј Р°РґСЂРµСЃ Р±Р»РѕРєР° РІ EEPROM.
+            m_uiBlockOffset = TEMPORARY_BLOCK_DATA_BEGIN;
+            // РџРѕР»СѓС‡РёРј СЂР°Р·РјРµСЂ Р±Р»РѕРєР°.
+            m_uiBlockLength = m_xServiseSection.xServiseSectionData.
+                              axBlockPositionData[m_uiBlockIndex].uiLength;
+            break;
+
+        case TEMPORARY_SERVICE_SECTION_INDEX:
+            // РџРѕР»СѓС‡РёРј Р°РґСЂРµСЃ Р±Р»РѕРєР° РІ EEPROM.
+            m_uiBlockOffset = TEMPORARY_SERVICE_SECTION_DATA_BEGIN;
+            // РџРѕР»СѓС‡РёРј СЂР°Р·РјРµСЂ Р±Р»РѕРєР°.
+            m_uiBlockLength = sizeof(struct TServiseSectionData);
+            break;
+
+        case SERVICE_SECTION_INDEX:
+            // РџРѕР»СѓС‡РёРј Р°РґСЂРµСЃ Р±Р»РѕРєР° РІ EEPROM.
+            m_uiBlockOffset = SERVICE_SECTION_DATA_BEGIN;
+            // РџРѕР»СѓС‡РёРј СЂР°Р·РјРµСЂ Р±Р»РѕРєР°.
+            m_uiBlockLength = sizeof(struct TServiseSectionData);
+            break;
+
+        default:
+            // РќРµС‚ РґР°РЅРЅС‹С….
+            return 0;
+            break;
+        }
+
+        SetArgumentData(m_puiIntermediateBuff,
+                        m_uiBlockOffset,
+                        m_uiBlockEncodedLength);
+
+        return 1;
+    }
+
+//    uint16_t uiLength;
+//    uint16_t uiEncodedLength;
+//    uint16_t uiSourceOffset;
+
+//    // Р‘Р»РѕРє СЃСѓС‰РµСЃС‚РІСѓРµС‚?
+//    if ((m_xServiseSection.xServiseSectionData.
+//            axBlockPositionData[uiBlock].uiLength != 0) &&
+//            (m_xServiseSection.xServiseSectionData.
+//             axBlockPositionData[uiBlock].uiEncodedLength != 0))
+//    {
+//        // РџРѕР»СѓС‡РёРј Р°РґСЂРµСЃ Р±Р»РѕРєР° РІ EEPROM.
+//        uiSourceOffset = m_xServiseSection.xServiseSectionData.
+//                         axBlockPositionData[uiBlock].uiOffset;
+//        // РџРѕР»СѓС‡РёРј СЂР°Р·РјРµСЂ Р±Р»РѕРєР°.
+//        uiLength = m_xServiseSection.xServiseSectionData.
+//                   axBlockPositionData[uiBlock].uiLength;
+//        // РџРѕР»СѓС‡РёРј СЂР°Р·РјРµСЂ Р·Р°РєРѕРґРёСЂРѕРІР°РЅРЅРѕРіРѕ Р±Р»РѕРєР°.
+//        uiEncodedLength = m_xServiseSection.xServiseSectionData.
+//                          axBlockPositionData[uiBlock].uiEncodedLength;
+
+//        // РџРѕР»СѓС‡РёРј РёРЅРґРµРєСЃ Р±Р»РѕРєР°.
+//        m_uiBlockIndex = uiBlock;
+//        // РџРѕР»СѓС‡РёРј СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РґР°РЅРЅС‹Рµ Р±Р»РѕРєР°.
+//        m_puiBlockDataPointer = puiDestination;
+//        // РџРѕР»СѓС‡РёРј Р°РґСЂРµСЃ Р±Р»РѕРєР° РІ EEPROM.
+//        m_uiBlockOffset = m_xServiseSection.xServiseSectionData.
+//                          axBlockPositionData[uiBlock].uiOffset;
+//        // РџРѕР»СѓС‡РёРј СЂР°Р·РјРµСЂ Р±Р»РѕРєР°.
+//        m_uiBlockLength = m_xServiseSection.xServiseSectionData.
+//                          axBlockPositionData[uiBlock].uiLength;
+//        // РџРѕР»СѓС‡РёРј СЂР°Р·РјРµСЂ Р·Р°РєРѕРґРёСЂРѕРІР°РЅРЅРѕРіРѕ Р±Р»РѕРєР°.
+//        m_uiBlockEncodedLength = m_xServiseSection.xServiseSectionData.
+//                                 axBlockPositionData[uiBlock].uiEncodedLength;
+//
+//        SetArgumentData(m_puiIntermediateBuff,
+//                        m_uiBlockOffset,
+//                        m_uiBlockEncodedLength);
+////        SetArgumentData(m_puiIntermediateBuff,
+////                        m_xServiseSection.xServiseSectionData.
+////                        axBlockPositionData[uiBlock].uiOffset,
+////                        m_xServiseSection.xServiseSectionData.
+////                        axBlockPositionData[uiBlock].uiEncodedLength);
+//        return 1;
+//    }
+//    else
+//    {
+//        // РќРµС‚ РґР°РЅРЅС‹С….
+//        return 0;
+//    }
+
+//    // РџСЂРѕС‡РёС‚Р°РµРј Р·Р°РєРѕРґРёСЂРѕРІР°РЅРЅС‹Рµ РґР°РЅРЅС‹Рµ.
+//    m_pxStorageDevice -> ReadBlock(m_puiIntermediateBuff,
+//                                   uiSourceOffset,
+//                                   uiEncodedLength);
+//
+//    // Р”РµРєРѕРґРёСЂСѓРµРј РїСЂРѕС‡РёС‚Р°РЅРЅС‹Рµ РґР°РЅРЅС‹Рµ.
+//    CHammingCodes::HammingCodesToBytes(m_puiIntermediateBuff,
+//                                       m_puiIntermediateBuff,
+//                                       uiEncodedLength);
+//
+//    // Р‘Р»РѕРє РЅРµ РїРѕРІСЂРµР¶РґС‘РЅ?
+//    if (m_xServiseSection.xServiseSectionData.
+//            axBlockPositionData[uiBlock].uiCrc ==
+//            usCrc16(m_puiIntermediateBuff, uiLength))
+//    {
+//        memcpy(puiDestination, m_puiIntermediateBuff, uiLength);
+//        return uiLength;
+//    }
+//    else
+//    {
+//        // РќРµС‚ РґР°РЅРЅС‹С….
+//        return 0;
+//    }
+}
+
+//-------------------------------------------------------------------------------
+// РЎС‡РёС‚С‹РІР°РµС‚ Рё РїСЂРѕРІРµСЂСЏРµС‚ С†РµР»РѕСЃС‚РЅРѕСЃС‚СЊ Р±Р»РѕРєР°.
+uint16_t CDataStore::GetReadedData()
+{
+    uint8_t auiTempArray[CDataStore::MAX_SERVICE_SECTION_DATA_LENGTH];
+
+    // Р”РµРєРѕРґРёСЂСѓРµРј РїСЂРѕС‡РёС‚Р°РЅРЅС‹Рµ РґР°РЅРЅС‹Рµ.
+    CHammingCodes::HammingCodesToBytes(auiTempArray,
+                                       m_puiIntermediateBuff,
+                                       m_uiBlockEncodedLength);
+
+    // Р‘Р»РѕРє РЅРµ РїРѕРІСЂРµР¶РґС‘РЅ?
+    if (m_xServiseSection.xServiseSectionData.
+            axBlockPositionData[m_uiBlockIndex].uiCrc ==
+            usCrc16(auiTempArray, m_uiBlockLength))
+    {
+        memcpy(m_puiBlockDataPointer, auiTempArray, m_uiBlockLength);
+        return m_uiBlockLength;
+    }
+    else
+    {
+        // РќРµС‚ РґР°РЅРЅС‹С….
         return 0;
     }
 }
 
 //-------------------------------------------------------------------------------
-// Вызывается только если база данных подтверждена пользователем.
+// Р’С‹Р·С‹РІР°РµС‚СЃСЏ С‚РѕР»СЊРєРѕ РµСЃР»Рё Р±Р°Р·Р° РґР°РЅРЅС‹С… РїРѕРґС‚РІРµСЂР¶РґРµРЅР° РїРѕР»СЊР·РѕРІР°С‚РµР»РµРј.
 void CDataStore::CrcOfBlocksCrcCreate(void)
 {
-    // Контрольная сумма вычисленная из массива контрольных сумм блоков, не включая служебный.
-    // Сохраняется при первой и последующих записях любых блоков через программатор.
-    // Ноль или её несовпадение свидетельствует о том, что база данных создана по умоланию,
-    // и не подтверждена пользователем. В этом случае прибор переходит в режим сигнализации об ошибке,
-    // ожидая квитирования или записи базы данных.
+    // РљРѕРЅС‚СЂРѕР»СЊРЅР°СЏ СЃСѓРјРјР° РІС‹С‡РёСЃР»РµРЅРЅР°СЏ РёР· РјР°СЃСЃРёРІР° РєРѕРЅС‚СЂРѕР»СЊРЅС‹С… СЃСѓРјРј Р±Р»РѕРєРѕРІ, РЅРµ РІРєР»СЋС‡Р°СЏ СЃР»СѓР¶РµР±РЅС‹Р№.
+    // РЎРѕС…СЂР°РЅСЏРµС‚СЃСЏ РїСЂРё РїРµСЂРІРѕР№ Рё РїРѕСЃР»РµРґСѓСЋС‰РёС… Р·Р°РїРёСЃСЏС… Р»СЋР±С‹С… Р±Р»РѕРєРѕРІ С‡РµСЂРµР· РїСЂРѕРіСЂР°РјРјР°С‚РѕСЂ.
+    // РќРѕР»СЊ РёР»Рё РµС‘ РЅРµСЃРѕРІРїР°РґРµРЅРёРµ СЃРІРёРґРµС‚РµР»СЊСЃС‚РІСѓРµС‚ Рѕ С‚РѕРј, С‡С‚Рѕ Р±Р°Р·Р° РґР°РЅРЅС‹С… СЃРѕР·РґР°РЅР° РїРѕ СѓРјРѕР»Р°РЅРёСЋ,
+    // Рё РЅРµ РїРѕРґС‚РІРµСЂР¶РґРµРЅР° РїРѕР»СЊР·РѕРІР°С‚РµР»РµРј. Р’ СЌС‚РѕРј СЃР»СѓС‡Р°Рµ РїСЂРёР±РѕСЂ РїРµСЂРµС…РѕРґРёС‚ РІ СЂРµР¶РёРј СЃРёРіРЅР°Р»РёР·Р°С†РёРё РѕР± РѕС€РёР±РєРµ,
+    // РѕР¶РёРґР°СЏ РєРІРёС‚РёСЂРѕРІР°РЅРёСЏ РёР»Рё Р·Р°РїРёСЃРё Р±Р°Р·С‹ РґР°РЅРЅС‹С….
     uint16_t auiBlocksCrc[MAX_BLOCKS_NUMBER];
 
-    // Получим Crc всех блоков.
+    // РџРѕР»СѓС‡РёРј Crc РІСЃРµС… Р±Р»РѕРєРѕРІ.
     for (uint16_t i = 0;
             i < MAX_BLOCKS_NUMBER;
             i++)
@@ -766,7 +1107,7 @@ void CDataStore::CrcOfBlocksCrcCreate(void)
             m_xServiseSection.xServiseSectionData.axBlockPositionData[i].uiCrc;
     }
 
-    // Сохраним Crc всех блоков.
+    // РЎРѕС…СЂР°РЅРёРј Crc РІСЃРµС… Р±Р»РѕРєРѕРІ.
     m_xServiseSection.xServiseSectionData.uiCrcOfBlocksCrc =
         usCrc16(reinterpret_cast<uint8_t*>(auiBlocksCrc),
                 (MAX_BLOCKS_NUMBER * sizeof(uint16_t)));
@@ -776,14 +1117,14 @@ void CDataStore::CrcOfBlocksCrcCreate(void)
 //-------------------------------------------------------------------------------
 bool CDataStore::CrcOfBlocksCrcCheck(void)
 {
-    // Контрольная сумма вычисленная из массива контрольных сумм блоков, не включая служебный.
-    // Сохраняется при первой и последующих записях любых блоков через программатор.
-    // Ноль или её несовпадение свидетельствует о том, что база данных создана по умоланию,
-    // и не подтверждена пользователем. В этом случае прибор переходит в режим сигнализации об ошибке,
-    // ожидая квитирования или записи базы данных.
+    // РљРѕРЅС‚СЂРѕР»СЊРЅР°СЏ СЃСѓРјРјР° РІС‹С‡РёСЃР»РµРЅРЅР°СЏ РёР· РјР°СЃСЃРёРІР° РєРѕРЅС‚СЂРѕР»СЊРЅС‹С… СЃСѓРјРј Р±Р»РѕРєРѕРІ, РЅРµ РІРєР»СЋС‡Р°СЏ СЃР»СѓР¶РµР±РЅС‹Р№.
+    // РЎРѕС…СЂР°РЅСЏРµС‚СЃСЏ РїСЂРё РїРµСЂРІРѕР№ Рё РїРѕСЃР»РµРґСѓСЋС‰РёС… Р·Р°РїРёСЃСЏС… Р»СЋР±С‹С… Р±Р»РѕРєРѕРІ С‡РµСЂРµР· РїСЂРѕРіСЂР°РјРјР°С‚РѕСЂ.
+    // РќРѕР»СЊ РёР»Рё РµС‘ РЅРµСЃРѕРІРїР°РґРµРЅРёРµ СЃРІРёРґРµС‚РµР»СЊСЃС‚РІСѓРµС‚ Рѕ С‚РѕРј, С‡С‚Рѕ Р±Р°Р·Р° РґР°РЅРЅС‹С… СЃРѕР·РґР°РЅР° РїРѕ СѓРјРѕР»Р°РЅРёСЋ,
+    // Рё РЅРµ РїРѕРґС‚РІРµСЂР¶РґРµРЅР° РїРѕР»СЊР·РѕРІР°С‚РµР»РµРј. Р’ СЌС‚РѕРј СЃР»СѓС‡Р°Рµ РїСЂРёР±РѕСЂ РїРµСЂРµС…РѕРґРёС‚ РІ СЂРµР¶РёРј СЃРёРіРЅР°Р»РёР·Р°С†РёРё РѕР± РѕС€РёР±РєРµ,
+    // РѕР¶РёРґР°СЏ РєРІРёС‚РёСЂРѕРІР°РЅРёСЏ РёР»Рё Р·Р°РїРёСЃРё Р±Р°Р·С‹ РґР°РЅРЅС‹С….
     uint16_t auiBlocksCrc[MAX_BLOCKS_NUMBER];
 
-    // Получим Crc всех блоков.
+    // РџРѕР»СѓС‡РёРј Crc РІСЃРµС… Р±Р»РѕРєРѕРІ.
     for (uint16_t i = 0;
             i < MAX_BLOCKS_NUMBER;
             i++)
@@ -792,7 +1133,7 @@ bool CDataStore::CrcOfBlocksCrcCheck(void)
             m_xServiseSection.xServiseSectionData.axBlockPositionData[i].uiCrc;
     }
 
-    // Crc из Crc всех блоков совпадает с сохранённым в служебном блоке?
+    // Crc РёР· Crc РІСЃРµС… Р±Р»РѕРєРѕРІ СЃРѕРІРїР°РґР°РµС‚ СЃ СЃРѕС…СЂР°РЅС‘РЅРЅС‹Рј РІ СЃР»СѓР¶РµР±РЅРѕРј Р±Р»РѕРєРµ?
     if (m_xServiseSection.xServiseSectionData.uiCrcOfBlocksCrc ==
             usCrc16(reinterpret_cast<uint8_t*>(auiBlocksCrc),
                     (MAX_BLOCKS_NUMBER * sizeof(uint16_t))))
@@ -815,287 +1156,8 @@ uint8_t CDataStore::GetBlockLength(uint8_t uiBlock)
 //    return 0;
 };
 
-////-------------------------------------------------------------------------------
-//// Проверяет целостность данных хранилища.
-//// Восстанавлмвает повреждённые данные с помощью алгоритма Хемминга.
-//// Восстанавливает данные записываемого блока при сбое питания и т.д.
-//uint8_t CDataStore::Check(void)
-//{
-//    enum
-//    {
-//        IDDLE = 0,
-//
-//        TEMPORARY_SERVICE_SECTION_DATA_CHECK,
-//        TEMPORARY_SERVICE_SECTION_LINKED_BLOCKS_CHECK,
-//
-//        CORRUPTED_BLOCK_RECOVERY_WRITE_END_WAITING,
-//        SERVICE_SECTION_DATA_WRITE_START,
-//        SERVICE_SECTION_DATA_WRITE_END_WAITING,
-//
-//        SERVICE_SECTION_DATA_CHECK,
-//        SERVICE_SECTION_LINKED_BLOCKS_CHECK,
-//
-//        DATA_STORE_NEW_VERSION_ACCEPTED,
-//        DATA_STORE_OLD_VERSION_ACCEPTED,
-//
-//        DATA_STORE_CHECK_OK,
-//        DATA_STORE_CHECK_ERROR,
-//        DATA_STORE_CHECK_REPEAT,
-//    };
-//
-//    enum
-//    {
-//        // Количество попыток восстановления хранилища.
-//        RECOVERY_ATTEMPTS_NUMBER = 3,
-//    };
-//
-//    uint8_t uiLocalFsmState;
-//    uint8_t uiRecoveryAttemptCounter = 0;
-//    uint8_t auiTempArray[MAX_BLOCK_LENGTH];
-//
-//    // Сбросим ошибки декодирования алгоритмом Хемминга.
-//    CHammingCodes::SetErrorCode(CHammingCodes::NONE_ERROR);
-//    // Запустим процесс проверки и восстановления хранилища.
-//    uiLocalFsmState = TEMPORARY_SERVICE_SECTION_DATA_CHECK;
-//
-//    while (1)
-//    {
-//        switch (uiLocalFsmState)
-//        {
-//        case IDDLE:
-//            break;
-//
-//        case TEMPORARY_SERVICE_SECTION_DATA_CHECK:
-//            // Временный служебный блок не повреждён?
-//            if (ReadTemporaryServiceSection())
-//            {
-//                uiLocalFsmState = TEMPORARY_SERVICE_SECTION_LINKED_BLOCKS_CHECK;
-//            }
-//            else
-//            {
-//                // Временный служебный блок повреждён, вероятно во время последнего сеанса записи.
-//                // Проверим целостность хранилища по постоянному служебному блоку.
-//                uiLocalFsmState = SERVICE_SECTION_DATA_CHECK;
-//            }
-//            break;
-//
-//        case TEMPORARY_SERVICE_SECTION_LINKED_BLOCKS_CHECK:
-//            // Проверим связанность блоков хранилища с временным служебным блоком, а следовательно их целостность.
-//            for (uint16_t i = 0;
-//                    i < m_xServiseSection.xServiseSectionData.uiStoredBlocksNumber;
-//                    i++)
-//            {
-//                // Блок не связан с временным служебным буфером(или повреждён)?
-//                if (!(ReadBlock(auiTempArray, i)))
-//                {
-//                    // Установим индекс блока, с сохранённым Crc которого,
-//                    // будем сравнивать Crc блока сохранённое во временном буфере.
-//                    m_uiBlock = i;
-//                    // Crc блока из временного буфера совпадает с Crc блока
-//                    // сохранённого во временном служебном буфере по текущему индексу?
-//                    if (CheckTemporaryBlock())
-//                    {
-//                        // Скопируем данные блока считанные при проверке во вспомогательный буфер.
-//                        memcpy(auiTempArray,
-//                               m_puiIntermediateBuff,
-//                               m_xServiseSection.xServiseSectionData.
-//                               axBlockPositionData[i].uiLength);
-//                        // Данные блока успешно записаны во временные буферы,
-//                        // но при записи в хранилище произошёл сбой.
-//                        // Требуется повторная запись данных блока из временных буферов в хранилище.
-//                        WriteBlock(auiTempArray,
-//                                   m_xServiseSection.xServiseSectionData.
-//                                   axBlockPositionData[i].uiLength,
-//                                   i);
-//
-//                        uiLocalFsmState = CORRUPTED_BLOCK_RECOVERY_WRITE_END_WAITING;
-//                        break;
-//                    }
-//                    else
-//                    {
-//                        // Блок не связан с временным служебным буфером.
-//                        // Возможно произошла ошибка во время записи временного служебного блока.
-//                        // Продолжим проверку.
-//                        uiLocalFsmState = SERVICE_SECTION_DATA_CHECK;
-//                        break;
-//                    }
-//                }
-//                else
-//                {
-//                    // Блок восстановлен алгоритмом Хемминга после обнаружения ошибки?
-//                    if (CHammingCodes::GetErrorCode() != CHammingCodes::NONE_ERROR)
-//                    {
-//                        // Сбросим ошибки декодирования алгоритмом Хемминга.
-//                        CHammingCodes::SetErrorCode(CHammingCodes::NONE_ERROR);
-//                        cout << "CHammingCodes::GetErrorCode 1 uiBlock" << (int)i << endl;
-//
-//                        // Требуется повторная запись данных в хранилище.
-//                        WriteBlock(auiTempArray,
-//                                   m_xServiseSection.xServiseSectionData.
-//                                   axBlockPositionData[i].uiLength,
-//                                   i);
-//
-//                        uiLocalFsmState = CORRUPTED_BLOCK_RECOVERY_WRITE_END_WAITING;
-//                        break;
-//                    }
-//                }
-//
-//                // Авансом.
-//                uiLocalFsmState = SERVICE_SECTION_DATA_WRITE_START;
-//            }
-//            break;
-//
-//        case CORRUPTED_BLOCK_RECOVERY_WRITE_END_WAITING:
-//            // Ожидаем окончания записи автоматом хранилища.
-//            // Сохранённый во временном буфере блок записан в хранилище?
-//            if (GetFsmEvent() == CDataStore::WRITE_OK_FSM_EVENT)
-//            {
-//                uiLocalFsmState = DATA_STORE_CHECK_REPEAT;
-//            }
-//            // При записи блока произошла ошибка?
-//            else if (GetFsmEvent() == CDataStore::WRITE_ERROR_FSM_EVENT)
-//            {
-//                uiLocalFsmState = DATA_STORE_CHECK_REPEAT;
-//            }
-//            break;
-//
-//        case SERVICE_SECTION_DATA_WRITE_START:
-//            // Блоки привязаны к временному служебному блоку, следовательно целы.
-//            // Как минимум, последний сеанс записи во временные буферы прощёл успешо.
-//            // Не будем проверять целостность и совпадение служебного блока, обновим сразу.
-//            // Обновим служебный блок.
-//            SetFsmEvent(WRITE_IN_PROGRESS_FSM_EVENT);
-//            // Запустим процесс записи служебного блока.
-//            SetFsmState(START_WRITE_SERVICE_SECTION_DATA);
-//            uiLocalFsmState = SERVICE_SECTION_DATA_WRITE_END_WAITING;
-//            break;
-//
-//        case SERVICE_SECTION_DATA_WRITE_END_WAITING:
-//            // Ожидаем окончания записи автоматом хранилища.
-//            // Служебный блок записан в хранилище?
-//            if (GetFsmEvent() == CDataStore::WRITE_OK_FSM_EVENT)
-//            {
-//                // Служебный блок не повреждён?
-//                if (ReadServiceSection())
-//                {
-//                    uiLocalFsmState = DATA_STORE_NEW_VERSION_ACCEPTED;
-//                }
-//                else
-//                {
-//                    uiLocalFsmState = DATA_STORE_CHECK_REPEAT;
-//                }
-//            }
-//            // При записи блока произошла ошибка?
-//            else if (GetFsmEvent() == CDataStore::WRITE_ERROR_FSM_EVENT)
-//            {
-//                uiLocalFsmState = DATA_STORE_CHECK_REPEAT;
-//            }
-//            break;
-//
-//        case SERVICE_SECTION_DATA_CHECK:
-//            // Мы здесь если временный служебный блок не связан с данными хранимых блоков(или повреждён).
-//            // Произошёл сбой во время записи. Попытаемся вернуть предыдущее состояние хранилища.
-//            // Служебный блок не повреждён?
-//            if (ReadServiceSection())
-//            {
-//                uiLocalFsmState = SERVICE_SECTION_LINKED_BLOCKS_CHECK;
-//            }
-//            else
-//            {
-//                uiLocalFsmState = DATA_STORE_CHECK_ERROR;
-//            }
-//            break;
-//
-//        case SERVICE_SECTION_LINKED_BLOCKS_CHECK:
-//            // Проверим связанность блоков хранилища со служебным блоком, а следовательно их целостность.
-//            for (uint16_t i = 0;
-//                    i < m_xServiseSection.xServiseSectionData.uiStoredBlocksNumber;
-//                    i++)
-//            {
-//                // Блок не связан со служебным буфером(или повреждён)?
-//                if (!(ReadBlock(auiTempArray, i)))
-//                {
-//                    // Блок не связан со служебным буфером.
-//                    // Возможно произошла ошибка во время записи служебного блока.
-//                    // Восстановить данные нельзя.
-//                    uiLocalFsmState = DATA_STORE_CHECK_ERROR;
-//                    break;
-//                }
-//                else
-//                {
-//                    // Блок восстановлен алгоритмом Хемминга после обнаружения ошибки?
-//                    if (CHammingCodes::GetErrorCode() != CHammingCodes::NONE_ERROR)
-//                    {
-//                        // Сбросим ошибки декодирования алгоритмом Хемминга.
-//                        CHammingCodes::SetErrorCode(CHammingCodes::NONE_ERROR);
-//                        cout << "CHammingCodes::GetErrorCode 2 uiBlock" << (int)i << endl;
-//
-//                        // Требуется повторная запись данных в хранилище.
-//                        WriteBlock(auiTempArray,
-//                                   m_xServiseSection.xServiseSectionData.
-//                                   axBlockPositionData[i].uiLength,
-//                                   i);
-//
-//                        uiLocalFsmState = CORRUPTED_BLOCK_RECOVERY_WRITE_END_WAITING;
-//                        break;
-//                    }
-//                }
-//
-//                // Авансом.
-//                // Блоки привязаны к служебному блоку, следовательно целы.
-//                // Восстановим предыдущую копию хранилища.
-//                uiLocalFsmState = DATA_STORE_OLD_VERSION_ACCEPTED;
-//            }
-//            break;
-//
-//        case DATA_STORE_NEW_VERSION_ACCEPTED:
-//            // Хранилище обновлено.
-//            cerr << "DATA_STORE_NEW_VERSION_ACCEPTED" << endl;
-//            return 1;
-//            break;
-//
-//        case DATA_STORE_OLD_VERSION_ACCEPTED:
-//            // Хранилище не обновлено.
-//            cerr << "DATA_STORE_OLD_VERSION_ACCEPTED" << endl;
-//            return 1;
-//            break;
-//
-//        case DATA_STORE_CHECK_OK:
-//            return 1;
-//            break;
-//
-//        case DATA_STORE_CHECK_ERROR:
-//            // Хранилище повреждено.
-//            cerr << "DATA_STORE_CHECK_ERROR" << endl;
-//            return 0;
-//            break;
-//
-//        case DATA_STORE_CHECK_REPEAT:
-//            // Продолжим проверку и попытки восстановления.
-//            // Ещё есть возможность для восстановления?
-//            if (uiRecoveryAttemptCounter < RECOVERY_ATTEMPTS_NUMBER)
-//            {
-//                uiRecoveryAttemptCounter++;
-//                // Повторим проверку хранилища после восстановления.
-//                uiLocalFsmState = TEMPORARY_SERVICE_SECTION_DATA_CHECK;
-//            }
-//            else
-//            {
-//                uiLocalFsmState = DATA_STORE_CHECK_ERROR;
-//            }
-//            break;
-//
-//        default:
-//            return 0;
-//            break;
-//        }
-//
-//        Fsm();
-//    }
-//}
-
 //-------------------------------------------------------------------------------
-// Главный автомат записи хранилища.
+// Р“Р»Р°РІРЅС‹Р№ Р°РІС‚РѕРјР°С‚ Р·Р°РїРёСЃРё С…СЂР°РЅРёР»РёС‰Р°.
 uint8_t CDataStore::Fsm(void)
 {
 //        std::cout << "CDataStore::Fsm 1"  << std::endl;
@@ -1118,19 +1180,38 @@ uint8_t CDataStore::Fsm(void)
 
     case INIT:
 //        std::cout << "CDataStore::Fsm INIT"  << std::endl;
+//    {
+//        CTaskInterface* pxTask =
+//            GetResources() ->
+//            GetCommonTaskFromMapPointer(m_sStorageDeviceName);
+//
+//        if (pxTask != 0)
+//        {
+//            if (pxTask -> GetFsmState() >= READY)
+//            {
+//                SetStorageDevice((CStorageDeviceInterface*)pxTask);
+//                SetFsmState(READY);
+//                std::cout << "CDataStore::Fsm READY"  << std::endl;
+//            }
+//        }
+//        else
+//        {
+//            if (GetTimerPointer() -> IsOverflow())
+//            {
+//                SetFsmState(STOP);
+//                std::cout << "CDataStore::Fsm STOP"  << std::endl;
+//            }
+//        }
+//    }
     {
-        CTaskInterface* pxTask =
+        m_pxTaskCustomer =
             GetResources() ->
-            GetCommonTaskFromMapPointer(m_sStorageDeviceName);
+            GetCommonTaskFromMapPointer(m_sTaskCustomerName);
 
-        if (pxTask != 0)
+        if (m_pxTaskCustomer != 0)
         {
-            if (pxTask -> GetFsmState() >= READY)
-            {
-                SetStorageDevice((CStorageDeviceInterface*)pxTask);
-                SetFsmState(READY);
-                std::cout << "CDataStore::Fsm READY"  << std::endl;
-            }
+            SetFsmState(READY);
+            std::cout << "CDataStore::Fsm READY"  << std::endl;
         }
         else
         {
@@ -1145,105 +1226,119 @@ uint8_t CDataStore::Fsm(void)
 
     case READY:
 //        std::cout << "CDataStore::Fsm READY"  << std::endl;
+//        if ((m_pxTaskCustomer -> m_uiFsmCommandState) != 0)
+//        {
+//            SetFsmState(m_pxTaskCustomer -> m_uiFsmCommandState);
+//            m_pxTaskCustomer -> m_uiFsmCommandState = 0;
+//        }
         break;
 
 //-------------------------------------------------------------------------------
-    // Запись блока во временный буфер.
+    // Р—Р°РїРёСЃСЊ Р±Р»РѕРєР° РІРѕ РІСЂРµРјРµРЅРЅС‹Р№ Р±СѓС„РµСЂ.
     case START_WRITE_TEMPORARY_BLOCK_DATA:
         std::cout << "CDataStore::Fsm 1"  << std::endl;
 //        SetFsmEvent(WRITE_IN_PROGRESS_FSM_EVENT);
-//        // Установим время ожидания готовности к записи.
-        GetTimerPointer() -> Set(READY_TO_WRITE_WAITING_TIMEOUT);
-        SetFsmState(READY_TO_WRITE_WAITING_TEMPORARY_BLOCK_DATA);
+//        // РЈСЃС‚Р°РЅРѕРІРёРј РІСЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РіРѕС‚РѕРІРЅРѕСЃС‚Рё Рє Р·Р°РїРёСЃРё.
+//        GetTimerPointer() -> Set(READY_TO_WRITE_WAITING_TIMEOUT);
+        // РЈСЃС‚Р°РЅРѕРІРёРј РІСЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РѕРєРѕРЅС‡Р°РЅРёСЏ Р·Р°РїРёСЃРё.
+        TemporaryBlockWritePrepare();
+//        WriteBlock(uint8_t *puiSource, uint16_t uiLength, TEMPORARY_BLOCK_INDEX)
+//        m_uiFsmCommandState = CStorageDeviceFileSystem::WRITE_DATA_START;
+        GetTimerPointer() -> Set(WRITE_END_WAITING_TIMEOUT);
+        SetFsmState(WRITE_END_WAITING_TEMPORARY_BLOCK_DATA);
+        //        SetFsmState(READY_TO_WRITE_WAITING_TEMPORARY_BLOCK_DATA);
         break;
 
-    case READY_TO_WRITE_WAITING_TEMPORARY_BLOCK_DATA:
-        std::cout << "CDataStore::Fsm 2"  << std::endl;
-//        // Устройство хранения готово к записи?
-////        if (m_pxStorageDevice -> IsReadyToWrite())
-        if (m_pxStorageDevice -> Fsm() == CStorageDeviceInterface::READY)
-        {
-            // Установим время ожидания окончания записи.
-            GetTimerPointer() -> Set(WRITE_END_WAITING_TIMEOUT);
-//            // Сбросим флаг - запись закончена.
-//            m_pxStorageDevice -> SetIsDataWrited(false);
-            // Подготовка к записи во временный буфер прошла успешно?
-            if (TemporaryBlockWritePrepare())
-            {
-                std::cout << "CDataStore::Fsm 3"  << std::endl;
-                SetFsmState(WRITE_END_WAITING_TEMPORARY_BLOCK_DATA);
-            }
-            else
-            {
-                std::cout << "CDataStore::Fsm 4"  << std::endl;
-//                SetFsmEvent(WRITE_ERROR_FSM_EVENT);
-                SetFsmState(WRITE_ERROR);
-            }
-        }
-        // Время ожидания готовности к записи закончилось?
-        else if (GetTimerPointer() -> IsOverflow())
-        {
-//                SetFsmEvent(WRITE_ERROR_FSM_EVENT);
-            SetFsmState(WRITE_ERROR);
-        }
-        break;
+//    case READY_TO_WRITE_WAITING_TEMPORARY_BLOCK_DATA:
+//        std::cout << "CDataStore::Fsm 2"  << std::endl;
+////        // РЈСЃС‚СЂРѕР№СЃС‚РІРѕ С…СЂР°РЅРµРЅРёСЏ РіРѕС‚РѕРІРѕ Рє Р·Р°РїРёСЃРё?
+//////        if (m_pxStorageDevice -> IsReadyToWrite())
+//        if (m_pxStorageDevice -> Fsm() == CStorageDeviceInterface::READY)
+//        {
+//            // РЈСЃС‚Р°РЅРѕРІРёРј РІСЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РѕРєРѕРЅС‡Р°РЅРёСЏ Р·Р°РїРёСЃРё.
+//            GetTimerPointer() -> Set(WRITE_END_WAITING_TIMEOUT);
+////            // РЎР±СЂРѕСЃРёРј С„Р»Р°Рі - Р·Р°РїРёСЃСЊ Р·Р°РєРѕРЅС‡РµРЅР°.
+////            m_pxStorageDevice -> SetIsDataWrited(false);
+//            // РџРѕРґРіРѕС‚РѕРІРєР° Рє Р·Р°РїРёСЃРё РІРѕ РІСЂРµРјРµРЅРЅС‹Р№ Р±СѓС„РµСЂ РїСЂРѕС€Р»Р° СѓСЃРїРµС€РЅРѕ?
+//        if (TemporaryBlockWritePrepare())
+//        {
+//            std::cout << "CDataStore::Fsm 3"  << std::endl;
+//            SetFsmState(WRITE_END_WAITING_TEMPORARY_BLOCK_DATA);
+//        }
+//        else
+//        {
+//            std::cout << "CDataStore::Fsm 4"  << std::endl;
+////                SetFsmEvent(WRITE_ERROR_FSM_EVENT);
+//            SetFsmState(WRITE_ERROR);
+//        }
+//        }
+//        // Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РіРѕС‚РѕРІРЅРѕСЃС‚Рё Рє Р·Р°РїРёСЃРё Р·Р°РєРѕРЅС‡РёР»РѕСЃСЊ?
+//        else if (GetTimerPointer() -> IsOverflow())
+//        {
+////                SetFsmEvent(WRITE_ERROR_FSM_EVENT);
+//            SetFsmState(WRITE_ERROR);
+//        }
+//        break;
 
     case WRITE_END_WAITING_TEMPORARY_BLOCK_DATA:
         std::cout << "CDataStore::Fsm 5"  << std::endl;
-        // Ожидаем окончания записи автоматом устройства хранения.
-        // Устройство хранения закончило запись?
+        // РћР¶РёРґР°РµРј РѕРєРѕРЅС‡Р°РЅРёСЏ Р·Р°РїРёСЃРё Р°РІС‚РѕРјР°С‚РѕРј СѓСЃС‚СЂРѕР№СЃС‚РІР° С…СЂР°РЅРµРЅРёСЏ.
+        // РЈСЃС‚СЂРѕР№СЃС‚РІРѕ С…СЂР°РЅРµРЅРёСЏ Р·Р°РєРѕРЅС‡РёР»Рѕ Р·Р°РїРёСЃСЊ?
 //        if (m_pxStorageDevice -> IsDataWrited())
-        if (m_pxStorageDevice -> Fsm() ==
-                CStorageDeviceInterface::DATA_WRITED_SUCCESSFULLY)
-        {
-            std::cout << "CDataStore::Fsm 6"  << std::endl;
-            m_pxStorageDevice -> SetFsmState(CStorageDeviceInterface::READY);
-            // Запись прошла успешно?
-            if (CheckTemporaryBlock())
-            {
-                cerr << "CheckTemporaryBlock ok" << endl;
-                SetFsmState(START_WRITE_TEMPORARY_SERVICE_SECTION_DATA);
-            }
-            else
-            {
-                cerr << "CheckTemporaryBlock error" << endl;
-//                SetFsmEvent(WRITE_ERROR_FSM_EVENT);
-                SetFsmState(WRITE_ERROR);
-            }
-        }
-        // Время ожидания окончания записи закончилось?
-        else if (GetTimerPointer() -> IsOverflow())
-        {
-            std::cout << "CDataStore::Fsm 7"  << std::endl;
-            m_pxStorageDevice -> SetFsmState(CStorageDeviceInterface::READY);
-//                SetFsmEvent(WRITE_ERROR_FSM_EVENT);
-            SetFsmState(WRITE_ERROR);
-        }
+//        if (m_pxStorageDevice -> Fsm() ==
+//                CStorageDeviceInterface::DATA_WRITED_SUCCESSFULLY)
+//        if (m_uiFsmAnswerState ==
+//                CStorageDeviceInterface::DATA_WRITED_SUCCESSFULLY)
+//        {
+//            std::cout << "CDataStore::Fsm 6"  << std::endl;
+//            m_uiFsmAnswerState = 0;
+////            m_pxStorageDevice -> SetFsmState(CStorageDeviceInterface::READY);
+//            // Р—Р°РїРёСЃСЊ РїСЂРѕС€Р»Р° СѓСЃРїРµС€РЅРѕ?
+//            if (CheckTemporaryBlock())
+//            {
+//                cerr << "CheckTemporaryBlock ok" << endl;
+//                SetFsmState(START_WRITE_TEMPORARY_SERVICE_SECTION_DATA);
+//            }
+//            else
+//            {
+//                cerr << "CheckTemporaryBlock error" << endl;
+////                SetFsmEvent(WRITE_ERROR_FSM_EVENT);
+//                SetFsmState(WRITE_ERROR);
+//            }
+//        }
+//        // Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РѕРєРѕРЅС‡Р°РЅРёСЏ Р·Р°РїРёСЃРё Р·Р°РєРѕРЅС‡РёР»РѕСЃСЊ?
+//        else if (GetTimerPointer() -> IsOverflow())
+//        {
+//            std::cout << "CDataStore::Fsm 7"  << std::endl;
+//            m_pxStorageDevice -> SetFsmState(CStorageDeviceInterface::READY);
+////                SetFsmEvent(WRITE_ERROR_FSM_EVENT);
+//            SetFsmState(WRITE_ERROR);
+//        }
         break;
 
 
 //-------------------------------------------------------------------------------
-    // Запись временного служеьного блока.
+    // Р—Р°РїРёСЃСЊ РІСЂРµРјРµРЅРЅРѕРіРѕ СЃР»СѓР¶РµСЊРЅРѕРіРѕ Р±Р»РѕРєР°.
     case START_WRITE_TEMPORARY_SERVICE_SECTION_DATA:
         std::cout << "CDataStore::Fsm 8"  << std::endl;
 //        SetFsmEvent(WRITE_IN_PROGRESS_FSM_EVENT);
-        // Установим время ожидания готовности к записи.
+        // РЈСЃС‚Р°РЅРѕРІРёРј РІСЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РіРѕС‚РѕРІРЅРѕСЃС‚Рё Рє Р·Р°РїРёСЃРё.
         GetTimerPointer() -> Set(READY_TO_WRITE_WAITING_TIMEOUT);
         SetFsmState(READY_TO_WRITE_WAITING_TEMPORARY_SERVICE_SECTION_DATA);
         break;
 
     case READY_TO_WRITE_WAITING_TEMPORARY_SERVICE_SECTION_DATA:
         std::cout << "CDataStore::Fsm 9"  << std::endl;
-        // Устройство хранения готово к записи?
+        // РЈСЃС‚СЂРѕР№СЃС‚РІРѕ С…СЂР°РЅРµРЅРёСЏ РіРѕС‚РѕРІРѕ Рє Р·Р°РїРёСЃРё?
 //        if (m_pxStorageDevice -> IsReadyToWrite())
         if (m_pxStorageDevice -> Fsm() == CStorageDeviceInterface::READY)
         {
             std::cout << "CDataStore::Fsm 9 1"  << std::endl;
-            // Установим время ожидания окончания записи.
+            // РЈСЃС‚Р°РЅРѕРІРёРј РІСЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РѕРєРѕРЅС‡Р°РЅРёСЏ Р·Р°РїРёСЃРё.
             GetTimerPointer() -> Set(WRITE_END_WAITING_TIMEOUT);
-//            // Сбросим флаг - запись закончена.
+//            // РЎР±СЂРѕСЃРёРј С„Р»Р°Рі - Р·Р°РїРёСЃСЊ Р·Р°РєРѕРЅС‡РµРЅР°.
 //            m_pxStorageDevice -> SetIsDataWrited(false);
-            // Подготовка к записи прошла успешно?
+            // РџРѕРґРіРѕС‚РѕРІРєР° Рє Р·Р°РїРёСЃРё РїСЂРѕС€Р»Р° СѓСЃРїРµС€РЅРѕ?
             if (TemporaryServiceSectionWritePrepare())
             {
                 std::cout << "CDataStore::Fsm 10"  << std::endl;
@@ -1256,7 +1351,7 @@ uint8_t CDataStore::Fsm(void)
                 SetFsmState(WRITE_ERROR);
             }
         }
-        // Время ожидания готовности к записи закончилось?
+        // Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РіРѕС‚РѕРІРЅРѕСЃС‚Рё Рє Р·Р°РїРёСЃРё Р·Р°РєРѕРЅС‡РёР»РѕСЃСЊ?
         else if (GetTimerPointer() -> IsOverflow())
         {
             std::cout << "CDataStore::Fsm 12"  << std::endl;
@@ -1266,15 +1361,15 @@ uint8_t CDataStore::Fsm(void)
         break;
 
     case WRITE_END_WAITING_TEMPORARY_SERVICE_SECTION_DATA:
-        // Ожидаем окончания записи автоматом устройства хранения.
-        // Устройство хранения закончило запись?
+        // РћР¶РёРґР°РµРј РѕРєРѕРЅС‡Р°РЅРёСЏ Р·Р°РїРёСЃРё Р°РІС‚РѕРјР°С‚РѕРј СѓСЃС‚СЂРѕР№СЃС‚РІР° С…СЂР°РЅРµРЅРёСЏ.
+        // РЈСЃС‚СЂРѕР№СЃС‚РІРѕ С…СЂР°РЅРµРЅРёСЏ Р·Р°РєРѕРЅС‡РёР»Рѕ Р·Р°РїРёСЃСЊ?
 //        if (m_pxStorageDevice -> IsDataWrited())
         if (m_pxStorageDevice -> Fsm() ==
                 CStorageDeviceInterface::DATA_WRITED_SUCCESSFULLY)
         {
             std::cout << "CDataStore::Fsm 13"  << std::endl;
             m_pxStorageDevice -> SetFsmState(CStorageDeviceInterface::READY);
-            // Запись прошла успешно?
+            // Р—Р°РїРёСЃСЊ РїСЂРѕС€Р»Р° СѓСЃРїРµС€РЅРѕ?
             if (ReadTemporaryServiceSection())
             {
                 cerr << "ReadTemporaryServiceSection ok" << endl;
@@ -1287,7 +1382,7 @@ uint8_t CDataStore::Fsm(void)
                 SetFsmState(WRITE_ERROR);
             }
         }
-        // Время ожидания окончания записи закончилось?
+        // Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РѕРєРѕРЅС‡Р°РЅРёСЏ Р·Р°РїРёСЃРё Р·Р°РєРѕРЅС‡РёР»РѕСЃСЊ?
         else if (GetTimerPointer() -> IsOverflow())
         {
             std::cout << "CDataStore::Fsm 14"  << std::endl;
@@ -1299,24 +1394,24 @@ uint8_t CDataStore::Fsm(void)
 
 
 //-------------------------------------------------------------------------------
-    // Запись блока.
+    // Р—Р°РїРёСЃСЊ Р±Р»РѕРєР°.
     case START_WRITE_BLOCK_DATA:
-//        // Установим время ожидания готовности к записи.
+//        // РЈСЃС‚Р°РЅРѕРІРёРј РІСЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РіРѕС‚РѕРІРЅРѕСЃС‚Рё Рє Р·Р°РїРёСЃРё.
         GetTimerPointer() -> Set(READY_TO_WRITE_WAITING_TIMEOUT);
         SetFsmState(READY_TO_WRITE_WAITING_BLOCK_DATA);
         break;
 
     case READY_TO_WRITE_WAITING_BLOCK_DATA:
-//        // Устройство хранения готово к записи?
+//        // РЈСЃС‚СЂРѕР№СЃС‚РІРѕ С…СЂР°РЅРµРЅРёСЏ РіРѕС‚РѕРІРѕ Рє Р·Р°РїРёСЃРё?
 ////        if (m_pxStorageDevice -> IsReadyToWrite())
         if (m_pxStorageDevice -> Fsm() == CStorageDeviceInterface::READY)
         {
             std::cout << "CDataStore::Fsm 15"  << std::endl;
-            // Установим время ожидания окончания записи записи.
+            // РЈСЃС‚Р°РЅРѕРІРёРј РІСЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РѕРєРѕРЅС‡Р°РЅРёСЏ Р·Р°РїРёСЃРё Р·Р°РїРёСЃРё.
             GetTimerPointer() -> Set(WRITE_END_WAITING_TIMEOUT);
-//            // Сбросим флаг - запись закончена.
+//            // РЎР±СЂРѕСЃРёРј С„Р»Р°Рі - Р·Р°РїРёСЃСЊ Р·Р°РєРѕРЅС‡РµРЅР°.
 //            m_pxStorageDevice -> SetIsDataWrited(false);
-            // Подготовка к записи прошла успешно?
+            // РџРѕРґРіРѕС‚РѕРІРєР° Рє Р·Р°РїРёСЃРё РїСЂРѕС€Р»Р° СѓСЃРїРµС€РЅРѕ?
             if (BlockWritePrepare())
             {
                 std::cout << "CDataStore::Fsm 16"  << std::endl;
@@ -1329,7 +1424,7 @@ uint8_t CDataStore::Fsm(void)
                 SetFsmState(WRITE_ERROR);
             }
         }
-        // Время ожидания готовности к записи закончилось?
+        // Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РіРѕС‚РѕРІРЅРѕСЃС‚Рё Рє Р·Р°РїРёСЃРё Р·Р°РєРѕРЅС‡РёР»РѕСЃСЊ?
         else if (GetTimerPointer() -> IsOverflow())
         {
             std::cout << "CDataStore::Fsm 18"  << std::endl;
@@ -1339,15 +1434,15 @@ uint8_t CDataStore::Fsm(void)
         break;
 
     case WRITE_END_WAITING_BLOCK_DATA:
-        // Ожидаем окончания записи автоматом устройства хранения.
-        // Устройство хранения закончило запись?
+        // РћР¶РёРґР°РµРј РѕРєРѕРЅС‡Р°РЅРёСЏ Р·Р°РїРёСЃРё Р°РІС‚РѕРјР°С‚РѕРј СѓСЃС‚СЂРѕР№СЃС‚РІР° С…СЂР°РЅРµРЅРёСЏ.
+        // РЈСЃС‚СЂРѕР№СЃС‚РІРѕ С…СЂР°РЅРµРЅРёСЏ Р·Р°РєРѕРЅС‡РёР»Рѕ Р·Р°РїРёСЃСЊ?
 //        if (m_pxStorageDevice -> IsDataWrited())
         if (m_pxStorageDevice -> Fsm() ==
                 CStorageDeviceInterface::DATA_WRITED_SUCCESSFULLY)
         {
             std::cout << "CDataStore::Fsm 19"  << std::endl;
             m_pxStorageDevice -> SetFsmState(CStorageDeviceInterface::READY);
-            // Запись прошла успешно?
+            // Р—Р°РїРёСЃСЊ РїСЂРѕС€Р»Р° СѓСЃРїРµС€РЅРѕ?
             if (CheckBlock())
             {
                 cerr << "CheckBlock ok" << endl;
@@ -1360,7 +1455,7 @@ uint8_t CDataStore::Fsm(void)
                 SetFsmState(WRITE_ERROR);
             }
         }
-        // Время ожидания окончания записи закончилось?
+        // Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РѕРєРѕРЅС‡Р°РЅРёСЏ Р·Р°РїРёСЃРё Р·Р°РєРѕРЅС‡РёР»РѕСЃСЊ?
         else if (GetTimerPointer() -> IsOverflow())
         {
             std::cout << "CDataStore::Fsm 20"  << std::endl;
@@ -1372,25 +1467,25 @@ uint8_t CDataStore::Fsm(void)
 
 
 //-------------------------------------------------------------------------------
-    // Запись служеьного блока.
+    // Р—Р°РїРёСЃСЊ СЃР»СѓР¶РµСЊРЅРѕРіРѕ Р±Р»РѕРєР°.
     case START_WRITE_SERVICE_SECTION_DATA:
 //        SetFsmEvent(WRITE_IN_PROGRESS_FSM_EVENT);
-        // Установим время ожидания готовности к записи.
+        // РЈСЃС‚Р°РЅРѕРІРёРј РІСЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РіРѕС‚РѕРІРЅРѕСЃС‚Рё Рє Р·Р°РїРёСЃРё.
         GetTimerPointer() -> Set(READY_TO_WRITE_WAITING_TIMEOUT);
         SetFsmState(READY_TO_WRITE_WAITING_SERVICE_SECTION_DATA);
         break;
 
     case READY_TO_WRITE_WAITING_SERVICE_SECTION_DATA:
-        // Устройство хранения готово к записи?
+        // РЈСЃС‚СЂРѕР№СЃС‚РІРѕ С…СЂР°РЅРµРЅРёСЏ РіРѕС‚РѕРІРѕ Рє Р·Р°РїРёСЃРё?
 //        if (m_pxStorageDevice -> IsReadyToWrite())
         if (m_pxStorageDevice -> Fsm() == CStorageDeviceInterface::READY)
         {
             std::cout << "CDataStore::Fsm 21"  << std::endl;
-            // Установим время ожидания окончания записи.
+            // РЈСЃС‚Р°РЅРѕРІРёРј РІСЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РѕРєРѕРЅС‡Р°РЅРёСЏ Р·Р°РїРёСЃРё.
             GetTimerPointer() -> Set(WRITE_END_WAITING_TIMEOUT);
-//            // Сбросим флаг - запись закончена.
+//            // РЎР±СЂРѕСЃРёРј С„Р»Р°Рі - Р·Р°РїРёСЃСЊ Р·Р°РєРѕРЅС‡РµРЅР°.
 //            m_pxStorageDevice -> SetIsDataWrited(false);
-            // Подготовка к записи прошла успешно?
+            // РџРѕРґРіРѕС‚РѕРІРєР° Рє Р·Р°РїРёСЃРё РїСЂРѕС€Р»Р° СѓСЃРїРµС€РЅРѕ?
             if (ServiceSectionWritePrepare())
             {
                 std::cout << "CDataStore::Fsm 22"  << std::endl;
@@ -1403,7 +1498,7 @@ uint8_t CDataStore::Fsm(void)
                 SetFsmState(WRITE_ERROR);
             }
         }
-        // Время ожидания готовности к записи закончилось?
+        // Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РіРѕС‚РѕРІРЅРѕСЃС‚Рё Рє Р·Р°РїРёСЃРё Р·Р°РєРѕРЅС‡РёР»РѕСЃСЊ?
         else if (GetTimerPointer() -> IsOverflow())
         {
             std::cout << "CDataStore::Fsm 24"  << std::endl;
@@ -1413,15 +1508,15 @@ uint8_t CDataStore::Fsm(void)
         break;
 
     case WRITE_END_WAITING_SERVICE_SECTION_DATA:
-        // Ожидаем окончания записи автоматом устройства хранения.
-        // Устройство хранения закончило запись?
+        // РћР¶РёРґР°РµРј РѕРєРѕРЅС‡Р°РЅРёСЏ Р·Р°РїРёСЃРё Р°РІС‚РѕРјР°С‚РѕРј СѓСЃС‚СЂРѕР№СЃС‚РІР° С…СЂР°РЅРµРЅРёСЏ.
+        // РЈСЃС‚СЂРѕР№СЃС‚РІРѕ С…СЂР°РЅРµРЅРёСЏ Р·Р°РєРѕРЅС‡РёР»Рѕ Р·Р°РїРёСЃСЊ?
 //        if (m_pxStorageDevice -> IsDataWrited())
         if (m_pxStorageDevice -> Fsm() ==
                 CStorageDeviceInterface::DATA_WRITED_SUCCESSFULLY)
         {
             std::cout << "CDataStore::Fsm 25"  << std::endl;
             m_pxStorageDevice -> SetFsmState(CStorageDeviceInterface::READY);
-            // Запись прошла успешно?
+            // Р—Р°РїРёСЃСЊ РїСЂРѕС€Р»Р° СѓСЃРїРµС€РЅРѕ?
             if (ReadServiceSection())
             {
                 std::cout << "CDataStore::Fsm 26"  << std::endl;
@@ -1437,7 +1532,7 @@ uint8_t CDataStore::Fsm(void)
                 SetFsmState(WRITE_ERROR);
             }
         }
-        // Время ожидания окончания записи закончилось?
+        // Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РѕРєРѕРЅС‡Р°РЅРёСЏ Р·Р°РїРёСЃРё Р·Р°РєРѕРЅС‡РёР»РѕСЃСЊ?
         else if (GetTimerPointer() -> IsOverflow())
         {
             std::cout << "CDataStore::Fsm 28"  << std::endl;

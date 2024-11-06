@@ -8,11 +8,8 @@
 //  GitHub      : https://github.com/AlexandrVolvenkin
 //-------------------------------------------------------------------------------
 
-#include "Platform.h"
-//#include "Resources.h"
-//#include "Dfa.h"
-#include "Timer.h"
-
+class Timer;
+class Platform;
 class CTask;
 class CResources;
 

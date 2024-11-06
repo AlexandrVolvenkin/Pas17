@@ -107,6 +107,8 @@ uint8_t CMainProductionCycle::CreateTasks(void)
                                     pxStorageDeviceFileSystem);
     pxStorageDeviceFileSystem ->
     SetResources(&m_xResources);
+    pxStorageDeviceFileSystem ->
+    SetTaskCustomerName("DataStoreFileSystem");
     m_xResources.AddCurrentlyRunningTasksList(pxStorageDeviceFileSystem);
 
     CDataStore* pxDataStoreFileSystem = new CDataStore();
@@ -116,6 +118,8 @@ uint8_t CMainProductionCycle::CreateTasks(void)
     SetResources(&m_xResources);
     pxDataStoreFileSystem ->
     SetStorageDeviceName("StorageDeviceFileSystem");
+    pxStorageDeviceFileSystem ->
+    SetTaskCustomerName("DataStoreCheck");
     m_xResources.AddCurrentlyRunningTasksList(pxDataStoreFileSystem);
     m_pxDataStoreFileSystem = pxDataStoreFileSystem;
 
@@ -330,7 +334,7 @@ uint8_t CMainProductionCycle::Fsm(void)
             if (GetTimerPointer() -> IsOverflow())
             {
                 SetFsmState(STOP);
-            std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_TASK_READY_WAITING 2"  << std::endl;
+                std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_TASK_READY_WAITING 2"  << std::endl;
             }
         }
         break;
@@ -342,8 +346,8 @@ uint8_t CMainProductionCycle::Fsm(void)
         GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
         SetFsmState(DATABASE_CHECK_END_WAITING);
 
-            m_pxDataStoreFileSystem -> CreateServiceSection();
-            m_pxDataStoreFileSystem -> WriteBlock(auiTempBlock, sizeof(auiTempBlock), 0);
+        m_pxDataStoreFileSystem -> CreateServiceSection();
+        m_pxDataStoreFileSystem -> WriteBlock(auiTempBlock, sizeof(auiTempBlock), 0);
 //        if (!(m_pxDataStoreCheck -> Check()))
 //        {
 //            cout << "DataStore check error" << endl;
@@ -406,21 +410,21 @@ uint8_t CMainProductionCycle::Fsm(void)
         if ((m_pxDataStoreCheck -> GetFsmState()) == CDataStoreCheck::DATA_STORE_CHECK_ERROR)
         {
             SetFsmState(DATABASE_CHECK_END_ERROR);
-        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_RECAVERY_END_WAITING 1"  << std::endl;
+            std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_RECAVERY_END_WAITING 1"  << std::endl;
         }
         else if (((m_pxDataStoreCheck -> GetFsmState()) == CDataStoreCheck::DATA_STORE_NEW_VERSION_ACCEPTED) ||
                  ((m_pxDataStoreCheck -> GetFsmState()) == CDataStoreCheck::DATA_STORE_OLD_VERSION_ACCEPTED) ||
                  ((m_pxDataStoreCheck -> GetFsmState()) == CDataStoreCheck::DATA_STORE_CHECK_OK))
         {
             SetFsmState(DATABASE_CHECK_END_OK);
-        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_RECAVERY_END_WAITING 2"  << std::endl;
+            std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_RECAVERY_END_WAITING 2"  << std::endl;
         }
         else
         {
             if (GetTimerPointer() -> IsOverflow())
             {
                 SetFsmState(DATABASE_CHECK_END_ERROR);
-        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_RECAVERY_END_WAITING 3"  << std::endl;
+                std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_RECAVERY_END_WAITING 3"  << std::endl;
             }
         }
         break;

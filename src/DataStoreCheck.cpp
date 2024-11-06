@@ -9,13 +9,14 @@
 #include <string.h>
 #include <typeinfo>
 
+#include "Timer.h"
 #include "Task.h"
 #include "Resources.h"
 #include "StorageDevice.h"
 #include "DataStore.h"
-#include "DataStoreCheck.h"
 #include "Crc.h"
 #include "HammingCodes.h"
+#include "DataStoreCheck.h"
 
 
 //-------------------------------------------------------------------------------
@@ -77,7 +78,7 @@ uint8_t CDataStoreCheck::Check(void)
 uint8_t CDataStoreCheck::Fsm(void)
 {
 //        std::cout << "CDataStoreCheck::Fsm 1"  << std::endl;
-    uint8_t auiTempArray[CDataStore::MAX_BLOCK_LENGTH];
+    uint8_t auiTempArray[CDataStore::MAX_SERVICE_SECTION_DATA_LENGTH];
 
     switch (GetFsmState())
     {

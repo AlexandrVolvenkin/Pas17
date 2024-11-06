@@ -57,6 +57,8 @@
 		<Unit filename="src/ConfigurationCreate.h" />
 		<Unit filename="src/Crc.cpp" />
 		<Unit filename="src/Crc.h" />
+		<Unit filename="src/DataContainer.cpp" />
+		<Unit filename="src/DataContainer.h" />
 		<Unit filename="src/DataStore.cpp" />
 		<Unit filename="src/DataStore.h" />
 		<Unit filename="src/DataStoreCheck.cpp" />

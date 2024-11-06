@@ -5,11 +5,12 @@
 //  email       : aav-36@mail.ru
 //  GitHub      : https://github.com/AlexandrVolvenkin
 //-------------------------------------------------------------------------------
+#include "Timer.h"
 #include "Task.h"
-#include "DeviceControl.h"
 #include "Platform.h"
 #include "Resources.h"
 #include "DataStore.h"
+#include "DeviceControl.h"
 
 using namespace std;
 

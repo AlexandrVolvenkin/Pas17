@@ -12,11 +12,7 @@
 #include <iostream>
 #include <fstream>
 
-//#include "Dfa.h"
-#include "Timer.h"
-//#include "StorageDevice.h"
-//#include "DataStore.h"
-
+class Timer;
 class CTask;
 class CResources;
 class CStorageDeviceInterface;

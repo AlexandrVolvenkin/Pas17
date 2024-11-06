@@ -13,10 +13,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "Platform.h"
-//#include "Dfa.h"
-#include "Timer.h"
-
 // MUVR
 //// коды типа модуля.
 #define MODULE_TYPE_MVPS3 0x06
@@ -116,10 +112,12 @@ enum
 // (sizeof(struct TAnalogueInputDescriptionDataBase) * ANALOG_MODULE_INPUT_QUANTITY)// 28х6=168.
 #define ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_LENGTH 168
 
+class CTimer;
+class CPlatform;
 class CTask;
-class CInternalModule;
 class CResources;
 class CCommunicationDeviceInterface;
+class CInternalModule;
 
 //-------------------------------------------------------------------------------
 class CInternalModuleMuvr : public CInternalModule

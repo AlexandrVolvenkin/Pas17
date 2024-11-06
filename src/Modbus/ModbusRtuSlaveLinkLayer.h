@@ -20,8 +20,6 @@
 #include "Modbus.h"
 #include "ModbusSlaveLinkLayer.h"
 #include "Configuration.h"
-#include "Platform.h"
-#include "Timer.h"
 
 /* Modbus_Application_Protocol_V1_1b.pdf Chapter 4 Section 1 Page 5
  * RS232 / RS485 ADU = 253 bytes + slave (1 byte) + CRC (2 bytes) = 256 bytes
@@ -39,6 +37,8 @@
 #define MODBUS_RTU_RS232 0
 #define MODBUS_RTU_RS485 1
 
+class CTimer;
+class CPlatform;
 class CTask;
 class CResources;
 class CCommunicationDeviceNew;

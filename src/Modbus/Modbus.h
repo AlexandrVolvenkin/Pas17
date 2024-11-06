@@ -17,10 +17,8 @@
 #include <assert.h>
 #include <time.h>
 
-#include "../Platform.h"
-//#include "../Task.h"
-//#include "../Dfa.h"
-#include "../Timer.h"
+class CTimer;
+class CPlatform;
 
 #define HAVE_DECL_TIOCSRS485 1
 

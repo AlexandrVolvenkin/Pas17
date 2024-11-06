@@ -1,0 +1,111 @@
+#ifndef CDFA_H
+#define CDFA_H
+
+#include <stdint.h>
+#include "Timer.h"
+
+//-------------------------------------------------------------------------------
+class CDfaLite
+{
+public:
+    CDfaLite();
+    virtual ~CDfaLite();
+    virtual uint8_t Fsm(void) {};
+    virtual uint8_t GetFsmState(void)
+    {
+        return m_uiFsmState;
+    };
+
+//protected:
+    virtual void SetFsmState(uint8_t uiData)
+    {
+        m_uiFsmState = uiData;
+    };
+
+    uint8_t m_uiFsmState;
+//    uint8_t m_uiFsmNextState;
+    uint8_t m_uiFsmCommandState;
+    uint8_t m_uiFsmAnswerState;
+};
+
+//-------------------------------------------------------------------------------
+
+
+
+
+
+//-------------------------------------------------------------------------------
+class CDfa : public CDfaLite
+{
+public:
+    CDfa();
+    virtual ~CDfa();
+//    uint8_t GetSavedFsmState(void)
+//    {
+//        return m_uiSavedFsmState;
+//    };
+//
+//    uint8_t GetFsmEvent(void)
+//    {
+//        return m_uiFsmEvent;
+//    };
+//
+////protected:
+//    void SetSavedFsmState(uint8_t uiData)
+//    {
+//        m_uiSavedFsmState = uiData;
+//    };
+//    void SetFsmEvent(uint8_t uiData)
+//    {
+//        m_uiFsmEvent = uiData;
+//    };
+    CTimer* GetTimerPointer(void)
+    {
+        return &m_xTimer;
+    };
+
+//    uint8_t m_uiSavedFsmState;
+//    uint8_t m_uiFsmEvent;
+    CTimer m_xTimer;
+};
+
+
+//-------------------------------------------------------------------------------
+#endif // CDFA_H
+
+who is porn star sydnee steele?
+//-------------------------------------------------------------------------------
+что я хочу сделать?
+я ищу видеокарту для своего компьютера с поддержкой cuda.
+
+или компьютер уже готовый к работе с хорошей видеокартой 8гигов.
+
+или купить отдельно видеокарту и потом подобрать под неё железо. 
+самому искать собирать это не реально. плохой вариант. мне не
+денег жалко. деньги у меня есть я хочу их потратить.
+
+для чего мне это нужно?
+для работы с нейронными сетями и их тренировки. у меня есть компьютер
+и чтобы он не простаивал за 2 тыщи вполне можно поиграть. с искуственным
+интеллектом разберусь позже.
+
+для запуска искуственного интеллекта. но у меня инлеллект вполне
+нормально запускается. это с коротким промптом, а если я захочу
+решать серьёзные задачи, анализ документов в широком контексте,
+то мне уже нужна хорошая видеокарта. видеокарта это ключевая задача.
+
+KoboldCpp-ROCm
+https://github.com/YellowRoseCx/koboldcpp-rocm
+
+GeForce GTX 1060 6 GB
+Видеокарта p106 100 6gb (gtx 1060)
+всё дорожает - всё дожирают
+
+
+
+
+
+
+
+
+

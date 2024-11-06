@@ -5,13 +5,14 @@
 //  email       : aav-36@mail.ru
 //  GitHub      : https://github.com/AlexandrVolvenkin
 //-------------------------------------------------------------------------------
+#include "Timer.h"
 #include "Task.h"
-#include "InternalModule.h"
-#include "InternalModuleMuvr.h"
 #include "Platform.h"
 #include "Resources.h"
 #include "DataStore.h"
 #include "Crc.h"
+#include "InternalModule.h"
+#include "InternalModuleMuvr.h"
 
 using namespace std;
 

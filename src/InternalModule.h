@@ -13,10 +13,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "Platform.h"
-//#include "Dfa.h"
-#include "Timer.h"
-
 
 //#define GET_MODULE_TYPE_COMMAND 0x91 // команда - чтение типа модуля.
 #define CHANGE_PROTOCOL_COMMAND 0x92 // команда - переключить на новый протокол.
@@ -50,6 +46,8 @@
 //#define SPI_COMMAND_BYTE_OFFSET 1
 //#define SPI_COMMAND_BYTE_LENGTH 1
 
+class Timer;
+class Platform;
 class CTask;
 class CResources;
 class CCommunicationDeviceInterface;

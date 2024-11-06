@@ -6,8 +6,8 @@
 //  GitHub      : https://github.com/AlexandrVolvenkin
 //-------------------------------------------------------------------------------
 
-#include "Timer.h"
 #include "Platform.h"
+#include "Timer.h"
 
 CTimeMeasure xTimeMeasure;
 //-------------------------------------------------------------------------------

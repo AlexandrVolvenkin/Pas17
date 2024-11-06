@@ -57,9 +57,10 @@
 #include <sys/ioctl.h>
 
 #include "Configuration.h"
-#include "Timer.h"
 
 //#define SOCKET uint32_t
+
+//class CTimer;
 
 //-------------------------------------------------------------------------------
 class CCommunicationDeviceInterface

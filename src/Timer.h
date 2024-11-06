@@ -11,8 +11,8 @@
 #include <stdint.h>
 
 #include "Platform.h"
+//class CPlatform;
 
-//class CTimeMeasure
 //-------------------------------------------------------------------------------
 class CTimer// : public CTimeMeasure
 {

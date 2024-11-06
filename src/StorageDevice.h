@@ -13,9 +13,7 @@
 #include <iostream>
 #include <fstream>
 
-//#include "DataTypes.h"
-//#include "Dfa.h"
-#include "Timer.h"
+class CTimer;
 
 using namespace std;
 
@@ -36,6 +34,7 @@ public:
     };
 
 //    virtual uint8_t PassingDataAndStartWrite(uint16_t uiOffset, uint8_t *puiSource, uint16_t uiLength) {};
+    virtual void GetArgumentData(void) {};
     virtual bool WriteBlock(uint8_t *puiSource, uint16_t uiOffset, uint16_t uiLength) {};
     virtual uint8_t Write(void) {};
     virtual bool ReadBlock(uint8_t *puiDestination, uint16_t uiOffset, uint16_t uiLength) {};
@@ -144,6 +143,7 @@ public:
     virtual ~CStorageDeviceFileSystem();
 
 //    uint8_t PassingDataAndStartWrite(uint16_t uiOffset, uint8_t *puiSource, uint16_t uiLength);
+    void GetArgumentData(void);
     bool WriteBlock(uint8_t *puiSource, uint16_t uiOffset, uint16_t uiLength);
     uint8_t Write(void);
     bool ReadBlock(uint8_t *puiDestination, uint16_t uiOffset, uint16_t uiLength);
@@ -209,8 +209,8 @@ private:
     bool m_bDataIsWrited;
 
     uint16_t m_nuiByteCounter;
-    uint16_t m_uiOffset;
     uint8_t* m_puiBuffer;
+    uint16_t m_uiOffset;
     uint16_t m_uiLength;
 };
 

@@ -17,11 +17,6 @@
 #include <assert.h>
 #include <time.h>
 
-//#include "Platform.h"
-//#include "Resources.h"
-//#include "Dfa.h"
-//#include "Timer.h"
-
 class CTask;
 class CTaskInterface;
 class CResources;

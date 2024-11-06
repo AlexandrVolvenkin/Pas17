@@ -13,6 +13,7 @@
 #include <fcntl.h>
 #include <string.h>
 
+//#include "Timer.h"
 #include "Platform.h"
 
 using namespace std;
