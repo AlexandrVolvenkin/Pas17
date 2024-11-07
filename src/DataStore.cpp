@@ -1208,12 +1208,25 @@ uint8_t CDataStore::Fsm(void)
 //std::dynamic_pointer_cast<CDataContainerInterface>(std::shared_ptr<CDataContainerDataBase>(base_object))
     case READY:
 //        std::cout << "CDataStore::Fsm READY"  << std::endl;
-        if (((static_cast<CDataContainerDataBase*>(m_pxDataContainer.get())) -> m_uiFsmCommandState) != 0)
+    {
+//        // Создание промежуточного указателя
+//        std::unique_ptr<CDataContainerDataBase> pxDataContainer = m_pxDataContainer; // Указатель на объект CDataContainerDataBase
+        CDataContainerDataBase* pxDataContainer =
+            (static_cast<CDataContainerDataBase*>(m_pxDataContainer.get()));
+
+        if (pxDataContainer -> m_uiFsmCommandState != 0)
         {
-            SetFsmState((static_cast<CDataContainerDataBase*>(m_pxDataContainer.get())) -> m_uiFsmCommandState);
-            (static_cast<CDataContainerDataBase*>(m_pxDataContainer.get())) -> m_uiFsmCommandState = 0;
+            SetFsmState(pxDataContainer -> m_uiFsmCommandState);
+            pxDataContainer -> m_uiFsmCommandState = 0;
         }
-        break;
+    }
+
+//        if (((static_cast<CDataContainerDataBase*>(m_pxDataContainer.get())) -> m_uiFsmCommandState) != 0)
+//        {
+//            SetFsmState((static_cast<CDataContainerDataBase*>(m_pxDataContainer.get())) -> m_uiFsmCommandState);
+//            (static_cast<CDataContainerDataBase*>(m_pxDataContainer.get())) -> m_uiFsmCommandState = 0;
+//        }
+    break;
 
 //-------------------------------------------------------------------------------
     // Запись блока во временный буфер.
