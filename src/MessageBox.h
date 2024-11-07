@@ -9,6 +9,8 @@
 #define CMESSAGEBOX_H
 
 
+class CDataContainerInterface;
+
 //-------------------------------------------------------------------------------
 class CMessageBoxInterface
 {

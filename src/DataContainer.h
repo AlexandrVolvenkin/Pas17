@@ -45,7 +45,7 @@ public:
                           uint32_t uiDataOffset,
                           uint32_t uiDataLength);
 
-private:
+public:
     uint8_t m_uiFsmCommandState;
 //    CDataContainerInterface* m_pxCommandDataPointer;
     uint16_t m_uiDataIndex;

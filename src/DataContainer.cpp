@@ -24,11 +24,12 @@ CDataContainerDataBase::~CDataContainerDataBase()
 
 //-------------------------------------------------------------------------------
 void CDataContainerDataBase::SetContainerData(uint8_t uiFsmCommandState,
-                          uint16_t uiDataIndex,
-                          uint8_t *puiDataPointer,
-                          uint32_t uiDataOffset,
-                          uint32_t uiDataLength)
+        uint16_t uiDataIndex,
+        uint8_t *puiDataPointer,
+        uint32_t uiDataOffset,
+        uint32_t uiDataLength)
 {
+    m_uiFsmCommandState = uiFsmCommandState;
     m_uiDataIndex = uiDataIndex;
     m_puiDataPointer = puiDataPointer;
     m_uiDataOffset = uiDataOffset;

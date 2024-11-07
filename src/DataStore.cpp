@@ -183,13 +183,14 @@ const unsigned char aucDataBaseBlockLength[CDataStore::MAX_BLOCKS_NUMBER] =
 CDataStore::CDataStore()
 {
     std::cout << "CDataStore constructor"  << std::endl;
-    // получим имя класса.
+    // РїРѕР»СѓС‡РёРј РёРјСЏ РєР»Р°СЃСЃР°.
     sprintf(GetTaskNamePointer(),
             "%s",
             typeid(*this).name());
     m_pxStorageDevice = 0;
     m_puiIntermediateBuff = new uint8_t[CDataStore::MAX_SERVICE_SECTION_DATA_LENGTH];
 //    m_pxArgumentData = std::make_shared<TArgumentData>();// = new TArgumentData;
+    m_pxDataContainer = std::make_shared<CDataContainerDataBase>();
     SetFsmState(START);
 }
 
@@ -227,9 +228,9 @@ void CDataStore::SetArgumentData(uint8_t *puiDataPointer,
                                  uint16_t uiDataOffset,
                                  uint16_t uiDataLength)
 {
-    GetArgumentDataPointer() -> m_uiDataPointer = puiDataPointer;
-    GetArgumentDataPointer() -> m_uiDataOffset = uiDataOffset;
-    GetArgumentDataPointer() -> m_uiDataLength = uiDataLength;
+//    GetArgumentDataPointer() -> m_uiDataPointer = puiDataPointer;
+//    GetArgumentDataPointer() -> m_uiDataOffset = uiDataOffset;
+//    GetArgumentDataPointer() -> m_uiDataLength = uiDataLength;
 }
 
 //-------------------------------------------------------------------------------
@@ -1180,38 +1181,19 @@ uint8_t CDataStore::Fsm(void)
 
     case INIT:
 //        std::cout << "CDataStore::Fsm INIT"  << std::endl;
-//    {
-//        CTaskInterface* pxTask =
-//            GetResources() ->
-//            GetCommonTaskFromMapPointer(m_sStorageDeviceName);
-//
-//        if (pxTask != 0)
-//        {
-//            if (pxTask -> GetFsmState() >= READY)
-//            {
-//                SetStorageDevice((CStorageDeviceInterface*)pxTask);
-//                SetFsmState(READY);
-//                std::cout << "CDataStore::Fsm READY"  << std::endl;
-//            }
-//        }
-//        else
-//        {
-//            if (GetTimerPointer() -> IsOverflow())
-//            {
-//                SetFsmState(STOP);
-//                std::cout << "CDataStore::Fsm STOP"  << std::endl;
-//            }
-//        }
-//    }
     {
-        m_pxTaskCustomer =
+        CTaskInterface* pxTask =
             GetResources() ->
-            GetCommonTaskFromMapPointer(m_sTaskCustomerName);
+            GetCommonTaskFromMapPointer(m_sStorageDeviceName);
 
-        if (m_pxTaskCustomer != 0)
+        if (pxTask != 0)
         {
-            SetFsmState(READY);
-            std::cout << "CDataStore::Fsm READY"  << std::endl;
+            if (pxTask -> GetFsmState() >= READY)
+            {
+                SetStorageDevice((CStorageDeviceInterface*)pxTask);
+                SetFsmState(READY);
+                std::cout << "CDataStore::Fsm READY"  << std::endl;
+            }
         }
         else
         {
@@ -1223,14 +1205,14 @@ uint8_t CDataStore::Fsm(void)
         }
     }
     break;
-
+//std::dynamic_pointer_cast<CDataContainerInterface>(std::shared_ptr<CDataContainerDataBase>(base_object))
     case READY:
 //        std::cout << "CDataStore::Fsm READY"  << std::endl;
-//        if ((m_pxTaskCustomer -> m_uiFsmCommandState) != 0)
-//        {
-//            SetFsmState(m_pxTaskCustomer -> m_uiFsmCommandState);
-//            m_pxTaskCustomer -> m_uiFsmCommandState = 0;
-//        }
+        if (((static_cast<CDataContainerDataBase*>(m_pxDataContainer.get())) -> m_uiFsmCommandState) != 0)
+        {
+            SetFsmState((static_cast<CDataContainerDataBase*>(m_pxDataContainer.get())) -> m_uiFsmCommandState);
+            (static_cast<CDataContainerDataBase*>(m_pxDataContainer.get())) -> m_uiFsmCommandState = 0;
+        }
         break;
 
 //-------------------------------------------------------------------------------
