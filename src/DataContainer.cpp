@@ -1,4 +1,4 @@
-
+﻿
 //-------------------------------------------------------------------------------
 //  Source      : FileName.cpp
 //  Created     : 01.06.2022
@@ -20,6 +20,19 @@ CDataContainerDataBase::CDataContainerDataBase()
 CDataContainerDataBase::~CDataContainerDataBase()
 {
     //dtor
+}
+
+//-------------------------------------------------------------------------------
+void CDataContainerDataBase::SetContainerData(uint8_t uiFsmCommandState,
+                          uint16_t uiDataIndex,
+                          uint8_t *puiDataPointer,
+                          uint32_t uiDataOffset,
+                          uint32_t uiDataLength)
+{
+    m_uiDataIndex = uiDataIndex;
+    m_puiDataPointer = puiDataPointer;
+    m_uiDataOffset = uiDataOffset;
+    m_uiDataLength = uiDataLength;
 }
 
 //-------------------------------------------------------------------------------

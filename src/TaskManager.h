@@ -1,4 +1,4 @@
-#ifndef CTASKMANAGER_H
+﻿#ifndef CTASKMANAGER_H
 #define CTASKMANAGER_H
 //-------------------------------------------------------------------------------
 //  Sourse      : FileName.cpp

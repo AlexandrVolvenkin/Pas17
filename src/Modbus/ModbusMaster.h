@@ -1,4 +1,4 @@
-#ifndef CMODBUSMASTER_H
+﻿#ifndef CMODBUSMASTER_H
 #define CMODBUSMASTER_H
 
 class CTask;

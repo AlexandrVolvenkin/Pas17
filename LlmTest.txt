@@ -1,4 +1,4 @@
-#ifndef CDFA_H
+﻿#ifndef CDFA_H
 #define CDFA_H
 
 #include <stdint.h>

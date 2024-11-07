@@ -1,4 +1,4 @@
-//-------------------------------------------------------------------------------
+﻿//-------------------------------------------------------------------------------
 //  Source      : FileName.cpp
 //  Created     : 01.06.2022
 //  Author      : Alexandr Volvenkin
@@ -16,6 +16,23 @@
 #include "DataContainer.h"
 #include "Task.h"
 
+////-------------------------------------------------------------------------------
+//CTaskInterface::CTaskInterface()
+//{
+//    std::cout << "CTaskInterface constructor 1"  << std::endl;
+////    SetFsmState(IDDLE);
+//}
+//
+////-------------------------------------------------------------------------------
+//CTaskInterface::~CTaskInterface()
+//{
+//    std::cout << "CTaskInterface destructor"  << std::endl;
+//}
+//    char* CTaskInterface::GetTaskNamePointer(void) {};
+//    std::shared_ptr<CTaskInterface::TArgumentData> CTaskInterface::GetArgumentDataPointer(void) {};
+//    void CTaskInterface::SetResources(CResources* pxResources) {};
+//    CResources* CTaskInterface::GetResources(void) {};
+//    void CTaskInterface::SetTaskCustomerName(std::string sName) {};
 //-------------------------------------------------------------------------------
 CTask::CTask()
 {
@@ -66,9 +83,15 @@ char* CTask::GetTaskNamePointer(void)
 };
 
 //-------------------------------------------------------------------------------
-std::shared_ptr<TArgumentData> CTask::GetArgumentDataPointer(void)
+std::shared_ptr<CTaskInterface::TArgumentData> CTask::GetArgumentDataPointer(void)
 {
     return m_pxArgumentData;
+};
+
+//-------------------------------------------------------------------------------
+std::shared_ptr<CDataContainerInterface> CTask::GetDataContainerPointer(void)
+{
+    return m_pxDataContainer;
 };
 
 //-------------------------------------------------------------------------------

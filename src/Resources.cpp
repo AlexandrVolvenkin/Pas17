@@ -1,4 +1,4 @@
-//-------------------------------------------------------------------------------
+﻿//-------------------------------------------------------------------------------
 //  Source      : FileName.cpp
 //  Created     : 01.06.2022
 //  Author      : Alexandr Volvenkin
@@ -14,6 +14,11 @@
 #include "DeviceControl.h"
 #include "Resources.h"
 
+    void CResourcesInterface::AddCommonListTask(CTaskInterface* pxTask) {};
+    CTaskInterface* CResourcesInterface::GetCommonListTaskPointer(char* pcTaskName) {};
+    void CResourcesInterface::AddCommonTaskToMap(std::string sTaskName, CTaskInterface* pxTask) {};
+    CTaskInterface* CResourcesInterface::GetCommonTaskFromMapPointer(std::string sTaskName) {};
+//    std::list<CTaskInterface*>* CResourcesInterface::GetCommonTasksListPointer(void) {};
 //-------------------------------------------------------------------------------
 CResources::CResources()
 {
@@ -287,6 +292,17 @@ CTaskInterface* CResources::GetCommonTaskFromMapPointer(std::string sTaskName)
 //    return 0;
 }
 
+////-------------------------------------------------------------------------------
+//std::list<CTaskInterface*>* CResources::GetCommonTasksListPointer(void)
+//{
+//    return &m_lpxCommonTasksList;
+//}
+
+////-------------------------------------------------------------------------------
+//std::list<CTaskInterface*>* CResources::GetCurrentlyRunningTasksListPointer(void)
+//{
+//    return &m_lpxCurrentlyRunningTasksList;
+//}
 //-------------------------------------------------------------------------------
 
 

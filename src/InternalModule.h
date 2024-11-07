@@ -1,4 +1,4 @@
-#ifndef CINTERNALMODULE_H
+﻿#ifndef CINTERNALMODULE_H
 #define CINTERNALMODULE_H
 //-------------------------------------------------------------------------------
 //  Sourse      : FileName.cpp

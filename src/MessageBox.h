@@ -5,25 +5,18 @@
 //  email       : aav-36@mail.ru
 //  GitHub      : https://github.com/AlexandrVolvenkin
 //-------------------------------------------------------------------------------
-#ifndef CDATACONTAINER_H
-#define CDATACONTAINER_H
+#ifndef CMESSAGEBOX_H
+#define CMESSAGEBOX_H
 
-#include <stdint.h>
-#include <iostream>
 
 //-------------------------------------------------------------------------------
-class CDataContainerInterface
+class CMessageBoxInterface
 {
-public:
-    virtual void SetContainerData(uint8_t uiFsmCommandState,
-                                  uint16_t uiDataIndex,
-                                  uint8_t *puiDataPointer,
-                                  uint32_t uiDataOffset,
-                                  uint32_t uiDataLength) {};
+    public:
 
-protected:
+    protected:
 
-private:
+    private:
 };
 
 //-------------------------------------------------------------------------------
@@ -33,21 +26,20 @@ private:
 
 
 //-------------------------------------------------------------------------------
-class CDataContainerDataBase : public CDataContainerInterface
+class CMessageBoxGeneral : public CMessageBoxInterface
 {
 public:
-    CDataContainerDataBase();
-    virtual ~CDataContainerDataBase();
+    CMessageBoxGeneral();
+    virtual ~CMessageBoxGeneral();
 
-    void SetContainerData(uint8_t uiFsmCommandState,
-                          uint16_t uiDataIndex,
+    void SetMessage(uint16_t uiDataIndex,
                           uint8_t *puiDataPointer,
                           uint32_t uiDataOffset,
                           uint32_t uiDataLength);
 
 private:
     uint8_t m_uiFsmCommandState;
-//    CDataContainerInterface* m_pxCommandDataPointer;
+    CDataContainerInterface* m_pxCommandDataPointer;
     uint16_t m_uiDataIndex;
     uint8_t* m_puiDataPointer;
     uint32_t m_uiDataOffset;
@@ -55,4 +47,4 @@ private:
 };
 
 //-------------------------------------------------------------------------------
-#endif // CDATACONTAINER_H
+#endif // CMESSAGEBOX_H

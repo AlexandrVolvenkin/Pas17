@@ -1,4 +1,4 @@
-#ifndef CCONFIGURATIONCREATE_H
+﻿#ifndef CCONFIGURATIONCREATE_H
 #define CCONFIGURATIONCREATE_H
 //-------------------------------------------------------------------------------
 //  Sourse      : FileName.cpp

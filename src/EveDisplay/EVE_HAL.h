@@ -1,4 +1,4 @@
-//------------------------------------------------------------------------------
+п»ї//------------------------------------------------------------------------------
 // Hardware abstract layer for FTDI EVE2 (only FT81x chips)
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -14,7 +14,7 @@
 #include "Platform.h"
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-//****************************** МАКРОСЫ ***************************************
+//****************************** РњРђРљР РћРЎР« ***************************************
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
@@ -24,22 +24,22 @@ class EVE_HAL
 protected:
 
 #pragma vector = INT1_vect
-//    static __interrupt void __INT1Interrupt(void); // Прерывание по INT1
+//    static __interrupt void __INT1Interrupt(void); // РџСЂРµСЂС‹РІР°РЅРёРµ РїРѕ INT1
 
 public:
 
-    static inline void SetLine_CS(unsigned char);  // Установка состояния линии CS
-    static inline void SetLine_PD(unsigned char);  // Установка состояния линии PD
+    static inline void SetLine_CS(unsigned char);  // РЈСЃС‚Р°РЅРѕРІРєР° СЃРѕСЃС‚РѕСЏРЅРёСЏ Р»РёРЅРёРё CS
+    static inline void SetLine_PD(unsigned char);  // РЈСЃС‚Р°РЅРѕРІРєР° СЃРѕСЃС‚РѕСЏРЅРёСЏ Р»РёРЅРёРё PD
 
-    static inline void Enable(void);		// Выборка видеопроцессора
-    static inline void Disable(void);		// Деактивация видеопроцессора
+    static inline void Enable(void);		// Р’С‹Р±РѕСЂРєР° РІРёРґРµРѕРїСЂРѕС†РµСЃСЃРѕСЂР°
+    static inline void Disable(void);		// Р”РµР°РєС‚РёРІР°С†РёСЏ РІРёРґРµРѕРїСЂРѕС†РµСЃСЃРѕСЂР°
 
     enum OPERATIONS
     {
-        MEM_MASK  = 0x3F,                             // <0011_1111> - маска команд R/W
-        MEM_READ  = 0x00,                             // <00aa_aaaa> - команда чтения
-        MEM_WRITE = 0x80,                             // <10aa_aaaa> - команда записи
-        HOST_CMD  = 0x40                              // <01cc_cccc> - Host - команда
+        MEM_MASK  = 0x3F,                             // <0011_1111> - РјР°СЃРєР° РєРѕРјР°РЅРґ R/W
+        MEM_READ  = 0x00,                             // <00aa_aaaa> - РєРѕРјР°РЅРґР° С‡С‚РµРЅРёСЏ
+        MEM_WRITE = 0x80,                             // <10aa_aaaa> - РєРѕРјР°РЅРґР° Р·Р°РїРёСЃРё
+        HOST_CMD  = 0x40                              // <01cc_cccc> - Host - РєРѕРјР°РЅРґР°
     };
 
     enum MEMORY_MAP
@@ -63,7 +63,7 @@ public:
 
     enum HOST_COMMANDS
     {
-        ACTIVE	= 0x00,				// Отдельная команда
+        ACTIVE	= 0x00,				// РћС‚РґРµР»СЊРЅР°СЏ РєРѕРјР°РЅРґР°
         STANDBY	= 0x41,
         SLEEP		= 0x42,
         PWR_DOWN	= 0x43,				// 0x50
@@ -76,24 +76,24 @@ public:
 
 public:
 
-    static void Command(unsigned char,unsigned char = 0x00);       // Host - команда
-    static void Activation(void);                                  // Активация видепроцессора
+    static void Command(unsigned char,unsigned char = 0x00);       // Host - РєРѕРјР°РЅРґР°
+    static void Activation(void);                                  // РђРєС‚РёРІР°С†РёСЏ РІРёРґРµРїСЂРѕС†РµСЃСЃРѕСЂР°
 
-    static unsigned char   Read8(unsigned long);                   // Чтение 1/2/4 байт данных
+    static unsigned char   Read8(unsigned long);                   // Р§С‚РµРЅРёРµ 1/2/4 Р±Р°Р№С‚ РґР°РЅРЅС‹С…
     static unsigned short Read16(unsigned long);
     static unsigned long  Read32(unsigned long);
 
-    static void  Write8(unsigned long,unsigned char);              // Запись 1/2/4 байт данных
+    static void  Write8(unsigned long,unsigned char);              // Р—Р°РїРёСЃСЊ 1/2/4 Р±Р°Р№С‚ РґР°РЅРЅС‹С…
     static void Write16(unsigned long,unsigned short);
     static void Write32(unsigned long, unsigned long);
 
-    static  void Read(unsigned long,void *,unsigned char);              // Чтение блока данных
-    static  void Read(void *,unsigned long,unsigned char);              // Чтение блока данных
+    static  void Read(unsigned long,void *,unsigned char);              // Р§С‚РµРЅРёРµ Р±Р»РѕРєР° РґР°РЅРЅС‹С…
+    static  void Read(void *,unsigned long,unsigned char);              // Р§С‚РµРЅРёРµ Р±Р»РѕРєР° РґР°РЅРЅС‹С…
 
-    static  void Write(unsigned long,void *,unsigned short);            // Запись блока данных
-//    static  void Write(unsigned long,void __farflash*,unsigned short);  // Запись блока данных (Flash)
+    static  void Write(unsigned long,void *,unsigned short);            // Р—Р°РїРёСЃСЊ Р±Р»РѕРєР° РґР°РЅРЅС‹С…
+//    static  void Write(unsigned long,void __farflash*,unsigned short);  // Р—Р°РїРёСЃСЊ Р±Р»РѕРєР° РґР°РЅРЅС‹С… (Flash)
 
-    static void Initialize(void);				        // Инициализация интерфейса
+    static void Initialize(void);				        // РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РёРЅС‚РµСЂС„РµР№СЃР°
     static void InitializeNEW(bool = false);
     static void InitializeFAST(bool = false);
 
@@ -108,7 +108,7 @@ public:
 };
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-//************************** INLINE - ФУНКЦИИ **********************************
+//************************** INLINE - Р¤РЈРќРљР¦РР **********************************
 //------------------------------------------------------------------------------
 void EVE_HAL::SetLine_CS(unsigned char Value)
 {

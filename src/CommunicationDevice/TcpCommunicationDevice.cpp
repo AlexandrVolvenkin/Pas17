@@ -1,4 +1,4 @@
-//#include "TcpCommunicationDevice.h"
+﻿//#include "TcpCommunicationDevice.h"
 //
 //CTcpCommunicationDevice::CTcpCommunicationDevice()
 //{

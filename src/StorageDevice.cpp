@@ -1,4 +1,4 @@
-
+п»ї
 //-------------------------------------------------------------------------------
 //  Source      : FileName.cpp
 //  Created     : 01.06.2022
@@ -15,16 +15,18 @@
 #include "Task.h"
 #include "Resources.h"
 #include "DataStore.h"
+#include "DataContainer.h"
 #include "StorageDevice.h"
 
 //-------------------------------------------------------------------------------
 CStorageDeviceFileSystem::CStorageDeviceFileSystem()
 {
     std::cout << "CStorageDeviceFileSystem constructor"  << std::endl;
-    // получим имя класса.
+    // РїРѕР»СѓС‡РёРј РёРјСЏ РєР»Р°СЃСЃР°.
     sprintf(GetTaskNamePointer(),
             "%s",
             typeid(*this).name());
+    m_pxDataContainer = std::make_shared<CDataContainerDataBase>();
     SetFsmState(START);
 }
 
@@ -35,7 +37,7 @@ CStorageDeviceFileSystem::~CStorageDeviceFileSystem()
 }
 
 ////-------------------------------------------------------------------------------
-//// Передаёт данные контекста записи блока автомату устройства хранения и запускает процесс записи.
+//// РџРµСЂРµРґР°С‘С‚ РґР°РЅРЅС‹Рµ РєРѕРЅС‚РµРєСЃС‚Р° Р·Р°РїРёСЃРё Р±Р»РѕРєР° Р°РІС‚РѕРјР°С‚Сѓ СѓСЃС‚СЂРѕР№СЃС‚РІР° С…СЂР°РЅРµРЅРёСЏ Рё Р·Р°РїСѓСЃРєР°РµС‚ РїСЂРѕС†РµСЃСЃ Р·Р°РїРёСЃРё.
 //uint8_t CStorageDeviceFileSystem::PassingDataAndStartWrite(uint16_t uiOffset, uint8_t *puiSource, uint16_t uiLength)
 //{
 //    SetOffset(uiOffset);
@@ -56,13 +58,13 @@ CStorageDeviceFileSystem::~CStorageDeviceFileSystem()
 //-------------------------------------------------------------------------------
 void CStorageDeviceFileSystem::GetArgumentData(void)
 {
-    m_puiBuffer = m_pxTaskCustomer -> GetArgumentDataPointer() -> m_uiDataPointer;
+    m_puiBuffer = m_pxTaskCustomer -> GetArgumentDataPointer() -> m_puiDataPointer;
     m_uiOffset = m_pxTaskCustomer -> GetArgumentDataPointer() -> m_uiDataOffset;
     m_uiLength = m_pxTaskCustomer -> GetArgumentDataPointer() -> m_uiDataLength;
 }
 
 //-------------------------------------------------------------------------------
-// Передаёт данные контекста записи блока автомату устройства хранения и запускает процесс записи.
+// РџРµСЂРµРґР°С‘С‚ РґР°РЅРЅС‹Рµ РєРѕРЅС‚РµРєСЃС‚Р° Р·Р°РїРёСЃРё Р±Р»РѕРєР° Р°РІС‚РѕРјР°С‚Сѓ СѓСЃС‚СЂРѕР№СЃС‚РІР° С…СЂР°РЅРµРЅРёСЏ Рё Р·Р°РїСѓСЃРєР°РµС‚ РїСЂРѕС†РµСЃСЃ Р·Р°РїРёСЃРё.
 bool CStorageDeviceFileSystem::WriteBlock(uint8_t *puiSource, uint16_t uiOffset, uint16_t uiLength)
 {
     std::cout << "CStorageDeviceFileSystem WriteBlock uiOffset " << (int)uiOffset  << std::endl;
@@ -87,7 +89,7 @@ bool CStorageDeviceFileSystem::WriteBlock(uint8_t *puiSource, uint16_t uiOffset,
 }
 
 //-------------------------------------------------------------------------------
-// Записывает блок данных в устройство хранения.
+// Р—Р°РїРёСЃС‹РІР°РµС‚ Р±Р»РѕРє РґР°РЅРЅС‹С… РІ СѓСЃС‚СЂРѕР№СЃС‚РІРѕ С…СЂР°РЅРµРЅРёСЏ.
 uint8_t CStorageDeviceFileSystem::Write(void)
 {
     std::cout << "CStorageDeviceFileSystem Write"  << std::endl;
@@ -101,16 +103,16 @@ uint8_t CStorageDeviceFileSystem::Write(void)
     {
         std::cout << "CStorageDeviceFileSystem Write 1"  << std::endl;
         ofstream outdata;
-        // Чтобы добавить и не стереть старые данные откроем файл на чтение и запись.
+        // Р§С‚РѕР±С‹ РґРѕР±Р°РІРёС‚СЊ Рё РЅРµ СЃС‚РµСЂРµС‚СЊ СЃС‚Р°СЂС‹Рµ РґР°РЅРЅС‹Рµ РѕС‚РєСЂРѕРµРј С„Р°Р№Р» РЅР° С‡С‚РµРЅРёРµ Рё Р·Р°РїРёСЃСЊ.
         outdata.open(pccFileName, (ios::binary | ios::in | ios::out));
-        // Файл не существует?
+        // Р¤Р°Р№Р» РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚?
         if (!outdata)
         {
             std::cout << "CStorageDeviceFileSystem Write 2"  << std::endl;
             cerr << "CStorageDeviceFileSystem::Write Error: file could not be opened" << endl;
-            // чтобы создать файл откроем только на запись.
+            // С‡С‚РѕР±С‹ СЃРѕР·РґР°С‚СЊ С„Р°Р№Р» РѕС‚РєСЂРѕРµРј С‚РѕР»СЊРєРѕ РЅР° Р·Р°РїРёСЃСЊ.
             outdata.open(pccFileName, (ios::binary | ios::out));
-            // Файл не создан?
+            // Р¤Р°Р№Р» РЅРµ СЃРѕР·РґР°РЅ?
             if (!outdata)
             {
                 std::cout << "CStorageDeviceFileSystem Write 3"  << std::endl;
@@ -125,7 +127,7 @@ uint8_t CStorageDeviceFileSystem::Write(void)
         outdata.write((char*)puiSource, uiLength);
 
         std::cout << "CStorageDeviceFileSystem Write 5"  << std::endl;
-        // закроем файл.
+        // Р·Р°РєСЂРѕРµРј С„Р°Р№Р».
         outdata.close();
 
         std::cout << "CStorageDeviceFileSystem Write 6"  << std::endl;
@@ -140,7 +142,7 @@ uint8_t CStorageDeviceFileSystem::Write(void)
 }
 
 //-------------------------------------------------------------------------------
-// Передаёт данные контекста записи блока автомату устройства хранения и запускает процесс записи.
+// РџРµСЂРµРґР°С‘С‚ РґР°РЅРЅС‹Рµ РєРѕРЅС‚РµРєСЃС‚Р° Р·Р°РїРёСЃРё Р±Р»РѕРєР° Р°РІС‚РѕРјР°С‚Сѓ СѓСЃС‚СЂРѕР№СЃС‚РІР° С…СЂР°РЅРµРЅРёСЏ Рё Р·Р°РїСѓСЃРєР°РµС‚ РїСЂРѕС†РµСЃСЃ Р·Р°РїРёСЃРё.
 bool CStorageDeviceFileSystem::ReadBlock(uint8_t *puiDestination, uint16_t uiOffset, uint16_t uiLength)
 {
     std::cout << "CStorageDeviceFileSystem ReadBlock"  << std::endl;
@@ -164,7 +166,7 @@ bool CStorageDeviceFileSystem::ReadBlock(uint8_t *puiDestination, uint16_t uiOff
 }
 
 //-------------------------------------------------------------------------------
-// Считывает блок данных из устройства хранения.
+// РЎС‡РёС‚С‹РІР°РµС‚ Р±Р»РѕРє РґР°РЅРЅС‹С… РёР· СѓСЃС‚СЂРѕР№СЃС‚РІР° С…СЂР°РЅРµРЅРёСЏ.
 uint8_t CStorageDeviceFileSystem::Read(void)
 {
     std::cout << "CStorageDeviceFileSystem Read"  << std::endl;
@@ -176,7 +178,7 @@ uint8_t CStorageDeviceFileSystem::Read(void)
     if ((uiOffset + uiLength) < MAX_BUFFER_LENGTH)
     {
         ifstream indata;
-        // откроем файл.
+        // РѕС‚РєСЂРѕРµРј С„Р°Р№Р».
         indata.open(pccFileName, (ios::in | ios::binary));
         if (!indata)
         {
@@ -185,13 +187,13 @@ uint8_t CStorageDeviceFileSystem::Read(void)
         }
         else
         {
-            // установим смещение в файле.
+            // СѓСЃС‚Р°РЅРѕРІРёРј СЃРјРµС‰РµРЅРёРµ РІ С„Р°Р№Р»Рµ.
             indata.seekg(uiOffset, ios_base::beg);
-            // прочитаем файл.
+            // РїСЂРѕС‡РёС‚Р°РµРј С„Р°Р№Р».
             indata.read(reinterpret_cast<char*>(puiDestination),
                         uiLength);
         }
-        // закроем файл.
+        // Р·Р°РєСЂРѕРµРј С„Р°Р№Р».
         indata.close();
         return 1;
     }
@@ -270,13 +272,13 @@ uint8_t CStorageDeviceFileSystem::Fsm(void)
     case DATA_WRITED_SUCCESSFULLY:
 //        std::cout << "CStorageDeviceFileSystem::Fsm DATA_WRITED_SUCCESSFULLY"  << std::endl;
 //            m_pxTaskCustomer -> m_uiFsmAnswerState = DATA_WRITED_SUCCESSFULLY;
-            SetFsmState(READY);
+        SetFsmState(READY);
         break;
 
     case WRITE_DATA_ERROR:
         //std::cout << "CMainProductionCycle::Fsm WRITE_DATA_ERROR"  << std::endl;
 //            m_pxTaskCustomer -> m_uiFsmAnswerState = WRITE_DATA_ERROR;
-            SetFsmState(READY);
+        SetFsmState(READY);
         break;
 
     case READ_DATA_START:
@@ -295,13 +297,13 @@ uint8_t CStorageDeviceFileSystem::Fsm(void)
     case DATA_READED_SUCCESSFULLY:
         //std::cout << "CMainProductionCycle::Fsm DATA_READED_SUCCESSFULLY"  << std::endl;
 //            m_pxTaskCustomer -> m_uiFsmAnswerState = DATA_READED_SUCCESSFULLY;
-            SetFsmState(READY);
+        SetFsmState(READY);
         break;
 
     case READ_DATA_ERROR:
         //std::cout << "CMainProductionCycle::Fsm READ_DATA_ERROR"  << std::endl;
 //            m_pxTaskCustomer -> m_uiFsmAnswerState = READ_DATA_ERROR;
-            SetFsmState(READY);
+        SetFsmState(READY);
         break;
 
     default:

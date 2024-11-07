@@ -84,6 +84,8 @@
 		<Unit filename="src/InternalModuleMuvr.h" />
 		<Unit filename="src/MainProductionCycle.cpp" />
 		<Unit filename="src/MainProductionCycle.h" />
+		<Unit filename="src/MessageBox.cpp" />
+		<Unit filename="src/MessageBox.h" />
 		<Unit filename="src/Modbus/Modbus.h" />
 		<Unit filename="src/Modbus/ModbusMaster.cpp" />
 		<Unit filename="src/Modbus/ModbusMaster.h" />

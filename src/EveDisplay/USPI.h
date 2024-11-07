@@ -1,5 +1,5 @@
-//------------------------------------------------------------------------------
-// Реализация USART_1 в режиме SPI Master
+п»ї//------------------------------------------------------------------------------
+// Р РµР°Р»РёР·Р°С†РёСЏ USART_1 РІ СЂРµР¶РёРјРµ SPI Master
 // SPI mode 0 (CPOL & CPHA = 0), MSB First
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -19,25 +19,25 @@ class USPI
 {
 protected:
 public:
-    inline static unsigned char Send(unsigned char);       // Обмен данными
-    static inline void Write(unsigned char);		// Запись байта данных
-    static inline unsigned char Read(void);		// Чтение байта данных
+    inline static unsigned char Send(unsigned char);       // РћР±РјРµРЅ РґР°РЅРЅС‹РјРё
+    static inline void Write(unsigned char);		// Р—Р°РїРёСЃСЊ Р±Р°Р№С‚Р° РґР°РЅРЅС‹С…
+    static inline unsigned char Read(void);		// Р§С‚РµРЅРёРµ Р±Р°Р№С‚Р° РґР°РЅРЅС‹С…
 
     static inline void WaitingReceive(void);               // [##]
 
-    static void Initialize(void);                          // Начальная инициализация
+    static void Initialize(void);                          // РќР°С‡Р°Р»СЊРЅР°СЏ РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
 
-    static  void Write(void *,unsigned short);          // Запись блока данных [##]
-//    static  void Write(void  *,unsigned short);  // Запись блока данных [##]
+    static  void Write(void *,unsigned short);          // Р—Р°РїРёСЃСЊ Р±Р»РѕРєР° РґР°РЅРЅС‹С… [##]
+//    static  void Write(void  *,unsigned short);  // Р—Р°РїРёСЃСЊ Р±Р»РѕРєР° РґР°РЅРЅС‹С… [##]
 };
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-//************************** INLINE - ФУНКЦИИ **********************************
+//************************** INLINE - Р¤РЈРќРљР¦РР **********************************
 //------------------------------------------------------------------------------
-// ВНИМАНИЕ - Переделать на режим с использованием буферизации модуля USART
+// Р’РќРРњРђРќРР• - РџРµСЂРµРґРµР»Р°С‚СЊ РЅР° СЂРµР¶РёРј СЃ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµРј Р±СѓС„РµСЂРёР·Р°С†РёРё РјРѕРґСѓР»СЏ USART
 unsigned char USPI::Send(unsigned char Value)
 {
-//    /*                                               // НЕ РАБОТАЕТ
+//    /*                                               // РќР• Р РђР‘РћРўРђР•Рў
 //     UDR1 = Value;                                   // Put data into buffer, sends the data
 //     while ( !( UCSR1A & (1<<UDRE1)) );              // Wait for empty transmit buffer
 //     return UDR1;                                    // Get and return received data from buffer
@@ -62,7 +62,7 @@ unsigned char USPI::Read(void)
 };
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-void USPI::WaitingReceive(void)                  // НЕ РАБОТАЕТ
+void USPI::WaitingReceive(void)                  // РќР• Р РђР‘РћРўРђР•Рў
 {
 // while ( !(UCSR1A & (1<<TXC1)) );              // Wait for data to be received
 };

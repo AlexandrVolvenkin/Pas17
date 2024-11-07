@@ -1,4 +1,4 @@
-//------------------------------------------------------------------------------
+п»ї//------------------------------------------------------------------------------
 // Hardware abstract layer for FTDI EVE2 (only FT81x chips)
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -17,9 +17,9 @@ extern CSpi xSpiCommunicationDevice;
 using namespace std;
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-//***************************** ПРЕРЫВАНИЯ *************************************
+//***************************** РџР Р•Р Р«Р’РђРќРРЇ *************************************
 //------------------------------------------------------------------------------
-//// Внешнее прерывание от видеопроцессора по входу INT1
+//// Р’РЅРµС€РЅРµРµ РїСЂРµСЂС‹РІР°РЅРёРµ РѕС‚ РІРёРґРµРѕРїСЂРѕС†РµСЃСЃРѕСЂР° РїРѕ РІС…РѕРґСѓ INT1
 //__interrupt void EVE_HAL::__INT1Interrupt(void)
 //{
 //    if((PIND & BIT(HARD::EVE_INT)) == 0)
@@ -39,9 +39,9 @@ using namespace std;
 //};
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-//***************************** ФУНКЦИИ ****************************************
+//***************************** Р¤РЈРќРљР¦РР ****************************************
 //------------------------------------------------------------------------------
-// Отправка Host-команды
+// РћС‚РїСЂР°РІРєР° Host-РєРѕРјР°РЅРґС‹
 void EVE_HAL::Command(unsigned char Cmd,unsigned char Parameters)
 {
     Enable();
@@ -103,12 +103,12 @@ void EVE_HAL::Command(unsigned char Cmd,unsigned char Parameters)
 };
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-// Активация видепроцессора
+// РђРєС‚РёРІР°С†РёСЏ РІРёРґРµРїСЂРѕС†РµСЃСЃРѕСЂР°
 void EVE_HAL::Activation(void)
 {
     Enable();
 
-//    USPI::Write(0x00);                              // Фиктивное чтение из 0x000000
+//    USPI::Write(0x00);                              // Р¤РёРєС‚РёРІРЅРѕРµ С‡С‚РµРЅРёРµ РёР· 0x000000
 //    USPI::Write(0x00);
 //    USPI::Write(0x00);
 
@@ -168,16 +168,16 @@ void EVE_HAL::Activation(void)
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-// Чтение байта данных по заданному адресу
+// Р§С‚РµРЅРёРµ Р±Р°Р№С‚Р° РґР°РЅРЅС‹С… РїРѕ Р·Р°РґР°РЅРЅРѕРјСѓ Р°РґСЂРµСЃСѓ
 unsigned char EVE_HAL::Read8(unsigned long Address)
 {
     Enable();
 
-//    USPI::Write((Address >> 16L) & MEM_MASK);       // <00aa_aaaa> - команда чтения
+//    USPI::Write((Address >> 16L) & MEM_MASK);       // <00aa_aaaa> - РєРѕРјР°РЅРґР° С‡С‚РµРЅРёСЏ
 //    USPI::Write( Address >>  8L);
 //    USPI::Write( Address >>  0L);
 //
-//    USPI::Write(0x00);				// Пустой синхро-байт
+//    USPI::Write(0x00);				// РџСѓСЃС‚РѕР№ СЃРёРЅС…СЂРѕ-Р±Р°Р№С‚
 
 //    unsigned char Readed = USPI::Read();
 
@@ -237,16 +237,16 @@ unsigned char EVE_HAL::Read8(unsigned long Address)
 };
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-// Чтение 2-байтового значения по заданному адресу
+// Р§С‚РµРЅРёРµ 2-Р±Р°Р№С‚РѕРІРѕРіРѕ Р·РЅР°С‡РµРЅРёСЏ РїРѕ Р·Р°РґР°РЅРЅРѕРјСѓ Р°РґСЂРµСЃСѓ
 unsigned short EVE_HAL::Read16(unsigned long Address)
 {
     Enable();
 
-    USPI::Write((Address >> 16L) & MEM_MASK);       // <00aa_aaaa> - команда чтения
+    USPI::Write((Address >> 16L) & MEM_MASK);       // <00aa_aaaa> - РєРѕРјР°РЅРґР° С‡С‚РµРЅРёСЏ
     USPI::Write(HIGH(Address));
     USPI::Write( LOW(Address));
 
-    USPI::Write(0x00);				// Пустой синхро-байт
+    USPI::Write(0x00);				// РџСѓСЃС‚РѕР№ СЃРёРЅС…СЂРѕ-Р±Р°Р№С‚
 
     union
     {
@@ -263,16 +263,16 @@ unsigned short EVE_HAL::Read16(unsigned long Address)
 };
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-// Чтение 4-байтового значения по заданному адресу
+// Р§С‚РµРЅРёРµ 4-Р±Р°Р№С‚РѕРІРѕРіРѕ Р·РЅР°С‡РµРЅРёСЏ РїРѕ Р·Р°РґР°РЅРЅРѕРјСѓ Р°РґСЂРµСЃСѓ
 unsigned long EVE_HAL::Read32(unsigned long Address)
 {
     Enable();
 
-    USPI::Write((Address >> 16L) & MEM_MASK);	// <00aa_aaaa> - команда чтения
+    USPI::Write((Address >> 16L) & MEM_MASK);	// <00aa_aaaa> - РєРѕРјР°РЅРґР° С‡С‚РµРЅРёСЏ
     USPI::Write(HIGH(Address));
     USPI::Write( LOW(Address));
 
-    USPI::Write(0x00);				// Пустой синхро-байт
+    USPI::Write(0x00);				// РџСѓСЃС‚РѕР№ СЃРёРЅС…СЂРѕ-Р±Р°Р№С‚
 
     union
     {
@@ -291,12 +291,12 @@ unsigned long EVE_HAL::Read32(unsigned long Address)
 };
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-// Запись байта данных по заданному адресу
+// Р—Р°РїРёСЃСЊ Р±Р°Р№С‚Р° РґР°РЅРЅС‹С… РїРѕ Р·Р°РґР°РЅРЅРѕРјСѓ Р°РґСЂРµСЃСѓ
 void EVE_HAL::Write8(unsigned long Address,unsigned char Value)
 {
     Enable();
 
-    USPI::Write(((Address >> 16L) & MEM_MASK) | MEM_WRITE);	// <10aa_aaaa> - команда записи
+    USPI::Write(((Address >> 16L) & MEM_MASK) | MEM_WRITE);	// <10aa_aaaa> - РєРѕРјР°РЅРґР° Р·Р°РїРёСЃРё
     USPI::Write(HIGH(Address));
     USPI::Write( LOW(Address));
 
@@ -306,12 +306,12 @@ void EVE_HAL::Write8(unsigned long Address,unsigned char Value)
 };
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-// Запись 2-байтового значения по заданному адресу
+// Р—Р°РїРёСЃСЊ 2-Р±Р°Р№С‚РѕРІРѕРіРѕ Р·РЅР°С‡РµРЅРёСЏ РїРѕ Р·Р°РґР°РЅРЅРѕРјСѓ Р°РґСЂРµСЃСѓ
 void EVE_HAL::Write16(unsigned long Address,unsigned short Value)
 {
     Enable();
 
-    USPI::Write(((Address >> 16L) & MEM_MASK) | MEM_WRITE);	// <10aa_aaaa> - команда записи
+    USPI::Write(((Address >> 16L) & MEM_MASK) | MEM_WRITE);	// <10aa_aaaa> - РєРѕРјР°РЅРґР° Р·Р°РїРёСЃРё
     USPI::Write(HIGH(Address));
     USPI::Write( LOW(Address));
 
@@ -322,12 +322,12 @@ void EVE_HAL::Write16(unsigned long Address,unsigned short Value)
 };
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-// Запись 4-байтового значения по заданному адресу
+// Р—Р°РїРёСЃСЊ 4-Р±Р°Р№С‚РѕРІРѕРіРѕ Р·РЅР°С‡РµРЅРёСЏ РїРѕ Р·Р°РґР°РЅРЅРѕРјСѓ Р°РґСЂРµСЃСѓ
 void EVE_HAL::Write32(unsigned long Address,unsigned long Value)
 {
     Enable();
 
-    USPI::Write(((Address >> 16L) & MEM_MASK) | MEM_WRITE);	// <10aa_aaaa> - команда записи
+    USPI::Write(((Address >> 16L) & MEM_MASK) | MEM_WRITE);	// <10aa_aaaa> - РєРѕРјР°РЅРґР° Р·Р°РїРёСЃРё
     USPI::Write(HIGH(Address));
     USPI::Write( LOW(Address));
 
@@ -342,16 +342,16 @@ void EVE_HAL::Write32(unsigned long Address,unsigned long Value)
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-// Чтение блока данных
+// Р§С‚РµРЅРёРµ Р±Р»РѕРєР° РґР°РЅРЅС‹С…
 void EVE_HAL::Read(unsigned long Address,void *Data,unsigned char Lenght)
 {
     Enable();
 
-    USPI::Write((Address >> 16L) & MEM_MASK);	// <00aa_aaaa> - команда чтения
+    USPI::Write((Address >> 16L) & MEM_MASK);	// <00aa_aaaa> - РєРѕРјР°РЅРґР° С‡С‚РµРЅРёСЏ
     USPI::Write(HIGH(Address));
     USPI::Write( LOW(Address));
 
-    USPI::Write(0x00);				// Пустой синхро-байт
+    USPI::Write(0x00);				// РџСѓСЃС‚РѕР№ СЃРёРЅС…СЂРѕ-Р±Р°Р№С‚
 
     unsigned char *Ptr = ((unsigned char *)Data);
 
@@ -364,16 +364,16 @@ void EVE_HAL::Read(unsigned long Address,void *Data,unsigned char Lenght)
 };
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-// Чтение блока данных
+// Р§С‚РµРЅРёРµ Р±Р»РѕРєР° РґР°РЅРЅС‹С…
 void EVE_HAL::Read(void *Data, unsigned long Address, unsigned char Lenght)
 {
     Enable();
 
-    USPI::Write((Address >> 16L) & MEM_MASK);	// <00aa_aaaa> - команда чтения
+    USPI::Write((Address >> 16L) & MEM_MASK);	// <00aa_aaaa> - РєРѕРјР°РЅРґР° С‡С‚РµРЅРёСЏ
     USPI::Write(HIGH(Address));
     USPI::Write( LOW(Address));
 
-    USPI::Write(0x00);				// Пустой синхро-байт
+    USPI::Write(0x00);				// РџСѓСЃС‚РѕР№ СЃРёРЅС…СЂРѕ-Р±Р°Р№С‚
 
     unsigned char *Ptr = ((unsigned char *)Data);
 
@@ -386,12 +386,12 @@ void EVE_HAL::Read(void *Data, unsigned long Address, unsigned char Lenght)
 };
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-// Запись блока данных
+// Р—Р°РїРёСЃСЊ Р±Р»РѕРєР° РґР°РЅРЅС‹С…
 void EVE_HAL::Write(unsigned long Address,void *Data,unsigned short Lenght)
 {
     Enable();
 
-    USPI::Write(((Address >> 16L) & MEM_MASK) | MEM_WRITE);	// <10aa_aaaa> - команда записи
+    USPI::Write(((Address >> 16L) & MEM_MASK) | MEM_WRITE);	// <10aa_aaaa> - РєРѕРјР°РЅРґР° Р·Р°РїРёСЃРё
     USPI::Write(HIGH(Address));
     USPI::Write( LOW(Address));
 
@@ -406,12 +406,12 @@ void EVE_HAL::Write(unsigned long Address,void *Data,unsigned short Lenght)
 };
 ////------------------------------------------------------------------------------
 ////------------------------------------------------------------------------------
-//// Запись блока данных из Flash
+//// Р—Р°РїРёСЃСЊ Р±Р»РѕРєР° РґР°РЅРЅС‹С… РёР· Flash
 // void EVE_HAL::Write(unsigned long Address,void __farflash *Data,unsigned short Lenght)
 //{
 //    Enable();
 //
-//    USPI::Write(((Address >> 16L) & MEM_MASK) | MEM_WRITE);	// <10aa_aaaa> - команда записи
+//    USPI::Write(((Address >> 16L) & MEM_MASK) | MEM_WRITE);	// <10aa_aaaa> - РєРѕРјР°РЅРґР° Р·Р°РїРёСЃРё
 //    USPI::Write(HIGH(Address));
 //    USPI::Write( LOW(Address));
 //
@@ -428,23 +428,23 @@ void EVE_HAL::Write(unsigned long Address,void *Data,unsigned short Lenght)
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-// Инициализация видеопроцессора (требует доработки)
+// РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РІРёРґРµРѕРїСЂРѕС†РµСЃСЃРѕСЂР° (С‚СЂРµР±СѓРµС‚ РґРѕСЂР°Р±РѕС‚РєРё)
 void EVE_HAL::Initialize(void)
 {
 //********************************************
 //********************************************
 
-    Activation();				// Будим видеопроцессор
-    //__delay_cycles(25000L * XTAL);		// Задержка 25 ms
+    Activation();				// Р‘СѓРґРёРј РІРёРґРµРѕРїСЂРѕС†РµСЃСЃРѕСЂ
+    //__delay_cycles(25000L * XTAL);		// Р—Р°РґРµСЂР¶РєР° 25 ms
 
-    Command(RST_PULSE);			// Сброс ядра
-    Command(CLK_EXT);		        // Переключаем на внешний осциллятор
+    Command(RST_PULSE);			// РЎР±СЂРѕСЃ СЏРґСЂР°
+    Command(CLK_EXT);		        // РџРµСЂРµРєР»СЋС‡Р°РµРј РЅР° РІРЅРµС€РЅРёР№ РѕСЃС†РёР»Р»СЏС‚РѕСЂ
     while(Read8(REG_ID) != 0x7C);;;
 
 //--------------------------------------------
 //********************************************
-    Write8(REG_PCLK,0);		// Отключаем тактировку
-    Write8(REG_PWM_DUTY,0);	// Подсветка на 0
+    Write8(REG_PCLK,0);		// РћС‚РєР»СЋС‡Р°РµРј С‚Р°РєС‚РёСЂРѕРІРєСѓ
+    Write8(REG_PWM_DUTY,0);	// РџРѕРґСЃРІРµС‚РєР° РЅР° 0
 
 //********************************************
     /*
@@ -484,7 +484,7 @@ void EVE_HAL::Initialize(void)
 //********************************************
 //--------------------------------------------
 
-    static unsigned long  DList[3] =       // Пустой начальный Display-лист
+    static unsigned long  DList[3] =       // РџСѓСЃС‚РѕР№ РЅР°С‡Р°Р»СЊРЅС‹Р№ Display-Р»РёСЃС‚
     {
         CLEAR_COLOR_RGB(14,65,92), //CLEAR_COLOR_RGB(0,0,0),
         CLEAR(1,1,1),
@@ -493,35 +493,35 @@ void EVE_HAL::Initialize(void)
 
     Write(RAM_DL,DList,sizeof(DList));
 
-    Write8(REG_DLSWAP,DLSWAP_FRAME);               // Запуск DL на исполнение
+    Write8(REG_DLSWAP,DLSWAP_FRAME);               // Р—Р°РїСѓСЃРє DL РЅР° РёСЃРїРѕР»РЅРµРЅРёРµ
 
     /*
      Enable();
-        Write32(RAM_DL + 0,CLEAR_COLOR_RGB(0,25,0));        // Пустой DL
+        Write32(RAM_DL + 0,CLEAR_COLOR_RGB(0,25,0));        // РџСѓСЃС‚РѕР№ DL
         Write32(RAM_DL + 4,CLEAR(1,1,1));
         Write32(RAM_DL + 8,DISPLAY());
      Disable();
 
-     Write8(REG_DLSWAP,DLSWAP_FRAME);                       // Запуск DL на исполнение
+     Write8(REG_DLSWAP,DLSWAP_FRAME);                       // Р—Р°РїСѓСЃРє DL РЅР° РёСЃРїРѕР»РЅРµРЅРёРµ
     */
 //--------------------------------------------
 //--------------------------------------------
 
-    Write8(REG_GPIO_DIR,(Read8(REG_GPIO_DIR) | 0x82));	// DE, GPIO1 - на выход,
-    Write8(REG_GPIO,(Read8(REG_GPIO) | 0x82));		// устанавливаем в 1
+    Write8(REG_GPIO_DIR,(Read8(REG_GPIO_DIR) | 0x82));	// DE, GPIO1 - РЅР° РІС‹С…РѕРґ,
+    Write8(REG_GPIO,(Read8(REG_GPIO) | 0x82));		// СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј РІ 1
 
-//Write8(REG_TOUCH_MODE,TOUCHMODE_OFF);		// Без тачскрина
+//Write8(REG_TOUCH_MODE,TOUCHMODE_OFF);		// Р‘РµР· С‚Р°С‡СЃРєСЂРёРЅР°
 
     Write8(REG_ROTATE,2);		// Rotate in portrait (view CMD_SETROTATE!!!)
 
-    Write8(REG_TOUCH_MODE,TOUCHMODE_FRAME);	        // Опрос сенсора с частотой кадров
-//Write16(REG_TOUCH_RZTHRESH,1200);                    // Уровень чувствительности
-// Write16(REG_TOUCH_CONFIG,0x9381);                      // RTP, защита от КЗ, sample clock
+    Write8(REG_TOUCH_MODE,TOUCHMODE_FRAME);	        // РћРїСЂРѕСЃ СЃРµРЅСЃРѕСЂР° СЃ С‡Р°СЃС‚РѕС‚РѕР№ РєР°РґСЂРѕРІ
+//Write16(REG_TOUCH_RZTHRESH,1200);                    // РЈСЂРѕРІРµРЅСЊ С‡СѓРІСЃС‚РІРёС‚РµР»СЊРЅРѕСЃС‚Рё
+// Write16(REG_TOUCH_CONFIG,0x9381);                      // RTP, Р·Р°С‰РёС‚Р° РѕС‚ РљР—, sample clock
 
-    Write16(REG_TOUCH_CONFIG,0x0381);                      // RTP, защита от КЗ, sample clock
+    Write16(REG_TOUCH_CONFIG,0x0381);                      // RTP, Р·Р°С‰РёС‚Р° РѕС‚ РљР—, sample clock
 
 
-//Write8(REG_INT_MASK,0x04);                             // TAG_CHANGE interrupt       - пока не используется
+//Write8(REG_INT_MASK,0x04);                             // TAG_CHANGE interrupt       - РїРѕРєР° РЅРµ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ
 //Write8(REG_INT_EN,1);                                  // Enable interrupt
 
 
@@ -531,40 +531,40 @@ void EVE_HAL::Initialize(void)
     Write8(REG_PWM_DUTY,40);
 
 //--------------------------------------------
-//EICRB |= BIT(ISC41);           // Внешнее прерывание INT4 по спаду
+//EICRB |= BIT(ISC41);           // Р’РЅРµС€РЅРµРµ РїСЂРµСЂС‹РІР°РЅРёРµ INT4 РїРѕ СЃРїР°РґСѓ
 //EIMSK |= BIT(INT4);
 };
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-// Инициализация видеопроцессора
+// РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РІРёРґРµРѕРїСЂРѕС†РµСЃСЃРѕСЂР°
 void EVE_HAL::InitializeNEW(bool HardReset)
 {
 //********************************************
-//    if(HardReset)                          // Аппаратный сброс по линии PD
+//    if(HardReset)                          // РђРїРїР°СЂР°С‚РЅС‹Р№ СЃР±СЂРѕСЃ РїРѕ Р»РёРЅРёРё PD
 //    {
         SetLine_PD(false);
-        //__delay_cycles(6000L * XTAL);         // Задержка 5 ms
+        //__delay_cycles(6000L * XTAL);         // Р—Р°РґРµСЂР¶РєР° 5 ms
         usleep(5000);
         SetLine_PD(true);
-        //__delay_cycles(25000L * XTAL);        // Задержка 25 ms
+        //__delay_cycles(25000L * XTAL);        // Р—Р°РґРµСЂР¶РєР° 25 ms
         usleep(25000);
 //    };
 
 //********************************************
 
-    Activation();				// Будим видеопроцессор
-    //__delay_cycles(25000L * XTAL);		// Задержка 25 ms
+    Activation();				// Р‘СѓРґРёРј РІРёРґРµРѕРїСЂРѕС†РµСЃСЃРѕСЂ
+    //__delay_cycles(25000L * XTAL);		// Р—Р°РґРµСЂР¶РєР° 25 ms
     usleep(25000);
 
 
 //if(HardReset == false)
     {
-        Command(RST_PULSE);			// Сброс ядра
+        Command(RST_PULSE);			// РЎР±СЂРѕСЃ СЏРґСЂР°
     };
 
-//    while(Read8(REG_ID) != 0x7C);;;        // Ожидание готовности
+//    while(Read8(REG_ID) != 0x7C);;;        // РћР¶РёРґР°РЅРёРµ РіРѕС‚РѕРІРЅРѕСЃС‚Рё
     usleep(25000);
     Read8(REG_ID);
     usleep(25000);
@@ -572,13 +572,13 @@ void EVE_HAL::InitializeNEW(bool HardReset)
     usleep(25000);
     Read8(REG_ID);
 
-//    Command(CLK_EXT);		        // Переключаем на внешний осциллятор
+//    Command(CLK_EXT);		        // РџРµСЂРµРєР»СЋС‡Р°РµРј РЅР° РІРЅРµС€РЅРёР№ РѕСЃС†РёР»Р»СЏС‚РѕСЂ
 
-//    while(Read8(REG_ID) != 0x7C);;;        // Ожидание готовности
+//    while(Read8(REG_ID) != 0x7C);;;        // РћР¶РёРґР°РЅРёРµ РіРѕС‚РѕРІРЅРѕСЃС‚Рё
 //
 ////********************************************
-//    Write8(REG_PCLK,0);		// Отключаем тактировку
-//    Write8(REG_PWM_DUTY,0);	// Подсветка на 0
+//    Write8(REG_PCLK,0);		// РћС‚РєР»СЋС‡Р°РµРј С‚Р°РєС‚РёСЂРѕРІРєСѓ
+//    Write8(REG_PWM_DUTY,0);	// РџРѕРґСЃРІРµС‚РєР° РЅР° 0
 //
 ////********************************************
 //
@@ -627,7 +627,7 @@ void EVE_HAL::InitializeNEW(bool HardReset)
 //
 ////********************************************
 //
-//    static unsigned long  DList[3] =       // Пустой начальный Display-лист
+//    static unsigned long  DList[3] =       // РџСѓСЃС‚РѕР№ РЅР°С‡Р°Р»СЊРЅС‹Р№ Display-Р»РёСЃС‚
 //    {
 //        CLEAR_COLOR_RGB(14,65,92),
 //        CLEAR(1,1,1),
@@ -636,29 +636,29 @@ void EVE_HAL::InitializeNEW(bool HardReset)
 //
 //    Write(RAM_DL,DList,sizeof(DList));
 //
-//    Write8(REG_DLSWAP,DLSWAP_FRAME);               // Запуск DL на исполнение
+//    Write8(REG_DLSWAP,DLSWAP_FRAME);               // Р—Р°РїСѓСЃРє DL РЅР° РёСЃРїРѕР»РЅРµРЅРёРµ
 //
 ////********************************************
 //
-//    Write8(REG_ROTATE,2);                                  // Поворот в портретный режим
+//    Write8(REG_ROTATE,2);                                  // РџРѕРІРѕСЂРѕС‚ РІ РїРѕСЂС‚СЂРµС‚РЅС‹Р№ СЂРµР¶РёРј
 //
-//    Write8(REG_GPIO_DIR,(Read8(REG_GPIO_DIR) | 0x82));	// DE, GPIO1 - на выход,
-//    Write8(REG_GPIO,(Read8(REG_GPIO) | 0x82));		// устанавливаем в 1
+//    Write8(REG_GPIO_DIR,(Read8(REG_GPIO_DIR) | 0x82));	// DE, GPIO1 - РЅР° РІС‹С…РѕРґ,
+//    Write8(REG_GPIO,(Read8(REG_GPIO) | 0x82));		// СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј РІ 1
 //
 ////********************************************
 //
 //    unsigned char ChipID = (Read32(REG_CHIPID) >> 8) & 0xFF;       // 0x10,0x11,0x12,0x13 - FT810,FT811,FT812,FT813
 //
-//    Write8(REG_TOUCH_MODE,TOUCHMODE_FRAME);	        // Опрос сенсора с частотой кадров
+//    Write8(REG_TOUCH_MODE,TOUCHMODE_FRAME);	        // РћРїСЂРѕСЃ СЃРµРЅСЃРѕСЂР° СЃ С‡Р°СЃС‚РѕС‚РѕР№ РєР°РґСЂРѕРІ
 //
 //    if(ChipID & 0x01)
 //    {
-//        Write16(REG_TOUCH_CONFIG,0x0381);                      // CTP сенсор
+//        Write16(REG_TOUCH_CONFIG,0x0381);                      // CTP СЃРµРЅСЃРѕСЂ
 //    }
 //    else
 //    {
-////Write16(REG_TOUCH_RZTHRESH,1200);                      // Уровень чувствительности
-//        Write16(REG_TOUCH_CONFIG,0x9381);                      // RTP сенсор, защита от КЗ, sample clock
+////Write16(REG_TOUCH_RZTHRESH,1200);                      // РЈСЂРѕРІРµРЅСЊ С‡СѓРІСЃС‚РІРёС‚РµР»СЊРЅРѕСЃС‚Рё
+//        Write16(REG_TOUCH_CONFIG,0x9381);                      // RTP СЃРµРЅСЃРѕСЂ, Р·Р°С‰РёС‚Р° РѕС‚ РљР—, sample clock
 //    };
 //
 ////********************************************
@@ -680,7 +680,7 @@ void EVE_HAL::InitializeNEW(bool HardReset)
 //    };
 //
 //
-//    Write8(REG_VOL_SOUND,0);       // Громкость на 0
+//    Write8(REG_VOL_SOUND,0);       // Р“СЂРѕРјРєРѕСЃС‚СЊ РЅР° 0
 //    Write16(REG_SOUND,0x60);       // Mute
 //    Write8(REG_PLAY,1);
 };
@@ -689,28 +689,28 @@ void EVE_HAL::InitializeNEW(bool HardReset)
 void EVE_HAL::InitializeFAST(bool HardReset)
 {
 
-    if(HardReset)                          // Аппаратный сброс по линии PD
+    if(HardReset)                          // РђРїРїР°СЂР°С‚РЅС‹Р№ СЃР±СЂРѕСЃ РїРѕ Р»РёРЅРёРё PD
     {
         SetLine_PD(false);
-        //__delay_cycles(6000L * XTAL);         // Задержка 6 ms
+        //__delay_cycles(6000L * XTAL);         // Р—Р°РґРµСЂР¶РєР° 6 ms
         SetLine_PD(true);
-        //__delay_cycles(25000L * XTAL);        // Задержка 25 ms
+        //__delay_cycles(25000L * XTAL);        // Р—Р°РґРµСЂР¶РєР° 25 ms
     };
 
 //********************************************
-    Activation();				// Будим видеопроцессор
-    //__delay_cycles(25000L * XTAL);		// Задержка 25 ms
+    Activation();				// Р‘СѓРґРёРј РІРёРґРµРѕРїСЂРѕС†РµСЃСЃРѕСЂ
+    //__delay_cycles(25000L * XTAL);		// Р—Р°РґРµСЂР¶РєР° 25 ms
 
 
-    Command(RST_PULSE);			// Сброс ядра
-    while(Read8(REG_ID) != 0x7C);;;     // Ожидание готовности
+    Command(RST_PULSE);			// РЎР±СЂРѕСЃ СЏРґСЂР°
+    while(Read8(REG_ID) != 0x7C);;;     // РћР¶РёРґР°РЅРёРµ РіРѕС‚РѕРІРЅРѕСЃС‚Рё
 
-    Command(CLK_EXT);		        // Переключаем на внешний осциллятор
-    while(Read8(REG_ID) != 0x7C);;;     // Ожидание готовности
+    Command(CLK_EXT);		        // РџРµСЂРµРєР»СЋС‡Р°РµРј РЅР° РІРЅРµС€РЅРёР№ РѕСЃС†РёР»Р»СЏС‚РѕСЂ
+    while(Read8(REG_ID) != 0x7C);;;     // РћР¶РёРґР°РЅРёРµ РіРѕС‚РѕРІРЅРѕСЃС‚Рё
 
 //********************************************
-//Write8(REG_PCLK,0);		// Отключаем тактировку
-//Write8(REG_PWM_DUTY,0);	// Подсветка на 0
+//Write8(REG_PCLK,0);		// РћС‚РєР»СЋС‡Р°РµРј С‚Р°РєС‚РёСЂРѕРІРєСѓ
+//Write8(REG_PWM_DUTY,0);	// РџРѕРґСЃРІРµС‚РєР° РЅР° 0
 
 //********************************************
 
@@ -735,7 +735,7 @@ void EVE_HAL::InitializeFAST(bool HardReset)
 
 //********************************************
 
-    static unsigned long  DList[3] =       // Пустой начальный Display-лист
+    static unsigned long  DList[3] =       // РџСѓСЃС‚РѕР№ РЅР°С‡Р°Р»СЊРЅС‹Р№ Display-Р»РёСЃС‚
     {
         CLEAR_COLOR_RGB(14,65,92),    //CLEAR_COLOR_RGB(0,0,0),
         CLEAR(1,1,1),
@@ -744,29 +744,29 @@ void EVE_HAL::InitializeFAST(bool HardReset)
 
     Write(RAM_DL,DList,sizeof(DList));
 
-    Write8(REG_DLSWAP,DLSWAP_FRAME);               // Запуск DL на исполнение
+    Write8(REG_DLSWAP,DLSWAP_FRAME);               // Р—Р°РїСѓСЃРє DL РЅР° РёСЃРїРѕР»РЅРµРЅРёРµ
 
 //********************************************
 
-    Write8(REG_ROTATE,2);                                  // Поворот в портретный режим
+    Write8(REG_ROTATE,2);                                  // РџРѕРІРѕСЂРѕС‚ РІ РїРѕСЂС‚СЂРµС‚РЅС‹Р№ СЂРµР¶РёРј
 
-    Write8(REG_GPIO_DIR,(Read8(REG_GPIO_DIR) | 0x82));	// DE, GPIO1 - на выход,
-    Write8(REG_GPIO,(Read8(REG_GPIO) | 0x82));		// устанавливаем в 1
+    Write8(REG_GPIO_DIR,(Read8(REG_GPIO_DIR) | 0x82));	// DE, GPIO1 - РЅР° РІС‹С…РѕРґ,
+    Write8(REG_GPIO,(Read8(REG_GPIO) | 0x82));		// СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј РІ 1
 
 //********************************************
 
     unsigned char ChipID = (Read32(REG_CHIPID) >> 8) & 0xFF;       // 0x10,0x11,0x12,0x13 - FT810,FT811,FT812,FT813
 
-    Write8(REG_TOUCH_MODE,TOUCHMODE_FRAME);	        // Опрос сенсора с частотой кадров
+    Write8(REG_TOUCH_MODE,TOUCHMODE_FRAME);	        // РћРїСЂРѕСЃ СЃРµРЅСЃРѕСЂР° СЃ С‡Р°СЃС‚РѕС‚РѕР№ РєР°РґСЂРѕРІ
 
     if(ChipID & 0x01)
     {
-        Write16(REG_TOUCH_CONFIG,0x0381);                      // CTP сенсор
+        Write16(REG_TOUCH_CONFIG,0x0381);                      // CTP СЃРµРЅСЃРѕСЂ
     }
     else
     {
-//Write16(REG_TOUCH_RZTHRESH,1200);                      // Уровень чувствительности
-        Write16(REG_TOUCH_CONFIG,0x9381);                      // RTP сенсор, защита от КЗ, sample clock
+//Write16(REG_TOUCH_RZTHRESH,1200);                      // РЈСЂРѕРІРµРЅСЊ С‡СѓРІСЃС‚РІРёС‚РµР»СЊРЅРѕСЃС‚Рё
+        Write16(REG_TOUCH_CONFIG,0x9381);                      // RTP СЃРµРЅСЃРѕСЂ, Р·Р°С‰РёС‚Р° РѕС‚ РљР—, sample clock
     };
 
 //********************************************
@@ -788,7 +788,7 @@ void EVE_HAL::InitializeFAST(bool HardReset)
     };
 
 
-    Write8(REG_VOL_SOUND,0);       // Громкость на 0
+    Write8(REG_VOL_SOUND,0);       // Р“СЂРѕРјРєРѕСЃС‚СЊ РЅР° 0
     Write16(REG_SOUND,0x60);       // Mute
     Write8(REG_PLAY,1);
 };
@@ -802,7 +802,7 @@ static const  unsigned long ControlPointAddr[10] =
 };
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-// Запись контрольных точек в RAM_G видеопроцессора
+// Р—Р°РїРёСЃСЊ РєРѕРЅС‚СЂРѕР»СЊРЅС‹С… С‚РѕС‡РµРє РІ RAM_G РІРёРґРµРѕРїСЂРѕС†РµСЃСЃРѕСЂР°
 void EVE_HAL::WriteControlPoints(void)
 {
     for(unsigned char i = 0; i < 10; i++)
@@ -814,7 +814,7 @@ void EVE_HAL::WriteControlPoints(void)
 };
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-// Проверка контрольных точек в RAM_G видеопроцессора
+// РџСЂРѕРІРµСЂРєР° РєРѕРЅС‚СЂРѕР»СЊРЅС‹С… С‚РѕС‡РµРє РІ RAM_G РІРёРґРµРѕРїСЂРѕС†РµСЃСЃРѕСЂР°
 unsigned short EVE_HAL::CheckControlPoints(void)
 {
     unsigned short ErrorFlags = 0x0000;
@@ -844,7 +844,7 @@ unsigned short EVE_HAL::CheckControlPoints(void)
 };
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-// Проверка контрольных точек в RAM_G видеопроцессора (SEP 2023)
+// РџСЂРѕРІРµСЂРєР° РєРѕРЅС‚СЂРѕР»СЊРЅС‹С… С‚РѕС‡РµРє РІ RAM_G РІРёРґРµРѕРїСЂРѕС†РµСЃСЃРѕСЂР° (SEP 2023)
 unsigned char EVE_HAL::CheckControlPoints2(void)
 {
     unsigned char Counter = 0;
@@ -870,7 +870,7 @@ unsigned char EVE_HAL::CheckControlPoints2(void)
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-// Установка уровня яркости подсветки экрана
+// РЈСЃС‚Р°РЅРѕРІРєР° СѓСЂРѕРІРЅСЏ СЏСЂРєРѕСЃС‚Рё РїРѕРґСЃРІРµС‚РєРё СЌРєСЂР°РЅР°
 void EVE_HAL::SetLighting(unsigned char Value)
 {
     if(Value <  10) Value =  10;

@@ -1,4 +1,4 @@
-#ifndef CSERVICEMARKET_H
+﻿#ifndef CSERVICEMARKET_H
 #define CSERVICEMARKET_H
 //-------------------------------------------------------------------------------
 //  Sourse      : FileName.cpp

@@ -1,4 +1,4 @@
-#ifndef CDEVICECONTROL_H
+﻿#ifndef CDEVICECONTROL_H
 #define CDEVICECONTROL_H
 //-------------------------------------------------------------------------------
 //  Sourse      : FileName.cpp

@@ -1,4 +1,4 @@
-#ifndef CSERIALPORTCOMMUNICATIONDEVICE_H
+﻿#ifndef CSERIALPORTCOMMUNICATIONDEVICE_H
 #define CSERIALPORTCOMMUNICATIONDEVICE_H
 //-------------------------------------------------------------------------------
 //  Source      : FileName.cpp

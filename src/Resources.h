@@ -1,4 +1,4 @@
-#ifndef CRESOURCES_H
+﻿#ifndef CRESOURCES_H
 #define CRESOURCES_H
 //-------------------------------------------------------------------------------
 //  Source      : FileName.cpp
@@ -14,9 +14,11 @@
 #include <string>
 
 //#include "Dfa.h"
+#include "Task.h"
 
-class CTaskInterface;
-class CTask;
+class CDfa;
+//class CTaskInterface;
+//class CTask;
 class CDeviceControl;
 class CDataStore;
 class CConfigurationCreate;
@@ -26,11 +28,16 @@ class CServiceMarket;
 class CResourcesInterface : public CTask//, public CDfa
 {
 public:
-    virtual void AddCommonListTask(CTaskInterface* pxTask) {};
-    virtual CTaskInterface* GetCommonListTaskPointer(char* pcTaskName) {};
-    virtual void AddCommonTaskToMap(std::string sTaskName, CTaskInterface* pxTask) {};
-    virtual CTaskInterface* GetCommonTaskFromMapPointer(std::string sTaskName) {};
-    virtual std::list<CTaskInterface*>* GetCommonTasksListPointer(void) {};
+    virtual void AddCommonListTask(CTaskInterface* pxTask);
+    virtual CTaskInterface* GetCommonListTaskPointer(char* pcTaskName);
+    virtual void AddCommonTaskToMap(std::string sTaskName, CTaskInterface* pxTask);
+    virtual CTaskInterface* GetCommonTaskFromMapPointer(std::string sTaskName);
+//    virtual std::list<CTaskInterface*>* GetCommonTasksListPointer(void);
+//    virtual void AddCommonListTask(CTaskInterface* pxTask) {};
+//    virtual CTaskInterface* GetCommonListTaskPointer(char* pcTaskName) {};
+//    virtual void AddCommonTaskToMap(std::string sTaskName, CTaskInterface* pxTask) {};
+//    virtual CTaskInterface* GetCommonTaskFromMapPointer(std::string sTaskName) {};
+//    virtual std::list<CTaskInterface*>* GetCommonTasksListPointer(void) {};
 
 };
 
@@ -82,16 +89,8 @@ public:
     void SetInputRegistersNumber(uint16_t uiData);
     uint16_t GetInputRegistersNumber(void);
 
-
-    std::list<CTaskInterface*>* GetCommonTasksListPointer(void)
-    {
-        return &m_lpxCommonTasksList;
-    };
-
-    std::list<CTaskInterface*>* GetCurrentlyRunningTasksListPointer(void)
-    {
-        return &m_lpxCurrentlyRunningTasksList;
-    };
+//    std::list<CTaskInterface*>* GetCommonTasksListPointer(void);
+//    std::list<CTaskInterface*>* GetCurrentlyRunningTasksListPointer(void);
 
 //protected:
 //
