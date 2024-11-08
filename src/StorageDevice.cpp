@@ -159,12 +159,12 @@ uint8_t CStorageDeviceFileSystem::Write(void)
 // Передаёт данные контекста записи блока автомату устройства хранения и запускает процесс записи.
 bool CStorageDeviceFileSystem::ReadBlock(uint8_t *puiDestination, uint16_t uiOffset, uint16_t uiLength)
 {
-    std::cout << "CStorageDeviceFileSystem ReadBlock"  << std::endl;
+    std::cout << "CStorageDeviceFileSystem ReadBlock 1"  << std::endl;
     if ((GetFsmState() == READY) ||
             (GetFsmState() == WRITE_DATA_ERROR) ||
             (GetFsmState() == READ_DATA_ERROR))
     {
-        std::cout << "CStorageDeviceFileSystem ReadBlock 1"  << std::endl;
+        std::cout << "CStorageDeviceFileSystem ReadBlock 2"  << std::endl;
         m_uiOffset = uiOffset;
         m_puiBuffer = puiDestination;
         m_uiLength = uiLength;
@@ -174,7 +174,7 @@ bool CStorageDeviceFileSystem::ReadBlock(uint8_t *puiDestination, uint16_t uiOff
     }
     else
     {
-        std::cout << "CStorageDeviceFileSystem ReadBlock 2"  << std::endl;
+        std::cout << "CStorageDeviceFileSystem ReadBlock 3"  << std::endl;
         return false;
     }
 }
@@ -183,7 +183,7 @@ bool CStorageDeviceFileSystem::ReadBlock(uint8_t *puiDestination, uint16_t uiOff
 // Считывает блок данных из устройства хранения.
 uint8_t CStorageDeviceFileSystem::Read(void)
 {
-    std::cout << "CStorageDeviceFileSystem Read"  << std::endl;
+    std::cout << "CStorageDeviceFileSystem Read 1"  << std::endl;
     CDataContainerDataBase* pxDataContainer =
         (static_cast<CDataContainerDataBase*>(m_pxDataContainer.get()));
 
@@ -195,16 +195,19 @@ uint8_t CStorageDeviceFileSystem::Read(void)
 //    cout << "CStorageDeviceFileSystem::Read uiLength" << " " << (int)uiLength << endl;
     if ((uiOffset + uiLength) < MAX_BUFFER_LENGTH)
     {
+        std::cout << "CStorageDeviceFileSystem Read 2"  << std::endl;
         ifstream indata;
         // откроем файл.
         indata.open(pccFileName, (ios::in | ios::binary));
         if (!indata)
         {
+            std::cout << "CStorageDeviceFileSystem Read 3"  << std::endl;
             cerr << "CStorageDeviceFileSystem::Read Error: file could not be opened" << endl;
             return 0;
         }
         else
         {
+            std::cout << "CStorageDeviceFileSystem Read 4"  << std::endl;
             // установим смещение в файле.
             indata.seekg(uiOffset, ios_base::beg);
             // прочитаем файл.
@@ -217,6 +220,7 @@ uint8_t CStorageDeviceFileSystem::Read(void)
     }
     else
     {
+        std::cout << "CStorageDeviceFileSystem Read 5"  << std::endl;
         return 0;
     }
 }
@@ -270,7 +274,7 @@ uint8_t CStorageDeviceFileSystem::Fsm(void)
     break;
 
     case WRITE_DATA_START:
-        //std::cout << "CMainProductionCycle::Fsm WRITE_DATA_START"  << std::endl;
+        std::cout << "CMainProductionCycle::Fsm WRITE_DATA_START"  << std::endl;
 //        GetArgumentData();
         if (Write())
         {
@@ -283,13 +287,13 @@ uint8_t CStorageDeviceFileSystem::Fsm(void)
         break;
 
     case DATA_WRITED_SUCCESSFULLY:
-//        std::cout << "CStorageDeviceFileSystem::Fsm DATA_WRITED_SUCCESSFULLY"  << std::endl;
+        std::cout << "CStorageDeviceFileSystem::Fsm DATA_WRITED_SUCCESSFULLY"  << std::endl;
         SetFsmAnswerState(DATA_WRITED_SUCCESSFULLY);
         SetFsmState(READY);
         break;
 
     case WRITE_DATA_ERROR:
-        //std::cout << "CMainProductionCycle::Fsm WRITE_DATA_ERROR"  << std::endl;
+        std::cout << "CMainProductionCycle::Fsm WRITE_DATA_ERROR"  << std::endl;
         SetFsmAnswerState(WRITE_DATA_ERROR);
         SetFsmState(READY);
         break;
@@ -308,13 +312,13 @@ uint8_t CStorageDeviceFileSystem::Fsm(void)
         break;
 
     case DATA_READED_SUCCESSFULLY:
-        //std::cout << "CMainProductionCycle::Fsm DATA_READED_SUCCESSFULLY"  << std::endl;
+        std::cout << "CMainProductionCycle::Fsm DATA_READED_SUCCESSFULLY"  << std::endl;
         SetFsmAnswerState(DATA_READED_SUCCESSFULLY);
         SetFsmState(READY);
         break;
 
     case READ_DATA_ERROR:
-        //std::cout << "CMainProductionCycle::Fsm READ_DATA_ERROR"  << std::endl;
+        std::cout << "CMainProductionCycle::Fsm READ_DATA_ERROR"  << std::endl;
         SetFsmAnswerState(READ_DATA_ERROR);
         SetFsmState(READY);
         break;

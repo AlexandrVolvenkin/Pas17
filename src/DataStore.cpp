@@ -401,6 +401,7 @@ uint8_t CDataStore::TemporaryBlockWritePrepare(void)
     uint8_t *puiSource = pxDataContainer -> m_puiDataPointer;
 //    uint16_t uiOffset = pxDataContainer -> m_uiDataOffset;
     uint16_t uiLength = pxDataContainer -> m_uiDataLength;
+    std::cout << "CDataStore::TemporaryBlockWritePrepare 1 uiBlock"  <<  (uiBlock) << std::endl;
 
 //    uint8_t uiBlock = m_uiBlockIndex;
 //    uint8_t* puiSource = m_puiBlockDataPointer;
@@ -442,9 +443,9 @@ uint8_t CDataStore::TemporaryBlockWritePrepare(void)
 //                    TEMPORARY_BLOCK_DATA_BEGIN,
 //                    uiEncodedByteCounter);
 
-//    CDataContainerDataBase* pxDataContainer =
-//        (static_cast<CDataContainerDataBase*>(m_pxStorageDevice ->
-//                m_pxDataContainer.get()));
+    pxDataContainer =
+        (static_cast<CDataContainerDataBase*>(m_pxStorageDevice ->
+                m_pxDataContainer.get()));
 
     pxDataContainer ->
     SetContainerData(CStorageDeviceInterface::WRITE_DATA_START,
@@ -484,6 +485,7 @@ uint8_t CDataStore::BlockWritePrepare(void)
     uint8_t *puiSource = pxDataContainer -> m_puiDataPointer;
 //    uint16_t uiOffset = pxDataContainer -> m_uiDataOffset;
     uint16_t uiLength = pxDataContainer -> m_uiDataLength;
+    std::cout << "CDataStore::BlockWritePrepare 1 uiBlock"  <<  (uiBlock) << std::endl;
 
 //    uint8_t uiBlock = m_uiBlockIndex;
 //    uint8_t* puiSource = m_puiBlockDataPointer;
@@ -522,6 +524,10 @@ uint8_t CDataStore::BlockWritePrepare(void)
         usCrc16(puiSource, uiLength);
 //    // Сохраним индекс последнего записываемого блока.
 //    m_xServiseSection.xServiseSectionData.uiLastWritedBlockNumber = uiBlock;
+
+    pxDataContainer =
+        (static_cast<CDataContainerDataBase*>(m_pxStorageDevice ->
+                m_pxDataContainer.get()));
 
     pxDataContainer ->
     SetContainerData(CStorageDeviceInterface::WRITE_DATA_START,
@@ -563,6 +569,7 @@ uint8_t CDataStore::BlockWritePrepare(void)
 uint8_t CDataStore::WriteBlock(uint8_t *puiSource, uint16_t uiLength, uint8_t uiBlock)
 {
     std::cout << "CDataStore::WriteBlock 1"  << std::endl;
+    std::cout << "CDataStore::WriteBlock 1 uiBlock"  <<  (uiBlock) << std::endl;
     // Произошёл выход за границы буфера?
     if (uiBlock >= (MAX_BLOCKS_NUMBER + SERVICE_SECTION_BLOCK_NUMBER))
     {
@@ -652,7 +659,7 @@ uint8_t CDataStore::ReadTemporaryServiceSection(void)
 // Считывает и проверяет целостность служебного блока.
 uint8_t CDataStore::ReadServiceSection(void)
 {
-    std::cout << "CDataStore::ReadTemporaryServiceSection 1"  << std::endl;
+    std::cout << "CDataStore::ReadServiceSection 1"  << std::endl;
     uint16_t uiEncodedLength =
         (CHammingCodes::CalculateEncodedDataLength(sizeof(struct TServiseSection)));
 
@@ -679,7 +686,7 @@ uint8_t CDataStore::ReadServiceSection(void)
 //                                         SERVICE_SECTION_DATA_BEGIN,
 //                                         uiEncodedLength)))
     {
-        std::cout << "CDataStore::ReadTemporaryServiceSection 2"  << std::endl;
+        std::cout << "CDataStore::ReadServiceSection 2"  << std::endl;
         // Нет данных.
         return 0;
     }
@@ -694,12 +701,12 @@ uint8_t CDataStore::ReadServiceSection(void)
             usCrc16(reinterpret_cast<uint8_t*>(&m_xServiseSection.xServiseSectionData),
                     sizeof(struct TServiseSectionData)))
     {
-        std::cout << "CDataStore::ReadTemporaryServiceSection 3"  << std::endl;
+        std::cout << "CDataStore::ReadServiceSection 3"  << std::endl;
         return 1;
     }
     else
     {
-        std::cout << "CDataStore::ReadTemporaryServiceSection 4"  << std::endl;
+        std::cout << "CDataStore::ReadServiceSection 4"  << std::endl;
         // Нет данных.
         return 0;
     }
@@ -715,6 +722,7 @@ uint8_t CDataStore::CheckTemporaryBlock(void)
         (static_cast<CDataContainerDataBase*>(m_pxDataContainer.get()));
 
     uint8_t uiBlock = pxDataContainer -> m_uiDataIndex;
+    std::cout << "CDataStore::CheckTemporaryBlock 1 uiBlock"  <<  (uiBlock) << std::endl;
 //    uint8_t *puiSource = pxDataContainer -> m_puiDataPointer;
 ////    uint16_t uiOffset = pxDataContainer -> m_uiDataOffset;
 //    uint16_t uiLength = pxDataContainer -> m_uiDataLength;
@@ -813,7 +821,9 @@ uint8_t CDataStore::CheckBlock(void)
     CDataContainerDataBase* pxDataContainer =
         (static_cast<CDataContainerDataBase*>(m_pxDataContainer.get()));
 
+//    std::cout << "CDataStore::CheckBlock 1 m_uiDataIndex"  <<  (pxDataContainer -> m_uiDataIndex) << std::endl;
     uint8_t uiBlock = pxDataContainer -> m_uiDataIndex;
+    std::cout << "CDataStore::CheckBlock 1 uiBlock"  <<  (uiBlock) << std::endl;
 //    uint8_t *puiSource = pxDataContainer -> m_puiDataPointer;
 ////    uint16_t uiOffset = pxDataContainer -> m_uiDataOffset;
 //    uint16_t uiLength = pxDataContainer -> m_uiDataLength;
@@ -863,7 +873,7 @@ uint8_t CDataStore::CheckBlock(void)
 
     pxDataContainer ->
     SetContainerData(CStorageDeviceInterface::READ_DATA_START,
-                     0,
+                     uiBlock,
                      m_puiIntermediateBuff,
                      uiSourceOffset,
                      uiEncodedLength);
@@ -1106,7 +1116,7 @@ uint16_t CDataStore::GetReadedData()
 // Вызывается только если база данных подтверждена пользователем.
 void CDataStore::CrcOfBlocksCrcCreate(void)
 {
-        std::cout << "CDataStore::CrcOfBlocksCrcCreate 1"  << std::endl;
+    std::cout << "CDataStore::CrcOfBlocksCrcCreate 1"  << std::endl;
     // Контрольная сумма вычисленная из массива контрольных сумм блоков, не включая служебный.
     // Сохраняется при первой и последующих записях любых блоков через программатор.
     // Ноль или её несовпадение свидетельствует о том, что база данных создана по умоланию,
@@ -1133,7 +1143,7 @@ void CDataStore::CrcOfBlocksCrcCreate(void)
 //-------------------------------------------------------------------------------
 bool CDataStore::CrcOfBlocksCrcCheck(void)
 {
-        std::cout << "CDataStore::CrcOfBlocksCrcCheck 1"  << std::endl;
+    std::cout << "CDataStore::CrcOfBlocksCrcCheck 1"  << std::endl;
     // Контрольная сумма вычисленная из массива контрольных сумм блоков, не включая служебный.
     // Сохраняется при первой и последующих записях любых блоков через программатор.
     // Ноль или её несовпадение свидетельствует о том, что база данных создана по умоланию,
@@ -1169,7 +1179,7 @@ bool CDataStore::CrcOfBlocksCrcCheck(void)
 //-------------------------------------------------------------------------------
 uint8_t CDataStore::GetBlockLength(uint8_t uiBlock)
 {
-        std::cout << "CDataStore::GetBlockLength 1"  << std::endl;
+    std::cout << "CDataStore::GetBlockLength 1"  << std::endl;
 //    return m_xServiseSection.xServiseSectionData.
 //           axBlockPositionData[uiBlock].uiLength;
     return aucDataBaseBlockLength[uiBlock];
@@ -1248,13 +1258,14 @@ uint8_t CDataStore::Fsm(void)
         break;
 
     case WRITE_END_WAITING_TEMPORARY_BLOCK_DATA:
-        std::cout << "CDataStore::Fsm 5"  << std::endl;
+//        std::cout << "CDataStore::Fsm 2"  << std::endl;
         // Ожидаем окончания записи автоматом устройства хранения.
         // Устройство хранения закончило запись успешно?
         if (m_pxStorageDevice -> GetFsmAnswerState() ==
                 CStorageDeviceInterface::DATA_WRITED_SUCCESSFULLY)
         {
-            std::cout << "CDataStore::Fsm 6"  << std::endl;
+            std::cout << "CDataStore::Fsm 3"  << std::endl;
+            m_pxStorageDevice -> SetFsmAnswerState(0);
             // Запись прошла успешно?
             if (CheckTemporaryBlock())
             {
@@ -1272,7 +1283,8 @@ uint8_t CDataStore::Fsm(void)
         else if (m_pxStorageDevice -> GetFsmAnswerState() ==
                  CStorageDeviceInterface::WRITE_DATA_ERROR)
         {
-            std::cout << "CDataStore::Fsm 7"  << std::endl;
+            std::cout << "CDataStore::Fsm 4"  << std::endl;
+            m_pxStorageDevice -> SetFsmAnswerState(0);
             SetFsmState(WRITE_ERROR);
         }
         else
@@ -1280,7 +1292,8 @@ uint8_t CDataStore::Fsm(void)
             // Время ожидания окончания записи закончилось?
             if (GetTimerPointer() -> IsOverflow())
             {
-                std::cout << "CDataStore::Fsm 7"  << std::endl;
+                std::cout << "CDataStore::Fsm 5"  << std::endl;
+                m_pxStorageDevice -> SetFsmAnswerState(0);
                 SetFsmState(WRITE_ERROR);
             }
         }
@@ -1290,7 +1303,7 @@ uint8_t CDataStore::Fsm(void)
 //-------------------------------------------------------------------------------
     // Запись временного служеьного блока.
     case START_WRITE_TEMPORARY_SERVICE_SECTION_DATA:
-        std::cout << "CDataStore::Fsm 8"  << std::endl;
+        std::cout << "CDataStore::Fsm 6"  << std::endl;
         TemporaryServiceSectionWritePrepare();
         // Установим время ожидания окончания записи.
         GetTimerPointer() -> Set(WRITE_END_WAITING_TIMEOUT);
@@ -1303,13 +1316,17 @@ uint8_t CDataStore::Fsm(void)
         if (m_pxStorageDevice -> GetFsmAnswerState() ==
                 CStorageDeviceInterface::DATA_WRITED_SUCCESSFULLY)
         {
+            std::cout << "CDataStore::Fsm 7"  << std::endl;
+            m_pxStorageDevice -> SetFsmAnswerState(0);
             // Запись прошла успешно?
             if (ReadTemporaryServiceSection())
             {
+                std::cout << "CDataStore::Fsm 8"  << std::endl;
                 SetFsmState(START_WRITE_BLOCK_DATA);
             }
             else
             {
+                std::cout << "CDataStore::Fsm 9"  << std::endl;
                 SetFsmState(WRITE_ERROR);
             }
         }
@@ -1317,6 +1334,8 @@ uint8_t CDataStore::Fsm(void)
         else if (m_pxStorageDevice -> GetFsmAnswerState() ==
                  CStorageDeviceInterface::WRITE_DATA_ERROR)
         {
+            std::cout << "CDataStore::Fsm 10"  << std::endl;
+            m_pxStorageDevice -> SetFsmAnswerState(0);
             SetFsmState(WRITE_ERROR);
         }
         else
@@ -1324,6 +1343,8 @@ uint8_t CDataStore::Fsm(void)
             // Время ожидания окончания записи закончилось?
             if (GetTimerPointer() -> IsOverflow())
             {
+                std::cout << "CDataStore::Fsm 12"  << std::endl;
+                m_pxStorageDevice -> SetFsmAnswerState(0);
                 SetFsmState(WRITE_ERROR);
             }
         }
@@ -1333,6 +1354,7 @@ uint8_t CDataStore::Fsm(void)
 //-------------------------------------------------------------------------------
     // Запись блока.
     case START_WRITE_BLOCK_DATA:
+        std::cout << "CDataStore::Fsm 13"  << std::endl;
         BlockWritePrepare();
         // Установим время ожидания окончания записи.
         GetTimerPointer() -> Set(WRITE_END_WAITING_TIMEOUT);
@@ -1345,13 +1367,17 @@ uint8_t CDataStore::Fsm(void)
         if (m_pxStorageDevice -> GetFsmAnswerState() ==
                 CStorageDeviceInterface::DATA_WRITED_SUCCESSFULLY)
         {
+            std::cout << "CDataStore::Fsm 14"  << std::endl;
+            m_pxStorageDevice -> SetFsmAnswerState(0);
             // Запись прошла успешно?
             if (CheckBlock())
             {
+                std::cout << "CDataStore::Fsm 15"  << std::endl;
                 SetFsmState(START_WRITE_SERVICE_SECTION_DATA);
             }
             else
             {
+                std::cout << "CDataStore::Fsm 16"  << std::endl;
                 SetFsmState(WRITE_ERROR);
             }
         }
@@ -1359,6 +1385,8 @@ uint8_t CDataStore::Fsm(void)
         else if (m_pxStorageDevice -> GetFsmAnswerState() ==
                  CStorageDeviceInterface::WRITE_DATA_ERROR)
         {
+            std::cout << "CDataStore::Fsm 17"  << std::endl;
+            m_pxStorageDevice -> SetFsmAnswerState(0);
             SetFsmState(WRITE_ERROR);
         }
         else
@@ -1366,6 +1394,8 @@ uint8_t CDataStore::Fsm(void)
             // Время ожидания окончания записи закончилось?
             if (GetTimerPointer() -> IsOverflow())
             {
+                std::cout << "CDataStore::Fsm 18"  << std::endl;
+                m_pxStorageDevice -> SetFsmAnswerState(0);
                 SetFsmState(WRITE_ERROR);
             }
         }
@@ -1375,6 +1405,7 @@ uint8_t CDataStore::Fsm(void)
 //-------------------------------------------------------------------------------
     // Запись служеьного блока.
     case START_WRITE_SERVICE_SECTION_DATA:
+        std::cout << "CDataStore::Fsm 19"  << std::endl;
         ServiceSectionWritePrepare();
         // Установим время ожидания окончания записи.
         GetTimerPointer() -> Set(WRITE_END_WAITING_TIMEOUT);
@@ -1387,13 +1418,17 @@ uint8_t CDataStore::Fsm(void)
         if (m_pxStorageDevice -> GetFsmAnswerState() ==
                 CStorageDeviceInterface::DATA_WRITED_SUCCESSFULLY)
         {
+            std::cout << "CDataStore::Fsm 20"  << std::endl;
+            m_pxStorageDevice -> SetFsmAnswerState(0);
             // Запись прошла успешно?
             if (ReadServiceSection())
             {
+                std::cout << "CDataStore::Fsm 21"  << std::endl;
                 SetFsmState(DATA_WRITED_SUCCESSFULLY);
             }
             else
             {
+                std::cout << "CDataStore::Fsm 22"  << std::endl;
                 SetFsmState(WRITE_ERROR);
             }
         }
@@ -1401,6 +1436,8 @@ uint8_t CDataStore::Fsm(void)
         else if (m_pxStorageDevice -> GetFsmAnswerState() ==
                  CStorageDeviceInterface::WRITE_DATA_ERROR)
         {
+            std::cout << "CDataStore::Fsm 23"  << std::endl;
+            m_pxStorageDevice -> SetFsmAnswerState(0);
             SetFsmState(WRITE_ERROR);
         }
         else
@@ -1408,20 +1445,27 @@ uint8_t CDataStore::Fsm(void)
             // Время ожидания окончания записи закончилось?
             if (GetTimerPointer() -> IsOverflow())
             {
+                std::cout << "CDataStore::Fsm 24"  << std::endl;
+                m_pxStorageDevice -> SetFsmAnswerState(0);
                 SetFsmState(WRITE_ERROR);
             }
         }
         break;
 
     case DATA_WRITED_SUCCESSFULLY:
+        std::cout << "CDataStore::Fsm 25"  << std::endl;
         SetFsmAnswerState(DATA_WRITED_SUCCESSFULLY);
+        SetFsmState(READY);
         break;
 
     case WRITE_ERROR:
+        std::cout << "CDataStore::Fsm 26"  << std::endl;
         SetFsmAnswerState(WRITE_ERROR);
+        SetFsmState(READY);
         break;
 
     default:
+        std::cout << "CDataStore::Fsm default"  << std::endl;
         break;
     }
 
