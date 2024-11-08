@@ -257,7 +257,7 @@ void CDataStore::GetArgumentData(void)
 void CDataStore::CreateServiceSection(void)
 {
     std::cout << "CDataStore::CreateServiceSection 1"  << std::endl;
-    SetFsmState(READY);
+//    SetFsmState(READY);
 
     // Очистим служебный контекст.
     memset(reinterpret_cast<uint8_t*>(&m_xServiseSection.xServiseSectionData),
@@ -297,18 +297,31 @@ uint8_t CDataStore::TemporaryServiceSectionWritePrepare(void)
         usCrc16(reinterpret_cast<uint8_t*>(&m_xServiseSection.xServiseSectionData),
                 sizeof(struct TServiseSectionData));
 
-    std::cout << "CDataStore::TemporaryServiceSectionWritePrepare 2"  << std::endl;
+//    std::cout << "CDataStore::TemporaryServiceSectionWritePrepare 2"  << std::endl;
     // Звкодируем данные алгоритмом Хемминга.
     uint16_t uiEncodedByteCounter =
         CHammingCodes::BytesToHammingCodes(m_puiIntermediateBuff,
                                            reinterpret_cast<uint8_t*>(&m_xServiseSection),
                                            sizeof(struct TServiseSection));
 
-    std::cout << "CDataStore::TemporaryServiceSectionWritePrepare 3"  << std::endl;
+//    std::cout << "CDataStore::TemporaryServiceSectionWritePrepare 3"  << std::endl;
 
-    SetArgumentData(m_puiIntermediateBuff,
-                    TEMPORARY_SERVICE_SECTION_DATA_BEGIN,
-                    uiEncodedByteCounter);
+    CDataContainerDataBase* pxDataContainer =
+        (static_cast<CDataContainerDataBase*>(m_pxStorageDevice ->
+                m_pxDataContainer.get()));
+
+    pxDataContainer ->
+    SetContainerData(CStorageDeviceInterface::WRITE_DATA_START,
+                     0,
+                     m_puiIntermediateBuff,
+                     TEMPORARY_SERVICE_SECTION_DATA_BEGIN,
+                     uiEncodedByteCounter);
+    m_pxStorageDevice ->
+    SetFsmCommandState(CStorageDeviceInterface::WRITE_DATA_START);
+
+//    SetArgumentData(m_puiIntermediateBuff,
+//                    TEMPORARY_SERVICE_SECTION_DATA_BEGIN,
+//                    uiEncodedByteCounter);
 
     return 1;
 //    if (m_pxStorageDevice -> WriteBlock(m_puiIntermediateBuff,
@@ -331,6 +344,7 @@ uint8_t CDataStore::TemporaryServiceSectionWritePrepare(void)
 // передаёт автомату записи устройства хранения.
 uint8_t CDataStore::ServiceSectionWritePrepare(void)
 {
+    std::cout << "CDataStore::ServiceSectionWritePrepare 1"  << std::endl;
     // Вычислим контрольную сумму.
     m_xServiseSection.uiCrc =
         usCrc16(reinterpret_cast<uint8_t*>(&m_xServiseSection.xServiseSectionData),
@@ -342,9 +356,22 @@ uint8_t CDataStore::ServiceSectionWritePrepare(void)
                                            reinterpret_cast<uint8_t*>(&m_xServiseSection),
                                            sizeof(struct TServiseSection));
 
-    SetArgumentData(m_puiIntermediateBuff,
-                    SERVICE_SECTION_DATA_BEGIN,
-                    uiEncodedByteCounter);
+    CDataContainerDataBase* pxDataContainer =
+        (static_cast<CDataContainerDataBase*>(m_pxStorageDevice ->
+                m_pxDataContainer.get()));
+
+    pxDataContainer ->
+    SetContainerData(CStorageDeviceInterface::WRITE_DATA_START,
+                     0,
+                     m_puiIntermediateBuff,
+                     TEMPORARY_SERVICE_SECTION_DATA_BEGIN,
+                     uiEncodedByteCounter);
+    m_pxStorageDevice ->
+    SetFsmCommandState(CStorageDeviceInterface::WRITE_DATA_START);
+
+//    SetArgumentData(m_puiIntermediateBuff,
+//                    SERVICE_SECTION_DATA_BEGIN,
+//                    uiEncodedByteCounter);
 
     return 1;
 
@@ -367,9 +394,17 @@ uint8_t CDataStore::ServiceSectionWritePrepare(void)
 uint8_t CDataStore::TemporaryBlockWritePrepare(void)
 {
     std::cout << "CDataStore::TemporaryBlockWritePrepare 1"  << std::endl;
-    uint8_t uiBlock = m_uiBlockIndex;
-    uint8_t* puiSource = m_puiBlockDataPointer;
-    uint16_t uiLength = m_uiBlockLength;
+    CDataContainerDataBase* pxDataContainer =
+        (static_cast<CDataContainerDataBase*>(m_pxDataContainer.get()));
+
+    uint8_t uiBlock = pxDataContainer -> m_uiDataIndex;
+    uint8_t *puiSource = pxDataContainer -> m_puiDataPointer;
+//    uint16_t uiOffset = pxDataContainer -> m_uiDataOffset;
+    uint16_t uiLength = pxDataContainer -> m_uiDataLength;
+
+//    uint8_t uiBlock = m_uiBlockIndex;
+//    uint8_t* puiSource = m_puiBlockDataPointer;
+//    uint16_t uiLength = m_uiBlockLength;
 
     // Звкодируем данные алгоритмом Хемминга.
     uint16_t uiEncodedByteCounter =
@@ -407,9 +442,9 @@ uint8_t CDataStore::TemporaryBlockWritePrepare(void)
 //                    TEMPORARY_BLOCK_DATA_BEGIN,
 //                    uiEncodedByteCounter);
 
-    CDataContainerDataBase* pxDataContainer =
-        (static_cast<CDataContainerDataBase*>(m_pxStorageDevice ->
-                m_pxDataContainer.get()));
+//    CDataContainerDataBase* pxDataContainer =
+//        (static_cast<CDataContainerDataBase*>(m_pxStorageDevice ->
+//                m_pxDataContainer.get()));
 
     pxDataContainer ->
     SetContainerData(CStorageDeviceInterface::WRITE_DATA_START,
@@ -441,9 +476,18 @@ uint8_t CDataStore::TemporaryBlockWritePrepare(void)
 // передаёт автомату записи устройства хранения.
 uint8_t CDataStore::BlockWritePrepare(void)
 {
-    uint8_t uiBlock = m_uiBlockIndex;
-    uint8_t* puiSource = m_puiBlockDataPointer;
-    uint16_t uiLength = m_uiBlockLength;
+    std::cout << "CDataStore::BlockWritePrepare 1"  << std::endl;
+    CDataContainerDataBase* pxDataContainer =
+        (static_cast<CDataContainerDataBase*>(m_pxDataContainer.get()));
+
+    uint8_t uiBlock = pxDataContainer -> m_uiDataIndex;
+    uint8_t *puiSource = pxDataContainer -> m_puiDataPointer;
+//    uint16_t uiOffset = pxDataContainer -> m_uiDataOffset;
+    uint16_t uiLength = pxDataContainer -> m_uiDataLength;
+
+//    uint8_t uiBlock = m_uiBlockIndex;
+//    uint8_t* puiSource = m_puiBlockDataPointer;
+//    uint16_t uiLength = m_uiBlockLength;
 
     // Звкодируем данные алгоритмом Хемминга.
     uint16_t uiEncodedByteCounter =
@@ -455,6 +499,7 @@ uint8_t CDataStore::BlockWritePrepare(void)
             (m_xServiseSection.xServiseSectionData.
              axBlockPositionData[uiBlock].uiEncodedLength == 0))
     {
+        std::cout << "CDataStore::BlockWritePrepare 2"  << std::endl;
         // Добавили новый блок данных.
         // Сохраним смещение на блок.
         m_xServiseSection.xServiseSectionData.
@@ -478,10 +523,20 @@ uint8_t CDataStore::BlockWritePrepare(void)
 //    // Сохраним индекс последнего записываемого блока.
 //    m_xServiseSection.xServiseSectionData.uiLastWritedBlockNumber = uiBlock;
 
-    SetArgumentData(m_puiIntermediateBuff,
-                    m_xServiseSection.xServiseSectionData.
-                    axBlockPositionData[uiBlock].uiOffset,
-                    uiEncodedByteCounter);
+    pxDataContainer ->
+    SetContainerData(CStorageDeviceInterface::WRITE_DATA_START,
+                     uiBlock,
+                     m_puiIntermediateBuff,
+                     m_xServiseSection.xServiseSectionData.
+                     axBlockPositionData[uiBlock].uiOffset,
+                     uiEncodedByteCounter);
+    m_pxStorageDevice ->
+    SetFsmCommandState(CStorageDeviceInterface::WRITE_DATA_START);
+
+//    SetArgumentData(m_puiIntermediateBuff,
+//                    m_xServiseSection.xServiseSectionData.
+//                    axBlockPositionData[uiBlock].uiOffset,
+//                    uiEncodedByteCounter);
 
     return 1;
 
@@ -511,207 +566,61 @@ uint8_t CDataStore::WriteBlock(uint8_t *puiSource, uint16_t uiLength, uint8_t ui
     // Произошёл выход за границы буфера?
     if (uiBlock >= (MAX_BLOCKS_NUMBER + SERVICE_SECTION_BLOCK_NUMBER))
     {
+        std::cout << "CDataStore::WriteBlock 2"  << std::endl;
         // Нет данных.
         return 0;
     }
 
-    // Получим данные контекста записи блока.
-    m_puiBlockDataPointer = puiSource;
-    m_uiBlockLength = uiLength;
-    m_uiBlockIndex = uiBlock;
-    return 1;
+    // получим указатель на свой контейнер с данными
+    CDataContainerDataBase* pxDataContainer =
+        (static_cast<CDataContainerDataBase*>(m_pxDataContainer.get()));
 
-//    // Произошёл выход за границы буфера?
-//    if (uiBlock >= (MAX_BLOCKS_NUMBER + SERVICE_SECTION_BLOCK_NUMBER))
-//    {
-//        // Нет данных.
-//        return 0;
-//    }
-//
-//
-//    // блок не служебный?
-//    if (uiBlock < MAX_BLOCKS_NUMBER)
-//    {
-//        // Звкодируем данные алгоритмом Хемминга.
-//        m_uiBlockEncodedLength =
-//            CHammingCodes::BytesToHammingCodes(m_puiIntermediateBuff,
-//                                               puiSource,
-//                                               uiLength);
-//        // Блок существует?
-//        if ((m_xServiseSection.xServiseSectionData.
-//                axBlockPositionData[uiBlock].uiLength != 0) &&
-//                (m_xServiseSection.xServiseSectionData.
-//                 axBlockPositionData[uiBlock].uiEncodedLength != 0))
-//        {
-//            // Добавили новый блок данных.
-//            // Сохраним смещение на блок.
-//            m_xServiseSection.xServiseSectionData.
-//            axBlockPositionData[uiBlock].uiOffset = m_xServiseSection.xServiseSectionData.uiFreeSpaceOffset;
-//            // Изменим смещение на свободное место.
-//            m_xServiseSection.xServiseSectionData.uiFreeSpaceOffset += m_uiBlockEncodedLength;
-//            // Сохраним размер первичных данных.
-//            m_xServiseSection.xServiseSectionData.
-//            axBlockPositionData[uiBlock].uiLength = uiLength;
-//            // Сохраним размер закодированных данных.
-//            m_xServiseSection.xServiseSectionData.
-//            axBlockPositionData[uiBlock].uiEncodedLength = m_uiBlockEncodedLength;
-//
-//            // Получим индекс блока.
-//            m_uiBlockIndex = uiBlock;
-//            // Получим указатель на данные блока.
-//            m_puiBlockDataPointer = puiSource;
-//            m_uiBlockOffset = m_xServiseSection.xServiseSectionData.
-//                              axBlockPositionData[uiBlock].uiOffset;
-//            // Получим размер блока.
-//            m_uiBlockLength = uiLength;
-//
-//            // Вычислим контрольную сумму поступивших данных.
-//            m_xServiseSection.xServiseSectionData.
-//            axBlockPositionData[uiBlock].uiCrc =
-//                usCrc16(puiSource, uiLength);
-//
-//            SetArgumentData(m_puiIntermediateBuff,
-//                            m_uiBlockOffset,
-//                            m_uiBlockEncodedLength);
-//            return 1;
-//        }
-//        else
-//        {
-//            // Нет данных.
-//            return 0;
-//        }
-//    }
-//    else
-//    {
-//        switch (uiBlock)
-//        {
-//        case TEMPORARY_BLOCK_INDEX:
-//            // Звкодируем данные алгоритмом Хемминга.
-//            m_uiBlockEncodedLength =
-//                CHammingCodes::BytesToHammingCodes(m_puiIntermediateBuff,
-//                                                   puiSource,
-//                                                   uiLength);
-//
-//            // Данные текущего блока данных - uiBlock сохраняются впервые?
-//            if ((m_xServiseSection.xServiseSectionData.
-//                    axBlockPositionData[uiBlock].uiLength == 0) &&
-//                    (m_xServiseSection.xServiseSectionData.
-//                     axBlockPositionData[uiBlock].uiEncodedLength == 0))
-//            {
-//                std::cout << "CDataStore::WriteBlock 2"  << std::endl;
-//                // Добавили новый блок данных.
-//                // Сохраним смещение на блок.
-//                m_xServiseSection.xServiseSectionData.
-//                axBlockPositionData[uiBlock].uiOffset = m_xServiseSection.xServiseSectionData.uiFreeSpaceOffset;
-//                // Изменим смещение на свободное место.
-//                m_xServiseSection.xServiseSectionData.uiFreeSpaceOffset += m_uiBlockEncodedLength;
-//                // Сохраним размер первичных данных.
-//                m_xServiseSection.xServiseSectionData.
-//                axBlockPositionData[uiBlock].uiLength = uiLength;
-//                // Сохраним размер закодированных данных.
-//                m_xServiseSection.xServiseSectionData.
-//                axBlockPositionData[uiBlock].uiEncodedLength = m_uiBlockEncodedLength;
-//                // Увеличим количество блоков находящихся в хранилище.
-//                m_xServiseSection.xServiseSectionData.uiStoredBlocksNumber += 1;
-//            }
-//
-//            // Получим индекс блока.
-//            m_uiBlockIndex = uiBlock;
-//            // Получим указатель на данные блока.
-//            m_puiBlockDataPointer = puiSource;
-//            // Получим адрес блока в EEPROM.
-//            m_uiBlockOffset = TEMPORARY_BLOCK_DATA_BEGIN;
-//            // Получим размер блока.
-//            m_uiBlockLength = uiLength;
-//
-//            // Вычислим контрольную сумму поступивших данных.
-//            m_xServiseSection.xServiseSectionData.
-//            axBlockPositionData[uiBlock].uiCrc =
-//                usCrc16(puiSource, uiLength);
-//
-//            SetArgumentData(m_puiIntermediateBuff,
-//                            m_uiBlockOffset,
-//                            m_uiBlockEncodedLength);
-//
-//            return 1;
-//            break;
-//
-//        case TEMPORARY_SERVICE_SECTION_INDEX:
-//            // Получим индекс блока.
-//            m_uiBlockIndex = uiBlock;
-//            // Получим указатель на данные блока.
-//            m_puiBlockDataPointer =
-//                (reinterpret_cast<uint8_t*>(&m_xServiseSection.xServiseSectionData));
-//            // Получим адрес блока в EEPROM.
-//            m_uiBlockOffset = TEMPORARY_SERVICE_SECTION_DATA_BEGIN;
-//            // Получим размер блока.
-//            m_uiBlockLength = sizeof(struct TServiseSectionData);
-//
-//            // Вычислим контрольную сумму поступивших данных.
-//            m_xServiseSection.uiCrc =
-//                usCrc16(m_puiBlockDataPointer, m_uiBlockLength);
-//
-//            // Звкодируем данные алгоритмом Хемминга.
-//            m_uiBlockEncodedLength =
-//                CHammingCodes::BytesToHammingCodes(m_puiIntermediateBuff,
-//                                                   m_puiBlockDataPointer,
-//                                                   m_uiBlockLength);
-//
-//            SetArgumentData(m_puiIntermediateBuff,
-//                            m_uiBlockOffset,
-//                            m_uiBlockEncodedLength);
-//
-//            return 1;
-//            break;
-//
-//        case SERVICE_SECTION_INDEX:
-//            // Получим индекс блока.
-//            m_uiBlockIndex = uiBlock;
-//            // Получим указатель на данные блока.
-//            m_puiBlockDataPointer =
-//                (reinterpret_cast<uint8_t*>(&m_xServiseSection.xServiseSectionData));
-//            // Получим адрес блока в EEPROM.
-//            m_uiBlockOffset = SERVICE_SECTION_DATA_BEGIN;
-//            // Получим размер блока.
-//            m_uiBlockLength = sizeof(struct TServiseSectionData);
-//
-//            // Вычислим контрольную сумму поступивших данных.
-//            m_xServiseSection.uiCrc =
-//                usCrc16(m_puiBlockDataPointer, m_uiBlockLength);
-//
-//            // Звкодируем данные алгоритмом Хемминга.
-//            m_uiBlockEncodedLength =
-//                CHammingCodes::BytesToHammingCodes(m_puiIntermediateBuff,
-//                                                   m_puiBlockDataPointer,
-//                                                   m_uiBlockLength);
-//
-//            SetArgumentData(m_puiIntermediateBuff,
-//                            m_uiBlockOffset,
-//                            m_uiBlockEncodedLength);
-//
-//            return 1;
-//            break;
-//
-//        default:
-//            // Нет данных.
-//            return 0;
-//            break;
-//        }
-//    }
+    // Получим данные контекста записи блока.
+    pxDataContainer ->
+    SetContainerData(START_WRITE_TEMPORARY_BLOCK_DATA,
+                     uiBlock,
+                     puiSource,
+                     0,
+                     uiLength);
+
+    SetFsmCommandState(START_WRITE_TEMPORARY_BLOCK_DATA);
+
+//    // Получим данные контекста записи блока.
+//    m_puiBlockDataPointer = puiSource;
+//    m_uiBlockLength = uiLength;
+//    m_uiBlockIndex = uiBlock;
+
+    return 1;
 }
 
 //-------------------------------------------------------------------------------
 // Считывает и проверяет целостность временного служебного блока.
 uint8_t CDataStore::ReadTemporaryServiceSection(void)
 {
+    std::cout << "CDataStore::ReadTemporaryServiceSection 1 " << std::endl;
     uint16_t uiEncodedLength =
         (CHammingCodes::CalculateEncodedDataLength(sizeof(struct TServiseSection)));
-    std::cout << "CDataStore::ReadTemporaryServiceSection 1 " << (int)uiEncodedLength  << std::endl;
+
+    // получим указатель на контейнер с данными задачи исполнителя
+    CDataContainerDataBase* pxDataContainer =
+        (static_cast<CDataContainerDataBase*>(m_pxStorageDevice ->
+                m_pxDataContainer.get()));
+
+    pxDataContainer ->
+    SetContainerData(CStorageDeviceInterface::READ_DATA_START,
+                     0,
+                     m_puiIntermediateBuff,
+                     TEMPORARY_SERVICE_SECTION_DATA_BEGIN,
+                     uiEncodedLength);
+//    m_pxStorageDevice ->
+//    SetFsmCommandState(CStorageDeviceInterface::READ_DATA_START);
+
     // Прочитаем закодированные данные.
     // При чтении данных возникла ошибка?
-    if (!(m_pxStorageDevice -> ReadBlock(m_puiIntermediateBuff,
-                                         TEMPORARY_SERVICE_SECTION_DATA_BEGIN,
-                                         uiEncodedLength)))
+    if (!(m_pxStorageDevice -> Read()))
+//    if (!(m_pxStorageDevice -> ReadBlock(m_puiIntermediateBuff,
+//                                         TEMPORARY_SERVICE_SECTION_DATA_BEGIN,
+//                                         uiEncodedLength)))
     {
         std::cout << "CDataStore::ReadTemporaryServiceSection 2"  << std::endl;
         // Нет данных.
@@ -743,15 +652,34 @@ uint8_t CDataStore::ReadTemporaryServiceSection(void)
 // Считывает и проверяет целостность служебного блока.
 uint8_t CDataStore::ReadServiceSection(void)
 {
+    std::cout << "CDataStore::ReadTemporaryServiceSection 1"  << std::endl;
     uint16_t uiEncodedLength =
         (CHammingCodes::CalculateEncodedDataLength(sizeof(struct TServiseSection)));
 
+    // получим указатель на контейнер с данными задачи исполнителя
+    CDataContainerDataBase* pxDataContainer =
+        (static_cast<CDataContainerDataBase*>(m_pxStorageDevice ->
+                m_pxDataContainer.get()));
+
+    pxDataContainer ->
+    SetContainerData(CStorageDeviceInterface::READ_DATA_START,
+                     0,
+                     m_puiIntermediateBuff,
+                     SERVICE_SECTION_DATA_BEGIN,
+                     uiEncodedLength);
+//    m_pxStorageDevice ->
+//    SetFsmCommandState(CStorageDeviceInterface::READ_DATA_START);
+
     // Прочитаем закодированные данные.
     // При чтении данных возникла ошибка?
-    if (!(m_pxStorageDevice -> ReadBlock(m_puiIntermediateBuff,
-                                         SERVICE_SECTION_DATA_BEGIN,
-                                         uiEncodedLength)))
+    if (!(m_pxStorageDevice -> Read()))
+//    // Прочитаем закодированные данные.
+//    // При чтении данных возникла ошибка?
+//    if (!(m_pxStorageDevice -> ReadBlock(m_puiIntermediateBuff,
+//                                         SERVICE_SECTION_DATA_BEGIN,
+//                                         uiEncodedLength)))
     {
+        std::cout << "CDataStore::ReadTemporaryServiceSection 2"  << std::endl;
         // Нет данных.
         return 0;
     }
@@ -766,10 +694,12 @@ uint8_t CDataStore::ReadServiceSection(void)
             usCrc16(reinterpret_cast<uint8_t*>(&m_xServiseSection.xServiseSectionData),
                     sizeof(struct TServiseSectionData)))
     {
+        std::cout << "CDataStore::ReadTemporaryServiceSection 3"  << std::endl;
         return 1;
     }
     else
     {
+        std::cout << "CDataStore::ReadTemporaryServiceSection 4"  << std::endl;
         // Нет данных.
         return 0;
     }
@@ -779,11 +709,22 @@ uint8_t CDataStore::ReadServiceSection(void)
 // Считывает и проверяет целостность временного буфера блока.
 uint8_t CDataStore::CheckTemporaryBlock(void)
 {
-    uint8_t uiBlock = m_uiBlockIndex;
+    std::cout << "CDataStore::CheckTemporaryBlock 1"  << std::endl;
+    // получим указатель на свой контейнер с данными
+    CDataContainerDataBase* pxDataContainer =
+        (static_cast<CDataContainerDataBase*>(m_pxDataContainer.get()));
+
+    uint8_t uiBlock = pxDataContainer -> m_uiDataIndex;
+//    uint8_t *puiSource = pxDataContainer -> m_puiDataPointer;
+////    uint16_t uiOffset = pxDataContainer -> m_uiDataOffset;
+//    uint16_t uiLength = pxDataContainer -> m_uiDataLength;
+
+//    uint8_t uiBlock = m_uiBlockIndex;
 
     // Произошёл выход за границы буфера?
     if (uiBlock >= MAX_BLOCKS_NUMBER)
     {
+        std::cout << "CDataStore::CheckTemporaryBlock 2"  << std::endl;
         // Нет данных.
         return 0;
     }
@@ -798,6 +739,7 @@ uint8_t CDataStore::CheckTemporaryBlock(void)
             (m_xServiseSection.xServiseSectionData.
              axBlockPositionData[uiBlock].uiEncodedLength != 0))
     {
+        std::cout << "CDataStore::CheckTemporaryBlock 3"  << std::endl;
         // Получим адрес блока в EEPROM.
         uiSourceOffset = m_xServiseSection.xServiseSectionData.
                          axBlockPositionData[uiBlock].uiOffset;
@@ -810,16 +752,33 @@ uint8_t CDataStore::CheckTemporaryBlock(void)
     }
     else
     {
+        std::cout << "CDataStore::CheckTemporaryBlock 4"  << std::endl;
         // Нет данных.
         return 0;
     }
 
+    // получим указатель на контейнер с данными задачи исполнителя
+    pxDataContainer =
+        (static_cast<CDataContainerDataBase*>(m_pxStorageDevice ->
+                m_pxDataContainer.get()));
+
+    pxDataContainer ->
+    SetContainerData(CStorageDeviceInterface::READ_DATA_START,
+                     uiBlock,
+                     m_puiIntermediateBuff,
+                     TEMPORARY_BLOCK_DATA_BEGIN,
+                     uiEncodedLength);
+//    m_pxStorageDevice ->
+//    SetFsmCommandState(CStorageDeviceInterface::READ_DATA_START);
+
     // Прочитаем закодированные данные.
     // При чтении данных возникла ошибка?
-    if (!(m_pxStorageDevice -> ReadBlock(m_puiIntermediateBuff,
-                                         TEMPORARY_BLOCK_DATA_BEGIN,
-                                         uiEncodedLength)))
+    if (!(m_pxStorageDevice -> Read()))
+//    if (!(m_pxStorageDevice -> ReadBlock(m_puiIntermediateBuff,
+//                                         TEMPORARY_BLOCK_DATA_BEGIN,
+//                                         uiEncodedLength)))
     {
+        std::cout << "CDataStore::CheckTemporaryBlock 5"  << std::endl;
         // Нет данных.
         return 0;
     }
@@ -834,10 +793,12 @@ uint8_t CDataStore::CheckTemporaryBlock(void)
             axBlockPositionData[uiBlock].uiCrc ==
             usCrc16(m_puiIntermediateBuff, uiLength))
     {
+        std::cout << "CDataStore::CheckTemporaryBlock 6"  << std::endl;
         return 1;
     }
     else
     {
+        std::cout << "CDataStore::CheckTemporaryBlock 7"  << std::endl;
         // Нет данных.
         return 0;
     }
@@ -847,11 +808,22 @@ uint8_t CDataStore::CheckTemporaryBlock(void)
 // Считывает и проверяет целостность блока.
 uint8_t CDataStore::CheckBlock(void)
 {
-    uint8_t uiBlock = m_uiBlockIndex;
+    std::cout << "CDataStore::CheckBlock 1"  << std::endl;
+    // получим указатель на свой контейнер с данными
+    CDataContainerDataBase* pxDataContainer =
+        (static_cast<CDataContainerDataBase*>(m_pxDataContainer.get()));
+
+    uint8_t uiBlock = pxDataContainer -> m_uiDataIndex;
+//    uint8_t *puiSource = pxDataContainer -> m_puiDataPointer;
+////    uint16_t uiOffset = pxDataContainer -> m_uiDataOffset;
+//    uint16_t uiLength = pxDataContainer -> m_uiDataLength;
+//
+//    uint8_t uiBlock = m_uiBlockIndex;
 
     // Произошёл выход за границы буфера?
     if (uiBlock >= MAX_BLOCKS_NUMBER)
     {
+        std::cout << "CDataStore::CheckBlock 2"  << std::endl;
         // Нет данных.
         return 0;
     }
@@ -866,6 +838,7 @@ uint8_t CDataStore::CheckBlock(void)
             (m_xServiseSection.xServiseSectionData.
              axBlockPositionData[uiBlock].uiEncodedLength != 0))
     {
+        std::cout << "CDataStore::CheckBlock 3"  << std::endl;
         // Получим адрес блока в EEPROM.
         uiSourceOffset = m_xServiseSection.xServiseSectionData.
                          axBlockPositionData[uiBlock].uiOffset;
@@ -878,16 +851,33 @@ uint8_t CDataStore::CheckBlock(void)
     }
     else
     {
+        std::cout << "CDataStore::CheckBlock 4"  << std::endl;
         // Нет данных.
         return 0;
     }
 
+    // получим указатель на контейнер с данными задачи исполнителя
+    pxDataContainer =
+        (static_cast<CDataContainerDataBase*>(m_pxStorageDevice ->
+                m_pxDataContainer.get()));
+
+    pxDataContainer ->
+    SetContainerData(CStorageDeviceInterface::READ_DATA_START,
+                     0,
+                     m_puiIntermediateBuff,
+                     uiSourceOffset,
+                     uiEncodedLength);
+//    m_pxStorageDevice ->
+//    SetFsmCommandState(CStorageDeviceInterface::READ_DATA_START);
+
     // Прочитаем закодированные данные.
     // При чтении данных возникла ошибка?
-    if (!(m_pxStorageDevice -> ReadBlock(m_puiIntermediateBuff,
-                                         uiSourceOffset,
-                                         uiEncodedLength)))
+    if (!(m_pxStorageDevice -> Read()))
+//    if (!(m_pxStorageDevice -> ReadBlock(m_puiIntermediateBuff,
+//                                         uiSourceOffset,
+//                                         uiEncodedLength)))
     {
+        std::cout << "CDataStore::CheckBlock 5"  << std::endl;
         // Нет данных.
         return 0;
     }
@@ -902,10 +892,12 @@ uint8_t CDataStore::CheckBlock(void)
             axBlockPositionData[uiBlock].uiCrc ==
             usCrc16(m_puiIntermediateBuff, uiLength))
     {
+        std::cout << "CDataStore::CheckBlock 6"  << std::endl;
         return 1;
     }
     else
     {
+        std::cout << "CDataStore::CheckBlock 7"  << std::endl;
         // Нет данных.
         return 0;
     }
@@ -915,21 +907,25 @@ uint8_t CDataStore::CheckBlock(void)
 // Считывает и проверяет целостность блока.
 uint16_t CDataStore::ReadBlock(uint8_t *puiDestination, uint8_t uiBlock)
 {
+    std::cout << "CDataStore::ReadBlock 1"  << std::endl;
     // Произошёл выход за границы буфера?
     if (uiBlock >= (MAX_BLOCKS_NUMBER + SERVICE_SECTION_BLOCK_NUMBER))
     {
+        std::cout << "CDataStore::ReadBlock 2"  << std::endl;
         // Нет данных.
         return 0;
     }
     // блок не служебный?
     if (uiBlock < MAX_BLOCKS_NUMBER)
     {
+        std::cout << "CDataStore::ReadBlock 3"  << std::endl;
         // Блок существует?
         if ((m_xServiseSection.xServiseSectionData.
                 axBlockPositionData[uiBlock].uiLength != 0) &&
                 (m_xServiseSection.xServiseSectionData.
                  axBlockPositionData[uiBlock].uiEncodedLength != 0))
         {
+            std::cout << "CDataStore::ReadBlock 4"  << std::endl;
             // Получим индекс блока.
             m_uiBlockIndex = uiBlock;
             // Получим указатель на данные блока.
@@ -951,12 +947,14 @@ uint16_t CDataStore::ReadBlock(uint8_t *puiDestination, uint8_t uiBlock)
         }
         else
         {
+            std::cout << "CDataStore::ReadBlock 5"  << std::endl;
             // Нет данных.
             return 0;
         }
     }
     else
     {
+        std::cout << "CDataStore::ReadBlock 6"  << std::endl;
         // Получим указатель на данные блока.
         m_puiBlockDataPointer = puiDestination;
         // Получим размер закодированного блока.
@@ -1079,6 +1077,7 @@ uint16_t CDataStore::ReadBlock(uint8_t *puiDestination, uint8_t uiBlock)
 // Считывает и проверяет целостность блока.
 uint16_t CDataStore::GetReadedData()
 {
+    std::cout << "CDataStore::GetReadedData 1"  << std::endl;
     uint8_t auiTempArray[CDataStore::MAX_SERVICE_SECTION_DATA_LENGTH];
 
     // Декодируем прочитанные данные.
@@ -1091,11 +1090,13 @@ uint16_t CDataStore::GetReadedData()
             axBlockPositionData[m_uiBlockIndex].uiCrc ==
             usCrc16(auiTempArray, m_uiBlockLength))
     {
+        std::cout << "CDataStore::GetReadedData 2"  << std::endl;
         memcpy(m_puiBlockDataPointer, auiTempArray, m_uiBlockLength);
         return m_uiBlockLength;
     }
     else
     {
+        std::cout << "CDataStore::GetReadedData 3"  << std::endl;
         // Нет данных.
         return 0;
     }
@@ -1105,6 +1106,7 @@ uint16_t CDataStore::GetReadedData()
 // Вызывается только если база данных подтверждена пользователем.
 void CDataStore::CrcOfBlocksCrcCreate(void)
 {
+        std::cout << "CDataStore::CrcOfBlocksCrcCreate 1"  << std::endl;
     // Контрольная сумма вычисленная из массива контрольных сумм блоков, не включая служебный.
     // Сохраняется при первой и последующих записях любых блоков через программатор.
     // Ноль или её несовпадение свидетельствует о том, что база данных создана по умоланию,
@@ -1131,6 +1133,7 @@ void CDataStore::CrcOfBlocksCrcCreate(void)
 //-------------------------------------------------------------------------------
 bool CDataStore::CrcOfBlocksCrcCheck(void)
 {
+        std::cout << "CDataStore::CrcOfBlocksCrcCheck 1"  << std::endl;
     // Контрольная сумма вычисленная из массива контрольных сумм блоков, не включая служебный.
     // Сохраняется при первой и последующих записях любых блоков через программатор.
     // Ноль или её несовпадение свидетельствует о том, что база данных создана по умоланию,
@@ -1152,10 +1155,12 @@ bool CDataStore::CrcOfBlocksCrcCheck(void)
             usCrc16(reinterpret_cast<uint8_t*>(auiBlocksCrc),
                     (MAX_BLOCKS_NUMBER * sizeof(uint16_t))))
     {
+        std::cout << "CDataStore::CrcOfBlocksCrcCheck 2"  << std::endl;
         return true;
     }
     else
     {
+        std::cout << "CDataStore::CrcOfBlocksCrcCheck 3"  << std::endl;
         return false;
     }
 }
@@ -1164,6 +1169,7 @@ bool CDataStore::CrcOfBlocksCrcCheck(void)
 //-------------------------------------------------------------------------------
 uint8_t CDataStore::GetBlockLength(uint8_t uiBlock)
 {
+        std::cout << "CDataStore::GetBlockLength 1"  << std::endl;
 //    return m_xServiseSection.xServiseSectionData.
 //           axBlockPositionData[uiBlock].uiLength;
     return aucDataBaseBlockLength[uiBlock];
@@ -1408,9 +1414,11 @@ uint8_t CDataStore::Fsm(void)
         break;
 
     case DATA_WRITED_SUCCESSFULLY:
+        SetFsmAnswerState(DATA_WRITED_SUCCESSFULLY);
         break;
 
     case WRITE_ERROR:
+        SetFsmAnswerState(WRITE_ERROR);
         break;
 
     default:

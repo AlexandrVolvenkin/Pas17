@@ -107,8 +107,8 @@ uint8_t CMainProductionCycle::CreateTasks(void)
                                     pxStorageDeviceFileSystem);
     pxStorageDeviceFileSystem ->
     SetResources(&m_xResources);
-    pxStorageDeviceFileSystem ->
-    SetTaskCustomerName("DataStoreFileSystem");
+//    pxStorageDeviceFileSystem ->
+//    SetTaskCustomerName("DataStoreFileSystem");
     m_xResources.AddCurrentlyRunningTasksList(pxStorageDeviceFileSystem);
 
     CDataStore* pxDataStoreFileSystem = new CDataStore();
@@ -118,8 +118,8 @@ uint8_t CMainProductionCycle::CreateTasks(void)
     SetResources(&m_xResources);
     pxDataStoreFileSystem ->
     SetStorageDeviceName("StorageDeviceFileSystem");
-    pxStorageDeviceFileSystem ->
-    SetTaskCustomerName("DataStoreCheck");
+//    pxDataStoreFileSystem ->
+//    SetTaskCustomerName("DataStoreCheck");
     m_xResources.AddCurrentlyRunningTasksList(pxDataStoreFileSystem);
     m_pxDataStoreFileSystem = pxDataStoreFileSystem;
 
