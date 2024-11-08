@@ -23,12 +23,15 @@ public:
     virtual uint8_t GetFsmState(void);
     virtual void SetFsmState(uint8_t uiData);
     virtual void SetFsmCommandState(uint8_t uiData);
+    virtual uint8_t GetFsmCommandState(void);
+    virtual void SetFsmAnswerState(uint8_t uiData);
+    virtual uint8_t GetFsmAnswerState(void);
     virtual CTimer* GetTimerPointer(void);
 
 protected:
     uint8_t m_uiFsmState;
     uint8_t m_uiFsmCommandState;
-//    uint8_t m_uiFsmAnswerState;
+    uint8_t m_uiFsmAnswerState;
     CTimer m_xTimer;
 };
 

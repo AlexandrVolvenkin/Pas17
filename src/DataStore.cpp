@@ -403,9 +403,22 @@ uint8_t CDataStore::TemporaryBlockWritePrepare(void)
     axBlockPositionData[uiBlock].uiCrc =
         usCrc16(puiSource, uiLength);
 
-    SetArgumentData(m_puiIntermediateBuff,
-                    TEMPORARY_BLOCK_DATA_BEGIN,
-                    uiEncodedByteCounter);
+//    SetArgumentData(m_puiIntermediateBuff,
+//                    TEMPORARY_BLOCK_DATA_BEGIN,
+//                    uiEncodedByteCounter);
+
+    CDataContainerDataBase* pxDataContainer =
+        (static_cast<CDataContainerDataBase*>(m_pxStorageDevice ->
+                m_pxDataContainer.get()));
+
+    pxDataContainer ->
+    SetContainerData(CStorageDeviceInterface::WRITE_DATA_START,
+                     uiBlock,
+                     m_puiIntermediateBuff,
+                     TEMPORARY_BLOCK_DATA_BEGIN,
+                     uiEncodedByteCounter);
+    m_pxStorageDevice ->
+    SetFsmCommandState(CStorageDeviceInterface::WRITE_DATA_START);
 
     return 1;
     //    if (m_pxStorageDevice -> WriteBlock(m_puiIntermediateBuff,
@@ -1205,110 +1218,77 @@ uint8_t CDataStore::Fsm(void)
         }
     }
     break;
-//std::dynamic_pointer_cast<CDataContainerInterface>(std::shared_ptr<CDataContainerDataBase>(base_object))
+
     case READY:
 //        std::cout << "CDataStore::Fsm READY"  << std::endl;
     {
-//        // Создание промежуточного указателя
-//        std::unique_ptr<CDataContainerDataBase> pxDataContainer = m_pxDataContainer; // Указатель на объект CDataContainerDataBase
-        CDataContainerDataBase* pxDataContainer =
-            (static_cast<CDataContainerDataBase*>(m_pxDataContainer.get()));
+////        // Создание промежуточного указателя
+////        std::unique_ptr<CDataContainerDataBase> pxDataContainer = m_pxDataContainer; // Указатель на объект CDataContainerDataBase
+//        CDataContainerDataBase* pxDataContainer =
+//            (static_cast<CDataContainerDataBase*>(m_pxDataContainer.get()));
+//
+//        if (pxDataContainer -> m_uiFsmCommandState != 0)
+//        {
+//            SetFsmState(pxDataContainer -> m_uiFsmCommandState);
+//            pxDataContainer -> m_uiFsmCommandState = 0;
+//        }
 
-        if (pxDataContainer -> m_uiFsmCommandState != 0)
+        if (GetFsmCommandState() != 0)
         {
-            SetFsmState(pxDataContainer -> m_uiFsmCommandState);
-            pxDataContainer -> m_uiFsmCommandState = 0;
+            SetFsmState(GetFsmCommandState());
+            SetFsmCommandState(0);
         }
     }
 
-//        if (((static_cast<CDataContainerDataBase*>(m_pxDataContainer.get())) -> m_uiFsmCommandState) != 0)
-//        {
-//            SetFsmState((static_cast<CDataContainerDataBase*>(m_pxDataContainer.get())) -> m_uiFsmCommandState);
-//            (static_cast<CDataContainerDataBase*>(m_pxDataContainer.get())) -> m_uiFsmCommandState = 0;
-//        }
     break;
 
 //-------------------------------------------------------------------------------
     // Запись блока во временный буфер.
     case START_WRITE_TEMPORARY_BLOCK_DATA:
         std::cout << "CDataStore::Fsm 1"  << std::endl;
-//        SetFsmEvent(WRITE_IN_PROGRESS_FSM_EVENT);
-//        // Установим время ожидания готовности к записи.
-//        GetTimerPointer() -> Set(READY_TO_WRITE_WAITING_TIMEOUT);
-        // Установим время ожидания окончания записи.
         TemporaryBlockWritePrepare();
-//        WriteBlock(uint8_t *puiSource, uint16_t uiLength, TEMPORARY_BLOCK_INDEX)
-//        m_uiFsmCommandState = CStorageDeviceFileSystem::WRITE_DATA_START;
+        // Установим время ожидания окончания записи.
         GetTimerPointer() -> Set(WRITE_END_WAITING_TIMEOUT);
         SetFsmState(WRITE_END_WAITING_TEMPORARY_BLOCK_DATA);
-        //        SetFsmState(READY_TO_WRITE_WAITING_TEMPORARY_BLOCK_DATA);
         break;
-
-//    case READY_TO_WRITE_WAITING_TEMPORARY_BLOCK_DATA:
-//        std::cout << "CDataStore::Fsm 2"  << std::endl;
-////        // Устройство хранения готово к записи?
-//////        if (m_pxStorageDevice -> IsReadyToWrite())
-//        if (m_pxStorageDevice -> Fsm() == CStorageDeviceInterface::READY)
-//        {
-//            // Установим время ожидания окончания записи.
-//            GetTimerPointer() -> Set(WRITE_END_WAITING_TIMEOUT);
-////            // Сбросим флаг - запись закончена.
-////            m_pxStorageDevice -> SetIsDataWrited(false);
-//            // Подготовка к записи во временный буфер прошла успешно?
-//        if (TemporaryBlockWritePrepare())
-//        {
-//            std::cout << "CDataStore::Fsm 3"  << std::endl;
-//            SetFsmState(WRITE_END_WAITING_TEMPORARY_BLOCK_DATA);
-//        }
-//        else
-//        {
-//            std::cout << "CDataStore::Fsm 4"  << std::endl;
-////                SetFsmEvent(WRITE_ERROR_FSM_EVENT);
-//            SetFsmState(WRITE_ERROR);
-//        }
-//        }
-//        // Время ожидания готовности к записи закончилось?
-//        else if (GetTimerPointer() -> IsOverflow())
-//        {
-////                SetFsmEvent(WRITE_ERROR_FSM_EVENT);
-//            SetFsmState(WRITE_ERROR);
-//        }
-//        break;
 
     case WRITE_END_WAITING_TEMPORARY_BLOCK_DATA:
         std::cout << "CDataStore::Fsm 5"  << std::endl;
         // Ожидаем окончания записи автоматом устройства хранения.
-        // Устройство хранения закончило запись?
-//        if (m_pxStorageDevice -> IsDataWrited())
-//        if (m_pxStorageDevice -> Fsm() ==
-//                CStorageDeviceInterface::DATA_WRITED_SUCCESSFULLY)
-//        if (m_uiFsmAnswerState ==
-//                CStorageDeviceInterface::DATA_WRITED_SUCCESSFULLY)
-//        {
-//            std::cout << "CDataStore::Fsm 6"  << std::endl;
-//            m_uiFsmAnswerState = 0;
-////            m_pxStorageDevice -> SetFsmState(CStorageDeviceInterface::READY);
-//            // Запись прошла успешно?
-//            if (CheckTemporaryBlock())
-//            {
-//                cerr << "CheckTemporaryBlock ok" << endl;
-//                SetFsmState(START_WRITE_TEMPORARY_SERVICE_SECTION_DATA);
-//            }
-//            else
-//            {
-//                cerr << "CheckTemporaryBlock error" << endl;
-////                SetFsmEvent(WRITE_ERROR_FSM_EVENT);
-//                SetFsmState(WRITE_ERROR);
-//            }
-//        }
-//        // Время ожидания окончания записи закончилось?
-//        else if (GetTimerPointer() -> IsOverflow())
-//        {
-//            std::cout << "CDataStore::Fsm 7"  << std::endl;
-//            m_pxStorageDevice -> SetFsmState(CStorageDeviceInterface::READY);
-////                SetFsmEvent(WRITE_ERROR_FSM_EVENT);
-//            SetFsmState(WRITE_ERROR);
-//        }
+        // Устройство хранения закончило запись успешно?
+        if (m_pxStorageDevice -> GetFsmAnswerState() ==
+                CStorageDeviceInterface::DATA_WRITED_SUCCESSFULLY)
+        {
+            std::cout << "CDataStore::Fsm 6"  << std::endl;
+            // Запись прошла успешно?
+            if (CheckTemporaryBlock())
+            {
+                cerr << "CheckTemporaryBlock ok" << endl;
+                SetFsmState(START_WRITE_TEMPORARY_SERVICE_SECTION_DATA);
+            }
+            else
+            {
+                cerr << "CheckTemporaryBlock error" << endl;
+//                SetFsmEvent(WRITE_ERROR_FSM_EVENT);
+                SetFsmState(WRITE_ERROR);
+            }
+        }
+        // Устройство хранения закончило запись не успешно?
+        else if (m_pxStorageDevice -> GetFsmAnswerState() ==
+                 CStorageDeviceInterface::WRITE_DATA_ERROR)
+        {
+            std::cout << "CDataStore::Fsm 7"  << std::endl;
+            SetFsmState(WRITE_ERROR);
+        }
+        else
+        {
+            // Время ожидания окончания записи закончилось?
+            if (GetTimerPointer() -> IsOverflow())
+            {
+                std::cout << "CDataStore::Fsm 7"  << std::endl;
+                SetFsmState(WRITE_ERROR);
+            }
+        }
         break;
 
 
@@ -1316,74 +1296,41 @@ uint8_t CDataStore::Fsm(void)
     // Запись временного служеьного блока.
     case START_WRITE_TEMPORARY_SERVICE_SECTION_DATA:
         std::cout << "CDataStore::Fsm 8"  << std::endl;
-//        SetFsmEvent(WRITE_IN_PROGRESS_FSM_EVENT);
-        // Установим время ожидания готовности к записи.
-        GetTimerPointer() -> Set(READY_TO_WRITE_WAITING_TIMEOUT);
-        SetFsmState(READY_TO_WRITE_WAITING_TEMPORARY_SERVICE_SECTION_DATA);
-        break;
-
-    case READY_TO_WRITE_WAITING_TEMPORARY_SERVICE_SECTION_DATA:
-        std::cout << "CDataStore::Fsm 9"  << std::endl;
-        // Устройство хранения готово к записи?
-//        if (m_pxStorageDevice -> IsReadyToWrite())
-        if (m_pxStorageDevice -> Fsm() == CStorageDeviceInterface::READY)
-        {
-            std::cout << "CDataStore::Fsm 9 1"  << std::endl;
-            // Установим время ожидания окончания записи.
-            GetTimerPointer() -> Set(WRITE_END_WAITING_TIMEOUT);
-//            // Сбросим флаг - запись закончена.
-//            m_pxStorageDevice -> SetIsDataWrited(false);
-            // Подготовка к записи прошла успешно?
-            if (TemporaryServiceSectionWritePrepare())
-            {
-                std::cout << "CDataStore::Fsm 10"  << std::endl;
-                SetFsmState(WRITE_END_WAITING_TEMPORARY_SERVICE_SECTION_DATA);
-            }
-            else
-            {
-                std::cout << "CDataStore::Fsm 11"  << std::endl;
-//                SetFsmEvent(WRITE_ERROR_FSM_EVENT);
-                SetFsmState(WRITE_ERROR);
-            }
-        }
-        // Время ожидания готовности к записи закончилось?
-        else if (GetTimerPointer() -> IsOverflow())
-        {
-            std::cout << "CDataStore::Fsm 12"  << std::endl;
-//                SetFsmEvent(WRITE_ERROR_FSM_EVENT);
-            SetFsmState(WRITE_ERROR);
-        }
+        TemporaryServiceSectionWritePrepare();
+        // Установим время ожидания окончания записи.
+        GetTimerPointer() -> Set(WRITE_END_WAITING_TIMEOUT);
+        SetFsmState(WRITE_END_WAITING_TEMPORARY_SERVICE_SECTION_DATA);
         break;
 
     case WRITE_END_WAITING_TEMPORARY_SERVICE_SECTION_DATA:
         // Ожидаем окончания записи автоматом устройства хранения.
-        // Устройство хранения закончило запись?
-//        if (m_pxStorageDevice -> IsDataWrited())
-        if (m_pxStorageDevice -> Fsm() ==
+        // Устройство хранения закончило запись успешно?
+        if (m_pxStorageDevice -> GetFsmAnswerState() ==
                 CStorageDeviceInterface::DATA_WRITED_SUCCESSFULLY)
         {
-            std::cout << "CDataStore::Fsm 13"  << std::endl;
-            m_pxStorageDevice -> SetFsmState(CStorageDeviceInterface::READY);
             // Запись прошла успешно?
             if (ReadTemporaryServiceSection())
             {
-                cerr << "ReadTemporaryServiceSection ok" << endl;
                 SetFsmState(START_WRITE_BLOCK_DATA);
             }
             else
             {
-                cerr << "ReadTemporaryServiceSection error" << endl;
-//                SetFsmEvent(WRITE_ERROR_FSM_EVENT);
                 SetFsmState(WRITE_ERROR);
             }
         }
-        // Время ожидания окончания записи закончилось?
-        else if (GetTimerPointer() -> IsOverflow())
+        // Устройство хранения закончило запись не успешно?
+        else if (m_pxStorageDevice -> GetFsmAnswerState() ==
+                 CStorageDeviceInterface::WRITE_DATA_ERROR)
         {
-            std::cout << "CDataStore::Fsm 14"  << std::endl;
-            m_pxStorageDevice -> SetFsmState(CStorageDeviceInterface::READY);
-//                SetFsmEvent(WRITE_ERROR_FSM_EVENT);
             SetFsmState(WRITE_ERROR);
+        }
+        else
+        {
+            // Время ожидания окончания записи закончилось?
+            if (GetTimerPointer() -> IsOverflow())
+            {
+                SetFsmState(WRITE_ERROR);
+            }
         }
         break;
 

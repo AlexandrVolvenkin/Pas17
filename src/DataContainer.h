@@ -47,6 +47,7 @@ public:
 
 public:
     uint8_t m_uiFsmCommandState;
+    uint8_t m_uiFsmAnswerState;
 //    CDataContainerInterface* m_pxCommandDataPointer;
     uint16_t m_uiDataIndex;
     uint8_t* m_puiDataPointer;

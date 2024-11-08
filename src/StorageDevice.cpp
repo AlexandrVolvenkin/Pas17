@@ -58,6 +58,17 @@ CStorageDeviceFileSystem::~CStorageDeviceFileSystem()
 //-------------------------------------------------------------------------------
 void CStorageDeviceFileSystem::GetArgumentData(void)
 {
+//        // Создание промежуточного указателя
+//        std::unique_ptr<CDataContainerDataBase> pxDataContainer = m_pxDataContainer; // Указатель на объект CDataContainerDataBase
+    CDataContainerDataBase* pxDataContainer =
+        (static_cast<CDataContainerDataBase*>(m_pxDataContainer.get()));
+
+    if (pxDataContainer -> m_uiFsmCommandState != 0)
+    {
+        SetFsmState(pxDataContainer -> m_uiFsmCommandState);
+        pxDataContainer -> m_uiFsmCommandState = 0;
+    }
+
     m_puiBuffer = m_pxTaskCustomer -> GetArgumentDataPointer() -> m_puiDataPointer;
     m_uiOffset = m_pxTaskCustomer -> GetArgumentDataPointer() -> m_uiDataOffset;
     m_uiLength = m_pxTaskCustomer -> GetArgumentDataPointer() -> m_uiDataLength;
@@ -93,9 +104,12 @@ bool CStorageDeviceFileSystem::WriteBlock(uint8_t *puiSource, uint16_t uiOffset,
 uint8_t CStorageDeviceFileSystem::Write(void)
 {
     std::cout << "CStorageDeviceFileSystem Write"  << std::endl;
-    uint16_t uiOffset = m_uiOffset;
-    uint8_t *puiSource = m_puiBuffer;
-    uint16_t uiLength = m_uiLength;
+    CDataContainerDataBase* pxDataContainer =
+        (static_cast<CDataContainerDataBase*>(m_pxDataContainer.get()));
+
+    uint8_t *puiDataPointer = pxDataContainer -> m_puiDataPointer;
+    uint16_t uiOffset = pxDataContainer -> m_uiDataOffset;
+    uint16_t uiLength = pxDataContainer -> m_uiDataLength;
 
 //    cout << "CStorageDeviceFileSystem::Write uiOffset" << " " << (int)uiOffset << endl;
 //    cout << "CStorageDeviceFileSystem::Write uiLength" << " " << (int)uiLength << endl;
@@ -124,7 +138,7 @@ uint8_t CStorageDeviceFileSystem::Write(void)
         std::cout << "CStorageDeviceFileSystem Write 4 1"  << std::endl;
         outdata.seekp(uiOffset, ios_base::beg);
         std::cout << "CStorageDeviceFileSystem Write 4"  << std::endl;
-        outdata.write((char*)puiSource, uiLength);
+        outdata.write((char*)puiDataPointer, uiLength);
 
         std::cout << "CStorageDeviceFileSystem Write 5"  << std::endl;
         // закроем файл.
@@ -170,9 +184,13 @@ bool CStorageDeviceFileSystem::ReadBlock(uint8_t *puiDestination, uint16_t uiOff
 uint8_t CStorageDeviceFileSystem::Read(void)
 {
     std::cout << "CStorageDeviceFileSystem Read"  << std::endl;
-    uint16_t uiOffset = m_uiOffset;
-    uint8_t *puiDestination = m_puiBuffer;
-    uint16_t uiLength = m_uiLength;
+    CDataContainerDataBase* pxDataContainer =
+        (static_cast<CDataContainerDataBase*>(m_pxDataContainer.get()));
+
+    uint8_t *puiDataPointer = pxDataContainer -> m_puiDataPointer;
+    uint16_t uiOffset = pxDataContainer -> m_uiDataOffset;
+    uint16_t uiLength = pxDataContainer -> m_uiDataLength;
+
 //    cout << "CStorageDeviceFileSystem::Read uiOffset" << " " << (int)uiOffset << endl;
 //    cout << "CStorageDeviceFileSystem::Read uiLength" << " " << (int)uiLength << endl;
     if ((uiOffset + uiLength) < MAX_BUFFER_LENGTH)
@@ -190,7 +208,7 @@ uint8_t CStorageDeviceFileSystem::Read(void)
             // установим смещение в файле.
             indata.seekg(uiOffset, ios_base::beg);
             // прочитаем файл.
-            indata.read(reinterpret_cast<char*>(puiDestination),
+            indata.read(reinterpret_cast<char*>(puiDataPointer),
                         uiLength);
         }
         // закроем файл.
@@ -220,45 +238,40 @@ uint8_t CStorageDeviceFileSystem::Fsm(void)
     case START:
         std::cout << "CStorageDeviceFileSystem::Fsm START"  << std::endl;
         std::cout << "CStorageDeviceFileSystem::Fsm m_sTaskCustomerName" << " " << (m_sTaskCustomerName) << std::endl;
-        GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
+//        GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
         SetFsmState(INIT);
         break;
 
     case INIT:
         //std::cout << "CStorageDeviceFileSystem::Fsm INIT"  << std::endl;
-    {
-        m_pxTaskCustomer =
-            GetResources() ->
-            GetCommonTaskFromMapPointer(m_sTaskCustomerName);
+        SetFsmState(READY);
+        break;
 
-        if (m_pxTaskCustomer != 0)
+    case READY:
+        //std::cout << "CStorageDeviceFileSystem::Fsm READY"  << std::endl;
+    {
+////        // Создание промежуточного указателя
+////        std::unique_ptr<CDataContainerDataBase> pxDataContainer = m_pxDataContainer; // Указатель на объект CDataContainerDataBase
+//        CDataContainerDataBase* pxDataContainer =
+//            (static_cast<CDataContainerDataBase*>(m_pxDataContainer.get()));
+
+//        if (pxDataContainer -> m_uiFsmCommandState != 0)
+//        {
+//            SetFsmState(pxDataContainer -> m_uiFsmCommandState);
+//            pxDataContainer -> m_uiFsmCommandState = 0;
+//        }
+
+        if (GetFsmCommandState() != 0)
         {
-            SetFsmState(READY);
-            std::cout << "CStorageDeviceFileSystem::Fsm READY"  << std::endl;
-        }
-        else
-        {
-            if (GetTimerPointer() -> IsOverflow())
-            {
-                SetFsmState(STOP);
-                std::cout << "CStorageDeviceFileSystem::Fsm STOP"  << std::endl;
-            }
+            SetFsmState(GetFsmCommandState());
+            SetFsmCommandState(0);
         }
     }
     break;
 
-    case READY:
-        //std::cout << "CStorageDeviceFileSystem::Fsm READY"  << std::endl;
-//        if ((m_pxTaskCustomer -> m_uiFsmCommandState) != 0)
-//        {
-//            SetFsmState(m_pxTaskCustomer -> m_uiFsmCommandState);
-//            m_pxTaskCustomer -> m_uiFsmCommandState = 0;
-//        }
-        break;
-
     case WRITE_DATA_START:
         //std::cout << "CMainProductionCycle::Fsm WRITE_DATA_START"  << std::endl;
-        GetArgumentData();
+//        GetArgumentData();
         if (Write())
         {
             SetFsmState(DATA_WRITED_SUCCESSFULLY);
@@ -271,19 +284,19 @@ uint8_t CStorageDeviceFileSystem::Fsm(void)
 
     case DATA_WRITED_SUCCESSFULLY:
 //        std::cout << "CStorageDeviceFileSystem::Fsm DATA_WRITED_SUCCESSFULLY"  << std::endl;
-//            m_pxTaskCustomer -> m_uiFsmAnswerState = DATA_WRITED_SUCCESSFULLY;
+        SetFsmAnswerState(DATA_WRITED_SUCCESSFULLY);
         SetFsmState(READY);
         break;
 
     case WRITE_DATA_ERROR:
         //std::cout << "CMainProductionCycle::Fsm WRITE_DATA_ERROR"  << std::endl;
-//            m_pxTaskCustomer -> m_uiFsmAnswerState = WRITE_DATA_ERROR;
+        SetFsmAnswerState(WRITE_DATA_ERROR);
         SetFsmState(READY);
         break;
 
     case READ_DATA_START:
         std::cout << "CMainProductionCycle::Fsm READ_DATA_START"  << std::endl;
-        GetArgumentData();
+//        GetArgumentData();
         if (Read())
         {
             SetFsmState(DATA_READED_SUCCESSFULLY);
@@ -296,13 +309,13 @@ uint8_t CStorageDeviceFileSystem::Fsm(void)
 
     case DATA_READED_SUCCESSFULLY:
         //std::cout << "CMainProductionCycle::Fsm DATA_READED_SUCCESSFULLY"  << std::endl;
-//            m_pxTaskCustomer -> m_uiFsmAnswerState = DATA_READED_SUCCESSFULLY;
+        SetFsmAnswerState(DATA_READED_SUCCESSFULLY);
         SetFsmState(READY);
         break;
 
     case READ_DATA_ERROR:
         //std::cout << "CMainProductionCycle::Fsm READ_DATA_ERROR"  << std::endl;
-//            m_pxTaskCustomer -> m_uiFsmAnswerState = READ_DATA_ERROR;
+        SetFsmAnswerState(READ_DATA_ERROR);
         SetFsmState(READY);
         break;
 

@@ -29,21 +29,39 @@ uint8_t CDfa::Fsm(void)
 }
 
 //-------------------------------------------------------------------------------
-uint8_t CDfa::GetFsmState(void)
-{
-    return m_uiFsmState;
-}
-
-//-------------------------------------------------------------------------------
 void CDfa::SetFsmState(uint8_t uiData)
 {
     m_uiFsmState = uiData;
 }
 
 //-------------------------------------------------------------------------------
+uint8_t CDfa::GetFsmState(void)
+{
+    return m_uiFsmState;
+}
+
+//-------------------------------------------------------------------------------
 void CDfa::SetFsmCommandState(uint8_t uiData)
 {
     m_uiFsmCommandState = uiData;
+}
+
+//-------------------------------------------------------------------------------
+uint8_t CDfa::GetFsmCommandState(void)
+{
+    return m_uiFsmCommandState;
+}
+
+//-------------------------------------------------------------------------------
+void CDfa::SetFsmAnswerState(uint8_t uiData)
+{
+    m_uiFsmAnswerState = uiData;
+}
+
+//-------------------------------------------------------------------------------
+uint8_t CDfa::GetFsmAnswerState(void)
+{
+    return m_uiFsmAnswerState;
 }
 
 //-------------------------------------------------------------------------------
