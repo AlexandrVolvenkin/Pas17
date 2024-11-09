@@ -22,7 +22,7 @@ class CDataStore;
 using namespace std;
 
 //-------------------------------------------------------------------------------
-class CDataStoreCheck : public CTask//, public CDfa
+class CDataStoreCheck : public CDataStore
 {
 public:
 

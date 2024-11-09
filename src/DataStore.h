@@ -181,10 +181,10 @@ public:
         return m_xServiseSection.xServiseSectionData.uiStoredBlocksNumber;
     };
 
-    void SetBlockIndex(uint8_t uiBlockIndex)
-    {
-        m_uiBlockIndex = uiBlockIndex;
-    };
+    void SetBlockIndex(uint8_t uiBlockIndex);
+//    {
+//        m_uiBlockIndex = uiBlockIndex;
+//    };
     uint8_t GetBlockIndex(void)
     {
         return m_uiBlockIndex;
@@ -208,8 +208,8 @@ public:
 public:
 
 
-//protected:
-private:
+protected:
+//private:
 //    CResources* m_pxResources;
     // Данные контекста записи блока.
     uint8_t m_uiBlockIndex;

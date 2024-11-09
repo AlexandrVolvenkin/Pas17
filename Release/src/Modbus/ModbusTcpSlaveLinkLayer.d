@@ -1,21 +1,17 @@
 src/Modbus/ModbusTcpSlaveLinkLayer.o: \
  ../src/Modbus/ModbusTcpSlaveLinkLayer.cpp \
  D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src/Task.h \
- D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src/Dfa.h \
  D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src/Timer.h \
  D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src/Platform.h \
  D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src/Configuration.h \
+ D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src/Dfa.h \
  D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src/Resources.h \
+ D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src/Task.h \
  ../src/Modbus/ModbusSlaveLinkLayer.h \
  D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src/Configuration.h \
- D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src/Platform.h \
- D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src/Timer.h \
- ../src/Modbus/ModbusTcpSlaveLinkLayer.h ../src/Modbus/Modbus.h \
- ../src/Modbus/../Platform.h ../src/Modbus/../Timer.h
+ ../src/Modbus/ModbusTcpSlaveLinkLayer.h ../src/Modbus/Modbus.h
 
 D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src/Task.h:
-
-D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src/Dfa.h:
 
 D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src/Timer.h:
 
@@ -23,20 +19,16 @@ D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src/Platfo
 
 D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src/Configuration.h:
 
+D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src/Dfa.h:
+
 D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src/Resources.h:
+
+D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src/Task.h:
 
 ../src/Modbus/ModbusSlaveLinkLayer.h:
 
 D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src/Configuration.h:
 
-D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src/Platform.h:
-
-D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src/Timer.h:
-
 ../src/Modbus/ModbusTcpSlaveLinkLayer.h:
 
 ../src/Modbus/Modbus.h:
-
-../src/Modbus/../Platform.h:
-
-../src/Modbus/../Timer.h:

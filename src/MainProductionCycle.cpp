@@ -129,7 +129,9 @@ uint8_t CMainProductionCycle::CreateTasks(void)
     pxDataStoreCheck ->
     SetResources(&m_xResources);
     pxDataStoreCheck ->
-    SetDataStoreName("DataStoreFileSystem");
+    SetStorageDeviceName("StorageDeviceFileSystem");
+//    pxDataStoreCheck ->
+//    SetDataStoreName("DataStoreFileSystem");
     m_xResources.AddCurrentlyRunningTasksList(pxDataStoreCheck);
     m_pxDataStoreCheck = pxDataStoreCheck;
 
@@ -307,17 +309,21 @@ uint8_t CMainProductionCycle::Fsm(void)
 //        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_TASK_READY_CHECK"  << std::endl;
         CurrentlyRunningTasksExecution();
 
-        if ((m_pxDataStoreCheck -> GetFsmState()) == READY)
-        {
-            SetFsmState(DATABASE_CHECK_BEGIN);
-            std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_TASK_READY_CHECK 1"  << std::endl;
-        }
-        else
-        {
-            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
-            SetFsmState(DATABASE_CHECK_TASK_READY_WAITING);
-            std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_TASK_READY_CHECK 2"  << std::endl;
-        }
+        GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
+        SetFsmState(DATABASE_CHECK_TASK_READY_WAITING);
+        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_TASK_READY_CHECK 1"  << std::endl;
+
+//        if ((m_pxDataStoreCheck -> GetFsmState()) == READY)
+//        {
+//            SetFsmState(DATABASE_CHECK_BEGIN);
+//            std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_TASK_READY_CHECK 1"  << std::endl;
+//        }
+//        else
+//        {
+//            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
+//            SetFsmState(DATABASE_CHECK_TASK_READY_WAITING);
+//            std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_TASK_READY_CHECK 2"  << std::endl;
+//        }
         break;
 
     case DATABASE_CHECK_TASK_READY_WAITING:
@@ -342,12 +348,14 @@ uint8_t CMainProductionCycle::Fsm(void)
     case DATABASE_CHECK_BEGIN:
         std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_BEGIN"  << std::endl;
         CurrentlyRunningTasksExecution();
-//        m_pxDataStoreCheck -> Check();
+        m_pxDataStoreCheck -> Check();
         GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
         SetFsmState(DATABASE_CHECK_END_WAITING);
 
-        m_pxDataStoreFileSystem -> CreateServiceSection();
-        m_pxDataStoreFileSystem -> WriteBlock(auiTempBlock, sizeof(auiTempBlock), 0);
+//        m_pxDataStoreFileSystem -> CreateServiceSection();
+//        m_pxDataStoreFileSystem -> WriteBlock(auiTempBlock, sizeof(auiTempBlock), 0);
+
+//
 //        if (!(m_pxDataStoreCheck -> Check()))
 //        {
 //            cout << "DataStore check error" << endl;

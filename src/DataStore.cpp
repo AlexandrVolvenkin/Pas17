@@ -241,23 +241,19 @@ void CDataStore::GetArgumentData(void)
 //    m_uiLength = m_pxTaskCustomer -> GetArgumentDataPointer() -> m_uiDataLength;
 }
 
-////-------------------------------------------------------------------------------
-//void CDataStore::SetResources(CResources* pxResources)
-//{
-//    m_pxResources = pxResources;
-//}
-//
-////-------------------------------------------------------------------------------
-//CResources* CDataStore::GetResources(void)
-//{
-//    return m_pxResources;
-//}
+//-------------------------------------------------------------------------------
+void CDataStore::SetBlockIndex(uint8_t uiBlockIndex)
+{
+    CDataContainerDataBase* pxDataContainer =
+        (static_cast<CDataContainerDataBase*>(m_pxDataContainer.get()));
+
+    pxDataContainer -> m_uiDataIndex = uiBlockIndex;
+}
 
 //-------------------------------------------------------------------------------
 void CDataStore::CreateServiceSection(void)
 {
     std::cout << "CDataStore::CreateServiceSection 1"  << std::endl;
-//    SetFsmState(READY);
 
     // Очистим служебный контекст.
     memset(reinterpret_cast<uint8_t*>(&m_xServiseSection.xServiseSectionData),
@@ -297,14 +293,11 @@ uint8_t CDataStore::TemporaryServiceSectionWritePrepare(void)
         usCrc16(reinterpret_cast<uint8_t*>(&m_xServiseSection.xServiseSectionData),
                 sizeof(struct TServiseSectionData));
 
-//    std::cout << "CDataStore::TemporaryServiceSectionWritePrepare 2"  << std::endl;
     // Звкодируем данные алгоритмом Хемминга.
     uint16_t uiEncodedByteCounter =
         CHammingCodes::BytesToHammingCodes(m_puiIntermediateBuff,
                                            reinterpret_cast<uint8_t*>(&m_xServiseSection),
                                            sizeof(struct TServiseSection));
-
-//    std::cout << "CDataStore::TemporaryServiceSectionWritePrepare 3"  << std::endl;
 
     CDataContainerDataBase* pxDataContainer =
         (static_cast<CDataContainerDataBase*>(m_pxStorageDevice ->
@@ -912,176 +905,276 @@ uint8_t CDataStore::CheckBlock(void)
         return 0;
     }
 }
-
 //-------------------------------------------------------------------------------
 // Считывает и проверяет целостность блока.
 uint16_t CDataStore::ReadBlock(uint8_t *puiDestination, uint8_t uiBlock)
 {
     std::cout << "CDataStore::ReadBlock 1"  << std::endl;
+
+//    CDataContainerDataBase* pxDataContainer =
+//        (static_cast<CDataContainerDataBase*>(m_pxDataContainer.get()));
+
+//    pxDataContainer -> m_uiDataIndex = uiBlock;
+//    pxDataContainer -> m_puiDataPointer = puiDestination;
+//    pxDataContainer -> m_uiDataOffset;
+//    pxDataContainer -> m_uiDataLength;
+
+//    uint8_t uiBlock = uiBlock;
+    std::cout << "CDataStore::ReadBlock 1 uiBlock"  <<  (uiBlock) << std::endl;
+
     // Произошёл выход за границы буфера?
-    if (uiBlock >= (MAX_BLOCKS_NUMBER + SERVICE_SECTION_BLOCK_NUMBER))
+    if (uiBlock >= MAX_BLOCKS_NUMBER)
     {
         std::cout << "CDataStore::ReadBlock 2"  << std::endl;
         // Нет данных.
         return 0;
     }
-    // блок не служебный?
-    if (uiBlock < MAX_BLOCKS_NUMBER)
+
+    uint16_t uiLength;
+    uint16_t uiEncodedLength;
+    uint16_t uiSourceOffset;
+
+    // Блок существует?
+    if ((m_xServiseSection.xServiseSectionData.
+            axBlockPositionData[uiBlock].uiLength != 0) &&
+            (m_xServiseSection.xServiseSectionData.
+             axBlockPositionData[uiBlock].uiEncodedLength != 0))
     {
         std::cout << "CDataStore::ReadBlock 3"  << std::endl;
-        // Блок существует?
-        if ((m_xServiseSection.xServiseSectionData.
-                axBlockPositionData[uiBlock].uiLength != 0) &&
-                (m_xServiseSection.xServiseSectionData.
-                 axBlockPositionData[uiBlock].uiEncodedLength != 0))
-        {
-            std::cout << "CDataStore::ReadBlock 4"  << std::endl;
-            // Получим индекс блока.
-            m_uiBlockIndex = uiBlock;
-            // Получим указатель на данные блока.
-            m_puiBlockDataPointer = puiDestination;
-            // Получим адрес блока в EEPROM.
-            m_uiBlockOffset = m_xServiseSection.xServiseSectionData.
-                              axBlockPositionData[uiBlock].uiOffset;
-            // Получим размер блока.
-            m_uiBlockLength = m_xServiseSection.xServiseSectionData.
-                              axBlockPositionData[uiBlock].uiLength;
-            // Получим размер закодированного блока.
-            m_uiBlockEncodedLength = m_xServiseSection.xServiseSectionData.
-                                     axBlockPositionData[uiBlock].uiEncodedLength;
-
-            SetArgumentData(m_puiIntermediateBuff,
-                            m_uiBlockOffset,
-                            m_uiBlockEncodedLength);
-            return 1;
-        }
-        else
-        {
-            std::cout << "CDataStore::ReadBlock 5"  << std::endl;
-            // Нет данных.
-            return 0;
-        }
+        // Получим адрес блока в EEPROM.
+        uiSourceOffset = m_xServiseSection.xServiseSectionData.
+                         axBlockPositionData[uiBlock].uiOffset;
+        // Получим размер блока.
+        uiLength = m_xServiseSection.xServiseSectionData.
+                   axBlockPositionData[uiBlock].uiLength;
+        // Получим размер закодированного блока.
+        uiEncodedLength = m_xServiseSection.xServiseSectionData.
+                          axBlockPositionData[uiBlock].uiEncodedLength;
     }
     else
     {
-        std::cout << "CDataStore::ReadBlock 6"  << std::endl;
-        // Получим указатель на данные блока.
-        m_puiBlockDataPointer = puiDestination;
-        // Получим размер закодированного блока.
-        m_uiBlockEncodedLength =
-            (CHammingCodes::CalculateEncodedDataLength(sizeof(struct TServiseSection)));
-
-        switch (uiBlock)
-        {
-        case TEMPORARY_BLOCK_INDEX:
-            // Получим адрес блока в EEPROM.
-            m_uiBlockOffset = TEMPORARY_BLOCK_DATA_BEGIN;
-            // Получим размер блока.
-            m_uiBlockLength = m_xServiseSection.xServiseSectionData.
-                              axBlockPositionData[m_uiBlockIndex].uiLength;
-            break;
-
-        case TEMPORARY_SERVICE_SECTION_INDEX:
-            // Получим адрес блока в EEPROM.
-            m_uiBlockOffset = TEMPORARY_SERVICE_SECTION_DATA_BEGIN;
-            // Получим размер блока.
-            m_uiBlockLength = sizeof(struct TServiseSectionData);
-            break;
-
-        case SERVICE_SECTION_INDEX:
-            // Получим адрес блока в EEPROM.
-            m_uiBlockOffset = SERVICE_SECTION_DATA_BEGIN;
-            // Получим размер блока.
-            m_uiBlockLength = sizeof(struct TServiseSectionData);
-            break;
-
-        default:
-            // Нет данных.
-            return 0;
-            break;
-        }
-
-        SetArgumentData(m_puiIntermediateBuff,
-                        m_uiBlockOffset,
-                        m_uiBlockEncodedLength);
-
-        return 1;
+        std::cout << "CDataStore::ReadBlock 4"  << std::endl;
+        // Нет данных.
+        return 0;
     }
 
-//    uint16_t uiLength;
-//    uint16_t uiEncodedLength;
-//    uint16_t uiSourceOffset;
+    // получим указатель на контейнер с данными задачи исполнителя
+    CDataContainerDataBase* pxDataContainer =
+        (static_cast<CDataContainerDataBase*>(m_pxStorageDevice ->
+                m_pxDataContainer.get()));
 
-//    // Блок существует?
-//    if ((m_xServiseSection.xServiseSectionData.
-//            axBlockPositionData[uiBlock].uiLength != 0) &&
-//            (m_xServiseSection.xServiseSectionData.
-//             axBlockPositionData[uiBlock].uiEncodedLength != 0))
+    pxDataContainer ->
+    SetContainerData(CStorageDeviceInterface::READ_DATA_START,
+                     uiBlock,
+                     m_puiIntermediateBuff,
+                     uiSourceOffset,
+                     uiEncodedLength);
+//    m_pxStorageDevice ->
+//    SetFsmCommandState(CStorageDeviceInterface::READ_DATA_START);
+
+    // Прочитаем закодированные данные.
+    // При чтении данных возникла ошибка?
+    if (!(m_pxStorageDevice -> Read()))
+//    if (!(m_pxStorageDevice -> ReadBlock(m_puiIntermediateBuff,
+//                                         uiSourceOffset,
+//                                         uiEncodedLength)))
+    {
+        std::cout << "CDataStore::ReadBlock 5"  << std::endl;
+        // Нет данных.
+        return 0;
+    }
+
+    // Декодируем прочитанные данные.
+    CHammingCodes::HammingCodesToBytes(m_puiIntermediateBuff,
+                                       m_puiIntermediateBuff,
+                                       uiEncodedLength);
+
+    // Блок не повреждён?
+    if (m_xServiseSection.xServiseSectionData.
+            axBlockPositionData[uiBlock].uiCrc ==
+            usCrc16(m_puiIntermediateBuff, uiLength))
+    {
+        std::cout << "CDataStore::ReadBlock 6"  << std::endl;
+        memcpy(puiDestination, m_puiIntermediateBuff, uiLength);
+        return 1;
+    }
+    else
+    {
+        std::cout << "CDataStore::ReadBlock 7"  << std::endl;
+        // Нет данных.
+        return 0;
+    }
+}
+
+////-------------------------------------------------------------------------------
+//// Считывает и проверяет целостность блока.
+//uint16_t CDataStore::ReadBlock(uint8_t *puiDestination, uint8_t uiBlock)
+//{
+//    std::cout << "CDataStore::ReadBlock 1"  << std::endl;
+//    // Произошёл выход за границы буфера?
+//    if (uiBlock >= (MAX_BLOCKS_NUMBER + SERVICE_SECTION_BLOCK_NUMBER))
 //    {
-//        // Получим адрес блока в EEPROM.
-//        uiSourceOffset = m_xServiseSection.xServiseSectionData.
-//                         axBlockPositionData[uiBlock].uiOffset;
-//        // Получим размер блока.
-//        uiLength = m_xServiseSection.xServiseSectionData.
-//                   axBlockPositionData[uiBlock].uiLength;
-//        // Получим размер закодированного блока.
-//        uiEncodedLength = m_xServiseSection.xServiseSectionData.
-//                          axBlockPositionData[uiBlock].uiEncodedLength;
-
-//        // Получим индекс блока.
-//        m_uiBlockIndex = uiBlock;
+//        std::cout << "CDataStore::ReadBlock 2"  << std::endl;
+//        // Нет данных.
+//        return 0;
+//    }
+//    // блок не служебный?
+//    if (uiBlock < MAX_BLOCKS_NUMBER)
+//    {
+//        std::cout << "CDataStore::ReadBlock 3"  << std::endl;
+//        // Блок существует?
+//        if ((m_xServiseSection.xServiseSectionData.
+//                axBlockPositionData[uiBlock].uiLength != 0) &&
+//                (m_xServiseSection.xServiseSectionData.
+//                 axBlockPositionData[uiBlock].uiEncodedLength != 0))
+//        {
+//            std::cout << "CDataStore::ReadBlock 4"  << std::endl;
+//            // Получим индекс блока.
+//            m_uiBlockIndex = uiBlock;
+//            // Получим указатель на данные блока.
+//            m_puiBlockDataPointer = puiDestination;
+//            // Получим адрес блока в EEPROM.
+//            m_uiBlockOffset = m_xServiseSection.xServiseSectionData.
+//                              axBlockPositionData[uiBlock].uiOffset;
+//            // Получим размер блока.
+//            m_uiBlockLength = m_xServiseSection.xServiseSectionData.
+//                              axBlockPositionData[uiBlock].uiLength;
+//            // Получим размер закодированного блока.
+//            m_uiBlockEncodedLength = m_xServiseSection.xServiseSectionData.
+//                                     axBlockPositionData[uiBlock].uiEncodedLength;
+//
+//            SetArgumentData(m_puiIntermediateBuff,
+//                            m_uiBlockOffset,
+//                            m_uiBlockEncodedLength);
+//            return 1;
+//        }
+//        else
+//        {
+//            std::cout << "CDataStore::ReadBlock 5"  << std::endl;
+//            // Нет данных.
+//            return 0;
+//        }
+//    }
+//    else
+//    {
+//        std::cout << "CDataStore::ReadBlock 6"  << std::endl;
 //        // Получим указатель на данные блока.
 //        m_puiBlockDataPointer = puiDestination;
-//        // Получим адрес блока в EEPROM.
-//        m_uiBlockOffset = m_xServiseSection.xServiseSectionData.
-//                          axBlockPositionData[uiBlock].uiOffset;
-//        // Получим размер блока.
-//        m_uiBlockLength = m_xServiseSection.xServiseSectionData.
-//                          axBlockPositionData[uiBlock].uiLength;
 //        // Получим размер закодированного блока.
-//        m_uiBlockEncodedLength = m_xServiseSection.xServiseSectionData.
-//                                 axBlockPositionData[uiBlock].uiEncodedLength;
+//        m_uiBlockEncodedLength =
+//            (CHammingCodes::CalculateEncodedDataLength(sizeof(struct TServiseSection)));
+//
+//        switch (uiBlock)
+//        {
+//        case TEMPORARY_BLOCK_INDEX:
+//            // Получим адрес блока в EEPROM.
+//            m_uiBlockOffset = TEMPORARY_BLOCK_DATA_BEGIN;
+//            // Получим размер блока.
+//            m_uiBlockLength = m_xServiseSection.xServiseSectionData.
+//                              axBlockPositionData[m_uiBlockIndex].uiLength;
+//            break;
+//
+//        case TEMPORARY_SERVICE_SECTION_INDEX:
+//            // Получим адрес блока в EEPROM.
+//            m_uiBlockOffset = TEMPORARY_SERVICE_SECTION_DATA_BEGIN;
+//            // Получим размер блока.
+//            m_uiBlockLength = sizeof(struct TServiseSectionData);
+//            break;
+//
+//        case SERVICE_SECTION_INDEX:
+//            // Получим адрес блока в EEPROM.
+//            m_uiBlockOffset = SERVICE_SECTION_DATA_BEGIN;
+//            // Получим размер блока.
+//            m_uiBlockLength = sizeof(struct TServiseSectionData);
+//            break;
+//
+//        default:
+//            // Нет данных.
+//            return 0;
+//            break;
+//        }
 //
 //        SetArgumentData(m_puiIntermediateBuff,
 //                        m_uiBlockOffset,
 //                        m_uiBlockEncodedLength);
-////        SetArgumentData(m_puiIntermediateBuff,
-////                        m_xServiseSection.xServiseSectionData.
-////                        axBlockPositionData[uiBlock].uiOffset,
-////                        m_xServiseSection.xServiseSectionData.
-////                        axBlockPositionData[uiBlock].uiEncodedLength);
+//
 //        return 1;
 //    }
-//    else
-//    {
-//        // Нет данных.
-//        return 0;
-//    }
-
-//    // Прочитаем закодированные данные.
-//    m_pxStorageDevice -> ReadBlock(m_puiIntermediateBuff,
-//                                   uiSourceOffset,
-//                                   uiEncodedLength);
 //
-//    // Декодируем прочитанные данные.
-//    CHammingCodes::HammingCodesToBytes(m_puiIntermediateBuff,
-//                                       m_puiIntermediateBuff,
-//                                       uiEncodedLength);
+////    uint16_t uiLength;
+////    uint16_t uiEncodedLength;
+////    uint16_t uiSourceOffset;
 //
-//    // Блок не повреждён?
-//    if (m_xServiseSection.xServiseSectionData.
-//            axBlockPositionData[uiBlock].uiCrc ==
-//            usCrc16(m_puiIntermediateBuff, uiLength))
-//    {
-//        memcpy(puiDestination, m_puiIntermediateBuff, uiLength);
-//        return uiLength;
-//    }
-//    else
-//    {
-//        // Нет данных.
-//        return 0;
-//    }
-}
+////    // Блок существует?
+////    if ((m_xServiseSection.xServiseSectionData.
+////            axBlockPositionData[uiBlock].uiLength != 0) &&
+////            (m_xServiseSection.xServiseSectionData.
+////             axBlockPositionData[uiBlock].uiEncodedLength != 0))
+////    {
+////        // Получим адрес блока в EEPROM.
+////        uiSourceOffset = m_xServiseSection.xServiseSectionData.
+////                         axBlockPositionData[uiBlock].uiOffset;
+////        // Получим размер блока.
+////        uiLength = m_xServiseSection.xServiseSectionData.
+////                   axBlockPositionData[uiBlock].uiLength;
+////        // Получим размер закодированного блока.
+////        uiEncodedLength = m_xServiseSection.xServiseSectionData.
+////                          axBlockPositionData[uiBlock].uiEncodedLength;
+//
+////        // Получим индекс блока.
+////        m_uiBlockIndex = uiBlock;
+////        // Получим указатель на данные блока.
+////        m_puiBlockDataPointer = puiDestination;
+////        // Получим адрес блока в EEPROM.
+////        m_uiBlockOffset = m_xServiseSection.xServiseSectionData.
+////                          axBlockPositionData[uiBlock].uiOffset;
+////        // Получим размер блока.
+////        m_uiBlockLength = m_xServiseSection.xServiseSectionData.
+////                          axBlockPositionData[uiBlock].uiLength;
+////        // Получим размер закодированного блока.
+////        m_uiBlockEncodedLength = m_xServiseSection.xServiseSectionData.
+////                                 axBlockPositionData[uiBlock].uiEncodedLength;
+////
+////        SetArgumentData(m_puiIntermediateBuff,
+////                        m_uiBlockOffset,
+////                        m_uiBlockEncodedLength);
+//////        SetArgumentData(m_puiIntermediateBuff,
+//////                        m_xServiseSection.xServiseSectionData.
+//////                        axBlockPositionData[uiBlock].uiOffset,
+//////                        m_xServiseSection.xServiseSectionData.
+//////                        axBlockPositionData[uiBlock].uiEncodedLength);
+////        return 1;
+////    }
+////    else
+////    {
+////        // Нет данных.
+////        return 0;
+////    }
+//
+////    // Прочитаем закодированные данные.
+////    m_pxStorageDevice -> ReadBlock(m_puiIntermediateBuff,
+////                                   uiSourceOffset,
+////                                   uiEncodedLength);
+////
+////    // Декодируем прочитанные данные.
+////    CHammingCodes::HammingCodesToBytes(m_puiIntermediateBuff,
+////                                       m_puiIntermediateBuff,
+////                                       uiEncodedLength);
+////
+////    // Блок не повреждён?
+////    if (m_xServiseSection.xServiseSectionData.
+////            axBlockPositionData[uiBlock].uiCrc ==
+////            usCrc16(m_puiIntermediateBuff, uiLength))
+////    {
+////        memcpy(puiDestination, m_puiIntermediateBuff, uiLength);
+////        return uiLength;
+////    }
+////    else
+////    {
+////        // Нет данных.
+////        return 0;
+////    }
+//}
 
 //-------------------------------------------------------------------------------
 // Считывает и проверяет целостность блока.

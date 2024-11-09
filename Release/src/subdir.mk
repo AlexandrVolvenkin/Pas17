@@ -6,6 +6,7 @@
 CPP_SRCS += \
 ../src/ConfigurationCreate.cpp \
 ../src/Crc.cpp \
+../src/DataContainer.cpp \
 ../src/DataStore.cpp \
 ../src/DataStoreCheck.cpp \
 ../src/DeviceControl.cpp \
@@ -14,6 +15,7 @@ CPP_SRCS += \
 ../src/InternalModule.cpp \
 ../src/InternalModuleMuvr.cpp \
 ../src/MainProductionCycle.cpp \
+../src/MessageBox.cpp \
 ../src/Platform.cpp \
 ../src/Resources.cpp \
 ../src/ServiceMarket.cpp \
@@ -26,6 +28,7 @@ CPP_SRCS += \
 CPP_DEPS += \
 ./src/ConfigurationCreate.d \
 ./src/Crc.d \
+./src/DataContainer.d \
 ./src/DataStore.d \
 ./src/DataStoreCheck.d \
 ./src/DeviceControl.d \
@@ -34,6 +37,7 @@ CPP_DEPS += \
 ./src/InternalModule.d \
 ./src/InternalModuleMuvr.d \
 ./src/MainProductionCycle.d \
+./src/MessageBox.d \
 ./src/Platform.d \
 ./src/Resources.d \
 ./src/ServiceMarket.d \
@@ -46,6 +50,7 @@ CPP_DEPS += \
 OBJS += \
 ./src/ConfigurationCreate.o \
 ./src/Crc.o \
+./src/DataContainer.o \
 ./src/DataStore.o \
 ./src/DataStoreCheck.o \
 ./src/DeviceControl.o \
@@ -54,6 +59,7 @@ OBJS += \
 ./src/InternalModule.o \
 ./src/InternalModuleMuvr.o \
 ./src/MainProductionCycle.o \
+./src/MessageBox.o \
 ./src/Platform.o \
 ./src/Resources.o \
 ./src/ServiceMarket.o \
@@ -76,7 +82,7 @@ src/%.o: ../src/%.cpp src/subdir.mk
 clean: clean-src
 
 clean-src:
-	-$(RM) ./src/ConfigurationCreate.d ./src/ConfigurationCreate.o ./src/Crc.d ./src/Crc.o ./src/DataStore.d ./src/DataStore.o ./src/DataStoreCheck.d ./src/DataStoreCheck.o ./src/DeviceControl.d ./src/DeviceControl.o ./src/Dfa.d ./src/Dfa.o ./src/HammingCodes.d ./src/HammingCodes.o ./src/InternalModule.d ./src/InternalModule.o ./src/InternalModuleMuvr.d ./src/InternalModuleMuvr.o ./src/MainProductionCycle.d ./src/MainProductionCycle.o ./src/Platform.d ./src/Platform.o ./src/Resources.d ./src/Resources.o ./src/ServiceMarket.d ./src/ServiceMarket.o ./src/StorageDevice.d ./src/StorageDevice.o ./src/Task.d ./src/Task.o ./src/TaskManager.d ./src/TaskManager.o ./src/Timer.d ./src/Timer.o ./src/main.d ./src/main.o
+	-$(RM) ./src/ConfigurationCreate.d ./src/ConfigurationCreate.o ./src/Crc.d ./src/Crc.o ./src/DataContainer.d ./src/DataContainer.o ./src/DataStore.d ./src/DataStore.o ./src/DataStoreCheck.d ./src/DataStoreCheck.o ./src/DeviceControl.d ./src/DeviceControl.o ./src/Dfa.d ./src/Dfa.o ./src/HammingCodes.d ./src/HammingCodes.o ./src/InternalModule.d ./src/InternalModule.o ./src/InternalModuleMuvr.d ./src/InternalModuleMuvr.o ./src/MainProductionCycle.d ./src/MainProductionCycle.o ./src/MessageBox.d ./src/MessageBox.o ./src/Platform.d ./src/Platform.o ./src/Resources.d ./src/Resources.o ./src/ServiceMarket.d ./src/ServiceMarket.o ./src/StorageDevice.d ./src/StorageDevice.o ./src/Task.d ./src/Task.o ./src/TaskManager.d ./src/TaskManager.o ./src/Timer.d ./src/Timer.o ./src/main.d ./src/main.o
 
 .PHONY: clean-src
 

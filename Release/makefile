@@ -12,6 +12,7 @@ RM := rm -rf
 -include src/EveDisplay/subdir.mk
 -include src/CommunicationDevice/subdir.mk
 -include src/subdir.mk
+-include obj/Release/Pas17/src/CommunicationDevice/subdir.mk
 -include obj/Release/Pas17/src/subdir.mk
 -include obj/Debug/src/Modbus/subdir.mk
 -include obj/Debug/src/subdir.mk

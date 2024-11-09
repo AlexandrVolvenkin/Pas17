@@ -27,7 +27,7 @@ CDataStoreCheck::CDataStoreCheck()
     sprintf(GetTaskNamePointer(),
             "%s",
             typeid(*this).name());
-    m_pxDataStore = 0;
+    m_pxStorageDevice = 0;
     SetFsmState(START);
 }
 
@@ -63,15 +63,7 @@ void CDataStoreCheck::SetDataStore(CDataStore* pxDataStore)
 uint8_t CDataStoreCheck::Check(void)
 {
     // Запустим процесс проверки и восстановления хранилища.
-    SetFsmState(DATA_STORE_CHECK_START);
-    //    if (GetFsmState() == READY)
-//    {
-//        SetFsmState(DATA_STORE_CHECK_START);
-//    }
-//    else
-//    {
-//        m_uiFsmNextState = DATA_STORE_CHECK_START;
-//    }
+    SetFsmCommandState(DATA_STORE_CHECK_START);
 }
 
 //-------------------------------------------------------------------------------
@@ -98,17 +90,17 @@ uint8_t CDataStoreCheck::Fsm(void)
         break;
 
     case INIT:
-//        std::cout << "CDataStoreCheck::Fsm INIT"  << std::endl;
+        std::cout << "CDataStoreCheck::Fsm INIT"  << std::endl;
     {
         CTaskInterface* pxTask =
             GetResources() ->
-            GetCommonTaskFromMapPointer(m_sDataStoreName);
+            GetCommonTaskFromMapPointer(m_sStorageDeviceName);
 
         if (pxTask != 0)
         {
             if (pxTask -> GetFsmState() >= READY)
             {
-                SetDataStore((CDataStore*)pxTask);
+                SetStorageDevice((CStorageDeviceInterface*)pxTask);
                 SetFsmState(READY);
                 std::cout << "CDataStoreCheck::Fsm READY"  << std::endl;
             }
@@ -126,11 +118,11 @@ uint8_t CDataStoreCheck::Fsm(void)
 
     case READY:
 //        std::cout << "CDataStoreCheck::Fsm READY"  << std::endl;
-//        if (m_uiFsmNextState)
-//        {
-//            SetFsmState(m_uiFsmNextState);
-//            m_uiFsmNextState = 0;
-//        }
+        if (GetFsmCommandState() != 0)
+        {
+            SetFsmState(GetFsmCommandState());
+            SetFsmCommandState(0);
+        }
         break;
 
 //-------------------------------------------------------------------------------
@@ -143,7 +135,7 @@ uint8_t CDataStoreCheck::Fsm(void)
 
     case TEMPORARY_SERVICE_SECTION_DATA_CHECK:
         // Временный служебный блок не повреждён?
-        if (m_pxDataStore -> ReadTemporaryServiceSection())
+        if (ReadTemporaryServiceSection())
         {
             SetFsmState(TEMPORARY_SERVICE_SECTION_LINKED_BLOCKS_CHECK);
         }
@@ -158,30 +150,32 @@ uint8_t CDataStoreCheck::Fsm(void)
     case TEMPORARY_SERVICE_SECTION_LINKED_BLOCKS_CHECK:
         // Проверим связанность блоков хранилища с временным служебным блоком, а следовательно их целостность.
         for (uint16_t i = 0;
-                i < m_pxDataStore -> GetStoredBlocksNumber();
+                i < GetStoredBlocksNumber();
                 i++)
         {
             // Блок не связан с временным служебным буфером(или повреждён)?
-            if (!(m_pxDataStore -> ReadBlock(auiTempArray, i)))
+            if (!(ReadBlock(auiTempArray, i)))
             {
                 // Установим индекс блока, с сохранённым Crc которого,
                 // будем сравнивать Crc блока сохранённое во временном буфере.
-                m_pxDataStore -> SetBlockIndex(i);
+                SetBlockIndex(i);
                 // Crc блока из временного буфера совпадает с Crc блока
                 // сохранённого во временном служебном буфере по текущему индексу?
-                if (m_pxDataStore -> CheckTemporaryBlock())
+                if (CheckTemporaryBlock())
                 {
                     // Скопируем данные блока считанные при проверке во вспомогательный буфер.
                     memcpy(auiTempArray,
-                           m_pxDataStore -> GetIntermediateBuff(),
-                           m_pxDataStore -> GetBlockLength(i));
+                           GetIntermediateBuff(),
+                           GetBlockLength(i));
                     // Данные блока успешно записаны во временные буферы,
                     // но при записи в хранилище произошёл сбой.
                     // Требуется повторная запись данных блока из временных буферов в хранилище.
-                    m_pxDataStore -> WriteBlock(auiTempArray,
-                                                m_pxDataStore -> GetBlockLength(i),
-                                                i);
+                    WriteBlock(auiTempArray,
+                               GetBlockLength(i),
+                               i);
 
+                    // Установим время ожидания окончания записи.
+                    GetTimerPointer() -> Set(WRITE_END_WAITING_TIMEOUT);
                     SetFsmState(CORRUPTED_BLOCK_RECOVERY_WRITE_END_WAITING);
                     break;
                 }
@@ -204,10 +198,12 @@ uint8_t CDataStoreCheck::Fsm(void)
                     cout << "CHammingCodes::GetErrorCode 1 uiBlock" << (int)i << endl;
 
                     // Требуется повторная запись данных в хранилище.
-                    m_pxDataStore -> WriteBlock(auiTempArray,
-                                                m_pxDataStore -> GetBlockLength(i),
-                                                i);
+                    WriteBlock(auiTempArray,
+                               GetBlockLength(i),
+                               i);
 
+                    // Установим время ожидания окончания записи.
+                    GetTimerPointer() -> Set(WRITE_END_WAITING_TIMEOUT);
                     SetFsmState(CORRUPTED_BLOCK_RECOVERY_WRITE_END_WAITING);
                     break;
                 }
@@ -219,24 +215,29 @@ uint8_t CDataStoreCheck::Fsm(void)
         break;
 
     case CORRUPTED_BLOCK_RECOVERY_WRITE_END_WAITING:
-        // Ожидаем окончания записи автоматом хранилища.
-        // Сохранённый во временном буфере блок записан в хранилище?
-//            if (GetFsmEvent() == CDataStore::WRITE_OK_FSM_EVENT)
-//            {
-        if (m_pxDataStore -> Fsm() ==
-                CDataStore::DATA_WRITED_SUCCESSFULLY)
+        // Ожидаем окончания записи автоматом устройства хранения.
+        // Устройство хранения закончило запись успешно?
+        if (m_pxStorageDevice -> GetFsmAnswerState() ==
+                CStorageDeviceInterface::DATA_WRITED_SUCCESSFULLY)
         {
-            m_pxDataStore -> SetFsmState(CDataStore::READY);
+            m_pxStorageDevice -> SetFsmAnswerState(0);
             SetFsmState(DATA_STORE_CHECK_REPEAT);
         }
-        // При записи блока произошла ошибка?
-//            else if (GetFsmEvent() == CDataStore::WRITE_ERROR_FSM_EVENT)
-//            {
-        else if (m_pxDataStore -> Fsm() ==
-                 CDataStore::WRITE_ERROR)
+        // Устройство хранения закончило запись не успешно?
+        else if (m_pxStorageDevice -> GetFsmAnswerState() ==
+                 CStorageDeviceInterface::WRITE_DATA_ERROR)
         {
-            m_pxDataStore -> SetFsmState(CDataStore::READY);
+            m_pxStorageDevice -> SetFsmAnswerState(0);
             SetFsmState(DATA_STORE_CHECK_REPEAT);
+        }
+        else
+        {
+            // Время ожидания окончания записи закончилось?
+            if (GetTimerPointer() -> IsOverflow())
+            {
+                m_pxStorageDevice -> SetFsmAnswerState(0);
+                SetFsmState(DATA_STORE_CHECK_REPEAT);
+            }
         }
         break;
 
@@ -246,22 +247,23 @@ uint8_t CDataStoreCheck::Fsm(void)
         // Не будем проверять целостность и совпадение служебного блока, обновим сразу.
         // Обновим служебный блок.
 //            SetFsmEvent(WRITE_IN_PROGRESS_FSM_EVENT);
+        ServiceSectionWritePrepare();
+        // Установим время ожидания окончания записи.
+        GetTimerPointer() -> Set(WRITE_END_WAITING_TIMEOUT);
         // Запустим процесс записи служебного блока.
-        m_pxDataStore -> SetFsmState(CDataStore::START_WRITE_SERVICE_SECTION_DATA);
+//        m_pxDataStore -> SetFsmState(CDataStore::START_WRITE_SERVICE_SECTION_DATA);
         SetFsmState(SERVICE_SECTION_DATA_WRITE_END_WAITING);
         break;
 
     case SERVICE_SECTION_DATA_WRITE_END_WAITING:
-        // Ожидаем окончания записи автоматом хранилища.
-        // Служебный блок записан в хранилище?
-//            if (GetFsmEvent() == CDataStore::WRITE_OK_FSM_EVENT)
-//            {
-        if (m_pxDataStore -> Fsm() ==
-                CDataStore::DATA_WRITED_SUCCESSFULLY)
+        // Ожидаем окончания записи автоматом устройства хранения.
+        // Устройство хранения закончило запись успешно?
+        if (m_pxStorageDevice -> GetFsmAnswerState() ==
+                CStorageDeviceInterface::DATA_WRITED_SUCCESSFULLY)
         {
-            m_pxDataStore -> SetFsmState(CDataStore::READY);
+            m_pxStorageDevice -> SetFsmAnswerState(0);
             // Служебный блок не повреждён?
-            if (m_pxDataStore -> ReadServiceSection())
+            if (ReadServiceSection())
             {
                 SetFsmState(DATA_STORE_NEW_VERSION_ACCEPTED);
             }
@@ -270,22 +272,30 @@ uint8_t CDataStoreCheck::Fsm(void)
                 SetFsmState(DATA_STORE_CHECK_REPEAT);
             }
         }
-        // При записи блока произошла ошибка?
-//            else if (GetFsmEvent() == CDataStore::WRITE_ERROR_FSM_EVENT)
-//            {
-        else if (m_pxDataStore -> Fsm() ==
-                 CDataStore::WRITE_ERROR)
+        // Устройство хранения закончило запись не успешно?
+        else if (m_pxStorageDevice -> GetFsmAnswerState() ==
+                 CStorageDeviceInterface::WRITE_DATA_ERROR)
         {
-            m_pxDataStore -> SetFsmState(CDataStore::READY);
+            m_pxStorageDevice -> SetFsmAnswerState(0);
             SetFsmState(DATA_STORE_CHECK_REPEAT);
         }
+        else
+        {
+            // Время ожидания окончания записи закончилось?
+            if (GetTimerPointer() -> IsOverflow())
+            {
+                m_pxStorageDevice -> SetFsmAnswerState(0);
+                SetFsmState(DATA_STORE_CHECK_REPEAT);
+            }
+        }
+
         break;
 
     case SERVICE_SECTION_DATA_CHECK:
         // Мы здесь если временный служебный блок не связан с данными хранимых блоков(или повреждён).
         // Произошёл сбой во время записи. Попытаемся вернуть предыдущее состояние хранилища.
         // Служебный блок не повреждён?
-        if (m_pxDataStore -> ReadServiceSection())
+        if (ReadServiceSection())
         {
             SetFsmState(SERVICE_SECTION_LINKED_BLOCKS_CHECK);
         }
@@ -293,7 +303,7 @@ uint8_t CDataStoreCheck::Fsm(void)
         {
             std::cout << "CDataStoreCheck::Fsm 1"  << std::endl;
 //            std::cout << "CreateServiceSection" << std::endl;
-//            m_pxDataStore -> CreateServiceSection();
+//            CreateServiceSection();
             SetFsmState(DATA_STORE_CHECK_ERROR);
 //            SetFsmState(DATA_STORE_CHECK_START);
         }
@@ -302,11 +312,11 @@ uint8_t CDataStoreCheck::Fsm(void)
     case SERVICE_SECTION_LINKED_BLOCKS_CHECK:
         // Проверим связанность блоков хранилища со служебным блоком, а следовательно их целостность.
         for (uint16_t i = 0;
-                i < m_pxDataStore -> GetStoredBlocksNumber();
+                i < GetStoredBlocksNumber();
                 i++)
         {
             // Блок не связан со служебным буфером(или повреждён)?
-            if (!(m_pxDataStore -> ReadBlock(auiTempArray, i)))
+            if (!(ReadBlock(auiTempArray, i)))
             {
                 // Блок не связан со служебным буфером.
                 // Возможно произошла ошибка во время записи служебного блока.
@@ -324,9 +334,9 @@ uint8_t CDataStoreCheck::Fsm(void)
                     cout << "CHammingCodes::GetErrorCode 2 uiBlock" << (int)i << endl;
 
                     // Требуется повторная запись данных в хранилище.
-                    m_pxDataStore -> WriteBlock(auiTempArray,
-                                                m_pxDataStore -> GetBlockLength(i),
-                                                i);
+                    WriteBlock(auiTempArray,
+                               GetBlockLength(i),
+                               i);
 
                     SetFsmState(DATA_STORE_CHECK_ERROR);
                     break;
@@ -342,25 +352,29 @@ uint8_t CDataStoreCheck::Fsm(void)
 
     case DATA_STORE_NEW_VERSION_ACCEPTED:
         // Хранилище обновлено.
-//        cerr << "DATA_STORE_NEW_VERSION_ACCEPTED" << endl;
-//        SetFsmState(READY);
+        cerr << "DATA_STORE_NEW_VERSION_ACCEPTED" << endl;
+        SetFsmAnswerState(DATA_STORE_NEW_VERSION_ACCEPTED);
+        SetFsmState(READY);
         break;
 
     case DATA_STORE_OLD_VERSION_ACCEPTED:
         // Хранилище не обновлено.
-//        cerr << "DATA_STORE_OLD_VERSION_ACCEPTED" << endl;
-//        SetFsmState(READY);
+        cerr << "DATA_STORE_OLD_VERSION_ACCEPTED" << endl;
+        SetFsmAnswerState(DATA_STORE_OLD_VERSION_ACCEPTED);
+        SetFsmState(READY);
         break;
 
     case DATA_STORE_CHECK_OK:
-//        cerr << "DATA_STORE_CHECK_OK" << endl;
-//        SetFsmState(READY);
+        cerr << "DATA_STORE_CHECK_OK" << endl;
+        SetFsmAnswerState(DATA_STORE_CHECK_OK);
+        SetFsmState(READY);
         break;
 
     case DATA_STORE_CHECK_ERROR:
         // Хранилище повреждено.
-//        cerr << "DATA_STORE_CHECK_ERROR" << endl;
-//        SetFsmState(STOP);
+        cerr << "DATA_STORE_CHECK_ERROR" << endl;
+        SetFsmAnswerState(DATA_STORE_CHECK_ERROR);
+        SetFsmState(STOP);
         break;
 
     case DATA_STORE_CHECK_REPEAT:
