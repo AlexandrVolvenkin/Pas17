@@ -20,6 +20,8 @@ class CDfa;
 class CResourcesInterface;
 class CResources;
 class CDataContainerInterface;
+class CMessageBoxInterface;
+class CMessageBoxGeneral;
 
 //-------------------------------------------------------------------------------
 class CTaskInterface : public CDfa
@@ -32,6 +34,8 @@ public:
         START,
         INIT,
         READY,
+        DONE_OK,
+        DONE_ERROR,
         NEXT_STEP,
     };
 
@@ -51,7 +55,10 @@ public:
 //    virtual void SetTaskCustomerName(std::string sName);
     virtual char* GetTaskNamePointer(void) {};
     virtual std::shared_ptr<TArgumentData> GetArgumentDataPointer(void) {};
+    virtual void SetDataContainerPoiner(std::shared_ptr<CDataContainerInterface> pxDataContainer) {};
     virtual std::shared_ptr<CDataContainerInterface> GetDataContainerPointer(void) {};
+    virtual void SetMessageBoxPoiner(std::shared_ptr<CMessageBoxInterface> pxMessageBox) {};
+    virtual std::shared_ptr<CMessageBoxInterface> GetMessageBoxPointer(void) {};
     virtual void SetResources(CResources* pxResources) {};
     virtual CResources* GetResources(void) {};
     virtual void SetTaskCustomerName(std::string sName) {};
@@ -106,6 +113,10 @@ public:
     void SetResources(CResources* pxResources);
     CResources* GetResources(void);
     void SetTaskCustomerName(std::string sName);
+    void SetDataContainerPoiner(std::shared_ptr<CDataContainerInterface> pxDataContainer);
+    std::shared_ptr<CDataContainerInterface> GetDataContainerPointer(void);
+    void SetMessageBoxPoiner(std::shared_ptr<CMessageBoxInterface> pxMessageBox);
+    std::shared_ptr<CMessageBoxInterface> GetMessageBoxPointer(void);
 //    uint8_t Init(void);
     uint8_t Fsm(void);
 //    void AddCurrentlyRunningTask(CTaskInterface* pxTask);
@@ -116,7 +127,6 @@ public:
 
     char* GetTaskNamePointer(void);
     std::shared_ptr<TArgumentData> GetArgumentDataPointer(void);
-    std::shared_ptr<CDataContainerInterface> GetDataContainerPointer(void);
 
 public:
     char m_acTaskName[TASK_NAME_LENGTH] = {0};
@@ -128,6 +138,7 @@ public:
 //    TArgumentData* m_pxArgumentData;
     std::shared_ptr<TArgumentData> m_pxArgumentData;
     std::shared_ptr<CDataContainerInterface> m_pxDataContainer;
+    std::shared_ptr<CMessageBoxInterface> m_pxMessageBox;
 };
 
 //-------------------------------------------------------------------------------

@@ -317,7 +317,7 @@ uint8_t CDataStore::TemporaryServiceSectionWritePrepare(void)
 //                    uiEncodedByteCounter);
 
     return 1;
-//    if (m_pxStorageDevice -> WriteBlock(m_puiIntermediateBuff,
+    //    if (m_pxStorageDevice -> WriteBlock(m_puiIntermediateBuff,
 //                                        TEMPORARY_SERVICE_SECTION_DATA_BEGIN,
 //                                        uiEncodedByteCounter))
 //    {
@@ -353,18 +353,29 @@ uint8_t CDataStore::ServiceSectionWritePrepare(void)
         (static_cast<CDataContainerDataBase*>(m_pxStorageDevice ->
                 m_pxDataContainer.get()));
 
-    pxDataContainer ->
-    SetContainerData(CStorageDeviceInterface::WRITE_DATA_START,
-                     0,
-                     m_puiIntermediateBuff,
-                     TEMPORARY_SERVICE_SECTION_DATA_BEGIN,
-                     uiEncodedByteCounter);
-    m_pxStorageDevice ->
-    SetFsmCommandState(CStorageDeviceInterface::WRITE_DATA_START);
+//    pxDataContainer ->
+//    SetContainerData(CStorageDeviceInterface::WRITE_DATA_START,
+//                     0,
+//                     m_puiIntermediateBuff,
+//                     TEMPORARY_SERVICE_SECTION_DATA_BEGIN,
+//                     uiEncodedByteCounter);
+//    m_pxStorageDevice ->
+//    SetFsmCommandState(CStorageDeviceInterface::WRITE_DATA_START);
 
 //    SetArgumentData(m_puiIntermediateBuff,
 //                    SERVICE_SECTION_DATA_BEGIN,
 //                    uiEncodedByteCounter);
+
+    pxDataContainer ->
+    SetDataIndex(0);
+    pxDataContainer ->
+    SetDataPointer(m_puiIntermediateBuff);
+    pxDataContainer ->
+    SetDataOffset(TEMPORARY_SERVICE_SECTION_DATA_BEGIN);
+    pxDataContainer ->
+    SetDataLength(uiEncodedByteCounter);
+
+    m_pxStorageDevice -> WriteBlock(pxDataContainer);
 
     return 1;
 
@@ -575,15 +586,29 @@ uint8_t CDataStore::WriteBlock(uint8_t *puiSource, uint16_t uiLength, uint8_t ui
     CDataContainerDataBase* pxDataContainer =
         (static_cast<CDataContainerDataBase*>(m_pxDataContainer.get()));
 
-    // Получим данные контекста записи блока.
-    pxDataContainer ->
-    SetContainerData(START_WRITE_TEMPORARY_BLOCK_DATA,
-                     uiBlock,
-                     puiSource,
-                     0,
-                     uiLength);
+//    // Получим данные контекста записи блока.
+//    pxDataContainer ->
+//    SetContainerData(START_WRITE_TEMPORARY_BLOCK_DATA,
+//                     uiBlock,
+//                     puiSource,
+//                     0,
+//                     uiLength);
+//
+//    SetFsmCommandState(START_WRITE_TEMPORARY_BLOCK_DATA);
 
-    SetFsmCommandState(START_WRITE_TEMPORARY_BLOCK_DATA);
+    pxDataContainer ->
+    SetDataIndex(uiBlock);
+    pxDataContainer ->
+    SetDataPointer(puiSource);
+    pxDataContainer ->
+    SetDataOffset(0);
+    pxDataContainer ->
+    SetDataLength(uiLength);
+
+    m_pxStorageDevice -> WriteBlock(pxDataContainer);
+
+
+
 
 //    // Получим данные контекста записи блока.
 //    m_puiBlockDataPointer = puiSource;

@@ -8,17 +8,21 @@
 #ifndef CMESSAGEBOX_H
 #define CMESSAGEBOX_H
 
+#include <stdint.h>
+#include <memory>
 
 class CDataContainerInterface;
 
 //-------------------------------------------------------------------------------
 class CMessageBoxInterface
 {
-    public:
+public:
+    virtual void SetDataContainerPoiner(CDataContainerInterface* pxDataContainer) {};
+    virtual CDataContainerInterface* GetDataContainerPointer(void) {};
 
-    protected:
+protected:
 
-    private:
+private:
 };
 
 //-------------------------------------------------------------------------------
@@ -34,18 +38,11 @@ public:
     CMessageBoxGeneral();
     virtual ~CMessageBoxGeneral();
 
-    void SetMessage(uint16_t uiDataIndex,
-                          uint8_t *puiDataPointer,
-                          uint32_t uiDataOffset,
-                          uint32_t uiDataLength);
+    void SetDataContainerPoiner(CDataContainerInterface* pxDataContainer);
+    CDataContainerInterface* GetDataContainerPointer(void);
 
-private:
-    uint8_t m_uiFsmCommandState;
-    CDataContainerInterface* m_pxCommandDataPointer;
-    uint16_t m_uiDataIndex;
-    uint8_t* m_puiDataPointer;
-    uint32_t m_uiDataOffset;
-    uint32_t m_uiDataLength;
+public:
+    CDataContainerInterface* m_pxDataContainer;
 };
 
 //-------------------------------------------------------------------------------

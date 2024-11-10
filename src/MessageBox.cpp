@@ -22,3 +22,15 @@ CMessageBoxGeneral::~CMessageBoxGeneral()
 {
     //dtor
 }
+
+//-------------------------------------------------------------------------------
+void CMessageBoxGeneral::SetDataContainerPoiner(CDataContainerInterface* pxDataContainer)
+{
+    m_pxDataContainer = pxDataContainer;
+}
+
+//-------------------------------------------------------------------------------
+CDataContainerInterface* CMessageBoxGeneral::GetDataContainerPointer(void)
+{
+    return m_pxDataContainer;
+}

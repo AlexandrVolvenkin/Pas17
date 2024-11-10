@@ -14,6 +14,7 @@
 #include "Dfa.h"
 #include "Resources.h"
 #include "DataContainer.h"
+#include "MessageBox.h"
 #include "Task.h"
 
 ////-------------------------------------------------------------------------------
@@ -111,6 +112,24 @@ void CTask::SetTaskCustomerName(std::string sName)
 {
     m_sTaskCustomerName = sName;
 }
+
+//-------------------------------------------------------------------------------
+void CTask::SetDataContainerPoiner(std::shared_ptr<CDataContainerInterface> pxDataContainer)
+{
+    m_pxDataContainer = pxDataContainer;
+}
+
+//-------------------------------------------------------------------------------
+void CTask::SetMessageBoxPoiner(std::shared_ptr<CMessageBoxInterface> pxMessageBox)
+{
+    m_pxMessageBox = pxMessageBox;
+}
+
+//-------------------------------------------------------------------------------
+std::shared_ptr<CMessageBoxInterface> CTask::GetMessageBoxPointer(void)
+{
+    return m_pxMessageBox;
+};
 
 ////-------------------------------------------------------------------------------
 //uint8_t CTask::Init(void)

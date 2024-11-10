@@ -16,6 +16,7 @@
 #include "Resources.h"
 #include "DataStore.h"
 #include "DataContainer.h"
+#include "MessageBox.h"
 #include "StorageDevice.h"
 
 //-------------------------------------------------------------------------------
@@ -27,6 +28,8 @@ CStorageDeviceFileSystem::CStorageDeviceFileSystem()
             "%s",
             typeid(*this).name());
     m_pxDataContainer = std::make_shared<CDataContainerDataBase>();
+//    SetMessageBoxPoiner(std::make_shared<CMessageBoxGeneral>());
+    m_pxMessageBox = std::make_shared<CMessageBoxGeneral>();
     SetFsmState(START);
 }
 
@@ -76,8 +79,67 @@ void CStorageDeviceFileSystem::GetArgumentData(void)
 
 //-------------------------------------------------------------------------------
 // Передаёт данные контекста записи блока автомату устройства хранения и запускает процесс записи.
+bool CStorageDeviceFileSystem::WriteBlock(CDataContainerInterface* pxDataContainer)
+{
+    std::cout << "CStorageDeviceFileSystem WriteBlock 1"  << std::endl;
+    if (GetMessageBoxPointer() -> GetDataContainerPointer() == 0)
+    {
+        GetMessageBoxPointer() -> SetDataContainerPoiner(pxDataContainer);
+        SetFsmCommandState(WRITE_DATA_START);
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+
+//    CDataContainerDataBase* pxDataContainer =
+//        (static_cast<CDataContainerDataBase*>(m_pxDataContainer.get()));
+//    uint8_t uiBlock = pxDataContainer -> m_uiDataIndex;
+//    uint8_t *puiSource = pxDataContainer -> m_puiDataPointer;
+////    uint16_t uiOffset = pxDataContainer -> m_uiDataOffset;
+//    uint16_t uiLength = pxDataContainer -> m_uiDataLength
+//
+//    pxDataContainer =
+//        (static_cast<CDataContainerDataBase*>(m_pxStorageDevice ->
+//                m_pxDataContainer.get()));
+//
+//    pxDataContainer ->
+//    SetContainerData(CStorageDeviceInterface::WRITE_DATA_START,
+//                     uiBlock,
+//                     m_puiIntermediateBuff,
+//                     TEMPORARY_BLOCK_DATA_BEGIN,
+//                     uiEncodedByteCounter);
+//    m_pxStorageDevice ->
+//    SetFsmCommandState(CStorageDeviceInterface::WRITE_DATA_START);
+}
+
+//-------------------------------------------------------------------------------
+// Передаёт данные контекста записи блока автомату устройства хранения и запускает процесс записи.
 bool CStorageDeviceFileSystem::WriteBlock(uint8_t *puiSource, uint16_t uiOffset, uint16_t uiLength)
 {
+//    CDataContainerDataBase* pxDataContainer =
+//        (static_cast<CDataContainerDataBase*>(m_pxDataContainer.get()));
+//    uint8_t uiBlock = pxDataContainer -> m_uiDataIndex;
+//    uint8_t *puiSource = pxDataContainer -> m_puiDataPointer;
+////    uint16_t uiOffset = pxDataContainer -> m_uiDataOffset;
+//    uint16_t uiLength = pxDataContainer -> m_uiDataLength
+//
+//    pxDataContainer =
+//        (static_cast<CDataContainerDataBase*>(m_pxStorageDevice ->
+//                m_pxDataContainer.get()));
+//
+//    pxDataContainer ->
+//    SetContainerData(CStorageDeviceInterface::WRITE_DATA_START,
+//                     uiBlock,
+//                     m_puiIntermediateBuff,
+//                     TEMPORARY_BLOCK_DATA_BEGIN,
+//                     uiEncodedByteCounter);
+//    m_pxStorageDevice ->
+//    SetFsmCommandState(CStorageDeviceInterface::WRITE_DATA_START);
+
+
+
     std::cout << "CStorageDeviceFileSystem WriteBlock uiOffset " << (int)uiOffset  << std::endl;
     std::cout << "CStorageDeviceFileSystem WriteBlock uiLength " << (int)uiLength  << std::endl;
     if ((GetFsmState() == READY) ||
@@ -248,30 +310,41 @@ uint8_t CStorageDeviceFileSystem::Fsm(void)
 
     case INIT:
         //std::cout << "CStorageDeviceFileSystem::Fsm INIT"  << std::endl;
+        GetMessageBoxPointer() -> SetDataContainerPoiner(0);
         SetFsmState(READY);
         break;
 
     case READY:
         //std::cout << "CStorageDeviceFileSystem::Fsm READY"  << std::endl;
     {
-////        // Создание промежуточного указателя
-////        std::unique_ptr<CDataContainerDataBase> pxDataContainer = m_pxDataContainer; // Указатель на объект CDataContainerDataBase
-//        CDataContainerDataBase* pxDataContainer =
-//            (static_cast<CDataContainerDataBase*>(m_pxDataContainer.get()));
-
-//        if (pxDataContainer -> m_uiFsmCommandState != 0)
-//        {
-//            SetFsmState(pxDataContainer -> m_uiFsmCommandState);
-//            pxDataContainer -> m_uiFsmCommandState = 0;
-//        }
-
-        if (GetFsmCommandState() != 0)
+        if (GetMessageBoxPointer() -> GetDataContainerPointer() != 0)
         {
+            CDataContainerDataBase* pxDataContainer =
+                (static_cast<CDataContainerDataBase*>(GetDataContainerPointer().get()));
+
+            pxDataContainer -> SetContainerData(GetMessageBoxPointer() -> GetDataContainerPointer());
             SetFsmState(GetFsmCommandState());
             SetFsmCommandState(0);
+            GetMessageBoxPointer() -> SetDataContainerPoiner(0);
         }
+
+//            if (GetFsmCommandState() != 0)
+//            {
+//                SetFsmState(GetFsmCommandState());
+//                SetFsmCommandState(0);
+//            }
     }
     break;
+
+    case DONE_OK:
+        //std::cout << "CStorageDeviceFileSystem::Fsm DONE_OK"  << std::endl;
+        SetFsmAnswerState(DONE_OK);
+        SetFsmState(READY);
+
+    case DONE_ERROR:
+        //std::cout << "CStorageDeviceFileSystem::Fsm DONE_ERROR"  << std::endl;
+        SetFsmAnswerState(DONE_ERROR);
+        SetFsmState(READY);
 
     case WRITE_DATA_START:
         std::cout << "CMainProductionCycle::Fsm WRITE_DATA_START"  << std::endl;

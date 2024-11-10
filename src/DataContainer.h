@@ -15,6 +15,7 @@
 class CDataContainerInterface
 {
 public:
+    virtual void SetContainerData(CDataContainerInterface* pxDataContainer) {};
     virtual void SetContainerData(uint8_t uiFsmCommandState,
                                   uint16_t uiDataIndex,
                                   uint8_t *puiDataPointer,
@@ -39,6 +40,22 @@ public:
     CDataContainerDataBase();
     virtual ~CDataContainerDataBase();
 
+    void SetFsmCommandState(uint8_t value);
+    uint8_t GetFsmCommandState() const;
+
+    void SetDataIndex(uint16_t value);
+    uint16_t GetDataIndex() const;
+
+    void SetDataPointer(uint8_t* value);
+    uint8_t* GetDataPointer() const;
+
+    void SetDataOffset(uint32_t value);
+    uint32_t GetDataOffset() const;
+
+    void SetDataLength(uint32_t value);
+    uint32_t GetDataLength() const;
+
+    void SetContainerData(CDataContainerInterface* pxDataContainer);
     void SetContainerData(uint8_t uiFsmCommandState,
                           uint16_t uiDataIndex,
                           uint8_t *puiDataPointer,
