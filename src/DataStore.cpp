@@ -183,7 +183,6 @@ const unsigned char aucDataBaseBlockLength[CDataStore::MAX_BLOCKS_NUMBER] =
 CDataStore::CDataStore()
 {
     std::cout << "CDataStore constructor"  << std::endl;
-    // РїРѕР»СѓС‡РёРј РёРјСЏ РєР»Р°СЃСЃР°.
     sprintf(GetTaskNamePointer(),
             "%s",
             typeid(*this).name());
@@ -200,7 +199,6 @@ CDataStore::CDataStore(CStorageDeviceInterface* pxStorageDevice) :
 {
     m_puiIntermediateBuff = new uint8_t[CDataStore::MAX_SERVICE_SECTION_DATA_LENGTH];
     SetFsmState(IDDLE);
-//    SetSavedFsmState(IDDLE);
 }
 
 //-------------------------------------------------------------------------------
@@ -304,31 +302,24 @@ uint8_t CDataStore::TemporaryServiceSectionWritePrepare(void)
                 m_pxDataContainer.get()));
 
     pxDataContainer ->
-    SetContainerData(CStorageDeviceInterface::WRITE_DATA_START,
-                     0,
-                     m_puiIntermediateBuff,
-                     TEMPORARY_SERVICE_SECTION_DATA_BEGIN,
-                     uiEncodedByteCounter);
-    m_pxStorageDevice ->
-    SetFsmCommandState(CStorageDeviceInterface::WRITE_DATA_START);
+    SetDataIndex(0);
+    pxDataContainer ->
+    SetDataPointer(m_puiIntermediateBuff);
+    pxDataContainer ->
+    SetDataOffset(TEMPORARY_SERVICE_SECTION_DATA_BEGIN);
+    pxDataContainer ->
+    SetDataLength(uiEncodedByteCounter);
 
-//    SetArgumentData(m_puiIntermediateBuff,
-//                    TEMPORARY_SERVICE_SECTION_DATA_BEGIN,
-//                    uiEncodedByteCounter);
-
-    return 1;
-    //    if (m_pxStorageDevice -> WriteBlock(m_puiIntermediateBuff,
-//                                        TEMPORARY_SERVICE_SECTION_DATA_BEGIN,
-//                                        uiEncodedByteCounter))
-//    {
-//        std::cout << "CDataStore::TemporaryServiceSectionWritePrepare 4"  << std::endl;
-//        return 1;
-//    }
-//    else
-//    {
-//        std::cout << "CDataStore::TemporaryServiceSectionWritePrepare 5"  << std::endl;
-//        return 0;
-//    }
+    if (m_pxStorageDevice -> WriteBlock(pxDataContainer))
+    {
+        std::cout << "CDataStore::TemporaryServiceSectionWritePrepare 4"  << std::endl;
+        return 1;
+    }
+    else
+    {
+        std::cout << "CDataStore::TemporaryServiceSectionWritePrepare 5"  << std::endl;
+        return 0;
+    }
 }
 
 //-------------------------------------------------------------------------------
@@ -353,42 +344,23 @@ uint8_t CDataStore::ServiceSectionWritePrepare(void)
         (static_cast<CDataContainerDataBase*>(m_pxStorageDevice ->
                 m_pxDataContainer.get()));
 
-//    pxDataContainer ->
-//    SetContainerData(CStorageDeviceInterface::WRITE_DATA_START,
-//                     0,
-//                     m_puiIntermediateBuff,
-//                     TEMPORARY_SERVICE_SECTION_DATA_BEGIN,
-//                     uiEncodedByteCounter);
-//    m_pxStorageDevice ->
-//    SetFsmCommandState(CStorageDeviceInterface::WRITE_DATA_START);
-
-//    SetArgumentData(m_puiIntermediateBuff,
-//                    SERVICE_SECTION_DATA_BEGIN,
-//                    uiEncodedByteCounter);
-
     pxDataContainer ->
     SetDataIndex(0);
     pxDataContainer ->
     SetDataPointer(m_puiIntermediateBuff);
     pxDataContainer ->
-    SetDataOffset(TEMPORARY_SERVICE_SECTION_DATA_BEGIN);
+    SetDataOffset(SERVICE_SECTION_DATA_BEGIN);
     pxDataContainer ->
     SetDataLength(uiEncodedByteCounter);
 
-    m_pxStorageDevice -> WriteBlock(pxDataContainer);
-
-    return 1;
-
-    //    if (m_pxStorageDevice -> WriteBlock(m_puiIntermediateBuff,
-//                                        SERVICE_SECTION_DATA_BEGIN,
-//                                        uiEncodedByteCounter))
-//    {
-//        return 1;
-//    }
-//    else
-//    {
-//        return 0;
-//    }
+    if (m_pxStorageDevice -> WriteBlock(pxDataContainer))
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
 }
 
 //-------------------------------------------------------------------------------
@@ -406,10 +378,6 @@ uint8_t CDataStore::TemporaryBlockWritePrepare(void)
 //    uint16_t uiOffset = pxDataContainer -> m_uiDataOffset;
     uint16_t uiLength = pxDataContainer -> m_uiDataLength;
     std::cout << "CDataStore::TemporaryBlockWritePrepare 1 uiBlock"  <<  (uiBlock) << std::endl;
-
-//    uint8_t uiBlock = m_uiBlockIndex;
-//    uint8_t* puiSource = m_puiBlockDataPointer;
-//    uint16_t uiLength = m_uiBlockLength;
 
     // Звкодируем данные алгоритмом Хемминга.
     uint16_t uiEncodedByteCounter =
@@ -443,36 +411,29 @@ uint8_t CDataStore::TemporaryBlockWritePrepare(void)
     axBlockPositionData[uiBlock].uiCrc =
         usCrc16(puiSource, uiLength);
 
-//    SetArgumentData(m_puiIntermediateBuff,
-//                    TEMPORARY_BLOCK_DATA_BEGIN,
-//                    uiEncodedByteCounter);
-
     pxDataContainer =
         (static_cast<CDataContainerDataBase*>(m_pxStorageDevice ->
                 m_pxDataContainer.get()));
 
     pxDataContainer ->
-    SetContainerData(CStorageDeviceInterface::WRITE_DATA_START,
-                     uiBlock,
-                     m_puiIntermediateBuff,
-                     TEMPORARY_BLOCK_DATA_BEGIN,
-                     uiEncodedByteCounter);
-    m_pxStorageDevice ->
-    SetFsmCommandState(CStorageDeviceInterface::WRITE_DATA_START);
+    SetDataIndex(uiBlock);
+    pxDataContainer ->
+    SetDataPointer(m_puiIntermediateBuff);
+    pxDataContainer ->
+    SetDataOffset(TEMPORARY_BLOCK_DATA_BEGIN);
+    pxDataContainer ->
+    SetDataLength(uiEncodedByteCounter);
 
-    return 1;
-    //    if (m_pxStorageDevice -> WriteBlock(m_puiIntermediateBuff,
-//                                        TEMPORARY_BLOCK_DATA_BEGIN,
-//                                        uiEncodedByteCounter))
-//    {
-//        std::cout << "CDataStore::TemporaryBlockWritePrepare 3"  << std::endl;
-//        return 1;
-//    }
-//    else
-//    {
-//        std::cout << "CDataStore::TemporaryBlockWritePrepare 4"  << std::endl;
-//        return 0;
-//    }
+    if (m_pxStorageDevice -> WriteBlock(pxDataContainer))
+    {
+        std::cout << "CDataStore::TemporaryBlockWritePrepare 3"  << std::endl;
+        return 1;
+    }
+    else
+    {
+        std::cout << "CDataStore::TemporaryBlockWritePrepare 4"  << std::endl;
+        return 0;
+    }
 }
 
 //-------------------------------------------------------------------------------
@@ -490,10 +451,6 @@ uint8_t CDataStore::BlockWritePrepare(void)
 //    uint16_t uiOffset = pxDataContainer -> m_uiDataOffset;
     uint16_t uiLength = pxDataContainer -> m_uiDataLength;
     std::cout << "CDataStore::BlockWritePrepare 1 uiBlock"  <<  (uiBlock) << std::endl;
-
-//    uint8_t uiBlock = m_uiBlockIndex;
-//    uint8_t* puiSource = m_puiBlockDataPointer;
-//    uint16_t uiLength = m_uiBlockLength;
 
     // Звкодируем данные алгоритмом Хемминга.
     uint16_t uiEncodedByteCounter =
@@ -534,33 +491,27 @@ uint8_t CDataStore::BlockWritePrepare(void)
                 m_pxDataContainer.get()));
 
     pxDataContainer ->
-    SetContainerData(CStorageDeviceInterface::WRITE_DATA_START,
-                     uiBlock,
-                     m_puiIntermediateBuff,
-                     m_xServiseSection.xServiseSectionData.
-                     axBlockPositionData[uiBlock].uiOffset,
-                     uiEncodedByteCounter);
-    m_pxStorageDevice ->
-    SetFsmCommandState(CStorageDeviceInterface::WRITE_DATA_START);
+    SetDataIndex(uiBlock);
+    pxDataContainer ->
+    SetDataPointer(m_puiIntermediateBuff);
+    pxDataContainer ->
+    SetDataOffset(m_xServiseSection.xServiseSectionData.
+                  axBlockPositionData[uiBlock].uiOffset);
+    pxDataContainer ->
+    SetDataLength(uiEncodedByteCounter);
 
-//    SetArgumentData(m_puiIntermediateBuff,
-//                    m_xServiseSection.xServiseSectionData.
-//                    axBlockPositionData[uiBlock].uiOffset,
-//                    uiEncodedByteCounter);
+    m_pxStorageDevice -> WriteBlock(pxDataContainer);
 
     return 1;
 
-//    if (m_pxStorageDevice -> WriteBlock(m_puiIntermediateBuff,
-//                                        m_xServiseSection.xServiseSectionData.
-//                                        axBlockPositionData[uiBlock].uiOffset,
-//                                        uiEncodedByteCounter))
-//    {
-//        return 1;
-//    }
-//    else
-//    {
-//        return 0;
-//    }
+    if (m_pxStorageDevice -> WriteBlock(pxDataContainer))
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
 }
 
 //-------------------------------------------------------------------------------
@@ -586,34 +537,15 @@ uint8_t CDataStore::WriteBlock(uint8_t *puiSource, uint16_t uiLength, uint8_t ui
     CDataContainerDataBase* pxDataContainer =
         (static_cast<CDataContainerDataBase*>(m_pxDataContainer.get()));
 
-//    // Получим данные контекста записи блока.
-//    pxDataContainer ->
-//    SetContainerData(START_WRITE_TEMPORARY_BLOCK_DATA,
-//                     uiBlock,
-//                     puiSource,
-//                     0,
-//                     uiLength);
-//
-//    SetFsmCommandState(START_WRITE_TEMPORARY_BLOCK_DATA);
-
+    // Получим данные контекста записи блока.
     pxDataContainer ->
-    SetDataIndex(uiBlock);
-    pxDataContainer ->
-    SetDataPointer(puiSource);
-    pxDataContainer ->
-    SetDataOffset(0);
-    pxDataContainer ->
-    SetDataLength(uiLength);
+    SetContainerData(START_WRITE_TEMPORARY_BLOCK_DATA,
+                     uiBlock,
+                     puiSource,
+                     0,
+                     uiLength);
 
-    m_pxStorageDevice -> WriteBlock(pxDataContainer);
-
-
-
-
-//    // Получим данные контекста записи блока.
-//    m_puiBlockDataPointer = puiSource;
-//    m_uiBlockLength = uiLength;
-//    m_uiBlockIndex = uiBlock;
+    SetFsmCommandState(START_WRITE_TEMPORARY_BLOCK_DATA);
 
     return 1;
 }
@@ -745,8 +677,6 @@ uint8_t CDataStore::CheckTemporaryBlock(void)
 ////    uint16_t uiOffset = pxDataContainer -> m_uiDataOffset;
 //    uint16_t uiLength = pxDataContainer -> m_uiDataLength;
 
-//    uint8_t uiBlock = m_uiBlockIndex;
-
     // Произошёл выход за границы буфера?
     if (uiBlock >= MAX_BLOCKS_NUMBER)
     {
@@ -845,8 +775,6 @@ uint8_t CDataStore::CheckBlock(void)
 //    uint8_t *puiSource = pxDataContainer -> m_puiDataPointer;
 ////    uint16_t uiOffset = pxDataContainer -> m_uiDataOffset;
 //    uint16_t uiLength = pxDataContainer -> m_uiDataLength;
-//
-//    uint8_t uiBlock = m_uiBlockIndex;
 
     // Произошёл выход за границы буфера?
     if (uiBlock >= MAX_BLOCKS_NUMBER)
