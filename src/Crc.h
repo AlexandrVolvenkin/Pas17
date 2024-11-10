@@ -1,4 +1,4 @@
-#ifndef CRC_H_INCLUDED
+﻿#ifndef CRC_H_INCLUDED
 #define CRC_H_INCLUDED
 
 

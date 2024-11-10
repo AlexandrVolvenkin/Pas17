@@ -1,4 +1,4 @@
-//-------------------------------------------------------------------------------
+﻿//-------------------------------------------------------------------------------
 //  Source      : FileName.cpp
 //  Created     : 01.06.2022
 //  Author      : Alexandr Volvenkin
@@ -11,8 +11,8 @@
 #include <stdint.h>
 
 #include "Platform.h"
+//class CPlatform;
 
-//class CTimeMeasure
 //-------------------------------------------------------------------------------
 class CTimer// : public CTimeMeasure
 {

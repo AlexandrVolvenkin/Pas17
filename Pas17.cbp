@@ -13,6 +13,11 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
+					<Add directory="src" />
+					<Add directory="src/Modbus" />
+					<Add directory="./" />
+					<Add directory="Pas17/src" />
+					<Add directory="Pas17/src/CommunicationDevice" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
@@ -22,6 +27,11 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O2" />
+					<Add directory="src" />
+					<Add directory="src/Modbus" />
+					<Add directory="./" />
+					<Add directory="Pas17/src" />
+					<Add directory="Pas17/src/CommunicationDevice" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -31,20 +41,81 @@
 		<Compiler>
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
+			<Add directory="src" />
+			<Add directory="src/Modbus" />
 		</Compiler>
+		<Unit filename="../Текущие задачиPas17.txt" />
+		<Unit filename="../структ и протоколы/структ и прот ПАС-17.txt" />
+		<Unit filename="src/CommunicationDevice/CommunicationDevice.cpp" />
+		<Unit filename="src/CommunicationDevice/CommunicationDevice.h" />
+		<Unit filename="src/CommunicationDevice/SerialPortCommunicationDevice.cpp" />
+		<Unit filename="src/CommunicationDevice/SerialPortCommunicationDevice.h" />
+		<Unit filename="src/CommunicationDevice/TcpCommunicationDevice.cpp" />
+		<Unit filename="src/CommunicationDevice/TcpCommunicationDevice.h" />
 		<Unit filename="src/Configuration.h" />
+		<Unit filename="src/ConfigurationCreate.cpp" />
+		<Unit filename="src/ConfigurationCreate.h" />
 		<Unit filename="src/Crc.cpp" />
 		<Unit filename="src/Crc.h" />
+		<Unit filename="src/DataContainer.cpp" />
+		<Unit filename="src/DataContainer.h" />
+		<Unit filename="src/DataStore.cpp" />
+		<Unit filename="src/DataStore.h" />
+		<Unit filename="src/DataStoreCheck.cpp" />
+		<Unit filename="src/DataStoreCheck.h" />
+		<Unit filename="src/DeviceControl.cpp" />
+		<Unit filename="src/DeviceControl.h" />
 		<Unit filename="src/Dfa.cpp" />
 		<Unit filename="src/Dfa.h" />
+		<Unit filename="src/EveDisplay/EVE_CMD.cpp" />
+		<Unit filename="src/EveDisplay/EVE_CMD.h" />
+		<Unit filename="src/EveDisplay/EVE_HAL.cpp" />
+		<Unit filename="src/EveDisplay/EVE_HAL.h" />
+		<Unit filename="src/EveDisplay/EVE_Resources.h" />
+		<Unit filename="src/EveDisplay/Hardware.cpp" />
+		<Unit filename="src/EveDisplay/Hardware.h" />
+		<Unit filename="src/EveDisplay/USPI.cpp" />
+		<Unit filename="src/EveDisplay/USPI.h" />
+		<Unit filename="src/HammingCodes.cpp" />
+		<Unit filename="src/HammingCodes.h" />
+		<Unit filename="src/InternalModule.cpp" />
+		<Unit filename="src/InternalModule.h" />
+		<Unit filename="src/InternalModuleMuvr.cpp" />
+		<Unit filename="src/InternalModuleMuvr.h" />
 		<Unit filename="src/MainProductionCycle.cpp" />
 		<Unit filename="src/MainProductionCycle.h" />
+		<Unit filename="src/MessageBox.cpp" />
+		<Unit filename="src/MessageBox.h" />
+		<Unit filename="src/Modbus/Modbus.h" />
+		<Unit filename="src/Modbus/ModbusMaster.cpp" />
+		<Unit filename="src/Modbus/ModbusMaster.h" />
+		<Unit filename="src/Modbus/ModbusMasterLinkLayer.cpp" />
+		<Unit filename="src/Modbus/ModbusMasterLinkLayer.h" />
+		<Unit filename="src/Modbus/ModbusRtuMasterLinkLayer.cpp" />
+		<Unit filename="src/Modbus/ModbusRtuMasterLinkLayer.h" />
+		<Unit filename="src/Modbus/ModbusRtuSlaveLinkLayer.cpp" />
+		<Unit filename="src/Modbus/ModbusRtuSlaveLinkLayer.h" />
+		<Unit filename="src/Modbus/ModbusSlave.cpp" />
+		<Unit filename="src/Modbus/ModbusSlave.h" />
+		<Unit filename="src/Modbus/ModbusSlaveLinkLayer.cpp" />
+		<Unit filename="src/Modbus/ModbusSlaveLinkLayer.h" />
+		<Unit filename="src/Modbus/ModbusTcpMasterLinkLayer.cpp" />
+		<Unit filename="src/Modbus/ModbusTcpMasterLinkLayer.h" />
+		<Unit filename="src/Modbus/ModbusTcpSlaveLinkLayer.cpp" />
+		<Unit filename="src/Modbus/ModbusTcpSlaveLinkLayer.h" />
+		<Unit filename="src/Modbus/errno-base.h" />
 		<Unit filename="src/Platform.cpp" />
 		<Unit filename="src/Platform.h" />
-		<Unit filename="src/Production.cpp" />
-		<Unit filename="src/Production.h" />
+		<Unit filename="src/Resources.cpp" />
+		<Unit filename="src/Resources.h" />
+		<Unit filename="src/ServiceMarket.cpp" />
+		<Unit filename="src/ServiceMarket.h" />
+		<Unit filename="src/StorageDevice.cpp" />
+		<Unit filename="src/StorageDevice.h" />
 		<Unit filename="src/Task.cpp" />
 		<Unit filename="src/Task.h" />
+		<Unit filename="src/TaskManager.cpp" />
+		<Unit filename="src/TaskManager.h" />
 		<Unit filename="src/Timer.cpp" />
 		<Unit filename="src/Timer.h" />
 		<Unit filename="src/main.cpp" />

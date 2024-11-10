@@ -1,4 +1,4 @@
-//-------------------------------------------------------------------------------
+﻿//-------------------------------------------------------------------------------
 //  Source      : FileName.cpp
 //  Created     : 01.06.2022
 //  Author      : Alexandr Volvenkin
@@ -12,13 +12,29 @@
 #include <string.h>
 
 #include "Platform.h"
-#include "Task.h"
-#include "Production.h"
+#include "Resources.h"
+#include "ServiceMarket.h"
+#include "DataStore.h"
+#include "DeviceControl.h"
+#include "InternalModule.h"
+//#include "Task.h"
+//#include "Production.h"
+//#include "ModbusTcp.h"
+#include "ModbusSlave.h"
+#include "ModbusSlaveLinkLayer.h"
+#include "ModbusTcpSlaveLinkLayer.h"
+#include "ModbusRtuSlaveLinkLayer.h"
 
+class CTask;
+//class CResources;
 class CLedBlinker;
+class CConfigurationCreate;
+class CDataStoreCheck;
+//class CDataStore;
+//class CDeviceControl;
 
 //-------------------------------------------------------------------------------
-class CMainProductionCycle : public CTask//,public CDfa
+class CMainProductionCycle : public CTask//, public CDfa
 {
 public:
 
@@ -29,42 +45,76 @@ public:
 
     enum
     {
-        START = 0,
-        READY,
-        IDDLE,
-        STOP,
+        DATABASE_CHECK_TASK_READY_CHECK = NEXT_STEP,
+        DATABASE_CHECK_TASK_READY_WAITING,
+        DATABASE_CHECK_BEGIN,
+        DATABASE_CHECK_END_WAITING,
+        DATABASE_CHECK_RECAVERY_END_WAITING,
+        DATABASE_CHECK_END_OK,
+        DATABASE_CHECK_END_ERROR,
+
+        MAIN_CYCLE_MODBUS_SLAVE,
         LED_BLINK_ON,
         LED_BLINK_OFF,
-
     };
 
     CMainProductionCycle();
     virtual ~CMainProductionCycle();
 
-    std::list<CTaskInterface*>* GetCommonTasksListPointer(void)
-    {
-        return &m_lpxCommonTasksList;
-    };
+//    std::list<CTaskInterface*>* GetCommonTasksListPointer(void)
+//    {
+//        return &m_lpxCommonTasksList;
+//    };
+//
+//    std::list<CTaskInterface*>* GetCurrentlyRunningTasksListPointer(void)
+//    {
+//        return &m_lpxCurrentlyRunningTasksList;
+//    };
 
-    std::list<CTaskInterface*>* GetCurrentlyRunningTasksListPointer(void)
-    {
-        return &m_lpxCurrentlyRunningTasksList;
-    };
-
-    uint8_t Init(void);
+    uint8_t CreateTasks(void);
+    uint8_t InitTasks(void);
+    void CurrentlyRunningTasksExecution(void);
     uint8_t Fsm(void);
 
 private:
-    std::list<CTaskInterface*> m_lpxCommonTasksList;
-    std::list<CTaskInterface*>::iterator m_xCommonTasksListIterator;
-    std::list<CTaskInterface*> m_lpxCurrentlyRunningTasksList;
-    std::list<CTaskInterface*>::iterator m_xCurrentlyRunningTasksListIterator;
+//    std::list<CTaskInterface*> m_lpxCommonTasksList;
+//    std::list<CTaskInterface*>::iterator m_xCommonTasksListIterator;
+//    std::list<CTaskInterface*> m_lpxCurrentlyRunningTasksList;
+//    std::list<CTaskInterface*>::iterator m_xCurrentlyRunningTasksListIterator;
+
+    CResources m_xResources;
+//    CDeviceControl m_xDeviceControl;
+    CDataStore* m_pxDataStoreFileSystem;
+    CDataStoreCheck* m_pxDataStoreCheck;
+
+    CSpi* m_pxSpiCommunicationDevice;
+    CInternalModuleInterface* m_pxInternalModule;
+    CInternalModuleInterface* m_pxInternalModuleMuvr;
+
+    CConfigurationCreate* m_pxConfigurationCreate;
+
+    CServiceMarket* m_pxServiceMarket;
 
     CLedBlinker* m_pxLedBlinker;
     // создадим указатель на объект
     // "производственная площадка задачи ожидания событий"
-    CProductionInterface* m_pxFileDescriptorEventsWaitingProduction;
+//    CProductionInterface* m_pxFileDescriptorEventsWaitingProduction;
+//    CModbusTcpSlaveTopLevelProduction* m_pxModusTcpSlaveTopLevelProduction;
+    CModbusTcpSlaveLinkLayer* m_pxModbusTcpSlaveLinkLayerUpperLevel;
+    CModbusSlave* m_pxModbusTcpSlaveUpperLevel;
 
+//    CModbusRtuSlaveTopLevelProduction* m_pxModusRtuSlaveTopLevelProduction;
+    CModbusRtuSlaveLinkLayer* m_pxModbusRtuSlaveLinkLayerUpperLevel;
+    CModbusSlave* m_pxModbusRtuSlaveUpperLevel;
+
+    uint8_t *m_puiCoils;
+    uint8_t *m_puiDiscreteInputs;
+    uint16_t *m_puiHoldingRegisters;
+    uint16_t *m_puiInputRegisters;
+    uint16_t m_uiCoilsNumber;
+    uint16_t m_uiDiscreteInputsNumber;
+    uint16_t m_uiHoldingRegistersNumber;
+    uint16_t m_uiInputRegistersNumber;
 };
 //-------------------------------------------------------------------------------
 
@@ -73,7 +123,7 @@ private:
 
 
 //-------------------------------------------------------------------------------
-class CLedBlinker : public CTask//,public CDfa
+class CLedBlinker : public CTask//, public CDfa
 {
 public:
 
@@ -84,11 +134,7 @@ public:
 
     enum
     {
-        START = 0,
-        READY,
-        IDDLE,
-        STOP,
-        LED_ON,
+        LED_ON = NEXT_STEP,
         LED_ON_PERIOD_END_WAITING,
         LED_OFF,
         LED_OFF_PERIOD_END_WAITING,

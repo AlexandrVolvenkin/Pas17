@@ -1,4 +1,4 @@
-#ifndef _ASM_GENERIC_ERRNO_BASE_H
+﻿#ifndef _ASM_GENERIC_ERRNO_BASE_H
 #define _ASM_GENERIC_ERRNO_BASE_H
 
 #define	EPERM		 1	/* Operation not permitted */

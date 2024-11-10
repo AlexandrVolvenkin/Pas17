@@ -1,4 +1,4 @@
-//-------------------------------------------------------------------------------
+﻿//-------------------------------------------------------------------------------
 //  Source      : FileName.cpp
 //  Created     : 01.06.2022
 //  Author      : Alexandr Volvenkin
@@ -57,9 +57,10 @@
 #include <sys/ioctl.h>
 
 #include "Configuration.h"
-#include "Timer.h"
 
 //#define SOCKET uint32_t
+
+//class CTimer;
 
 //-------------------------------------------------------------------------------
 class CCommunicationDeviceInterface
@@ -90,6 +91,12 @@ public:
     virtual void CloseClient(void) {};
     virtual int16_t Write(uint8_t* puiDestination, uint16_t uiLength) {};
     virtual int16_t Read(uint8_t* puiSource, uint16_t uiLength) {};
+    virtual int16_t ReceiveStart(uint8_t *puiDestination,
+                                 uint16_t uiLength,
+                                 uint32_t uiReceiveTimeout) {};
+    virtual int16_t ReceiveContinue(uint8_t *puiDestination,
+                                    uint16_t uiLength,
+                                    uint32_t uiReceiveTimeout) {};
     virtual int Exchange(uint8_t uiAddress,
                          unsigned char* pucTxBuff,
                          unsigned char* pucRxBuff,
@@ -188,6 +195,12 @@ public:
 //    bool IsDataAvailable(void);
     int16_t Write(uint8_t* puiDestination, uint16_t uiLength);
     int16_t Read(uint8_t* puiSource, uint16_t uiLength);
+    int16_t ReceiveStart(uint8_t *puiDestination,
+                         uint16_t uiLength,
+                         uint32_t uiReceiveTimeout);
+    int16_t ReceiveContinue(uint8_t *puiDestination,
+                            uint16_t uiLength,
+                            uint32_t uiReceiveTimeout);
     int Exchange(uint8_t uiAddress,
                  unsigned char *pucTxBuff,
                  unsigned char *pucRxBuff,
@@ -253,6 +266,7 @@ public:
     void SetPort(uint16_t uiPort);
     int8_t Listen(void);
     int8_t Accept(void);
+//    int8_t Accept(uint32_t uiBlockingTime);
     int8_t Connect(void);
     int8_t Open(void);
     int8_t Close(void);
@@ -261,6 +275,12 @@ public:
 //    bool IsDataAvailable(void);
     int16_t Write(uint8_t* puiDestination, uint16_t uiLength);
     int16_t Read(uint8_t* puiSource, uint16_t uiLength);
+    int16_t ReceiveStart(uint8_t *puiDestination,
+                         uint16_t uiLength,
+                         uint32_t uiReceiveTimeout);
+    int16_t ReceiveContinue(uint8_t *puiDestination,
+                            uint16_t uiLength,
+                            uint32_t uiReceiveTimeout);
     int Exchange(uint8_t uiAddress,
                  unsigned char *pucTxBuff,
                  unsigned char *pucRxBuff,
@@ -393,7 +413,7 @@ public:
 #define SPI_MODE SPI_MODE_0
 #define SPI_MODE32 SPI_3WIRE
 #define BITS_PER_WORD 8
-#define SPEED_IN_HZ 150000UL
+#define SPEED_IN_HZ 15000UL
 #define LOW_SPEED_IN_HZ SPEED_IN_HZ
 
 #define SPI_CHIP_SELECT_PIN_0  7 /* (R2) lcd_data1.gpio2[7] A0*/
