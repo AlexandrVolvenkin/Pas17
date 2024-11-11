@@ -70,6 +70,34 @@ CTimer* CDfa::GetTimerPointer(void)
     return &m_xTimer;
 }
 
+//-------------------------------------------------------------------------------
+bool CDfa::IsDoneOk(void)
+{
+    if (m_uiFsmAnswerState == DONE_OK)
+    {
+        SetFsmAnswerState(0);
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+//-------------------------------------------------------------------------------
+bool CDfa::IsDoneError(void)
+{
+    if (m_uiFsmAnswerState == DONE_ERROR)
+    {
+        SetFsmAnswerState(0);
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
 
 
 

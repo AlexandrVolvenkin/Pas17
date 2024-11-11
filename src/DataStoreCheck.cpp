@@ -91,30 +91,30 @@ uint8_t CDataStoreCheck::Fsm(void)
 
     case INIT:
         std::cout << "CDataStoreCheck::Fsm INIT"  << std::endl;
-    {
-        CTaskInterface* pxTask =
-            GetResources() ->
-            GetCommonTaskFromMapPointer(m_sStorageDeviceName);
+        {
+            CTaskInterface* pxTask =
+                GetResources() ->
+                GetCommonTaskFromMapPointer(m_sStorageDeviceName);
 
-        if (pxTask != 0)
-        {
-            if (pxTask -> GetFsmState() >= READY)
+            if (pxTask != 0)
             {
-                SetStorageDevice((CStorageDeviceInterface*)pxTask);
-                SetFsmState(READY);
-                std::cout << "CDataStoreCheck::Fsm READY"  << std::endl;
+                if (pxTask -> GetFsmState() >= READY)
+                {
+                    SetStorageDevice((CStorageDeviceInterface*)pxTask);
+                    SetFsmState(READY);
+                    std::cout << "CDataStoreCheck::Fsm READY"  << std::endl;
+                }
+            }
+            else
+            {
+                if (GetTimerPointer() -> IsOverflow())
+                {
+                    SetFsmState(STOP);
+                    std::cout << "CDataStoreCheck::Fsm STOP"  << std::endl;
+                }
             }
         }
-        else
-        {
-            if (GetTimerPointer() -> IsOverflow())
-            {
-                SetFsmState(STOP);
-                std::cout << "CDataStoreCheck::Fsm STOP"  << std::endl;
-            }
-        }
-    }
-    break;
+        break;
 
     case READY:
 //        std::cout << "CDataStoreCheck::Fsm READY"  << std::endl;
@@ -217,15 +217,13 @@ uint8_t CDataStoreCheck::Fsm(void)
     case CORRUPTED_BLOCK_RECOVERY_WRITE_END_WAITING:
         // Ожидаем окончания записи автоматом устройства хранения.
         // Устройство хранения закончило запись успешно?
-        if (m_pxStorageDevice -> GetFsmAnswerState() ==
-                CStorageDeviceInterface::DATA_WRITED_SUCCESSFULLY)
+        if (m_pxStorageDevice -> IsDoneOk())
         {
             m_pxStorageDevice -> SetFsmAnswerState(0);
             SetFsmState(DATA_STORE_CHECK_REPEAT);
         }
         // Устройство хранения закончило запись не успешно?
-        else if (m_pxStorageDevice -> GetFsmAnswerState() ==
-                 CStorageDeviceInterface::WRITE_DATA_ERROR)
+        else if (m_pxStorageDevice -> IsDoneError())
         {
             m_pxStorageDevice -> SetFsmAnswerState(0);
             SetFsmState(DATA_STORE_CHECK_REPEAT);
@@ -258,8 +256,7 @@ uint8_t CDataStoreCheck::Fsm(void)
     case SERVICE_SECTION_DATA_WRITE_END_WAITING:
         // Ожидаем окончания записи автоматом устройства хранения.
         // Устройство хранения закончило запись успешно?
-        if (m_pxStorageDevice -> GetFsmAnswerState() ==
-                CStorageDeviceInterface::DATA_WRITED_SUCCESSFULLY)
+        if (m_pxStorageDevice -> IsDoneOk())
         {
             m_pxStorageDevice -> SetFsmAnswerState(0);
             // Служебный блок не повреждён?
@@ -273,8 +270,7 @@ uint8_t CDataStoreCheck::Fsm(void)
             }
         }
         // Устройство хранения закончило запись не успешно?
-        else if (m_pxStorageDevice -> GetFsmAnswerState() ==
-                 CStorageDeviceInterface::WRITE_DATA_ERROR)
+        else if (m_pxStorageDevice -> IsDoneError())
         {
             m_pxStorageDevice -> SetFsmAnswerState(0);
             SetFsmState(DATA_STORE_CHECK_REPEAT);

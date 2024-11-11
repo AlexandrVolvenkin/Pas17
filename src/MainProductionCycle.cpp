@@ -348,12 +348,12 @@ uint8_t CMainProductionCycle::Fsm(void)
     case DATABASE_CHECK_BEGIN:
         std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_BEGIN"  << std::endl;
         CurrentlyRunningTasksExecution();
-        m_pxDataStoreCheck -> Check();
+//        m_pxDataStoreCheck -> Check();
         GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
         SetFsmState(DATABASE_CHECK_END_WAITING);
 
-//        m_pxDataStoreFileSystem -> CreateServiceSection();
-//        m_pxDataStoreFileSystem -> WriteBlock(auiTempBlock, sizeof(auiTempBlock), 0);
+        m_pxDataStoreFileSystem -> CreateServiceSection();
+        m_pxDataStoreFileSystem -> WriteBlock(auiTempBlock, sizeof(auiTempBlock), 0);
 
 //
 //        if (!(m_pxDataStoreCheck -> Check()))

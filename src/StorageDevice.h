@@ -39,9 +39,10 @@ public:
 
 //    virtual uint8_t PassingDataAndStartWrite(uint16_t uiOffset, uint8_t *puiSource, uint16_t uiLength) {};
     virtual void GetArgumentData(void) {};
-    virtual bool WriteBlock(CDataContainerInterface* pxDataContainer) {};
+    virtual bool WriteBlock(CDataContainerDataBase* pxDataContainer) {};
     virtual bool WriteBlock(uint8_t *puiSource, uint16_t uiOffset, uint16_t uiLength) {};
     virtual uint8_t Write(void) {};
+    virtual bool ReadBlock(CDataContainerDataBase* pxDataContainer) {};
     virtual bool ReadBlock(uint8_t *puiDestination, uint16_t uiOffset, uint16_t uiLength) {};
     virtual uint8_t Read(void) {};
 //    virtual void SetIsDataWrited(bool bStatus) {};
@@ -149,9 +150,10 @@ public:
 
 //    uint8_t PassingDataAndStartWrite(uint16_t uiOffset, uint8_t *puiSource, uint16_t uiLength);
     void GetArgumentData(void);
-    bool WriteBlock(CDataContainerInterface* pxDataContainer);
+    bool WriteBlock(CDataContainerDataBase* pxDataContainer);
     bool WriteBlock(uint8_t *puiSource, uint16_t uiOffset, uint16_t uiLength);
     uint8_t Write(void);
+    bool ReadBlock(CDataContainerDataBase* pxDataContainer);
     bool ReadBlock(uint8_t *puiDestination, uint16_t uiOffset, uint16_t uiLength);
     uint8_t Read(void);
 
@@ -218,6 +220,9 @@ private:
     uint8_t* m_puiBuffer;
     uint16_t m_uiOffset;
     uint16_t m_uiLength;
+
+    CDataContainerDataBase* m_pxCommandDataContainer;
+    CDataContainerDataBase* m_pxOperatingDataContainer;
 };
 
 //-------------------------------------------------------------------------------

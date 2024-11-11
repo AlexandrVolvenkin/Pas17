@@ -20,6 +20,8 @@ class CStorageDeviceInterface;
 class CStorageDeviceFileSystem;
 class CDataContainerInterface;
 class CDataContainerDataBase;
+class CMessageBoxInterface;
+class CMessageBoxGeneral;
 
 using namespace std;
 
@@ -33,7 +35,7 @@ using namespace std;
 // 2 - дублирующий блок для записи временных служебных данных.
 // 3 - временная копия записываемого блока.
 // 4 - пространство с последовательно расположенными хранимыми блоками.
-class CDataStore : public CTask//, public CDfa
+class CDataStore : public CTask
 {
 public:
     enum
@@ -73,15 +75,6 @@ public:
         DATA_WRITED_SUCCESSFULLY,
         WRITE_ERROR,
     };
-
-//    enum
-//    {
-//        NO_EVENT_FSM_EVENT = 0,
-//        WRITE_IN_PROGRESS_FSM_EVENT,
-//        STORAGE_DEVICE_BUSY_FSM_EVENT,
-//        WRITE_OK_FSM_EVENT,
-//        WRITE_ERROR_FSM_EVENT,
-//    };
 
     struct TBlockPositionData
     {
@@ -152,8 +145,6 @@ public:
                          uint16_t uiDataOffset,
                          uint16_t uiDataLength);
     void GetArgumentData(void);
-//    void SetResources(CResources* pxResources);
-//    CResources* GetResources(void);
 
 //    uint8_t Check(void);
     void CreateServiceSection(void);
@@ -200,10 +191,6 @@ public:
     uint8_t CheckBlock(void);
     uint8_t TemporaryBlockWritePrepare(void);
     uint8_t BlockWritePrepare(void);
-//    CTimer* GetTimerPointer(void)
-//    {
-//        return &m_xTimer;
-//    };
 
 public:
 
@@ -227,7 +214,9 @@ protected:
     uint16_t m_auiBlocksCurrentCrc[MAX_BLOCKS_NUMBER];
     // Вспомогательный буфер.
     uint8_t* m_puiIntermediateBuff;
-//    CTimer m_xTimer;
+
+    CDataContainerDataBase* m_pxCommandDataContainer;
+    CDataContainerDataBase* m_pxOperatingDataContainer;
 };
 
 //-------------------------------------------------------------------------------
