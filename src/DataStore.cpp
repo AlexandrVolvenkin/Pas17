@@ -189,26 +189,15 @@ CDataStore::CDataStore()
             typeid(*this).name());
     m_pxStorageDevice = 0;
     m_puiIntermediateBuff = new uint8_t[CDataStore::MAX_SERVICE_SECTION_DATA_LENGTH];
-//    m_pxDataContainer = std::make_shared<CDataContainerDataBase>();
     m_pxCommandDataContainer = new CDataContainerDataBase();
     m_pxOperatingDataContainer = new CDataContainerDataBase();
-//    m_pxMessageBox = std::make_shared<CMessageBoxGeneral>();
     SetFsmState(START);
-}
-
-//-------------------------------------------------------------------------------
-CDataStore::CDataStore(CStorageDeviceInterface* pxStorageDevice) :
-    m_pxStorageDevice(pxStorageDevice)
-{
-    m_puiIntermediateBuff = new uint8_t[CDataStore::MAX_SERVICE_SECTION_DATA_LENGTH];
-    SetFsmState(IDDLE);
 }
 
 //-------------------------------------------------------------------------------
 CDataStore::~CDataStore()
 {
     delete m_puiIntermediateBuff;
-//    delete m_pxStorageDevice;
     delete m_pxOperatingDataContainer;
     delete m_pxCommandDataContainer;
 
@@ -228,30 +217,12 @@ void CDataStore::SetStorageDevice(CStorageDeviceInterface* pxStorageDevice)
 }
 
 //-------------------------------------------------------------------------------
-void CDataStore::SetArgumentData(uint8_t *puiDataPointer,
-                                 uint16_t uiDataOffset,
-                                 uint16_t uiDataLength)
-{
-//    GetArgumentDataPointer() -> m_uiDataPointer = puiDataPointer;
-//    GetArgumentDataPointer() -> m_uiDataOffset = uiDataOffset;
-//    GetArgumentDataPointer() -> m_uiDataLength = uiDataLength;
-}
-
-//-------------------------------------------------------------------------------
-void CDataStore::GetArgumentData(void)
-{
-//    m_puiBuffer = m_pxTaskCustomer -> GetArgumentDataPointer() -> m_uiDataPointer;
-//    m_uiOffset = m_pxTaskCustomer -> GetArgumentDataPointer() -> m_uiDataOffset;
-//    m_uiLength = m_pxTaskCustomer -> GetArgumentDataPointer() -> m_uiDataLength;
-}
-
-//-------------------------------------------------------------------------------
 void CDataStore::SetBlockIndex(uint8_t uiBlockIndex)
 {
-    CDataContainerDataBase* pxDataContainer =
-        (static_cast<CDataContainerDataBase*>(m_pxDataContainer.get()));
+    CDataContainerDataBase* pxDataContainer = m_pxCommandDataContainer;
 
-    pxDataContainer -> m_uiDataIndex = uiBlockIndex;
+    pxDataContainer ->
+    SetDataIndex(uiBlockIndex);
 }
 
 //-------------------------------------------------------------------------------
@@ -1043,6 +1014,7 @@ uint8_t CDataStore::Fsm(void)
     case START_WRITE_TEMPORARY_BLOCK_DATA:
         std::cout << "CDataStore::Fsm 1"  << std::endl;
         TemporaryBlockWritePrepare();
+        m_uiRequestRetryCounter = 0;
         // Установим время ожидания окончания записи.
         GetTimerPointer() -> Set(WRITE_END_WAITING_TIMEOUT);
         SetFsmState(WRITE_END_WAITING_TEMPORARY_BLOCK_DATA);
@@ -1225,13 +1197,13 @@ uint8_t CDataStore::Fsm(void)
 
     case DATA_WRITED_SUCCESSFULLY:
         std::cout << "CDataStore::Fsm 25"  << std::endl;
-        SetFsmAnswerState(DATA_WRITED_SUCCESSFULLY);
+        SetFsmAnswerState(DONE_OK);
         SetFsmState(READY);
         break;
 
     case WRITE_ERROR:
         std::cout << "CDataStore::Fsm 26"  << std::endl;
-        SetFsmAnswerState(WRITE_ERROR);
+        SetFsmAnswerState(DONE_ERROR);
         SetFsmState(READY);
         break;
 

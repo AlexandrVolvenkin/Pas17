@@ -136,33 +136,34 @@ uint8_t CMainProductionCycle::CreateTasks(void)
     m_pxDataStoreCheck = pxDataStoreCheck;
 
 
-////-------------------------------------------------------------------------------
-//    CSerialPortCommunicationDevice* pxSerialPortCommunicationDeviceCom1 =
-//        new CSerialPortCommunicationDevice();
-//    m_xResources.AddCommonTaskToMap("SerialPortCommunicationDeviceCom1",
-//                                    pxSerialPortCommunicationDeviceCom1);
-//    pxSerialPortCommunicationDeviceCom1 ->
-//    SetResources(&m_xResources);
-//
-////-------------------------------------------------------------------------------
-//    CModbusRtuSlaveLinkLayer* pxModbusRtuSlaveLinkLayerUpperLevel =
-//        new CModbusRtuSlaveLinkLayer();
-//    m_xResources.AddCommonTaskToMap("ModbusRtuSlaveLinkLayerUpperLevel",
-//                                    pxModbusRtuSlaveLinkLayerUpperLevel);
-//    pxModbusRtuSlaveLinkLayerUpperLevel ->
-//    SetResources(&m_xResources);
-//    pxModbusRtuSlaveLinkLayerUpperLevel ->
-//    SetCommunicationDeviceName("SerialPortCommunicationDeviceCom1");
-//
-////-------------------------------------------------------------------------------
-//    CModbusSlave* pxModbusRtuSlaveUpperLevel =
-//        new CModbusSlave();
-//    m_xResources.AddCommonTaskToMap("ModbusRtuSlaveUpperLevel",
-//                                    pxModbusRtuSlaveUpperLevel);
-//    pxModbusRtuSlaveUpperLevel ->
-//    SetResources(&m_xResources);
-//    pxModbusRtuSlaveUpperLevel ->
-//    SetModbusSlaveLinkLayerName("ModbusRtuSlaveLinkLayerUpperLevel");
+//-------------------------------------------------------------------------------
+    CSerialPortCommunicationDevice* pxSerialPortCommunicationDeviceCom1 =
+        new CSerialPortCommunicationDevice();
+    m_xResources.AddCommonTaskToMap("SerialPortCommunicationDeviceCom1",
+                                    pxSerialPortCommunicationDeviceCom1);
+    pxSerialPortCommunicationDeviceCom1 ->
+    SetResources(&m_xResources);
+
+//-------------------------------------------------------------------------------
+    CModbusRtuSlaveLinkLayer* pxModbusRtuSlaveLinkLayerUpperLevel =
+        new CModbusRtuSlaveLinkLayer();
+    m_xResources.AddCommonTaskToMap("ModbusRtuSlaveLinkLayerUpperLevel",
+                                    pxModbusRtuSlaveLinkLayerUpperLevel);
+    pxModbusRtuSlaveLinkLayerUpperLevel ->
+    SetResources(&m_xResources);
+    pxModbusRtuSlaveLinkLayerUpperLevel ->
+    SetCommunicationDeviceName("SerialPortCommunicationDeviceCom1");
+
+//-------------------------------------------------------------------------------
+    CModbusSlave* pxModbusRtuSlaveUpperLevel =
+        new CModbusSlave();
+    m_xResources.AddCommonTaskToMap("ModbusRtuSlaveUpperLevel",
+                                    pxModbusRtuSlaveUpperLevel);
+    pxModbusRtuSlaveUpperLevel ->
+    SetResources(&m_xResources);
+    pxModbusRtuSlaveUpperLevel ->
+    SetModbusSlaveLinkLayerName("ModbusRtuSlaveLinkLayerUpperLevel");
+    m_xResources.AddCurrentlyRunningTasksList(pxModbusRtuSlaveUpperLevel);
 }
 
 //-------------------------------------------------------------------------------

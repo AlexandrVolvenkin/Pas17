@@ -45,7 +45,7 @@ public:
         MAX_BLOCK_LENGTH = 256,
         MAX_ENCODED_BLOCK_LENGTH =
             ((MAX_BLOCK_LENGTH + TAIL_LENGTH) + ((MAX_BLOCK_LENGTH + TAIL_LENGTH) / 2)),
-        MAX_BLOCKS_NUMBER = 100,//(TDataBase::BLOCKS_QUANTITY + SERVICE_SECTION_DATA_BLOCK_NUMBER),
+        MAX_BLOCKS_NUMBER = 100,
     };
 
     enum
@@ -100,7 +100,6 @@ public:
         // Коэффициент - 1.5: один байт преобразуется в кодовое слово 12 бит,
         // из двух байт полезных данных получается три байта кодированных.
         uint16_t uiEncodedLength;
-//        uint16_t uiLastWritedBlockNumber;
         uint16_t uiStoredBlocksNumber;
         // Контрольная сумма вычисленная из массива контрольных сумм блоков, не включая служебный.
         // Сохраняется при первой и последующих записях любых блоков через программатор.
@@ -136,21 +135,13 @@ public:
     };
 
     CDataStore();
-    CDataStore(CStorageDeviceInterface* pxStorageDevice);
     virtual ~CDataStore();
 
     void SetStorageDeviceName(std::string sName);
     void SetStorageDevice(CStorageDeviceInterface* pxStorageDevice);
-    void SetArgumentData(uint8_t *puiDataPointer,
-                         uint16_t uiDataOffset,
-                         uint16_t uiDataLength);
-    void GetArgumentData(void);
 
-//    uint8_t Check(void);
-    void CreateServiceSection(void);
     uint8_t WriteBlock(uint8_t *puiSource, uint16_t uiLength, uint8_t uiBlock);
     uint16_t ReadBlock(uint8_t *, uint8_t );
-    uint16_t GetReadedData();
     void CrcOfBlocksCrcCreate(void);
     bool CrcOfBlocksCrcCheck(void);
     uint8_t Fsm(void);
@@ -161,11 +152,6 @@ public:
     };
 
     uint8_t GetBlockLength(uint8_t uiBlock);
-//    {
-//        return m_xServiseSection.xServiseSectionData.
-//               axBlockPositionData[uiBlock].uiLength;
-//               aucDataBaseBlockLength[CDataStore::MAX_BLOCKS_NUMBER]
-//    };
 
     uint16_t GetStoredBlocksNumber(void)
     {
@@ -173,16 +159,9 @@ public:
     };
 
     void SetBlockIndex(uint8_t uiBlockIndex);
-//    {
-//        m_uiBlockIndex = uiBlockIndex;
-//    };
-    uint8_t GetBlockIndex(void)
-    {
-        return m_uiBlockIndex;
-    };
 
-
-//private:
+protected:
+    void CreateServiceSection(void);
     uint8_t TemporaryServiceSectionWritePrepare(void);
     uint8_t ServiceSectionWritePrepare(void);
     uint8_t ReadTemporaryServiceSection(void);
@@ -192,18 +171,8 @@ public:
     uint8_t TemporaryBlockWritePrepare(void);
     uint8_t BlockWritePrepare(void);
 
-public:
-
-
 protected:
-//private:
-//    CResources* m_pxResources;
-    // Данные контекста записи блока.
-    uint8_t m_uiBlockIndex;
-    uint8_t* m_puiBlockDataPointer;
-    uint16_t m_uiBlockOffset;
-    uint16_t m_uiBlockLength;
-    uint16_t m_uiBlockEncodedLength;
+    uint8_t m_uiRequestRetryCounter;
 
     std::string m_sStorageDeviceName;
     // Указатель на объект класса устройства хранения.

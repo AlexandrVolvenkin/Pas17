@@ -22,7 +22,7 @@ class CCommunicationDeviceNew;
 class CCommunicationDeviceInterfaceNew;
 
 //-------------------------------------------------------------------------------
-class CModbusSlaveLinkLayerInterface : public CTask//, public CDfa
+class CModbusSlaveLinkLayerInterface : public CTask
 {
 public:
     enum
@@ -55,10 +55,13 @@ public:
 
     virtual uint8_t GetSlaveAddress(void) {};
     virtual void SetSlaveAddress(uint8_t uiData) {};
+
     virtual uint8_t GetFunctionCode(void) {};
     virtual void SetFunctionCode(uint8_t uiData) {};
+
     virtual uint16_t GetDataAddress(void) {};
     virtual void SetDataAddress(uint16_t uiData) {};
+
     virtual uint16_t GetBitNumber(void) {};
     virtual void SetBitNumber(uint16_t uiData) {};
 

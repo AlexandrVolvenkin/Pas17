@@ -22,7 +22,7 @@ class CMessageBoxGeneral;
 using namespace std;
 
 //-------------------------------------------------------------------------------
-class CStorageDeviceInterface : public CTask//, public CDfa
+class CStorageDeviceInterface : public CTask
 {
 public:
     enum
@@ -37,20 +37,12 @@ public:
         READ_DATA_ERROR,
     };
 
-//    virtual uint8_t PassingDataAndStartWrite(uint16_t uiOffset, uint8_t *puiSource, uint16_t uiLength) {};
-    virtual void GetArgumentData(void) {};
     virtual bool WriteBlock(CDataContainerDataBase* pxDataContainer) {};
-    virtual bool WriteBlock(uint8_t *puiSource, uint16_t uiOffset, uint16_t uiLength) {};
     virtual uint8_t Write(void) {};
     virtual bool ReadBlock(CDataContainerDataBase* pxDataContainer) {};
-    virtual bool ReadBlock(uint8_t *puiDestination, uint16_t uiOffset, uint16_t uiLength) {};
     virtual uint8_t Read(void) {};
-//    virtual void SetIsDataWrited(bool bStatus) {};
-//    virtual bool IsDataWrited(void) {};
-    virtual bool IsReadyToWrite(void) {};
 
     virtual void SetBufferPointer(uint8_t* puiBuffer) {};
-
     virtual uint8_t* GetBufferPointer(void) {};
 
     virtual void SetOffset(uint16_t uiOffset) {};
@@ -74,7 +66,7 @@ public:
 
 
 //-------------------------------------------------------------------------------
-class CStorageDevice : public CTask//, public CDfa
+class CStorageDevice : public CTask
 {
 public:
 //    virtual uint8_t PassingDataAndStartWrite(uint16_t uiOffset, uint8_t *puiSource, uint16_t uiLength) = 0;
@@ -148,78 +140,14 @@ public:
     CStorageDeviceFileSystem();
     virtual ~CStorageDeviceFileSystem();
 
-//    uint8_t PassingDataAndStartWrite(uint16_t uiOffset, uint8_t *puiSource, uint16_t uiLength);
-    void GetArgumentData(void);
     bool WriteBlock(CDataContainerDataBase* pxDataContainer);
-    bool WriteBlock(uint8_t *puiSource, uint16_t uiOffset, uint16_t uiLength);
     uint8_t Write(void);
     bool ReadBlock(CDataContainerDataBase* pxDataContainer);
-    bool ReadBlock(uint8_t *puiDestination, uint16_t uiOffset, uint16_t uiLength);
     uint8_t Read(void);
-
-    bool IsReadyToWrite(void)
-    {
-        // Симулируем готовность к записи.
-        // В случае записи средствами ОС проверка не проводится.
-        return true;
-    };
-//    void SetIsDataWrited(bool bStatus)
-//    {
-//        m_bDataIsWrited = bStatus;
-//    };
-//    bool IsDataWrited(void)
-//    {
-//        return m_bDataIsWrited;
-//    };
     uint8_t Fsm(void);
 
-    virtual void SetBufferPointer(uint8_t* puiBuffer)
-    {
-        m_puiBuffer = puiBuffer;
-    };
-
-    virtual uint8_t* GetBufferPointer(void)
-    {
-        return m_puiBuffer;
-    };
-
-    virtual void SetOffset(uint16_t uiOffset)
-    {
-        m_uiOffset = uiOffset;
-    };
-    virtual uint16_t GetOffset(void)
-    {
-        return m_uiOffset;
-    };
-
-    virtual void SetLength(uint16_t uiLength)
-    {
-        m_uiLength = uiLength;
-    };
-    virtual uint16_t GetLength(void)
-    {
-        return m_uiLength;
-    };
-
-    virtual void SetByteCounter(uint16_t nuiByteCounter)
-    {
-        m_nuiByteCounter = nuiByteCounter;
-    };
-    virtual uint16_t GetByteCounter(void)
-    {
-        return m_nuiByteCounter;
-    };
-
 private:
-
     const char *pccFileName = "StorageDeviceData.dat";
-    // Флаг - данные записаны.
-    bool m_bDataIsWrited;
-
-    uint16_t m_nuiByteCounter;
-    uint8_t* m_puiBuffer;
-    uint16_t m_uiOffset;
-    uint16_t m_uiLength;
 
     CDataContainerDataBase* m_pxCommandDataContainer;
     CDataContainerDataBase* m_pxOperatingDataContainer;

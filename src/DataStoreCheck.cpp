@@ -32,28 +32,9 @@ CDataStoreCheck::CDataStoreCheck()
 }
 
 //-------------------------------------------------------------------------------
-CDataStoreCheck::CDataStoreCheck(CDataStore* pxDataStore) :
-    m_pxDataStore(pxDataStore)
-{
-    SetFsmState(IDDLE);
-}
-
-//-------------------------------------------------------------------------------
 CDataStoreCheck::~CDataStoreCheck()
 {
     //dtor
-}
-
-//-------------------------------------------------------------------------------
-void CDataStoreCheck::SetDataStoreName(std::string sName)
-{
-    m_sDataStoreName = sName;
-}
-
-//-------------------------------------------------------------------------------
-void CDataStoreCheck::SetDataStore(CDataStore* pxDataStore)
-{
-    m_pxDataStore = pxDataStore;
 }
 
 //-------------------------------------------------------------------------------
@@ -84,7 +65,6 @@ uint8_t CDataStoreCheck::Fsm(void)
 
     case START:
         std::cout << "CDataStoreCheck::Fsm START"  << std::endl;
-        std::cout << "CDataStoreCheck::Fsm m_sDataStoreName" << " " << (m_sDataStoreName) << std::endl;
         GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
         SetFsmState(INIT);
         break;
@@ -219,13 +199,11 @@ uint8_t CDataStoreCheck::Fsm(void)
         // Устройство хранения закончило запись успешно?
         if (m_pxStorageDevice -> IsDoneOk())
         {
-            m_pxStorageDevice -> SetFsmAnswerState(0);
             SetFsmState(DATA_STORE_CHECK_REPEAT);
         }
         // Устройство хранения закончило запись не успешно?
         else if (m_pxStorageDevice -> IsDoneError())
         {
-            m_pxStorageDevice -> SetFsmAnswerState(0);
             SetFsmState(DATA_STORE_CHECK_REPEAT);
         }
         else
@@ -233,7 +211,6 @@ uint8_t CDataStoreCheck::Fsm(void)
             // Время ожидания окончания записи закончилось?
             if (GetTimerPointer() -> IsOverflow())
             {
-                m_pxStorageDevice -> SetFsmAnswerState(0);
                 SetFsmState(DATA_STORE_CHECK_REPEAT);
             }
         }
@@ -244,12 +221,10 @@ uint8_t CDataStoreCheck::Fsm(void)
         // Как минимум, последний сеанс записи во временные буферы прощёл успешо.
         // Не будем проверять целостность и совпадение служебного блока, обновим сразу.
         // Обновим служебный блок.
-//            SetFsmEvent(WRITE_IN_PROGRESS_FSM_EVENT);
         ServiceSectionWritePrepare();
         // Установим время ожидания окончания записи.
         GetTimerPointer() -> Set(WRITE_END_WAITING_TIMEOUT);
         // Запустим процесс записи служебного блока.
-//        m_pxDataStore -> SetFsmState(CDataStore::START_WRITE_SERVICE_SECTION_DATA);
         SetFsmState(SERVICE_SECTION_DATA_WRITE_END_WAITING);
         break;
 
@@ -258,7 +233,6 @@ uint8_t CDataStoreCheck::Fsm(void)
         // Устройство хранения закончило запись успешно?
         if (m_pxStorageDevice -> IsDoneOk())
         {
-            m_pxStorageDevice -> SetFsmAnswerState(0);
             // Служебный блок не повреждён?
             if (ReadServiceSection())
             {
@@ -272,7 +246,6 @@ uint8_t CDataStoreCheck::Fsm(void)
         // Устройство хранения закончило запись не успешно?
         else if (m_pxStorageDevice -> IsDoneError())
         {
-            m_pxStorageDevice -> SetFsmAnswerState(0);
             SetFsmState(DATA_STORE_CHECK_REPEAT);
         }
         else
@@ -280,7 +253,6 @@ uint8_t CDataStoreCheck::Fsm(void)
             // Время ожидания окончания записи закончилось?
             if (GetTimerPointer() -> IsOverflow())
             {
-                m_pxStorageDevice -> SetFsmAnswerState(0);
                 SetFsmState(DATA_STORE_CHECK_REPEAT);
             }
         }
@@ -298,10 +270,7 @@ uint8_t CDataStoreCheck::Fsm(void)
         else
         {
             std::cout << "CDataStoreCheck::Fsm 1"  << std::endl;
-//            std::cout << "CreateServiceSection" << std::endl;
-//            CreateServiceSection();
             SetFsmState(DATA_STORE_CHECK_ERROR);
-//            SetFsmState(DATA_STORE_CHECK_START);
         }
         break;
 

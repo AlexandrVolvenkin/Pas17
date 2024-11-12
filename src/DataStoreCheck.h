@@ -54,19 +54,14 @@ public:
     };
 
     CDataStoreCheck();
-    CDataStoreCheck(CDataStore* pxDataStore);
     virtual ~CDataStoreCheck();
 
-    void SetDataStoreName(std::string sName);
-    void SetDataStore(CDataStore* pxDataStore);
     uint8_t Check(void);
     uint8_t Fsm(void);
 
 protected:
 
 private:
-    std::string m_sDataStoreName;
-    CDataStore* m_pxDataStore;
     uint8_t m_uiRecoveryAttemptCounter;
 };
 
