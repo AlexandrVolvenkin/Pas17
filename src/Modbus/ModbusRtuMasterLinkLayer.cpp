@@ -12,12 +12,6 @@ CModbusRtuMasterLinkLayer::CModbusRtuMasterLinkLayer()
     //ctor
 }
 
-//-------------------------------------------------------------------------------
-CModbusRtuMasterLinkLayer::CModbusRtuMasterLinkLayer(CResources* pxResources)
-{
-
-}
-
 CModbusRtuMasterLinkLayer::~CModbusRtuMasterLinkLayer()
 {
     //dtor

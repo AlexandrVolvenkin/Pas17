@@ -52,12 +52,6 @@ CModbusTcpSlaveLinkLayer::CModbusTcpSlaveLinkLayer()
 }
 
 //-------------------------------------------------------------------------------
-CModbusTcpSlaveLinkLayer::CModbusTcpSlaveLinkLayer(CResources* pxResources)
-{
-
-}
-
-//-------------------------------------------------------------------------------
 CModbusTcpSlaveLinkLayer::~CModbusTcpSlaveLinkLayer()
 {
     delete m_pxCommunicationDevice;

@@ -28,23 +28,11 @@ CModbusRtuSlaveLinkLayer::CModbusRtuSlaveLinkLayer()
     m_pxCommunicationDevice = 0;
     SetFsmState(START);
 
-//    std::thread m_xThread(CModbusRtuSlaveLinkLayer::Process, this);
     m_pxThread = new std::thread(CModbusRtuSlaveLinkLayer::Process, this);
-//    m_pxThread = &m_xThread;
-//    std::thread::id th_id = m_xThread.get_id();
-//    //std::cout << "CModbusRtuSlaveLinkLayer th_id" << " " << th_id << std::endl;
-//    // не ждем завершения работы функции
-//    m_xThread.detach();
     std::thread::id th_id = m_pxThread -> get_id();
     std::cout << "CModbusRtuSlaveLinkLayer th_id" << " " << th_id << std::endl;
     // не ждем завершения работы функции
     m_pxThread -> detach();
-}
-
-//-------------------------------------------------------------------------------
-CModbusRtuSlaveLinkLayer::CModbusRtuSlaveLinkLayer(CResources* pxResources)
-{
-
 }
 
 //-------------------------------------------------------------------------------
@@ -111,6 +99,24 @@ void CModbusRtuSlaveLinkLayer::TransmitEnable(void)
 void CModbusRtuSlaveLinkLayer::TransmitDisable(void)
 {
 //    m_pxCommunicationDevice -> Close();
+}
+
+//-------------------------------------------------------------------------------
+void CModbusRtuSlaveLinkLayer::CommunicationStart(void)
+{
+    SetFsmState(COMMUNICATION_START);
+}
+
+//-------------------------------------------------------------------------------
+void CModbusRtuSlaveLinkLayer::ReceiveStart(void)
+{
+    SetFsmState(COMMUNICATION_RECEIVE_CONTINUE);
+}
+
+//-------------------------------------------------------------------------------
+void CModbusRtuSlaveLinkLayer::TransmitStart(void)
+{
+    SetFsmState(COMMUNICATION_TRANSMIT_START);
 }
 
 //-------------------------------------------------------------------------------
@@ -582,12 +588,13 @@ uint8_t CModbusRtuSlaveLinkLayer::Fsm(void)
         std::cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_FRAME_CHECK 1"  << std::endl;
         if (FrameCheck(m_auiRxBuffer, m_uiFrameLength))
         {
-        std::cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_FRAME_CHECK 2"  << std::endl;
+            std::cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_FRAME_CHECK 2"  << std::endl;
             SetFsmState(COMMUNICATION_FRAME_RECEIVED);
+            SetFsmAnswerState(DONE_OK);
         }
         else
         {
-        std::cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_FRAME_CHECK 3"  << std::endl;
+            std::cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_FRAME_CHECK 3"  << std::endl;
             SetFsmState(COMMUNICATION_RECEIVE_ERROR);
         }
         break;
@@ -629,6 +636,7 @@ uint8_t CModbusRtuSlaveLinkLayer::Fsm(void)
         std::cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_TRANSMIT_START m_uiFrameLength "  << (int)m_uiFrameLength << std::endl;
         m_pxCommunicationDevice -> Write(m_auiTxBuffer, m_uiFrameLength);
         SetFsmState(COMMUNICATION_FRAME_TRANSMITED);
+        SetFsmAnswerState(DONE_OK);
         break;
 
     case COMMUNICATION_FRAME_TRANSMITED:

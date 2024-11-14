@@ -1,18 +1,12 @@
-﻿#ifndef CMODBUSRTUSLAVELINKLAYER_H
+﻿//-------------------------------------------------------------------------------
+//  Source      : FileName.cpp
+//  Created     : 01.06.2022
+//  Author      : Alexandr Volvenkin
+//  email       : aav-36@mail.ru
+//  GitHub      : https://github.com/AlexandrVolvenkin
+//-------------------------------------------------------------------------------
+#ifndef CMODBUSRTUSLAVELINKLAYER_H
 #define CMODBUSRTUSLAVELINKLAYER_H
-
-
-//class CModbusRtuSlaveLinkLayer
-//{
-//    public:
-//        CModbusRtuSlaveLinkLayer();
-//        virtual ~CModbusRtuSlaveLinkLayer();
-//
-//    protected:
-//
-//    private:
-//};
-
 
 #include <stdint.h>
 #include <thread>
@@ -59,26 +53,9 @@ public:
         COMMUNICATION_TRANSMIT_START,
         COMMUNICATION_FRAME_TRANSMITED,
         COMMUNICATION_RECEIVE_ERROR,
-
-
-
-//        REQUEST_ENABLE,
-//        WAITING_ACCEPT,
-//        START_REQUEST,
-//        WAITING_MESSAGE_REQUEST,
-//        RECEIVE_MESSAGE_REQUEST,
-//        REQUEST_PROCESSING_REQUEST,
-//        FRAME_TRANSMIT_CONFIRMATION,
-//        WAITING_FRAME_TRANSMIT_CONFIRMATION,
-//        END_WAITING_FRAME_TRANSMIT_CONFIRMATION,
-//        STOP_REQUEST,
-//        REQUEST_ERROR,
-//
-//        RESTART,
     };
 
     CModbusRtuSlaveLinkLayer();
-    CModbusRtuSlaveLinkLayer(CResources* pxResources);
     virtual ~CModbusRtuSlaveLinkLayer();
 
     static void Process(CModbusRtuSlaveLinkLayer* pxModbusSlaveLinkLayer);
@@ -112,6 +89,11 @@ private:
     void ReceiveDisable(void);
     void TransmitEnable(void);
     void TransmitDisable(void);
+
+    void CommunicationStart(void);
+    void ReceiveStart(void);
+    void TransmitStart(void);
+
     uint16_t RequestBasis(uint8_t uiSlave,
                           uint8_t uiFunctionCode,
                           uint16_t uiAddress,

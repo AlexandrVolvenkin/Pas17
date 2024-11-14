@@ -25,18 +25,18 @@ class CCommunicationDeviceInterfaceNew;
 class CModbusSlaveLinkLayerInterface : public CTask
 {
 public:
-    enum
-    {
-        COMMUNICATION_START = NEXT_STEP,
-        COMMUNICATION_RECEIVE_START,
-        COMMUNICATION_RECEIVE_CONTINUE,
-        COMMUNICATION_RECEIVE_END,
-        COMMUNICATION_FRAME_CHECK,
-        COMMUNICATION_FRAME_RECEIVED,
-        COMMUNICATION_TRANSMIT_START,
-        COMMUNICATION_FRAME_TRANSMITED,
-        COMMUNICATION_RECEIVE_ERROR,
-    };
+//    enum
+//    {
+//        COMMUNICATION_START = NEXT_STEP,
+//        COMMUNICATION_RECEIVE_START,
+//        COMMUNICATION_RECEIVE_CONTINUE,
+//        COMMUNICATION_RECEIVE_END,
+//        COMMUNICATION_FRAME_CHECK,
+//        COMMUNICATION_FRAME_RECEIVED,
+//        COMMUNICATION_TRANSMIT_START,
+//        COMMUNICATION_FRAME_TRANSMITED,
+//        COMMUNICATION_RECEIVE_ERROR,
+//    };
 
 //    CModbusSlaveLinkLayerInterface();
 //    virtual ~CModbusSlaveLinkLayerInterface();
@@ -46,11 +46,6 @@ public:
     void CommunicationDeviceInit(const char* pccIpAddress,
                                  uint16_t uiPort) {};
     uint8_t Fsm(void) {};
-
-//    void SetCommunicationDevice(CCommunicationDeviceInterface* pxCommunicationDevice)
-//    {
-//        m_pxCommunicationDevice = pxCommunicationDevice;
-//    };
 
     virtual uint8_t* GetRxBuffer(void) {};
     virtual uint8_t* GetTxBuffer(void) {};
@@ -79,6 +74,11 @@ public:
 //    void ReceiveDisable(void) {};
 //    void TransmitEnable(void) {};
 //    void TransmitDisable(void) {};
+
+    virtual void CommunicationStart(void) {};
+    virtual void ReceiveStart(void) {};
+    virtual void TransmitStart(void) {};
+
     virtual uint16_t RequestBasis(uint8_t uiSlave,
                                   uint8_t uiFunctionCode,
                                   uint16_t uiAddress,
@@ -135,7 +135,6 @@ class CModbusSlaveLinkLayer : public CModbusSlaveLinkLayerInterface
 {
 public:
     CModbusSlaveLinkLayer();
-    CModbusSlaveLinkLayer(CResources* pxResources);
     virtual ~CModbusSlaveLinkLayer();
 
     void SetCommunicationDeviceName(std::string sName);

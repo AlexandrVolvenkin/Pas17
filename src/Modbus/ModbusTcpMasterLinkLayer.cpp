@@ -12,12 +12,6 @@ CModbusTcpMasterLinkLayer::CModbusTcpMasterLinkLayer()
     //ctor
 }
 
-//-------------------------------------------------------------------------------
-CModbusTcpMasterLinkLayer::CModbusTcpMasterLinkLayer(CResources* pxResources)
-{
-
-}
-
 CModbusTcpMasterLinkLayer::~CModbusTcpMasterLinkLayer()
 {
     //dtor

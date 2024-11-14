@@ -53,26 +53,9 @@ public:
         COMMUNICATION_TRANSMIT_START,
         COMMUNICATION_FRAME_TRANSMITED,
         COMMUNICATION_RECEIVE_ERROR,
-
-
-
-//        REQUEST_ENABLE,
-//        WAITING_ACCEPT,
-//        START_REQUEST,
-//        WAITING_MESSAGE_REQUEST,
-//        RECEIVE_MESSAGE_REQUEST,
-//        REQUEST_PROCESSING_REQUEST,
-//        FRAME_TRANSMIT_CONFIRMATION,
-//        WAITING_FRAME_TRANSMIT_CONFIRMATION,
-//        END_WAITING_FRAME_TRANSMIT_CONFIRMATION,
-//        STOP_REQUEST,
-//        REQUEST_ERROR,
-//
-//        RESTART,
     };
 
     CModbusTcpSlaveLinkLayer();
-    CModbusTcpSlaveLinkLayer(CResources* pxResources);
     virtual ~CModbusTcpSlaveLinkLayer();
 
     static void Process(CModbusTcpSlaveLinkLayer* pxModbusSlaveLinkLayer);

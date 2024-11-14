@@ -24,12 +24,6 @@ CModbusSlaveLinkLayer::CModbusSlaveLinkLayer()
 }
 
 //-------------------------------------------------------------------------------
-CModbusSlaveLinkLayer::CModbusSlaveLinkLayer(CResources* pxResources)
-{
-
-}
-
-//-------------------------------------------------------------------------------
 CModbusSlaveLinkLayer::~CModbusSlaveLinkLayer()
 {
     //dtor

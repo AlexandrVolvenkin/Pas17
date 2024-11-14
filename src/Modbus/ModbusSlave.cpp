@@ -1468,16 +1468,19 @@ uint8_t CModbusSlave::Fsm(void)
         std::cout << "CModbusSlave::Fsm COMMUNICATION_START"  << std::endl;
 //        m_pxModbusSlaveLinkLayer ->
 //        SetFsmState(CModbusSlaveLinkLayerInterface::COMMUNICATION_START);
+//        m_pxModbusSlaveLinkLayer ->
+//        SetFsmState(CModbusSlaveLinkLayerInterface::START);
         m_pxModbusSlaveLinkLayer ->
-        SetFsmState(CModbusSlaveLinkLayerInterface::START);
+        CommunicationStart();
         SetFsmState(MESSAGE_RECEIVE_WAITING);
         break;
 
     case MESSAGE_RECEIVE_WAITING:
 //        std::cout << "CModbusSlave::Fsm MESSAGE_RECEIVE_WAITING"  << std::endl;
-        if (m_pxModbusSlaveLinkLayer ->
-                GetFsmState() ==
-                CModbusSlaveLinkLayerInterface::COMMUNICATION_FRAME_RECEIVED)
+        if (m_pxModbusSlaveLinkLayer -> IsDoneOk())
+//        if (m_pxModbusSlaveLinkLayer ->
+//                GetFsmState() ==
+//                CModbusSlaveLinkLayerInterface::COMMUNICATION_FRAME_RECEIVED)
         {
             SetFsmState(REQUEST_PROCESSING);
         }
@@ -1502,8 +1505,10 @@ uint8_t CModbusSlave::Fsm(void)
         if (GetTimerPointer() -> IsOverflow())
         {
 //            GetTimerPointer() -> Set(m_uiConfirmationTimeout);
+            //            m_pxModbusSlaveLinkLayer ->
+//            SetFsmState(CModbusSlaveLinkLayerInterface::COMMUNICATION_TRANSMIT_START);
             m_pxModbusSlaveLinkLayer ->
-            SetFsmState(CModbusSlaveLinkLayerInterface::COMMUNICATION_TRANSMIT_START);
+            TransmitStart();
             SetFsmState(AFTER_ANSWERING_WAITING);
         }
         break;
@@ -1515,12 +1520,15 @@ uint8_t CModbusSlave::Fsm(void)
 
     case AFTER_ANSWERING_WAITING:
 //        std::cout << "CModbusSlave::Fsm COMMUNICATION_START"  << std::endl;
-        if (m_pxModbusSlaveLinkLayer ->
-                GetFsmState() ==
-                CModbusSlaveLinkLayerInterface::COMMUNICATION_FRAME_TRANSMITED)
+        if (m_pxModbusSlaveLinkLayer -> IsDoneOk())
+//        if (m_pxModbusSlaveLinkLayer ->
+//                GetFsmState() ==
+//                CModbusSlaveLinkLayerInterface::COMMUNICATION_FRAME_TRANSMITED)
         {
+//            m_pxModbusSlaveLinkLayer ->
+//            SetFsmState(CModbusSlaveLinkLayerInterface::COMMUNICATION_RECEIVE_CONTINUE);
             m_pxModbusSlaveLinkLayer ->
-            SetFsmState(CModbusSlaveLinkLayerInterface::COMMUNICATION_RECEIVE_CONTINUE);
+            ReceiveStart();
             SetFsmState(MESSAGE_RECEIVE_WAITING);
         }
         break;
