@@ -149,6 +149,8 @@ void CSerialPortCommunicationDevice::Init(void)
     //m_xRs485Conf.flags |= SER_RS485_RTS_AFTER_SEND;
     m_xRs485Conf.delay_rts_before_send = 0;
     m_xRs485Conf.delay_rts_after_send = 0;
+
+    SetFsmState(READY);
 }
 
 //-------------------------------------------------------------------------------
@@ -390,8 +392,8 @@ int16_t CSerialPortCommunicationDevice::Read(uint8_t *puiDestination, uint16_t u
 
 //-------------------------------------------------------------------------------
 int16_t CSerialPortCommunicationDevice::ReceiveStart(uint8_t *puiDestination,
-                                  uint16_t uiLength,
-                                  uint32_t uiReceiveTimeout)
+        uint16_t uiLength,
+        uint32_t uiReceiveTimeout)
 {
 //    std::cout << "CSerialPortCommunicationDevice::ReceiveStart 1"  << std::endl;
 
@@ -467,8 +469,8 @@ int16_t CSerialPortCommunicationDevice::ReceiveStart(uint8_t *puiDestination,
 
 //-------------------------------------------------------------------------------
 int16_t CSerialPortCommunicationDevice::ReceiveContinue(uint8_t *puiDestination,
-                                     uint16_t uiLength,
-                                     uint32_t uiReceiveTimeout)
+        uint16_t uiLength,
+        uint32_t uiReceiveTimeout)
 {
 //    std::cout << "CSerialPortCommunicationDevice::ReceiveContinue 1"  << std::endl;
 
@@ -555,10 +557,10 @@ int16_t CSerialPortCommunicationDevice::Write(uint8_t *puiSource, uint16_t uiLen
 //-------------------------------------------------------------------------------
 // производит обмен данными по SPI.
 int CSerialPortCommunicationDevice::Exchange(uint8_t uiAddress,
-                          unsigned char *pucTxBuff,
-                          unsigned char *pucRxBuff,
-                          int iLength,
-                          int iSpeed)
+        unsigned char *pucTxBuff,
+        unsigned char *pucRxBuff,
+        int iLength,
+        int iSpeed)
 {
 
 }

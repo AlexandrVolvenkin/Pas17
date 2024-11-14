@@ -13,6 +13,7 @@
 #include "Platform.h"
 #include "CommunicationDevice.h"
 #include "SerialPortCommunicationDevice.h"
+#include "TcpCommunicationDevice.h"
 #include "Resources.h"
 #include "TaskManager.h"
 #include "ServiceMarket.h"
@@ -174,6 +175,38 @@ uint8_t CMainProductionCycle::CreateTasks(void)
     pxModbusRtuSlaveUpperLevel ->
     ModbusWorkingArraysInit();
     m_xResources.AddCurrentlyRunningTasksList(pxModbusRtuSlaveUpperLevel);
+
+
+//-------------------------------------------------------------------------------
+    CTcpCommunicationDevice* pxTcpCommunicationDeviceUpperLevel =
+        new CTcpCommunicationDevice();
+    m_xResources.AddCommonTaskToMap("TcpCommunicationDeviceUpperLevel",
+                                    pxTcpCommunicationDeviceUpperLevel);
+    pxTcpCommunicationDeviceUpperLevel ->
+    SetResources(&m_xResources);
+
+//-------------------------------------------------------------------------------
+    CModbusTcpSlaveLinkLayer* pxModbusTcpSlaveLinkLayerUpperLevel =
+        new CModbusTcpSlaveLinkLayer();
+    m_xResources.AddCommonTaskToMap("ModbusTcpSlaveLinkLayerUpperLevel",
+                                    pxModbusTcpSlaveLinkLayerUpperLevel);
+    pxModbusTcpSlaveLinkLayerUpperLevel ->
+    SetResources(&m_xResources);
+    pxModbusTcpSlaveLinkLayerUpperLevel ->
+    SetCommunicationDeviceName("TcpCommunicationDeviceUpperLevel");
+
+//-------------------------------------------------------------------------------
+    CModbusSlave* pxModbusTcpSlaveUpperLevel =
+        new CModbusSlave();
+    m_xResources.AddCommonTaskToMap("ModbusTcpSlaveUpperLevel",
+                                    pxModbusTcpSlaveUpperLevel);
+    pxModbusTcpSlaveUpperLevel ->
+    SetResources(&m_xResources);
+    pxModbusTcpSlaveUpperLevel ->
+    SetModbusSlaveLinkLayerName("ModbusTcpSlaveLinkLayerUpperLevel");
+    pxModbusTcpSlaveUpperLevel ->
+    ModbusWorkingArraysInit();
+    m_xResources.AddCurrentlyRunningTasksList(pxModbusTcpSlaveUpperLevel);
 }
 
 //-------------------------------------------------------------------------------
@@ -210,6 +243,26 @@ uint8_t CMainProductionCycle::InitTasks(void)
                         GetCommonTaskFromMapPointer("ModbusRtuSlaveUpperLevel"));
 
     pxModbusRtuSlaveUpperLevel ->
+    SetOwnAddress(17);
+
+
+//-------------------------------------------------------------------------------
+    CTcpCommunicationDevice* pxTcpCommunicationDeviceUpperLevel =
+        (CTcpCommunicationDevice*)(GetResources() ->
+                                   GetCommonTaskFromMapPointer("TcpCommunicationDeviceUpperLevel"));
+
+    pxTcpCommunicationDeviceUpperLevel -> Init();
+    pxTcpCommunicationDeviceUpperLevel -> SetIpAddress("127.0.0.1");
+    pxTcpCommunicationDeviceUpperLevel -> SetPort(502);
+
+//    m_uiGuardTimeout = ((((1000000UL / uiBaudRate) * 8UL * 4UL) / 1000UL) + 1);
+
+//-------------------------------------------------------------------------------
+    CModbusSlave* pxModbusTcpSlaveUpperLevel =
+        (CModbusSlave*)(GetResources() ->
+                        GetCommonTaskFromMapPointer("ModbusTcpSlaveUpperLevel"));
+
+    pxModbusTcpSlaveUpperLevel ->
     SetOwnAddress(17);
 
 

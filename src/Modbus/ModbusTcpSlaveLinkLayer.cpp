@@ -10,11 +10,12 @@
 #include <string.h>
 #include <typeinfo>
 
-#include <iostream>
-#include <string.h>
 
+#include "Platform.h"
 #include "Task.h"
 #include "Resources.h"
+#include "CommunicationDevice.h"
+#include <Crc.h>
 #include "ModbusSlaveLinkLayer.h"
 #include "ModbusTcpSlaveLinkLayer.h"
 
@@ -24,27 +25,13 @@ using namespace std;
 CModbusTcpSlaveLinkLayer::CModbusTcpSlaveLinkLayer()
 {
     std::cout << "CModbusTcpSlaveLinkLayer constructor"  << std::endl;
-    m_pxCommunicationDevice = new CTcpCommunicationDevice();
-    CommunicationDeviceInit("127.0.0.1",
-                            502);
-//    SetFsmState(COMMUNICATION_START);
-    SetFsmState(IDDLE);
+//    m_pxCommunicationDevice = new CTcpCommunicationDevice();
+//    CommunicationDeviceInit("127.0.0.1",
+//                            502);
+    m_pxCommunicationDevice = 0;
+    SetFsmState(START);
 
-//    std::thread m_xThread(CModbusTcpSlaveLinkLayer::Process, this);
-//    m_pxThread = &m_xThread;
-//    std::thread::id th_id = m_xThread.get_id();
-//    //std::cout << "CModbusTcpSlaveLinkLayer th_id" << " " << th_id << std::endl;
-//    // не ждем завершения работы функции
-//    m_xThread.detach();
-
-//    std::thread m_xThread(CModbusTcpSlaveLinkLayer::Process, this);
     m_pxThread = new std::thread(CModbusTcpSlaveLinkLayer::Process, this);
-//    m_pxThread = &m_xThread;
-//    std::thread::id th_id = m_xThread.get_id();
-//    //std::cout << "CModbusTcpSlaveLinkLayer th_id" << " " << th_id << std::endl;
-//    // не ждем завершения работы функции
-//    m_xThread.detach();
-
     std::thread::id th_id = m_pxThread -> get_id();
     std::cout << "CModbusTcpSlaveLinkLayer th_id" << " " << th_id << std::endl;
     // не ждем завершения работы функции
@@ -108,6 +95,33 @@ void CModbusTcpSlaveLinkLayer::TransmitEnable(void)
 void CModbusTcpSlaveLinkLayer::TransmitDisable(void)
 {
 //    m_pxCommunicationDevice -> Close();
+}
+
+//-------------------------------------------------------------------------------
+void CModbusTcpSlaveLinkLayer::CommunicationStart(void)
+{
+//    SetFsmState(COMMUNICATION_START);
+    SetFsmCommandState(COMMUNICATION_START);
+}
+
+//-------------------------------------------------------------------------------
+void CModbusTcpSlaveLinkLayer::CommunicationReceiveStart(void)
+{
+    SetFsmCommandState(COMMUNICATION_RECEIVE_START);
+}
+
+//-------------------------------------------------------------------------------
+void CModbusTcpSlaveLinkLayer::ReceiveStart(void)
+{
+//    SetFsmState(COMMUNICATION_RECEIVE_CONTINUE);
+    SetFsmCommandState(COMMUNICATION_RECEIVE_START);
+}
+
+//-------------------------------------------------------------------------------
+void CModbusTcpSlaveLinkLayer::TransmitStart(void)
+{
+//    SetFsmState(COMMUNICATION_TRANSMIT_START);
+    SetFsmCommandState(COMMUNICATION_TRANSMIT_START);
 }
 
 //-------------------------------------------------------------------------------
@@ -258,65 +272,6 @@ uint16_t CModbusTcpSlaveLinkLayer::ResponseBasis(uint8_t uiSlave, uint8_t uiFunc
 }
 
 //-------------------------------------------------------------------------------
-/* Builds a TCP request header */
-uint16_t CModbusTcpSlaveLinkLayer::RequestHeader(uint8_t uiSlave)
-{
-    /* Extract from MODBUS Messaging on TCP/IP Implementation Guide V1.0b
-       (page 23/46):
-       The transaction identifier is used to associate the future response
-       with the request. So, at a time, on a TCP connection, this identifier
-       must be unique. */
-
-    /* Transaction ID */
-    if (m_uiRequestTransactionId < UINT16_MAX)
-    {
-        m_uiRequestTransactionId++;
-    }
-    else
-    {
-        m_uiRequestTransactionId = 0;
-    }
-    m_auiTxBuffer[0] = (m_uiRequestTransactionId >> 8);
-    m_auiTxBuffer[1] = (m_uiRequestTransactionId & 0x00ff);
-
-    /* Protocol Modbus */
-    m_auiTxBuffer[2] = 0;
-    m_auiTxBuffer[3] = 0;
-
-    /* Length will be defined later by set_puiRequest_length_tcp at offsets 4
-       and 5 */
-
-    m_auiTxBuffer[6] = uiSlave;
-
-    // tcp header length
-    return 7;
-}
-
-//-------------------------------------------------------------------------------
-/* Builds a TCP response header */
-uint16_t CModbusTcpSlaveLinkLayer::ResponseHeader(uint8_t uiSlave)
-{
-    /* Extract from MODBUS Messaging on TCP/IP Implementation
-       Guide V1.0b (page 23/46):
-       The transaction identifier is used to associate the future
-       response with the puiRequestuest. */
-    m_auiTxBuffer[0] = (m_uiResponseTransactionId >> 8);
-    m_auiTxBuffer[1] = (m_uiResponseTransactionId & 0x00ff);
-
-    /* Protocol Modbus */
-    m_auiTxBuffer[2] = 0;
-    m_auiTxBuffer[3] = 0;
-
-    /* Length will be set later by send_msg (4 and 5) */
-
-    /* The slave ID is copied from the indication */
-    m_auiTxBuffer[6] = uiSlave;
-
-    // tcp header length
-    return 7;
-}
-
-//-------------------------------------------------------------------------------
 uint16_t CModbusTcpSlaveLinkLayer::Tail(uint8_t *puiMessage, uint16_t uiLength)
 {
     m_auiTxBuffer[4] = ((m_uiFrameLength - 6) >> 8);
@@ -359,19 +314,86 @@ uint8_t CModbusTcpSlaveLinkLayer::Fsm(void)
 //        std::cout << "CModbusTcpSlaveLinkLayer::Fsm IDDLE"  << std::endl;
         break;
 
+    case STOP:
+//        //std::cout << "CModbusTcpSlaveLinkLayer::Fsm STOP"  << std::endl;
+        break;
+
     case START:
         std::cout << "CModbusTcpSlaveLinkLayer::Fsm START"  << std::endl;
-        SetFsmState(COMMUNICATION_START);
+        std::cout << "CModbusTcpSlaveLinkLayer::Fsm m_sCommunicationDeviceName" << " " << (m_sCommunicationDeviceName) << std::endl;
+        GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
+        SetFsmState(INIT);
+        break;
+
+    case INIT:
+        std::cout << "CModbusTcpSlaveLinkLayer::Fsm INIT 1"  << std::endl;
+        {
+            CTaskInterface* pxTask =
+                GetResources() ->
+                GetCommonTaskFromMapPointer(m_sCommunicationDeviceName);
+
+            if (pxTask != 0)
+            {
+                std::cout << "CModbusTcpSlaveLinkLayer::Fsm INIT 2"  << std::endl;
+                if (pxTask -> GetFsmState() >= READY)
+                {
+                    SetCommunicationDevice((CCommunicationDeviceInterfaceNew*)pxTask);
+                    SetFsmCommandState(0);
+                    SetFsmState(READY);
+                    std::cout << "CModbusTcpSlaveLinkLayer::Fsm READY"  << std::endl;
+                }
+            }
+            else
+            {
+                std::cout << "CModbusTcpSlaveLinkLayer::Fsm INIT 3"  << std::endl;
+                if (GetTimerPointer() -> IsOverflow())
+                {
+                    SetFsmState(STOP);
+                    std::cout << "CModbusTcpSlaveLinkLayer::Fsm STOP"  << std::endl;
+                }
+            }
+        }
         break;
 
     case READY:
-        std::cout << "CModbusTcpSlaveLinkLayer::Fsm READY"  << std::endl;
+//        std::cout << "CModbusTcpSlaveLinkLayer::Fsm READY"  << std::endl;
+//
+//        if (GetFsmCommandState() != 0)
+//        {
+//            std::cout << "CModbusTcpSlaveLinkLayer::Fsm READY 2"  << std::endl;
+//            SetFsmState(GetFsmCommandState());
+//            SetFsmCommandState(0);
+//        }
         break;
 
-    case STOP:
-        std::cout << "CModbusTcpSlaveLinkLayer::Fsm STOP"  << std::endl;
-        SetFsmState(START);
+    case DONE_OK:
+        std::cout << "CModbusTcpSlaveLinkLayer::Fsm DONE_OK"  << std::endl;
+        SetFsmAnswerState(DONE_OK);
+        SetFsmState(READY);
         break;
+
+    case DONE_ERROR:
+        std::cout << "CModbusTcpSlaveLinkLayer::Fsm DONE_ERROR"  << std::endl;
+        SetFsmAnswerState(DONE_ERROR);
+        SetFsmState(READY);
+
+//    case IDDLE:
+////        std::cout << "CModbusTcpSlaveLinkLayer::Fsm IDDLE"  << std::endl;
+//        break;
+//
+//    case START:
+//        std::cout << "CModbusTcpSlaveLinkLayer::Fsm START"  << std::endl;
+//        SetFsmState(COMMUNICATION_START);
+//        break;
+//
+//    case READY:
+//        std::cout << "CModbusTcpSlaveLinkLayer::Fsm READY"  << std::endl;
+//        break;
+//
+//    case STOP:
+//        std::cout << "CModbusTcpSlaveLinkLayer::Fsm STOP"  << std::endl;
+//        SetFsmState(START);
+//        break;
 
     case COMMUNICATION_START:
         std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_START"  << std::endl;

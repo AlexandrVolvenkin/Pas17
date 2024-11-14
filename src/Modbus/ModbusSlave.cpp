@@ -1389,7 +1389,6 @@ uint8_t CModbusSlave::Fsm(void)
                 if (pxTask -> GetFsmState() >= READY)
                 {
                     SetModbusSlaveLinkLayer((CModbusSlaveLinkLayer*)pxTask);
-//                    SetFsmState(COMMUNICATION_START);
                     SetFsmState(READY);
                     std::cout << "CModbusSlave::Fsm READY"  << std::endl;
                 }
@@ -1407,7 +1406,7 @@ uint8_t CModbusSlave::Fsm(void)
         break;
 
     case READY:
-//        std::cout << "CModbusSlave::Fsm READY"  << std::endl;
+        std::cout << "CModbusSlave::Fsm READY"  << std::endl;
 //        {
 //            if (m_pxCommandDataContainer != 0)
 //            {
@@ -1431,38 +1430,14 @@ uint8_t CModbusSlave::Fsm(void)
         break;
 
     case DONE_OK:
-        //std::cout << "CModbusSlave::Fsm DONE_OK"  << std::endl;
+        std::cout << "CModbusSlave::Fsm DONE_OK"  << std::endl;
         SetFsmAnswerState(DONE_OK);
         SetFsmState(READY);
 
     case DONE_ERROR:
-        //std::cout << "CModbusSlave::Fsm DONE_ERROR"  << std::endl;
+        std::cout << "CModbusSlave::Fsm DONE_ERROR"  << std::endl;
         SetFsmAnswerState(DONE_ERROR);
         SetFsmState(READY);
-
-
-
-//    case IDDLE:
-//        std::cout << "CModbusSlave::Fsm IDDLE"  << std::endl;
-//        break;
-//
-//    case START:
-//        std::cout << "CModbusSlave::Fsm START"  << std::endl;
-//        std::cout << "CModbusSlave::Fsm m_sCommunicationDeviceName" << " " << (m_sModbusSlaveLinkLayerName) << std::endl;
-//        SetModbusSlaveLinkLayer((CModbusSlaveLinkLayerInterface*)
-//                                (GetResources() ->
-//                                 GetCommonTaskFromMapPointer(m_sModbusSlaveLinkLayerName)));
-//        SetFsmState(COMMUNICATION_START);
-//        break;
-//
-//    case READY:
-//        std::cout << "CModbusSlave::Fsm READY"  << std::endl;
-//        break;
-//
-//    case STOP:
-//        std::cout << "CModbusSlave::Fsm STOP"  << std::endl;
-//        SetFsmState(START);
-//        break;
 
     case COMMUNICATION_START:
         std::cout << "CModbusSlave::Fsm COMMUNICATION_START"  << std::endl;
@@ -1475,6 +1450,13 @@ uint8_t CModbusSlave::Fsm(void)
         SetFsmState(MESSAGE_RECEIVE_WAITING);
         break;
 
+    case COMMUNICATION_RECEIVE_START:
+        std::cout << "CModbusSlave::Fsm COMMUNICATION_RECEIVE_START"  << std::endl;
+        m_pxModbusSlaveLinkLayer ->
+        CommunicationReceiveStart();
+        SetFsmState(MESSAGE_RECEIVE_WAITING);
+        break;
+
     case MESSAGE_RECEIVE_WAITING:
 //        std::cout << "CModbusSlave::Fsm MESSAGE_RECEIVE_WAITING"  << std::endl;
         if (m_pxModbusSlaveLinkLayer -> IsDoneOk())
@@ -1482,7 +1464,13 @@ uint8_t CModbusSlave::Fsm(void)
 //                GetFsmState() ==
 //                CModbusSlaveLinkLayerInterface::COMMUNICATION_FRAME_RECEIVED)
         {
+            std::cout << "CModbusSlave::Fsm MESSAGE_RECEIVE_WAITING 2"  << std::endl;
             SetFsmState(REQUEST_PROCESSING);
+        }
+        else if (m_pxModbusSlaveLinkLayer -> IsDoneError())
+        {
+            std::cout << "CModbusSlave::Fsm MESSAGE_RECEIVE_WAITING 3"  << std::endl;
+            SetFsmState(COMMUNICATION_RECEIVE_START);
         }
         break;
 
@@ -1519,17 +1507,21 @@ uint8_t CModbusSlave::Fsm(void)
         break;
 
     case AFTER_ANSWERING_WAITING:
-//        std::cout << "CModbusSlave::Fsm COMMUNICATION_START"  << std::endl;
+        std::cout << "CModbusSlave::Fsm AFTER_ANSWERING_WAITING"  << std::endl;
         if (m_pxModbusSlaveLinkLayer -> IsDoneOk())
 //        if (m_pxModbusSlaveLinkLayer ->
 //                GetFsmState() ==
 //                CModbusSlaveLinkLayerInterface::COMMUNICATION_FRAME_TRANSMITED)
         {
-//            m_pxModbusSlaveLinkLayer ->
-//            SetFsmState(CModbusSlaveLinkLayerInterface::COMMUNICATION_RECEIVE_CONTINUE);
+            std::cout << "CModbusSlave::Fsm AFTER_ANSWERING_WAITING 2"  << std::endl;
             m_pxModbusSlaveLinkLayer ->
-            ReceiveStart();
+            CommunicationReceiveStart();
             SetFsmState(MESSAGE_RECEIVE_WAITING);
+        }
+        else if (m_pxModbusSlaveLinkLayer -> IsDoneError())
+        {
+            std::cout << "CModbusSlave::Fsm AFTER_ANSWERING_WAITING 3"  << std::endl;
+            SetFsmState(COMMUNICATION_RECEIVE_START);
         }
         break;
 

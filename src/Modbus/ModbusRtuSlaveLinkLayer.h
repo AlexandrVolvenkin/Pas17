@@ -46,7 +46,6 @@ public:
     {
         COMMUNICATION_START = NEXT_STEP,
         COMMUNICATION_RECEIVE_START,
-        COMMUNICATION_RECEIVE_CONTINUE,
         COMMUNICATION_RECEIVE_END,
         COMMUNICATION_FRAME_CHECK,
         COMMUNICATION_FRAME_RECEIVED,
@@ -91,6 +90,7 @@ private:
     void TransmitDisable(void);
 
     void CommunicationStart(void);
+    void CommunicationReceiveStart(void);
     void ReceiveStart(void);
     void TransmitStart(void);
 
@@ -100,8 +100,6 @@ private:
                           uint16_t uiBitNumber,
                           uint8_t *puiRequest);
     uint16_t ResponseBasis(uint8_t, uint8_t, uint8_t * );
-    uint16_t RequestHeader(uint8_t uiSlave);
-    uint16_t ResponseHeader(uint8_t uiSlave);
     uint16_t Tail(uint8_t *, uint16_t );
     uint16_t Send(uint8_t *, uint16_t );
     int16_t Receive(uint8_t *, uint16_t );

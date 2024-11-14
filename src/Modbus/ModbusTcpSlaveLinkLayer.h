@@ -12,6 +12,7 @@
 #include <thread>
 
 #include "Modbus.h"
+#include "ModbusSlaveLinkLayer.h"
 #include "Configuration.h"
 
 /* Modbus_Application_Protocol_V1_1b.pdf Chapter 4 Section 1 Page 5
@@ -38,9 +39,11 @@ class CTimer;
 class CPlatform;
 class CTask;
 class CResources;
+class CCommunicationDeviceNew;
+class CCommunicationDeviceInterfaceNew;
 
 //-------------------------------------------------------------------------------
-class CModbusTcpSlaveLinkLayer : public CModbusSlaveLinkLayerInterface
+class CModbusTcpSlaveLinkLayer : public CModbusSlaveLinkLayer
 {
 public:
     enum
@@ -86,14 +89,18 @@ private:
     void ReceiveDisable(void);
     void TransmitEnable(void);
     void TransmitDisable(void);
+
+    void CommunicationStart(void);
+    void CommunicationReceiveStart(void);
+    void ReceiveStart(void);
+    void TransmitStart(void);
+
     uint16_t RequestBasis(uint8_t uiSlave,
                           uint8_t uiFunctionCode,
                           uint16_t uiAddress,
                           uint16_t uiBitNumber,
                           uint8_t *puiRequest);
     uint16_t ResponseBasis(uint8_t, uint8_t, uint8_t * );
-    uint16_t RequestHeader(uint8_t uiSlave);
-    uint16_t ResponseHeader(uint8_t uiSlave);
     uint16_t Tail(uint8_t *, uint16_t );
     uint16_t Send(uint8_t *, uint16_t );
     int16_t Receive(uint8_t *, uint16_t );
@@ -131,7 +138,7 @@ private:
         return 0;
     };
 
-    CTcpCommunicationDevice* m_pxCommunicationDevice;
+//    CTcpCommunicationDevice* m_pxCommunicationDevice;
     uint16_t m_uiRequestTransactionId = 0;
     uint16_t m_uiResponseTransactionId = 0;
     // таймоут по отсутствию следующего байта 3.5 бода.

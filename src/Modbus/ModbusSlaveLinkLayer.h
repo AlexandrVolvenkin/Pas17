@@ -29,7 +29,6 @@ public:
 //    {
 //        COMMUNICATION_START = NEXT_STEP,
 //        COMMUNICATION_RECEIVE_START,
-//        COMMUNICATION_RECEIVE_CONTINUE,
 //        COMMUNICATION_RECEIVE_END,
 //        COMMUNICATION_FRAME_CHECK,
 //        COMMUNICATION_FRAME_RECEIVED,
@@ -76,6 +75,7 @@ public:
 //    void TransmitDisable(void) {};
 
     virtual void CommunicationStart(void) {};
+    virtual void CommunicationReceiveStart(void) {};
     virtual void ReceiveStart(void) {};
     virtual void TransmitStart(void) {};
 

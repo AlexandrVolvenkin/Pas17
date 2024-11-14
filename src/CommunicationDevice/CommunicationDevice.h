@@ -81,13 +81,13 @@ public:
 //-------------------------------------------------------------------------------
 class CCommunicationDeviceNew : public CCommunicationDeviceInterfaceNew
 {
-    public:
-        CCommunicationDeviceNew();
-        virtual ~CCommunicationDeviceNew();
+public:
+    CCommunicationDeviceNew();
+    virtual ~CCommunicationDeviceNew();
 
-    protected:
+protected:
 
-    private:
+private:
 };
 
 //-------------------------------------------------------------------------------

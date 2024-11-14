@@ -104,19 +104,28 @@ void CModbusRtuSlaveLinkLayer::TransmitDisable(void)
 //-------------------------------------------------------------------------------
 void CModbusRtuSlaveLinkLayer::CommunicationStart(void)
 {
-    SetFsmState(COMMUNICATION_START);
+//    SetFsmState(COMMUNICATION_START);
+    SetFsmCommandState(COMMUNICATION_START);
+}
+
+//-------------------------------------------------------------------------------
+void CModbusRtuSlaveLinkLayer::CommunicationReceiveStart(void)
+{
+    SetFsmCommandState(COMMUNICATION_RECEIVE_START);
 }
 
 //-------------------------------------------------------------------------------
 void CModbusRtuSlaveLinkLayer::ReceiveStart(void)
 {
-    SetFsmState(COMMUNICATION_RECEIVE_CONTINUE);
+//    SetFsmState(COMMUNICATION_RECEIVE_CONTINUE);
+    SetFsmCommandState(COMMUNICATION_RECEIVE_START);
 }
 
 //-------------------------------------------------------------------------------
 void CModbusRtuSlaveLinkLayer::TransmitStart(void)
 {
-    SetFsmState(COMMUNICATION_TRANSMIT_START);
+//    SetFsmState(COMMUNICATION_TRANSMIT_START);
+    SetFsmCommandState(COMMUNICATION_TRANSMIT_START);
 }
 
 //-------------------------------------------------------------------------------
@@ -200,7 +209,7 @@ void CModbusRtuSlaveLinkLayer::SetBitNumber(uint16_t uiData)
 }
 
 //-------------------------------------------------------------------------------
-/* Builds a TCP request header */
+/* Builds a RTU request header */
 uint16_t CModbusRtuSlaveLinkLayer::RequestBasis(uint8_t uiSlave,
         uint8_t uiFunctionCode,
         uint16_t uiAddress,
@@ -218,7 +227,7 @@ uint16_t CModbusRtuSlaveLinkLayer::RequestBasis(uint8_t uiSlave,
 }
 
 //-------------------------------------------------------------------------------
-/* Builds a TCP response header */
+/* Builds a RTU response header */
 uint16_t CModbusRtuSlaveLinkLayer::ResponseBasis(uint8_t uiSlave, uint8_t uiFunctionCode, uint8_t *puiResponse)
 {
     /* In this case, the slave is certainly valid because a check is already
@@ -227,65 +236,6 @@ uint16_t CModbusRtuSlaveLinkLayer::ResponseBasis(uint8_t uiSlave, uint8_t uiFunc
     puiResponse[1] = uiFunctionCode;
 
     return _MODBUS_RTU_PRESET_RSP_LENGTH;
-}
-
-//-------------------------------------------------------------------------------
-/* Builds a TCP request header */
-uint16_t CModbusRtuSlaveLinkLayer::RequestHeader(uint8_t uiSlave)
-{
-//    /* Extract from MODBUS Messaging on TCP/IP Implementation Guide V1.0b
-//       (page 23/46):
-//       The transaction identifier is used to associate the future response
-//       with the request. So, at a time, on a TCP connection, this identifier
-//       must be unique. */
-//
-//    /* Transaction ID */
-//    if (m_uiRequestTransactionId < UINT16_MAX)
-//    {
-//        m_uiRequestTransactionId++;
-//    }
-//    else
-//    {
-//        m_uiRequestTransactionId = 0;
-//    }
-//    m_auiTxBuffer[0] = (m_uiRequestTransactionId >> 8);
-//    m_auiTxBuffer[1] = (m_uiRequestTransactionId & 0x00ff);
-//
-//    /* Protocol Modbus */
-//    m_auiTxBuffer[2] = 0;
-//    m_auiTxBuffer[3] = 0;
-//
-//    /* Length will be defined later by set_puiRequest_length_tcp at offsets 4
-//       and 5 */
-//
-//    m_auiTxBuffer[6] = uiSlave;
-//
-//    // tcp header length
-//    return 7;
-}
-
-//-------------------------------------------------------------------------------
-/* Builds a TCP response header */
-uint16_t CModbusRtuSlaveLinkLayer::ResponseHeader(uint8_t uiSlave)
-{
-//    /* Extract from MODBUS Messaging on TCP/IP Implementation
-//       Guide V1.0b (page 23/46):
-//       The transaction identifier is used to associate the future
-//       response with the puiRequestuest. */
-//    m_auiTxBuffer[0] = (m_uiResponseTransactionId >> 8);
-//    m_auiTxBuffer[1] = (m_uiResponseTransactionId & 0x00ff);
-//
-//    /* Protocol Modbus */
-//    m_auiTxBuffer[2] = 0;
-//    m_auiTxBuffer[3] = 0;
-//
-//    /* Length will be set later by send_msg (4 and 5) */
-//
-//    /* The slave ID is copied from the indication */
-//    m_auiTxBuffer[6] = uiSlave;
-//
-//    // tcp header length
-//    return 7;
 }
 
 //-------------------------------------------------------------------------------
@@ -341,110 +291,72 @@ uint8_t CModbusRtuSlaveLinkLayer::Fsm(void)
     {
         int16_t iBytesNumber;
 
-//    case IDDLE:
-////        std::cout << "CModbusRtuSlaveLinkLayer::Fsm IDDLE"  << std::endl;
-//        break;
-//
-//    case STOP:
-////        //std::cout << "CModbusRtuSlaveLinkLayer::Fsm STOP"  << std::endl;[[[]=
-//        SetFsmState(START);
-//        break;
-//
-//    case START:
-//        std::cout << "CModbusRtuSlaveLinkLayer::Fsm START"  << std::endl;
-//        std::cout << "CModbusRtuSlaveLinkLayer::Fsm m_sModbusSlaveLinkLayerName" << " " << (m_sModbusSlaveLinkLayerName) << std::endl;
-//        GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
-//        SetFsmState(INIT);
-//        break;
-//
-//    case INIT:
-//        std::cout << "CModbusRtuSlaveLinkLayer::Fsm INIT 1"  << std::endl;
-//        {
-//            CTaskInterface* pxTask =
-//                GetResources() ->
-//                GetCommonTaskFromMapPointer(m_sCommunicationDeviceName);
-//
-//            if (pxTask != 0)
-//            {
-//                std::cout << "CModbusRtuSlaveLinkLayer::Fsm INIT 2"  << std::endl;
-//                if (pxTask -> GetFsmState() >= READY)
-//                {
-//                    SetCommunicationDevice((CCommunicationDeviceInterfaceNew*)pxTask);
-////                    SetFsmState(COMMUNICATION_START);
-//                    SetFsmState(READY);
-//                    std::cout << "CModbusRtuSlaveLinkLayer::Fsm READY"  << std::endl;
-//                }
-//            }
-//            else
-//            {
-//                std::cout << "CModbusRtuSlaveLinkLayer::Fsm INIT 3"  << std::endl;
-//                if (GetTimerPointer() -> IsOverflow())
-//                {
-//                    SetFsmState(STOP);
-//                    std::cout << "CModbusRtuSlaveLinkLayer::Fsm STOP"  << std::endl;
-//                }
-//            }
-//        }
-//        break;
-//
-//    case READY:
-//        std::cout << "CModbusRtuSlaveLinkLayer::Fsm READY"  << std::endl;
-////        {
-////            if (m_pxCommandDataContainer != 0)
-////            {
-////                std::cout << "CModbusRtuSlaveLinkLayer::Fsm READY 2"  << std::endl;
-////                m_pxOperatingDataContainer = m_pxCommandDataContainer;
-////                SetFsmState(GetFsmCommandState());
-////                SetFsmCommandState(0);
-////                m_pxCommandDataContainer = 0;
-////            }
-////        }
-//
-//
-////        {
-////            if (GetFsmCommandState() != 0)
-////            {
-////                SetFsmState(GetFsmCommandState());
-////                SetFsmCommandState(0);
-////            }
-////        }
-////        SetFsmState(COMMUNICATION_START);
-//        break;
-//
-//    case DONE_OK:
-//        //std::cout << "CModbusRtuSlaveLinkLayer::Fsm DONE_OK"  << std::endl;
-//        SetFsmAnswerState(DONE_OK);
-//        SetFsmState(READY);
-//
-//    case DONE_ERROR:
-//        //std::cout << "CModbusRtuSlaveLinkLayer::Fsm DONE_ERROR"  << std::endl;
-//        SetFsmAnswerState(DONE_ERROR);
-//        SetFsmState(READY);
-
-
-
-
     case IDDLE:
 //        std::cout << "CModbusRtuSlaveLinkLayer::Fsm IDDLE"  << std::endl;
+        break;
+
+    case STOP:
+//        //std::cout << "CModbusRtuSlaveLinkLayer::Fsm STOP"  << std::endl;
         break;
 
     case START:
         std::cout << "CModbusRtuSlaveLinkLayer::Fsm START"  << std::endl;
         std::cout << "CModbusRtuSlaveLinkLayer::Fsm m_sCommunicationDeviceName" << " " << (m_sCommunicationDeviceName) << std::endl;
-        SetCommunicationDevice((CCommunicationDeviceInterfaceNew*)
-                               (GetResources() ->
-                                GetCommonTaskFromMapPointer(m_sCommunicationDeviceName)));
-        SetFsmState(COMMUNICATION_START);
+        GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
+        SetFsmState(INIT);
+        break;
+
+    case INIT:
+        std::cout << "CModbusRtuSlaveLinkLayer::Fsm INIT 1"  << std::endl;
+        {
+            CTaskInterface* pxTask =
+                GetResources() ->
+                GetCommonTaskFromMapPointer(m_sCommunicationDeviceName);
+
+            if (pxTask != 0)
+            {
+                std::cout << "CModbusRtuSlaveLinkLayer::Fsm INIT 2"  << std::endl;
+                if (pxTask -> GetFsmState() >= READY)
+                {
+                    SetCommunicationDevice((CCommunicationDeviceInterfaceNew*)pxTask);
+                    SetFsmCommandState(0);
+                    SetFsmState(READY);
+                    std::cout << "CModbusRtuSlaveLinkLayer::Fsm READY"  << std::endl;
+                }
+            }
+            else
+            {
+                std::cout << "CModbusRtuSlaveLinkLayer::Fsm INIT 3"  << std::endl;
+                if (GetTimerPointer() -> IsOverflow())
+                {
+                    SetFsmState(STOP);
+                    std::cout << "CModbusRtuSlaveLinkLayer::Fsm STOP"  << std::endl;
+                }
+            }
+        }
         break;
 
     case READY:
         std::cout << "CModbusRtuSlaveLinkLayer::Fsm READY"  << std::endl;
+
+        if (GetFsmCommandState() != 0)
+        {
+            std::cout << "CModbusRtuSlaveLinkLayer::Fsm READY 2"  << std::endl;
+            SetFsmState(GetFsmCommandState());
+            SetFsmCommandState(0);
+        }
         break;
 
-    case STOP:
-        std::cout << "CModbusRtuSlaveLinkLayer::Fsm STOP"  << std::endl;
-        SetFsmState(START);
+    case DONE_OK:
+        std::cout << "CModbusRtuSlaveLinkLayer::Fsm DONE_OK"  << std::endl;
+        SetFsmAnswerState(DONE_OK);
+        SetFsmState(READY);
         break;
+
+    case DONE_ERROR:
+        std::cout << "CModbusRtuSlaveLinkLayer::Fsm DONE_ERROR"  << std::endl;
+        SetFsmAnswerState(DONE_ERROR);
+        SetFsmState(READY);
 
     case COMMUNICATION_START:
         std::cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_START"  << std::endl;
@@ -487,65 +399,6 @@ uint8_t CModbusRtuSlaveLinkLayer::Fsm(void)
         }
         break;
 
-    case COMMUNICATION_RECEIVE_CONTINUE:
-        std::cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_CONTINUE"  << std::endl;
-        m_uiFrameLength = 0;
-        iBytesNumber =
-            m_pxCommunicationDevice ->
-            ReceiveContinue((m_auiRxBuffer + m_uiFrameLength),
-                            (MODBUS_RTU_MAX_ADU_LENGTH - m_uiFrameLength),
-                            1000000);
-//        if (iBytesNumber > 0)
-//        {
-//            m_uiFrameLength = m_uiFrameLength + iBytesNumber;
-//        }
-//        else if (iBytesNumber < 0)
-//        {
-//            SetFsmState(COMMUNICATION_RECEIVE_ERROR);
-//        }
-//        else
-//        {
-//            SetFsmState(COMMUNICATION_FRAME_RECEIVED);
-//
-//            cout << "ReceiveContinue" << endl;
-//            unsigned char *pucSourceTemp;
-//            pucSourceTemp = (unsigned char*)m_auiRxBuffer;
-//            for(int i=0; i<32; )
-//            {
-//                for(int j=0; j<8; j++)
-//                {
-//                    cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
-//                }
-//                cout << endl;
-//                i += 8;
-//            }
-//        }
-        if (iBytesNumber > 0)
-        {
-            m_uiFrameLength = m_uiFrameLength + iBytesNumber;
-            {
-                cout << "CModbusRtuSlaveLinkLayer::Fsm m_auiRxBuffer" << endl;
-                unsigned char *pucSourceTemp;
-                pucSourceTemp = (unsigned char*)m_auiRxBuffer;
-                for(int i=0; i<32; )
-                {
-                    for(int j=0; j<8; j++)
-                    {
-                        cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
-                    }
-                    cout << endl;
-                    i += 8;
-                }
-            }
-            SetFsmState(COMMUNICATION_RECEIVE_END);
-        }
-        else if (iBytesNumber < 0)
-        {
-            cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_CONTINUE errno " << errno << endl;
-            SetFsmState(COMMUNICATION_RECEIVE_ERROR);
-        }
-        break;
-
     case COMMUNICATION_RECEIVE_END:
         std::cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END"  << std::endl;
         iBytesNumber =
@@ -563,8 +416,6 @@ uint8_t CModbusRtuSlaveLinkLayer::Fsm(void)
         }
         else
         {
-//            m_uiResponseTransactionId = ((static_cast<uint16_t>(m_auiRxBuffer[0]) << 8) |
-//                                         (static_cast<uint16_t>(m_auiRxBuffer[1])));
             SetFsmState(COMMUNICATION_FRAME_CHECK);
 
             {
@@ -590,7 +441,6 @@ uint8_t CModbusRtuSlaveLinkLayer::Fsm(void)
         {
             std::cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_FRAME_CHECK 2"  << std::endl;
             SetFsmState(COMMUNICATION_FRAME_RECEIVED);
-            SetFsmAnswerState(DONE_OK);
         }
         else
         {
@@ -602,6 +452,7 @@ uint8_t CModbusRtuSlaveLinkLayer::Fsm(void)
     case COMMUNICATION_FRAME_RECEIVED:
         std::cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_FRAME_RECEIVED"  << std::endl;
 
+        SetFsmState(DONE_OK);
 //        cout << "ReceiveContinue" << endl;
 //        unsigned char *pucSourceTemp;
 //        pucSourceTemp = (unsigned char*)m_auiRxBuffer;
@@ -636,11 +487,11 @@ uint8_t CModbusRtuSlaveLinkLayer::Fsm(void)
         std::cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_TRANSMIT_START m_uiFrameLength "  << (int)m_uiFrameLength << std::endl;
         m_pxCommunicationDevice -> Write(m_auiTxBuffer, m_uiFrameLength);
         SetFsmState(COMMUNICATION_FRAME_TRANSMITED);
-        SetFsmAnswerState(DONE_OK);
         break;
 
     case COMMUNICATION_FRAME_TRANSMITED:
         std::cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_FRAME_TRANSMITED"  << std::endl;
+        SetFsmState(DONE_OK);
         {
             cout << "CModbusRtuSlaveLinkLayer::Fsm m_auiTxBuffer" << endl;
             unsigned char *pucSourceTemp;
@@ -659,9 +510,7 @@ uint8_t CModbusRtuSlaveLinkLayer::Fsm(void)
 
     case COMMUNICATION_RECEIVE_ERROR:
         std::cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_ERROR"  << std::endl;
-//        m_pxCommunicationDevice -> Close();
-//        SetFsmState(COMMUNICATION_START);
-        SetFsmState(COMMUNICATION_RECEIVE_CONTINUE);
+        SetFsmState(DONE_ERROR);
         break;
 
     default:
