@@ -54,6 +54,7 @@ public:
         COMMUNICATION_RECEIVE_START,
         COMMUNICATION_RECEIVE_CONTINUE,
         COMMUNICATION_RECEIVE_END,
+        COMMUNICATION_FRAME_CHECK,
         COMMUNICATION_FRAME_RECEIVED,
         COMMUNICATION_TRANSMIT_START,
         COMMUNICATION_FRAME_TRANSMITED,
@@ -81,8 +82,6 @@ public:
     virtual ~CModbusRtuSlaveLinkLayer();
 
     static void Process(CModbusRtuSlaveLinkLayer* pxModbusSlaveLinkLayer);
-//    void CommunicationDeviceInit(const char* pccIpAddress,
-//                                 uint16_t uiPort);
     void CommunicationDeviceInit(const char* pccDeviceName,
                                  uint32_t uiBaudRate,
                                  uint8_t uiDataBits,

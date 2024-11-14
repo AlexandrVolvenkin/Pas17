@@ -23,6 +23,8 @@ OBJS :=
 
 # Every subdirectory with source files must be described here
 SUBDIRS := \
+obj/Debug/Pas17/src/CommunicationDevice \
+obj/Debug/Pas17/src \
 obj/Debug/src \
 obj/Debug/src/Modbus \
 obj/Release/Pas17/src/CommunicationDevice \

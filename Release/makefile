@@ -16,6 +16,8 @@ RM := rm -rf
 -include obj/Release/Pas17/src/subdir.mk
 -include obj/Debug/src/Modbus/subdir.mk
 -include obj/Debug/src/subdir.mk
+-include obj/Debug/Pas17/src/CommunicationDevice/subdir.mk
+-include obj/Debug/Pas17/src/subdir.mk
 ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(strip $(C++_DEPS)),)
 -include $(C++_DEPS)

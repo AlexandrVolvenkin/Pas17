@@ -75,6 +75,8 @@ CMainProductionCycle::~CMainProductionCycle()
     delete m_pxLedBlinker;
 //    delete m_pxFileDescriptorEventsWaitingProduction;
 
+    m_xResources.ModbusWorkingArraysDestroy();
+
     delete m_puiCoils;
     delete m_puiDiscreteInputs;
     delete m_puiHoldingRegisters;
@@ -101,6 +103,7 @@ uint8_t CMainProductionCycle::CreateTasks(void)
     std::cout << "CMainProductionCycle CreateTasks"  << std::endl;
 
     m_pxSpiCommunicationDevice = new CSpi();
+
 //-------------------------------------------------------------------------------
     CStorageDeviceFileSystem* pxStorageDeviceFileSystem = new CStorageDeviceFileSystem();
     m_xResources.AddCommonTaskToMap("StorageDeviceFileSystem",
@@ -137,6 +140,11 @@ uint8_t CMainProductionCycle::CreateTasks(void)
 
 
 //-------------------------------------------------------------------------------
+    m_xResources.ModbusWorkingArraysCreate(COILS_WORK_ARRAY_LENGTH,
+                                           DISCRETE_INPUTS_ARRAY_LENGTH,
+                                           HOLDING_REGISTERS_ARRAY_LENGTH,
+                                           INPUT_REGISTERS_ARRAY_LENGTH);
+
     CSerialPortCommunicationDevice* pxSerialPortCommunicationDeviceCom1 =
         new CSerialPortCommunicationDevice();
     m_xResources.AddCommonTaskToMap("SerialPortCommunicationDeviceCom1",
@@ -163,6 +171,8 @@ uint8_t CMainProductionCycle::CreateTasks(void)
     SetResources(&m_xResources);
     pxModbusRtuSlaveUpperLevel ->
     SetModbusSlaveLinkLayerName("ModbusRtuSlaveLinkLayerUpperLevel");
+    pxModbusRtuSlaveUpperLevel ->
+    ModbusWorkingArraysInit();
     m_xResources.AddCurrentlyRunningTasksList(pxModbusRtuSlaveUpperLevel);
 }
 
@@ -180,27 +190,27 @@ uint8_t CMainProductionCycle::InitTasks(void)
     cout << "m_pxSpiCommunicationDevice -> Open" << endl;
 
 
-////-------------------------------------------------------------------------------
-//    CSerialPortCommunicationDevice* pxSerialPortCommunicationDeviceCom1 =
-//        (CSerialPortCommunicationDevice*)(GetResources() ->
-//                                          GetCommonTaskFromMapPointer("SerialPortCommunicationDeviceCom1"));
-//
-//    pxSerialPortCommunicationDeviceCom1 -> Init();
-//    pxSerialPortCommunicationDeviceCom1 -> SetDeviceName("/dev/ttyO1");
-//    pxSerialPortCommunicationDeviceCom1 -> SetBaudRate(9600);
-//    pxSerialPortCommunicationDeviceCom1 -> SetDataBits(8);
-//    pxSerialPortCommunicationDeviceCom1 -> SetParity('N');
-//    pxSerialPortCommunicationDeviceCom1 -> SetStopBit(2);
-//
-////    m_uiGuardTimeout = ((((1000000UL / uiBaudRate) * 8UL * 4UL) / 1000UL) + 1);
-//
-////-------------------------------------------------------------------------------
-//    CModbusSlave* pxModbusRtuSlaveUpperLevel =
-//        (CModbusSlave*)(GetResources() ->
-//                        GetCommonTaskFromMapPointer("ModbusRtuSlaveUpperLevel"));
-//
-//    pxModbusRtuSlaveUpperLevel ->
-//    SetOwnAddress(17);
+//-------------------------------------------------------------------------------
+    CSerialPortCommunicationDevice* pxSerialPortCommunicationDeviceCom1 =
+        (CSerialPortCommunicationDevice*)(GetResources() ->
+                                          GetCommonTaskFromMapPointer("SerialPortCommunicationDeviceCom1"));
+
+    pxSerialPortCommunicationDeviceCom1 -> Init();
+    pxSerialPortCommunicationDeviceCom1 -> SetDeviceName("/dev/ttyO1");
+    pxSerialPortCommunicationDeviceCom1 -> SetBaudRate(9600);
+    pxSerialPortCommunicationDeviceCom1 -> SetDataBits(8);
+    pxSerialPortCommunicationDeviceCom1 -> SetParity('N');
+    pxSerialPortCommunicationDeviceCom1 -> SetStopBit(2);
+
+//    m_uiGuardTimeout = ((((1000000UL / uiBaudRate) * 8UL * 4UL) / 1000UL) + 1);
+
+//-------------------------------------------------------------------------------
+    CModbusSlave* pxModbusRtuSlaveUpperLevel =
+        (CModbusSlave*)(GetResources() ->
+                        GetCommonTaskFromMapPointer("ModbusRtuSlaveUpperLevel"));
+
+    pxModbusRtuSlaveUpperLevel ->
+    SetOwnAddress(17);
 
 
 
@@ -333,7 +343,8 @@ uint8_t CMainProductionCycle::Fsm(void)
 
         if ((m_pxDataStoreCheck -> GetFsmState()) == READY)
         {
-            SetFsmState(DATABASE_CHECK_BEGIN);
+            SetFsmState(MAIN_CYCLE_MODBUS_SLAVE);
+//            SetFsmState(DATABASE_CHECK_BEGIN);
             std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_TASK_READY_WAITING 1"  << std::endl;
         }
         else

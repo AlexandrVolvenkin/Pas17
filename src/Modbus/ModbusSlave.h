@@ -26,7 +26,7 @@ class CTask;
 class CResources;
 
 //-------------------------------------------------------------------------------
-class CModbusSlave : public CTask//, public CDfa
+class CModbusSlave : public CTask
 {
 public:
     enum
@@ -70,22 +70,23 @@ public:
     static const char *ModbusStringError(int errnum);
 //    void SlaveSet(uint8_t );
 
-    uint16_t ReadCoils(uint8_t *, uint8_t *, uint16_t );
-    uint16_t ReadDiscreteInputs(uint8_t *, uint8_t *, uint16_t );
-    uint16_t ReadHoldingRegisters(uint8_t *, uint8_t *, uint16_t );
-    uint16_t ReadInputRegisters(uint8_t *, uint8_t *, uint16_t );
-    uint16_t WriteSingleCoil(uint8_t *, uint8_t *, uint16_t );
-    uint16_t WriteSingleRegister(uint8_t *, uint8_t *, uint16_t );
-    uint16_t WriteMultipleCoils(uint8_t *, uint8_t *, uint16_t );
-    uint16_t WriteMultipleRegisters(uint8_t *, uint8_t *, uint16_t );
-    uint16_t ReadExceptionStatus(uint8_t *, uint8_t *, uint16_t );
-    uint16_t ReportSlaveID(uint8_t *, uint8_t *, uint16_t );
-    uint16_t WriteAndReadRegisters(uint8_t *, uint8_t *, uint16_t );
-    uint16_t Programming(uint8_t *, uint8_t *, uint16_t );
-    uint16_t PollProgramming(uint8_t *, uint8_t *, uint16_t );
-    uint16_t DataBaseRead(uint8_t *, uint8_t *, uint16_t );
-    uint16_t DataBaseWrite(uint8_t *, uint8_t *, uint16_t );
-    uint16_t RequestProcessing(uint8_t *, uint8_t *, uint16_t );
+    uint16_t ReadCoils(void);
+    uint16_t ReadDiscreteInputs(void);
+    uint16_t ReadHoldingRegisters(void);
+    uint16_t ReadInputRegisters(void);
+    uint16_t WriteSingleCoil(void);
+    uint16_t WriteSingleRegister(void);
+    uint16_t WriteMultipleCoils(void);
+    uint16_t WriteMultipleRegisters(void);
+    uint16_t ReadExceptionStatus(void);
+    uint16_t ReportSlaveID(void);
+    uint16_t WriteAndReadRegisters(void);
+    uint16_t Programming(void);
+    uint16_t PollProgramming(void);
+    uint16_t DataBaseRead(void);
+    uint16_t DataBaseWrite(void);
+    uint16_t RequestProcessing(void);
+
     uint8_t Fsm(void);
 
     void SetModbusSlaveLinkLayer(CModbusSlaveLinkLayerInterface* pxModbusSlaveLinkLayer)
@@ -172,7 +173,6 @@ public:
 //-------------------------------------------------------------------------------
     std::string m_sModbusSlaveLinkLayerName;
     CModbusSlaveLinkLayerInterface* m_pxModbusSlaveLinkLayer;
-//    CResources* m_pxResources;
 
     uint8_t m_uiOwnAddress;
     uint8_t m_uiSlaveAddress;

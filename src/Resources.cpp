@@ -14,11 +14,6 @@
 #include "DeviceControl.h"
 #include "Resources.h"
 
-    void CResourcesInterface::AddCommonListTask(CTaskInterface* pxTask) {};
-    CTaskInterface* CResourcesInterface::GetCommonListTaskPointer(char* pcTaskName) {};
-    void CResourcesInterface::AddCommonTaskToMap(std::string sTaskName, CTaskInterface* pxTask) {};
-    CTaskInterface* CResourcesInterface::GetCommonTaskFromMapPointer(std::string sTaskName) {};
-//    std::list<CTaskInterface*>* CResourcesInterface::GetCommonTasksListPointer(void) {};
 //-------------------------------------------------------------------------------
 CResources::CResources()
 {
@@ -34,10 +29,10 @@ CResources::CResources()
     SetResources(this);
 //    m_pxResources -> AddCommonListTask(this);
 
-    ModbusWorkingArraysCreate(COILS_WORK_ARRAY_LENGTH,
-                              DISCRETE_INPUTS_ARRAY_LENGTH,
-                              HOLDING_REGISTERS_ARRAY_LENGTH,
-                              INPUT_REGISTERS_ARRAY_LENGTH);
+//    ModbusWorkingArraysCreate(COILS_WORK_ARRAY_LENGTH,
+//                              DISCRETE_INPUTS_ARRAY_LENGTH,
+//                              HOLDING_REGISTERS_ARRAY_LENGTH,
+//                              INPUT_REGISTERS_ARRAY_LENGTH);
 }
 
 //-------------------------------------------------------------------------------
@@ -65,6 +60,15 @@ void CResources::ModbusWorkingArraysCreate(uint16_t uiCoilsNumber,
     m_uiDiscreteInputsNumber = uiDiscreteInputsNumber;
     m_uiHoldingRegistersNumber = uiHoldingRegistersNumber;
     m_uiInputRegistersNumber = uiInputRegistersNumber;
+}
+
+//-------------------------------------------------------------------------------
+void CResources::ModbusWorkingArraysDestroy(void)
+{
+    delete[] m_puiCoils;
+    delete[] m_puiDiscreteInputs;
+    delete[] m_puiHoldingRegisters;
+    delete[] m_puiInputRegisters;
 }
 
 //-------------------------------------------------------------------------------

@@ -25,19 +25,14 @@ class CConfigurationCreate;
 class CServiceMarket;
 
 //-------------------------------------------------------------------------------
-class CResourcesInterface : public CTask//, public CDfa
+class CResourcesInterface : public CTask
 {
 public:
-    virtual void AddCommonListTask(CTaskInterface* pxTask);
-    virtual CTaskInterface* GetCommonListTaskPointer(char* pcTaskName);
-    virtual void AddCommonTaskToMap(std::string sTaskName, CTaskInterface* pxTask);
-    virtual CTaskInterface* GetCommonTaskFromMapPointer(std::string sTaskName);
-//    virtual std::list<CTaskInterface*>* GetCommonTasksListPointer(void);
-//    virtual void AddCommonListTask(CTaskInterface* pxTask) {};
-//    virtual CTaskInterface* GetCommonListTaskPointer(char* pcTaskName) {};
-//    virtual void AddCommonTaskToMap(std::string sTaskName, CTaskInterface* pxTask) {};
-//    virtual CTaskInterface* GetCommonTaskFromMapPointer(std::string sTaskName) {};
-//    virtual std::list<CTaskInterface*>* GetCommonTasksListPointer(void) {};
+    virtual void AddCommonListTask(CTaskInterface* pxTask) {};
+    virtual CTaskInterface* GetCommonListTaskPointer(char* pcTaskName) {};
+    virtual void AddCommonTaskToMap(std::string sTaskName, CTaskInterface* pxTask) {};
+    virtual CTaskInterface* GetCommonTaskFromMapPointer(std::string sTaskName) {};
+    virtual std::list<CTaskInterface*>* GetCommonTasksListPointer(void) {};
 
 };
 
@@ -69,6 +64,7 @@ public:
                                    uint16_t uiDiscreteInputsNumber,
                                    uint16_t uiHoldingRegistersNumber,
                                    uint16_t uiInputRegistersNumber);
+    void ModbusWorkingArraysDestroy(void);
     void SetCoils(uint8_t* puiPointer);
     uint8_t* GetCoils(void);
     void SetCoilsNumber(uint16_t uiData);

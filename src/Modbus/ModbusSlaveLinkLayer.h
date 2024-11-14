@@ -31,6 +31,7 @@ public:
         COMMUNICATION_RECEIVE_START,
         COMMUNICATION_RECEIVE_CONTINUE,
         COMMUNICATION_RECEIVE_END,
+        COMMUNICATION_FRAME_CHECK,
         COMMUNICATION_FRAME_RECEIVED,
         COMMUNICATION_TRANSMIT_START,
         COMMUNICATION_FRAME_TRANSMITED,
@@ -45,6 +46,11 @@ public:
     void CommunicationDeviceInit(const char* pccIpAddress,
                                  uint16_t uiPort) {};
     uint8_t Fsm(void) {};
+
+//    void SetCommunicationDevice(CCommunicationDeviceInterface* pxCommunicationDevice)
+//    {
+//        m_pxCommunicationDevice = pxCommunicationDevice;
+//    };
 
     virtual uint8_t* GetRxBuffer(void) {};
     virtual uint8_t* GetTxBuffer(void) {};
@@ -83,7 +89,7 @@ public:
     virtual uint16_t Send(uint8_t *, uint16_t ) {};
 //    int16_t Receive(uint8_t * , uint16_t ) {};
 //    uint16_t GetFrameLength(void) {};
-//    int8_t FrameCheck(uint8_t * , uint16_t ) {};
+    virtual int8_t FrameCheck(uint8_t * , uint16_t ) {};
 
     virtual uint16_t GetFrameLength(void) {};
     virtual void SetFrameLength(uint16_t uiData) {};
