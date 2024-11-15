@@ -231,7 +231,7 @@ uint8_t CStorageDeviceFileSystem::Fsm(void)
         SetFsmState(READY);
 
     case WRITE_DATA_START:
-        std::cout << "CMainProductionCycle::Fsm WRITE_DATA_START"  << std::endl;
+        std::cout << "CStorageDeviceFileSystem::Fsm WRITE_DATA_START"  << std::endl;
         if (Write())
         {
             SetFsmState(DATA_WRITED_SUCCESSFULLY);
