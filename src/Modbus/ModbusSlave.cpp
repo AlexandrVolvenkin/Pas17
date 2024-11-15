@@ -714,9 +714,15 @@ uint16_t CModbusSlave::ReportSlaveID(void)
     std::cout << "CModbusSlave::ReportSlaveID uiFunctionCode "  << (int)uiFunctionCode << std::endl;
 
     std::cout << "CModbusSlave::ReportSlaveID 4" << std::endl;
-    uiLength = m_pxResources ->
-               m_pxDeviceControl ->
+
+    CDeviceControl* pxDeviceControl =
+        (CDeviceControl*)GetResources() ->
+        GetCommonTaskFromMapPointer("DeviceControl");
+    uiLength = pxDeviceControl ->
                ConfigurationRead(&puiResponse[uiPduOffset + 2]);
+//    uiLength = m_pxResources ->
+//               m_pxDeviceControl ->
+//               ConfigurationRead(&puiResponse[uiPduOffset + 2]);
 
 //    uint8_t auiTempData[] = {1, 15, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 22, 4, 0,};
 //    memcpy(&puiResponse[uiPduOffset + 2], auiTempData, sizeof(auiTempData));
@@ -940,9 +946,36 @@ uint16_t CModbusSlave::DataBaseRead(void)
     else
     {
         std::cout << "CModbusSlave::DataBaseRead 4" << std::endl;
-        uiLength = m_pxResources ->
-                   m_pxDeviceControl ->
+
+        CDeviceControl* pxDeviceControl =
+            (CDeviceControl*)GetResources() ->
+            GetCommonTaskFromMapPointer("DeviceControl");
+
+//        if (pxTask != 0)
+//        {
+//            std::cout << "CModbusSlave::Fsm INIT 2"  << std::endl;
+//            if (pxTask -> GetFsmState() >= READY)
+//            {
+//                SetModbusSlaveLinkLayer((CModbusSlaveLinkLayer*)pxTask);
+//                SetFsmState(READY);
+//                std::cout << "CModbusSlave::Fsm READY"  << std::endl;
+//            }
+//        }
+//        else
+//        {
+//            std::cout << "CModbusSlave::Fsm INIT 3"  << std::endl;
+//            if (GetTimerPointer() -> IsOverflow())
+//            {
+//                SetFsmState(STOP);
+//                std::cout << "CModbusSlave::Fsm STOP"  << std::endl;
+//            }
+//        }
+
+        uiLength = pxDeviceControl ->
                    DataBaseBlockRead(&puiResponse[uiPduOffset + 3], uiBlockIndex);
+//        uiLength = m_pxResources ->
+//                   m_pxDeviceControl ->
+//                   DataBaseBlockRead(&puiResponse[uiPduOffset + 3], uiBlockIndex);
         // количество байт в пакете
         puiResponse[uiPduOffset + 1] = uiLength + 1;
         uiLength ++;

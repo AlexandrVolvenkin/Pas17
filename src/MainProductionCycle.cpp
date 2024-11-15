@@ -106,6 +106,13 @@ uint8_t CMainProductionCycle::CreateTasks(void)
     m_pxSpiCommunicationDevice = new CSpi();
 
 //-------------------------------------------------------------------------------
+    CDeviceControl* pxDeviceControl = new CDeviceControl();
+    m_xResources.AddCommonTaskToMap("DeviceControl",
+                                    pxDeviceControl);
+    pxDeviceControl ->
+    SetResources(&m_xResources);
+
+//-------------------------------------------------------------------------------
     CStorageDeviceFileSystem* pxStorageDeviceFileSystem = new CStorageDeviceFileSystem();
     m_xResources.AddCommonTaskToMap("StorageDeviceFileSystem",
                                     pxStorageDeviceFileSystem);
