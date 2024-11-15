@@ -4,12 +4,6 @@
 //  Author      : Alexandr Volvenkin
 //  email       : aav-36@mail.ru
 //  GitHub      : https://github.com/AlexandrVolvenkin
-//-------------------------------------------------------------------------------//-------------------------------------------------------------------------------
-//  Sourse      : FileName.cpp
-//  Created     : 01.06.2022
-//  Author      : Alexandr Volvenkin
-//  email       : aav-36@mail.ru
-//  GitHub      : https://github.com/AlexandrVolvenkin
 //-------------------------------------------------------------------------------
 #include <typeinfo>
 
@@ -88,157 +82,6 @@ int8_t CTcpCommunicationDevice::Open(void)
 {
     cout << "CTcpCommunicationDevice::Open 1" << endl;
     return Listen();
-
-//    int sock, listener;
-//    struct sockaddr_in addr;
-//    char buf[1024];
-//    int bytes_read;
-//
-//    listener = socket(AF_INET, SOCK_STREAM, 0);
-//    if(listener < 0)
-//    {
-//        perror("socket");
-//        exit(1);
-//    }
-//
-//    int yes;
-//    yes = 1;
-//    if (setsockopt(listener, SOL_SOCKET, SO_REUSEADDR,
-//                   (char *) &yes, sizeof(yes)) == -1)
-//    {
-//        cout << "CTcpCommunicationDevice::Open error 8" << endl;
-//        close(listener);
-//        return -1;
-//    }
-//
-//    addr.sin_family = AF_INET;
-//    addr.sin_port = htons(5);
-//    addr.sin_addr.s_addr = htonl(INADDR_ANY);
-//    if(bind(listener, (struct sockaddr *)&addr, sizeof(addr)) < 0)
-//    {
-//        perror("bind");
-//        exit(2);
-//    }
-//
-//        cout << "bind ok" << endl;
-//    return 0;
-
-
-    /* Establishes a modbus TCP connection with a Modbus server. */
-    int rc;
-
-    m_iDeviceDescriptorServer = socket(PF_INET, SOCK_STREAM, 0);
-    if (m_iDeviceDescriptorServer == -1)
-    {
-        cout << "CTcpCommunicationDevice::Open error" << endl;
-        return -1;
-    }
-
-    cout << "CTcpCommunicationDevice::Open ok" << endl;
-
-    int option;
-
-    /* Set the TCP no delay flag */
-    /* SOL_TCP = IPPROTO_TCP */
-    option = 1;
-    rc = setsockopt(m_iDeviceDescriptorServer, IPPROTO_TCP, TCP_NODELAY,
-                    (const void *)&option, sizeof(int));
-    if (rc == -1)
-    {
-        cout << "CTcpCommunicationDevice::Open error 2" << endl;
-        return -1;
-    }
-
-    rc = connect(m_iDeviceDescriptorServer, (struct sockaddr *)&m_Address,
-                 sizeof(struct sockaddr_in));
-    if (rc == -1)
-    {
-//        fprintf(stderr, "Connection failed tcp: %s\n",
-//                CModbus::ModbusStringError(errno));
-        cout << "CTcpCommunicationDevice::Open error 3" << endl;
-        close(m_iDeviceDescriptorServer);
-//        return -1;
-    }
-
-
-
-    int new_socket;
-    int yes;
-    struct sockaddr_in addr;
-
-    new_socket = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
-    if (new_socket == -1)
-    {
-        cout << "CTcpCommunicationDevice::Open error 4" << endl;
-        return -1;
-    }
-
-    yes = 1;
-    if (setsockopt(new_socket, SOL_SOCKET, SO_REUSEADDR,
-                   (char *) &yes, sizeof(yes)) == -1)
-    {
-        cout << "CTcpCommunicationDevice::Open error 8" << endl;
-        close(new_socket);
-        return -1;
-    }
-
-
-
-    memset(&addr, 0, sizeof(addr));
-    addr.sin_family = AF_INET;
-    /* If the modbus port is < to 1024, we need the setuid root. */
-//    addr.sin_port = m_Address.sin_port;
-    addr.sin_port = htons(502);
-    addr.sin_addr.s_addr = INADDR_ANY;//htonl(INADDR_ANY);//
-
-    cout << "CStorageDeviceFileSystem::Write pccIpAddress" << " " << addr.sin_addr.s_addr << endl;
-    cout << "CStorageDeviceFileSystem::Write sin_port" << " " << (int)addr.sin_port << endl;
-    cout << "CStorageDeviceFileSystem::Write sin_port" << " " << (int)htons(502) << endl;
-
-    if (bind(new_socket, (struct sockaddr *)&addr, sizeof(addr)) == -1)
-    {
-//        fprintf(stderr, "Connection failed tcp bind: %s\n",
-//                CModbus::ModbusStringError(errno));
-        cout << "CTcpCommunicationDevice::Open error 5" << endl;
-        close(new_socket);
-        return -1;
-    }
-
-    int nb_connection = 1;
-    if (listen(new_socket, nb_connection) == -1)
-    {
-        cout << "CTcpCommunicationDevice::Open error 6" << endl;
-        close(new_socket);
-        return -1;
-    }
-
-
-
-//    struct sockaddr_in addr;
-    socklen_t addrlen;
-
-    addrlen = sizeof(addr);
-    m_iDeviceDescriptorServer = accept(new_socket, (struct sockaddr *)&addr, &addrlen);
-    if (m_iDeviceDescriptorServer == -1)
-    {
-        cout << "CTcpCommunicationDevice::Open error 7" << endl;
-        close(new_socket);
-        return -1;
-    }
-
-//    if (ctx->debug)
-//    {
-    printf("The client connection from %s is accepted\n",
-           inet_ntoa(m_Address.sin_addr));
-//    }
-
-
-
-    int flags = fcntl(m_iDeviceDescriptorServer, F_GETFL, 0);
-    fcntl(m_iDeviceDescriptorServer, F_SETFL, flags | O_NONBLOCK);
-
-
-    return 0;
 }
 
 //-------------------------------------------------------------------------------
@@ -328,60 +171,6 @@ int8_t CTcpCommunicationDevice::Accept(void)
 
 //    cout << "CTcpCommunicationDevice::Accept 3" << endl;
     return 1;
-
-
-//    cout << "CTcpCommunicationDevice::Accept 1" << endl;
-////    // Сделаем не блокирующим.
-////    int flags = fcntl(m_iDeviceDescriptorServer, F_GETFL, 0);
-////    fcntl(m_iDeviceDescriptorServer, F_SETFL, flags | O_NONBLOCK);
-//
-//    fd_set readfds, writefds;
-//    FD_ZERO(&readfds);
-////    FD_ZERO(&writefds);
-//    FD_SET(m_iDeviceDescriptorServer, &readfds);
-////    FD_SET(m_iDeviceDescriptorServer, &writefds);
-//    FD_SET(STDIN_FILENO, &readfds);
-////    FD_SET(STDIN_FILENO, &writefds);
-//
-//    int ready = select(m_iDeviceDescriptorServer + 1, &readfds, NULL, NULL, NULL);
-//
-//    cout << "CTcpCommunicationDevice::Accept 2" << endl;
-//    if (ready == -1)
-//    {
-//        cout << "CTcpCommunicationDevice::Accept 3" << endl;
-//        return 0;
-//    }
-//    else if (FD_ISSET(m_iDeviceDescriptorServer, &readfds))
-//    {
-//        cout << "CTcpCommunicationDevice::Accept 4" << endl;
-//        struct sockaddr_in addr;
-//        socklen_t addrlen;
-//        addrlen = sizeof(addr);
-//        memset(&addr, 0, sizeof(addr));
-//        m_iDeviceDescriptorClient = accept(m_iDeviceDescriptorServer, (struct sockaddr *)&addr, &addrlen);
-//        if (m_iDeviceDescriptorClient == -1)
-//        {
-//            cout << "CTcpCommunicationDevice::Accept 5" << endl;
-////            fprintf(stderr, "Connection failed tcp bind: %s\n",
-////                    CModbus::ModbusStringError(errno));
-//            close(m_iDeviceDescriptorServer);
-//            return 0;
-//        }
-//
-//        printf("The client connection from %s is accepted\n",
-//               inet_ntoa(addr.sin_addr));
-//
-////        // Сделаем не блокирующим.
-////        int flags = fcntl(m_iDeviceDescriptorClient, F_GETFL, 0);
-////        fcntl(m_iDeviceDescriptorClient, F_SETFL, flags | O_NONBLOCK);
-//
-//        return 1;
-//    }
-//    else
-//    {
-//        cout << "CTcpCommunicationDevice::Accept 6" << endl;
-//        return 0;
-//    }
 }
 
 ////-------------------------------------------------------------------------------
@@ -522,68 +311,6 @@ int16_t CTcpCommunicationDevice::Read(uint8_t *puiDestination, uint16_t uiLength
 //    std::cout << "CTcpCommunicationDevice::Read 1"  << std::endl;
 //    return read(m_iDeviceDescriptorClient, puiDestination, uiLength);
     return recv(m_iDeviceDescriptorClient, (char*)puiDestination, uiLength, 0);
-
-
-
-//    int rc;
-//    fd_set rfds;
-//    struct timeval tv;
-//    struct timeval *p_tv;
-//
-//
-//    tv.tv_sec = 0;
-//    tv.tv_usec = 15000000;
-//    p_tv = &tv;
-//
-//    /* Add a file descriptor to the set */
-//    FD_ZERO(&rfds);
-//    FD_SET(m_iDeviceDescriptorServer, &rfds);
-//
-//    if( select(m_iDeviceDescriptorServer + 1, &rfds, NULL, NULL, &tv) == -1 )
-//    {
-//        std::cout << "CTcpCommunicationDevice::Read timeout"  << std::endl;
-//        return -1;
-//    }
-//    else if( FD_ISSET( m_iDeviceDescriptorClient, &rfds ) )
-//    {
-//        std::cout << "CTcpCommunicationDevice::Read FD_ISSET"  << std::endl;
-////        if( ( rc = read(m_iDeviceDescriptorClient, (char*)puiDestination, uiLength) ) == -1 )
-//        if( ( rc = recv(m_iDeviceDescriptorClient, (char*)puiDestination, uiLength, 0) ) == -1 )
-//        {
-//            std::cout << "CTcpCommunicationDevice::Read recv error"  << std::endl;
-//            return -1;
-//        }
-//        else
-//        {
-//            if (rc)
-//            {
-//
-////                cout << "Read" << endl;
-////                unsigned char *pucSourceTemp;
-////                pucSourceTemp = (unsigned char*)puiDestination;
-////                for(int i=0; i<32; )
-////                {
-////                    for(int j=0; j<8; j++)
-////                    {
-////                        cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
-////                    }
-////                    cout << endl;
-////                    i += 8;
-////                }
-//
-//                std::cout << "CTcpCommunicationDevice::Read recv rc "  << (int)rc  << std::endl;
-//                return rc;
-//            }
-//            else
-//            {
-//                std::cout << "CTcpCommunicationDevice::Read recv 0 " << std::endl;
-//                return 0;
-//            }
-//        }
-//    }
-//
-//    std::cout << "CTcpCommunicationDevice::Read return 0"  << std::endl;
-//    return 0;
 }
 
 //-------------------------------------------------------------------------------
@@ -592,8 +319,6 @@ int16_t CTcpCommunicationDevice::ReceiveStart(uint8_t *puiDestination,
         uint32_t uiReceiveTimeout)
 {
 //    std::cout << "CTcpCommunicationDevice::ReceiveStart 1"  << std::endl;
-////    return read(m_iDeviceDescriptorClient, puiDestination, uiLength);
-//    return recv(m_iDeviceDescriptorClient, (char*)puiDestination, uiLength, 0);
 
 //    // Сделаем не блокирующим.
 //    int flags = fcntl(m_iDeviceDescriptorServer, F_GETFL, 0);
@@ -606,7 +331,7 @@ int16_t CTcpCommunicationDevice::ReceiveStart(uint8_t *puiDestination,
 
     struct timeval tv;
     tv.tv_sec = 0;
-    tv.tv_usec = uiReceiveTimeout;
+    tv.tv_usec = (uiReceiveTimeout * 1000);
 
     int ready = select(m_iDeviceDescriptorServer + 1, &readfds, NULL, NULL, &tv);
 
@@ -649,9 +374,6 @@ int16_t CTcpCommunicationDevice::ReceiveStart(uint8_t *puiDestination,
 //        int flags = fcntl(m_iDeviceDescriptorClient, F_GETFL, 0);
 //        fcntl(m_iDeviceDescriptorClient, F_SETFL, flags | O_NONBLOCK);
 
-//        return read(m_iDeviceDescriptorClient, puiDestination, uiLength);
-////    return recv(m_iDeviceDescriptorClient, (char*)puiDestination, uiLength, 0);
-////        return 1;
         rc = read(m_iDeviceDescriptorClient, (char*)puiDestination, uiLength);
 //        rc = recv(m_iDeviceDescriptorClient, (char*)puiDestination, uiLength, 0);
 
@@ -693,67 +415,6 @@ int16_t CTcpCommunicationDevice::ReceiveStart(uint8_t *puiDestination,
         cout << "CTcpCommunicationDevice::ReceiveStart 6" << endl;
         return 0;
     }
-
-
-//    int rc;
-//    fd_set rfds;
-//    struct timeval tv;
-//    struct timeval *p_tv;
-//
-//
-//    tv.tv_sec = 0;
-//    tv.tv_usec = 15000000;
-//    p_tv = &tv;
-//
-//    /* Add a file descriptor to the set */
-//    FD_ZERO(&rfds);
-//    FD_SET(m_iDeviceDescriptorServer, &rfds);
-//
-//    if( select(m_iDeviceDescriptorServer + 1, &rfds, NULL, NULL, &tv) == -1 )
-//    {
-//        std::cout << "CTcpCommunicationDevice::Read timeout"  << std::endl;
-//        return -1;
-//    }
-//    else if( FD_ISSET( m_iDeviceDescriptorClient, &rfds ) )
-//    {
-//        std::cout << "CTcpCommunicationDevice::Read FD_ISSET"  << std::endl;
-////        if( ( rc = read(m_iDeviceDescriptorClient, (char*)puiDestination, uiLength) ) == -1 )
-//        if( ( rc = recv(m_iDeviceDescriptorClient, (char*)puiDestination, uiLength, 0) ) == -1 )
-//        {
-//            std::cout << "CTcpCommunicationDevice::Read recv error"  << std::endl;
-//            return -1;
-//        }
-//        else
-//        {
-//            if (rc)
-//            {
-//
-////                cout << "Read" << endl;
-////                unsigned char *pucSourceTemp;
-////                pucSourceTemp = (unsigned char*)puiDestination;
-////                for(int i=0; i<32; )
-////                {
-////                    for(int j=0; j<8; j++)
-////                    {
-////                        cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
-////                    }
-////                    cout << endl;
-////                    i += 8;
-////                }
-//
-//                std::cout << "CTcpCommunicationDevice::Read recv rc "  << (int)rc  << std::endl;
-//                return rc;
-//            }
-//            else
-//            {
-//                std::cout << "CTcpCommunicationDevice::Read recv 0 " << std::endl;
-//                return 0;
-//            }
-//        }
-//    }
-//
-//    std::cout << "CTcpCommunicationDevice::Read return 0"  << std::endl;
-//    return 0;
 }
 
 //-------------------------------------------------------------------------------
@@ -762,10 +423,6 @@ int16_t CTcpCommunicationDevice::ReceiveContinue(uint8_t *puiDestination,
         uint32_t uiReceiveTimeout)
 {
 //    std::cout << "CTcpCommunicationDevice::ReceiveContinue 1"  << std::endl;
-////    return read(m_iDeviceDescriptorClient, puiDestination, uiLength);
-//    return recv(m_iDeviceDescriptorClient, (char*)puiDestination, uiLength, 0);
-
-
 
     int rc;
     fd_set rfds;
@@ -776,7 +433,7 @@ int16_t CTcpCommunicationDevice::ReceiveContinue(uint8_t *puiDestination,
 
     struct timeval tv;
     tv.tv_sec = 0;
-    tv.tv_usec = uiReceiveTimeout;
+    tv.tv_usec = (uiReceiveTimeout * 1000);
 
     rc = select(m_iDeviceDescriptorClient + 1, &rfds, NULL, NULL, &tv);
 

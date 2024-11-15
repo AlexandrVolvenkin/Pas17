@@ -235,8 +235,6 @@ uint8_t CMainProductionCycle::InitTasks(void)
     pxSerialPortCommunicationDeviceCom1 -> SetParity('N');
     pxSerialPortCommunicationDeviceCom1 -> SetStopBit(2);
 
-//    m_uiGuardTimeout = ((((1000000UL / uiBaudRate) * 8UL * 4UL) / 1000UL) + 1);
-
 //-------------------------------------------------------------------------------
     CModbusSlave* pxModbusRtuSlaveUpperLevel =
         (CModbusSlave*)(GetResources() ->
@@ -254,8 +252,6 @@ uint8_t CMainProductionCycle::InitTasks(void)
     pxTcpCommunicationDeviceUpperLevel -> Init();
     pxTcpCommunicationDeviceUpperLevel -> SetIpAddress("127.0.0.1");
     pxTcpCommunicationDeviceUpperLevel -> SetPort(502);
-
-//    m_uiGuardTimeout = ((((1000000UL / uiBaudRate) * 8UL * 4UL) / 1000UL) + 1);
 
 //-------------------------------------------------------------------------------
     CModbusSlave* pxModbusTcpSlaveUpperLevel =

@@ -25,9 +25,6 @@ using namespace std;
 CModbusTcpSlaveLinkLayer::CModbusTcpSlaveLinkLayer()
 {
     std::cout << "CModbusTcpSlaveLinkLayer constructor"  << std::endl;
-//    m_pxCommunicationDevice = new CTcpCommunicationDevice();
-//    CommunicationDeviceInit("127.0.0.1",
-//                            502);
     m_pxCommunicationDevice = 0;
     SetFsmState(START);
 
@@ -58,7 +55,6 @@ void CModbusTcpSlaveLinkLayer::Process(CModbusTcpSlaveLinkLayer* pxModbusSlaveLi
     while (1)
     {
         pxModbusSlaveLinkLayer -> Fsm();
-        usleep(1000);
     }
 }
 
@@ -70,6 +66,7 @@ void CModbusTcpSlaveLinkLayer::CommunicationDeviceInit(const char* pccIpAddress,
     m_pxCommunicationDevice -> SetIpAddress(pccIpAddress);
     m_pxCommunicationDevice -> SetPort(uiPort);
 
+//    m_uiGuardTimeout = ((((1000000UL / uiBaudRate) * 8UL * 4UL) / 1000UL) + 1);
     m_uiGuardTimeout = 10;
 }
 
@@ -392,7 +389,7 @@ uint8_t CModbusTcpSlaveLinkLayer::Fsm(void)
             m_pxCommunicationDevice ->
             ReceiveStart((m_auiRxBuffer + m_uiFrameLength),
                          (MODBUS_TCP_MAX_ADU_LENGTH - m_uiFrameLength),
-                         10000000);
+                         m_uiReceiveTimeout);
         if (iBytesNumber > 0)
         {
             std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_START 2"  << std::endl;
@@ -422,32 +419,7 @@ uint8_t CModbusTcpSlaveLinkLayer::Fsm(void)
             m_pxCommunicationDevice ->
             ReceiveContinue((m_auiRxBuffer + m_uiFrameLength),
                             (MODBUS_TCP_MAX_ADU_LENGTH - m_uiFrameLength),
-                            10000000);
-//        if (iBytesNumber > 0)
-//        {
-//            m_uiFrameLength = m_uiFrameLength + iBytesNumber;
-//        }
-//        else if (iBytesNumber < 0)
-//        {
-//            SetFsmState(COMMUNICATION_RECEIVE_ERROR);
-//        }
-//        else
-//        {
-//            SetFsmState(COMMUNICATION_FRAME_RECEIVED);
-//
-//            cout << "CModbusTcpSlaveLinkLayer::Fsm ReceiveContinue" << endl;
-//            unsigned char *pucSourceTemp;
-//            pucSourceTemp = (unsigned char*)m_auiRxBuffer;
-//            for(int i=0; i<32; )
-//            {
-//                for(int j=0; j<8; j++)
-//                {
-//                    cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
-//                }
-//                cout << endl;
-//                i += 8;
-//            }
-//        }
+                            m_uiReceiveTimeout);
         if (iBytesNumber > 0)
         {
             std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_CONTINUE 2"  << std::endl;
@@ -475,7 +447,7 @@ uint8_t CModbusTcpSlaveLinkLayer::Fsm(void)
             m_pxCommunicationDevice ->
             ReceiveContinue((m_auiRxBuffer + m_uiFrameLength),
                             (MODBUS_TCP_MAX_ADU_LENGTH - m_uiFrameLength),
-                            10000);
+                            m_uiGuardTimeout);
         if (iBytesNumber > 0)
         {
             std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END 2"  << std::endl;
@@ -528,18 +500,6 @@ uint8_t CModbusTcpSlaveLinkLayer::Fsm(void)
         std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_FRAME_RECEIVED"  << std::endl;
 
         SetFsmState(DONE_OK);
-//        cout << "CModbusTcpSlaveLinkLayer::Fsm ReceiveContinue" << endl;
-//        unsigned char *pucSourceTemp;
-//        pucSourceTemp = (unsigned char*)m_auiRxBuffer;
-//        for(int i=0; i<32; )
-//        {
-//            for(int j=0; j<8; j++)
-//            {
-//                cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
-//            }
-//            cout << endl;
-//            i += 8;
-//        }
         break;
 
     case COMMUNICATION_TRANSMIT_START:
@@ -586,10 +546,7 @@ uint8_t CModbusTcpSlaveLinkLayer::Fsm(void)
     case COMMUNICATION_RECEIVE_ERROR:
         std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_ERROR"  << std::endl;
         m_pxCommunicationDevice -> Close();
-//        usleep(1000000);
-//        m_pxCommunicationDevice -> Open();
         SetFsmState(DONE_ERROR);
-//        SetFsmState(COMMUNICATION_START);
         break;
 
     default:

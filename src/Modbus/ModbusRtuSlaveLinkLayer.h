@@ -142,7 +142,7 @@ private:
     uint16_t m_uiRequestTransactionId = 0;
     uint16_t m_uiResponseTransactionId = 0;
     // таймоут по отсутствию следующего байта 3.5 бода.
-    uint16_t m_uiGuardTimeout;
+    uint16_t m_uiGuardTimeout = 10;
     // таймоут по отсутствию запроса.
     const static uint16_t m_uiReceiveTimeout = 15000;
     // таймоут по отсутствию подтверждения.

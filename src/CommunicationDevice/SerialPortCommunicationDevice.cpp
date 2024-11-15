@@ -395,7 +395,7 @@ int16_t CSerialPortCommunicationDevice::ReceiveStart(uint8_t *puiDestination,
         uint16_t uiLength,
         uint32_t uiReceiveTimeout)
 {
-//    std::cout << "CSerialPortCommunicationDevice::ReceiveStart 1"  << std::endl;
+    std::cout << "CSerialPortCommunicationDevice::ReceiveStart 1"  << std::endl;
 
     int rc;
     fd_set rfds;
@@ -406,7 +406,7 @@ int16_t CSerialPortCommunicationDevice::ReceiveStart(uint8_t *puiDestination,
 
     struct timeval tv;
     tv.tv_sec = 0;
-    tv.tv_usec = uiReceiveTimeout;
+    tv.tv_usec = (uiReceiveTimeout * 1000);
 
     rc = select(m_iDeviceDescriptorServer + 1, &rfds, NULL, NULL, &tv);
 
@@ -472,7 +472,7 @@ int16_t CSerialPortCommunicationDevice::ReceiveContinue(uint8_t *puiDestination,
         uint16_t uiLength,
         uint32_t uiReceiveTimeout)
 {
-//    std::cout << "CSerialPortCommunicationDevice::ReceiveContinue 1"  << std::endl;
+    std::cout << "CSerialPortCommunicationDevice::ReceiveContinue 1"  << std::endl;
 
     int rc;
     fd_set rfds;
@@ -483,7 +483,7 @@ int16_t CSerialPortCommunicationDevice::ReceiveContinue(uint8_t *puiDestination,
 
     struct timeval tv;
     tv.tv_sec = 0;
-    tv.tv_usec = uiReceiveTimeout;
+    tv.tv_usec = (uiReceiveTimeout * 1000);
 
     rc = select(m_iDeviceDescriptorServer + 1, &rfds, NULL, NULL, &tv);
 
@@ -542,9 +542,6 @@ int16_t CSerialPortCommunicationDevice::ReceiveContinue(uint8_t *puiDestination,
         cout << "CSerialPortCommunicationDevice::ReceiveContinue 6" << endl;
         return 0;
     }
-
-//    std::cout << "CSerialPortCommunicationDevice::ReceiveContinue return 0"  << std::endl;
-//    return 0;
 }
 
 //-------------------------------------------------------------------------------

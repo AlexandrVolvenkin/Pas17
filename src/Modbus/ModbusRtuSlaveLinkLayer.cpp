@@ -56,7 +56,6 @@ void CModbusRtuSlaveLinkLayer::Process(CModbusRtuSlaveLinkLayer* pxModbusSlaveLi
     while (1)
     {
         pxModbusSlaveLinkLayer -> Fsm();
-        usleep(1000);
     }
 }
 
@@ -67,6 +66,7 @@ void CModbusRtuSlaveLinkLayer::CommunicationDeviceInit(const char* pccDeviceName
         char cParity,
         uint8_t uiStopBit)
 {
+    cout << "CModbusRtuSlaveLinkLayer::CommunicationDeviceInit 1" << endl;
     m_pxCommunicationDevice -> Init();
     m_pxCommunicationDevice -> SetDeviceName(pccDeviceName);
     m_pxCommunicationDevice -> SetBaudRate(uiBaudRate);
@@ -74,7 +74,7 @@ void CModbusRtuSlaveLinkLayer::CommunicationDeviceInit(const char* pccDeviceName
     m_pxCommunicationDevice -> SetParity(cParity);
     m_pxCommunicationDevice -> SetStopBit(uiStopBit);
 
-    m_uiGuardTimeout = ((((1000000UL / uiBaudRate) * 8UL * 4UL) / 1000UL) + 1);
+    m_uiGuardTimeout = 10;//((((1000000UL / uiBaudRate) * 8UL * 4UL) / 1000UL) + 1);
 }
 
 //-------------------------------------------------------------------------------
@@ -334,7 +334,7 @@ uint8_t CModbusRtuSlaveLinkLayer::Fsm(void)
         break;
 
     case READY:
-        std::cout << "CModbusRtuSlaveLinkLayer::Fsm READY"  << std::endl;
+//        std::cout << "CModbusRtuSlaveLinkLayer::Fsm READY"  << std::endl;
 
         if (GetFsmCommandState() != 0)
         {
@@ -369,7 +369,7 @@ uint8_t CModbusRtuSlaveLinkLayer::Fsm(void)
             m_pxCommunicationDevice ->
             ReceiveStart((m_auiRxBuffer + m_uiFrameLength),
                          (MODBUS_RTU_MAX_ADU_LENGTH - m_uiFrameLength),
-                         10000000);
+                         m_uiReceiveTimeout);
         if (iBytesNumber > 0)
         {
             std::cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_START 2"  << std::endl;
@@ -409,7 +409,7 @@ uint8_t CModbusRtuSlaveLinkLayer::Fsm(void)
             m_pxCommunicationDevice ->
             ReceiveContinue((m_auiRxBuffer + m_uiFrameLength),
                             (MODBUS_RTU_MAX_ADU_LENGTH - m_uiFrameLength),
-                            10000);
+                            m_uiGuardTimeout);
         if (iBytesNumber > 0)
         {
             std::cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_START 2"  << std::endl;
@@ -463,18 +463,6 @@ uint8_t CModbusRtuSlaveLinkLayer::Fsm(void)
         std::cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_FRAME_RECEIVED"  << std::endl;
 
         SetFsmState(DONE_OK);
-//        cout << "ReceiveContinue" << endl;
-//        unsigned char *pucSourceTemp;
-//        pucSourceTemp = (unsigned char*)m_auiRxBuffer;
-//        for(int i=0; i<32; )
-//        {
-//            for(int j=0; j<8; j++)
-//            {
-//                cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
-//            }
-//            cout << endl;
-//            i += 8;
-//        }
         break;
 
     case COMMUNICATION_TRANSMIT_START:

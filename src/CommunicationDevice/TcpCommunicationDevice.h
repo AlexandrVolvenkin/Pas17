@@ -80,22 +80,6 @@ public:
     int32_t m_iDeviceDescriptorServer;
     int32_t m_iDeviceDescriptorClient;
     struct sockaddr_in m_Address;
-//    struct termios m_xTios;
-//    struct serial_rs485 m_xRs485Conf;
-//    struct timeval *pto;
-//    fd_set readfds, writefds;
-//    uint32_t m_uiBaudRate;
-//    /* Parity: 'N', 'O', 'E' */
-//    char m_uiParity;
-////    uint8_t m_uiParity;
-//    uint8_t m_uiDataBits;
-//    uint8_t m_uiStopBit;
-//    // Флаг - данные записаны.
-//    bool m_bDataIsWrited = false;
-//    uint8_t* m_puiTxBuffer;
-//    uint16_t m_nuiTxBuffByteCounter;
-//    uint8_t* m_puiRxBuffer;
-//    uint16_t m_nuiRxBuffByteCounter;
 };
 
 //-------------------------------------------------------------------------------
