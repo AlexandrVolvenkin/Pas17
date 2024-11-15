@@ -503,6 +503,7 @@ int8_t CTcpCommunicationDevice::Connect(void)
 //-------------------------------------------------------------------------------
 void CTcpCommunicationDevice::CloseClient(void)
 {
+    std::cout << "CTcpCommunicationDevice::CloseClient 1"  << std::endl;
     shutdown(m_iDeviceDescriptorClient, SHUT_RDWR);
     close(m_iDeviceDescriptorClient);
 }
@@ -510,6 +511,7 @@ void CTcpCommunicationDevice::CloseClient(void)
 //-------------------------------------------------------------------------------
 int8_t CTcpCommunicationDevice::Close(void)
 {
+    std::cout << "CTcpCommunicationDevice::Close 1"  << std::endl;
     close(m_iDeviceDescriptorServer);
     close(m_iDeviceDescriptorClient);
 }
@@ -597,6 +599,7 @@ int16_t CTcpCommunicationDevice::ReceiveStart(uint8_t *puiDestination,
 //    int flags = fcntl(m_iDeviceDescriptorServer, F_GETFL, 0);
 //    fcntl(m_iDeviceDescriptorServer, F_SETFL, flags | O_NONBLOCK);
 
+    int rc;
     fd_set readfds;
     FD_ZERO(&readfds);
     FD_SET(m_iDeviceDescriptorServer, &readfds);
@@ -646,9 +649,44 @@ int16_t CTcpCommunicationDevice::ReceiveStart(uint8_t *puiDestination,
 //        int flags = fcntl(m_iDeviceDescriptorClient, F_GETFL, 0);
 //        fcntl(m_iDeviceDescriptorClient, F_SETFL, flags | O_NONBLOCK);
 
-        return read(m_iDeviceDescriptorClient, puiDestination, uiLength);
-//    return recv(m_iDeviceDescriptorClient, (char*)puiDestination, uiLength, 0);
-//        return 1;
+//        return read(m_iDeviceDescriptorClient, puiDestination, uiLength);
+////    return recv(m_iDeviceDescriptorClient, (char*)puiDestination, uiLength, 0);
+////        return 1;
+        rc = read(m_iDeviceDescriptorClient, (char*)puiDestination, uiLength);
+//        rc = recv(m_iDeviceDescriptorClient, (char*)puiDestination, uiLength, 0);
+
+        if (rc < 0)
+        {
+            std::cout << "CTcpCommunicationDevice::ReceiveStart recv error"  << std::endl;
+            return rc;
+        }
+        else
+        {
+            if (rc)
+            {
+
+//                cout << "ReceiveStart" << endl;
+//                unsigned char *pucSourceTemp;
+//                pucSourceTemp = (unsigned char*)puiDestination;
+//                for(int i=0; i<32; )
+//                {
+//                    for(int j=0; j<8; j++)
+//                    {
+//                        cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+//                    }
+//                    cout << endl;
+//                    i += 8;
+//                }
+
+                std::cout << "CTcpCommunicationDevice::ReceiveStart recv rc "  << (int)rc  << std::endl;
+                return rc;
+            }
+            else
+            {
+                std::cout << "CTcpCommunicationDevice::ReceiveStart recv 0 " << std::endl;
+                return -1;
+            }
+        }
     }
     else
     {

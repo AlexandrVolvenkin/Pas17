@@ -104,7 +104,6 @@ void CModbusRtuSlaveLinkLayer::TransmitDisable(void)
 //-------------------------------------------------------------------------------
 void CModbusRtuSlaveLinkLayer::CommunicationStart(void)
 {
-//    SetFsmState(COMMUNICATION_START);
     SetFsmCommandState(COMMUNICATION_START);
 }
 
@@ -117,14 +116,12 @@ void CModbusRtuSlaveLinkLayer::CommunicationReceiveStart(void)
 //-------------------------------------------------------------------------------
 void CModbusRtuSlaveLinkLayer::ReceiveStart(void)
 {
-//    SetFsmState(COMMUNICATION_RECEIVE_CONTINUE);
     SetFsmCommandState(COMMUNICATION_RECEIVE_START);
 }
 
 //-------------------------------------------------------------------------------
 void CModbusRtuSlaveLinkLayer::TransmitStart(void)
 {
-//    SetFsmState(COMMUNICATION_TRANSMIT_START);
     SetFsmCommandState(COMMUNICATION_TRANSMIT_START);
 }
 
@@ -372,9 +369,10 @@ uint8_t CModbusRtuSlaveLinkLayer::Fsm(void)
             m_pxCommunicationDevice ->
             ReceiveStart((m_auiRxBuffer + m_uiFrameLength),
                          (MODBUS_RTU_MAX_ADU_LENGTH - m_uiFrameLength),
-                         1000000);
+                         10000000);
         if (iBytesNumber > 0)
         {
+            std::cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_START 2"  << std::endl;
             m_uiFrameLength = m_uiFrameLength + iBytesNumber;
             {
                 cout << "CModbusRtuSlaveLinkLayer::Fsm m_auiRxBuffer" << endl;
@@ -394,8 +392,14 @@ uint8_t CModbusRtuSlaveLinkLayer::Fsm(void)
         }
         else if (iBytesNumber < 0)
         {
+            std::cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_START 3"  << std::endl;
             cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_START errno " << errno << endl;
             SetFsmState(COMMUNICATION_RECEIVE_ERROR);
+        }
+        else
+        {
+            std::cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_START 4"  << std::endl;
+            cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_START errno " << errno << endl;
         }
         break;
 
@@ -408,14 +412,20 @@ uint8_t CModbusRtuSlaveLinkLayer::Fsm(void)
                             10000);
         if (iBytesNumber > 0)
         {
+            std::cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_START 2"  << std::endl;
+            cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_START errno " << errno << endl;
             m_uiFrameLength = m_uiFrameLength + iBytesNumber;
         }
         else if (iBytesNumber < 0)
         {
+            std::cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_START 3"  << std::endl;
+            cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_START errno " << errno << endl;
             SetFsmState(COMMUNICATION_RECEIVE_ERROR);
         }
         else
         {
+            std::cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_START 4"  << std::endl;
+            cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_START errno " << errno << endl;
             SetFsmState(COMMUNICATION_FRAME_CHECK);
 
             {

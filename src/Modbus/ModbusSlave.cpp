@@ -1441,10 +1441,6 @@ uint8_t CModbusSlave::Fsm(void)
 
     case COMMUNICATION_START:
         std::cout << "CModbusSlave::Fsm COMMUNICATION_START"  << std::endl;
-//        m_pxModbusSlaveLinkLayer ->
-//        SetFsmState(CModbusSlaveLinkLayerInterface::COMMUNICATION_START);
-//        m_pxModbusSlaveLinkLayer ->
-//        SetFsmState(CModbusSlaveLinkLayerInterface::START);
         m_pxModbusSlaveLinkLayer ->
         CommunicationStart();
         SetFsmState(MESSAGE_RECEIVE_WAITING);
@@ -1470,7 +1466,7 @@ uint8_t CModbusSlave::Fsm(void)
         else if (m_pxModbusSlaveLinkLayer -> IsDoneError())
         {
             std::cout << "CModbusSlave::Fsm MESSAGE_RECEIVE_WAITING 3"  << std::endl;
-            SetFsmState(COMMUNICATION_RECEIVE_START);
+            SetFsmState(COMMUNICATION_START);
         }
         break;
 
@@ -1521,7 +1517,7 @@ uint8_t CModbusSlave::Fsm(void)
         else if (m_pxModbusSlaveLinkLayer -> IsDoneError())
         {
             std::cout << "CModbusSlave::Fsm AFTER_ANSWERING_WAITING 3"  << std::endl;
-            SetFsmState(COMMUNICATION_RECEIVE_START);
+            SetFsmState(COMMUNICATION_START);
         }
         break;
 
