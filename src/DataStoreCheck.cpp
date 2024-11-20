@@ -16,6 +16,7 @@
 #include "DataStore.h"
 #include "Crc.h"
 #include "HammingCodes.h"
+#include "DataContainer.h"
 #include "DataStoreCheck.h"
 
 
@@ -28,13 +29,16 @@ CDataStoreCheck::CDataStoreCheck()
             "%s",
             typeid(*this).name());
     m_pxStorageDevice = 0;
+    m_pxCommandDataContainer = new CDataContainerDataBase();
+//    m_pxOperatingDataContainer = new CDataContainerDataBase();
     SetFsmState(START);
 }
 
 //-------------------------------------------------------------------------------
 CDataStoreCheck::~CDataStoreCheck()
 {
-    //dtor
+    delete m_pxOperatingDataContainer;
+    delete m_pxCommandDataContainer;
 }
 
 //-------------------------------------------------------------------------------
@@ -153,6 +157,22 @@ uint8_t CDataStoreCheck::Fsm(void)
                     WriteBlock(auiTempArray,
                                GetBlockLength(i),
                                i);
+
+
+                    CDataContainerDataBase* pxCommandDataContainer =
+                        static_cast<CDataContainerDataBase*>(GetCommandDataContainerPointer());
+
+//    pxDataContainer ->
+//    SetDataIndex(uiBlock);
+//    pxDataContainer ->
+//    SetDataPointer(puiSource);
+//    pxDataContainer ->
+//    SetDataOffset(0);
+//    pxDataContainer ->
+//    SetDataLength(uiLength);
+
+//    SetFsmCommandState(START_WRITE_TEMPORARY_BLOCK_DATA);
+
 
                     // Установим время ожидания окончания записи.
                     GetTimerPointer() -> Set(WRITE_END_WAITING_TIMEOUT);
@@ -318,27 +338,27 @@ uint8_t CDataStoreCheck::Fsm(void)
     case DATA_STORE_NEW_VERSION_ACCEPTED:
         // Хранилище обновлено.
         cerr << "DATA_STORE_NEW_VERSION_ACCEPTED" << endl;
-        SetFsmAnswerState(DATA_STORE_NEW_VERSION_ACCEPTED);
+        SetFsmOperationStatus(DATA_STORE_NEW_VERSION_ACCEPTED);
         SetFsmState(READY);
         break;
 
     case DATA_STORE_OLD_VERSION_ACCEPTED:
         // Хранилище не обновлено.
         cerr << "DATA_STORE_OLD_VERSION_ACCEPTED" << endl;
-        SetFsmAnswerState(DATA_STORE_OLD_VERSION_ACCEPTED);
+        SetFsmOperationStatus(DATA_STORE_OLD_VERSION_ACCEPTED);
         SetFsmState(READY);
         break;
 
     case DATA_STORE_CHECK_OK:
         cerr << "DATA_STORE_CHECK_OK" << endl;
-        SetFsmAnswerState(DATA_STORE_CHECK_OK);
+        SetFsmOperationStatus(DATA_STORE_CHECK_OK);
         SetFsmState(READY);
         break;
 
     case DATA_STORE_CHECK_ERROR:
         // Хранилище повреждено.
         cerr << "DATA_STORE_CHECK_ERROR" << endl;
-        SetFsmAnswerState(DATA_STORE_CHECK_ERROR);
+        SetFsmOperationStatus(DATA_STORE_CHECK_ERROR);
         SetFsmState(STOP);
         break;
 

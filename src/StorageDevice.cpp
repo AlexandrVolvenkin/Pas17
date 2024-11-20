@@ -222,13 +222,15 @@ uint8_t CStorageDeviceFileSystem::Fsm(void)
 
     case DONE_OK:
         //std::cout << "CStorageDeviceFileSystem::Fsm DONE_OK"  << std::endl;
-        SetFsmAnswerState(DONE_OK);
+        SetFsmOperationStatus(DONE_OK);
         SetFsmState(READY);
+        break;
 
     case DONE_ERROR:
         //std::cout << "CStorageDeviceFileSystem::Fsm DONE_ERROR"  << std::endl;
-        SetFsmAnswerState(DONE_ERROR);
+        SetFsmOperationStatus(DONE_ERROR);
         SetFsmState(READY);
+        break;
 
     case WRITE_DATA_START:
         std::cout << "CStorageDeviceFileSystem::Fsm WRITE_DATA_START"  << std::endl;
@@ -244,13 +246,13 @@ uint8_t CStorageDeviceFileSystem::Fsm(void)
 
     case DATA_WRITED_SUCCESSFULLY:
         std::cout << "CStorageDeviceFileSystem::Fsm DATA_WRITED_SUCCESSFULLY"  << std::endl;
-        SetFsmAnswerState(DONE_OK);
+        SetFsmOperationStatus(DONE_OK);
         SetFsmState(READY);
         break;
 
     case WRITE_DATA_ERROR:
         std::cout << "CMainProductionCycle::Fsm WRITE_DATA_ERROR"  << std::endl;
-        SetFsmAnswerState(DONE_ERROR);
+        SetFsmOperationStatus(DONE_ERROR);
         SetFsmState(READY);
         break;
 
@@ -268,13 +270,13 @@ uint8_t CStorageDeviceFileSystem::Fsm(void)
 
     case DATA_READED_SUCCESSFULLY:
         std::cout << "CMainProductionCycle::Fsm DATA_READED_SUCCESSFULLY"  << std::endl;
-        SetFsmAnswerState(DONE_OK);
+        SetFsmOperationStatus(DONE_OK);
         SetFsmState(READY);
         break;
 
     case READ_DATA_ERROR:
         std::cout << "CMainProductionCycle::Fsm READ_DATA_ERROR"  << std::endl;
-        SetFsmAnswerState(DONE_ERROR);
+        SetFsmOperationStatus(DONE_ERROR);
         SetFsmState(READY);
         break;
 

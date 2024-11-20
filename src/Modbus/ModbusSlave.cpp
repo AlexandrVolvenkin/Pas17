@@ -11,10 +11,11 @@
 
 #include "Task.h"
 #include "Resources.h"
-#include "ModbusSlave.h"
 #include "Platform.h"
 #include "DataStore.h"
 #include "DeviceControl.h"
+#include "Link.h"
+#include "ModbusSlave.h"
 
 using namespace std;
 
@@ -27,12 +28,14 @@ CModbusSlave::CModbusSlave()
     sprintf(GetTaskNamePointer(),
             "%s",
             typeid(*this).name());
+    m_puiIntermediateBuff = new uint8_t[MAX_MODBUS_MESSAGE_LENGTH];
     SetFsmState(START);
 }
 
 //-------------------------------------------------------------------------------
 CModbusSlave::~CModbusSlave()
 {
+    delete[] m_puiIntermediateBuff;
     WorkingArraysDelete();
 }
 
@@ -47,6 +50,42 @@ void CModbusSlave::SetModbusSlaveLinkLayer(CModbusSlaveLinkLayer* pxModbusSlaveL
 {
     m_pxModbusSlaveLinkLayer = pxModbusSlaveLinkLayer;
 }
+
+//-------------------------------------------------------------------------------
+void CModbusSlave::SetDeviceControlName(std::string sName)
+{
+    m_sDeviceControlName = sName;
+}
+
+//-------------------------------------------------------------------------------
+void CModbusSlave::SetDeviceControl(CDeviceControl* pxDeviceControl)
+{
+    m_pxDeviceControl = pxDeviceControl;
+}
+
+//-------------------------------------------------------------------------------
+void CModbusSlave::SetDeviceControlLinkName(const std::string sName)
+{
+    m_sDeviceControlLinkName = sName;
+}
+
+////-------------------------------------------------------------------------------
+//std::string CModbusSlave::GetDeviceControlLinkName() const
+//{
+//    return m_sDeviceControlLinkName;
+//}
+
+//-------------------------------------------------------------------------------
+void CModbusSlave::SetDeviceControlLink(CLinkInterface* pxLink)
+{
+    m_pxDeviceControlLink = pxLink;
+}
+
+////-------------------------------------------------------------------------------
+//CLinkInterface* CModbusSlave::GetDeviceControlLink() const
+//{
+//    return m_pxDeviceControlLink;
+//}
 
 //-------------------------------------------------------------------------------
 const char *CModbusSlave::ModbusStringError(int errnum)
@@ -315,7 +354,8 @@ uint16_t CModbusSlave::ReadCoils(void)
     if (uiNumberB < 1 || MODBUS_MAX_READ_BITS < uiNumberB)
     {
         std::cout << "CModbusSlave::ReadCoils 2" << std::endl;
-        uiLength = ResponseException(uiSlave,
+        uiLength = m_pxModbusSlaveLinkLayer ->
+                   ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_DATA_VALUE,
                                      puiResponse);
@@ -324,7 +364,8 @@ uint16_t CModbusSlave::ReadCoils(void)
     {
         std::cout << "CModbusSlave::ReadCoils 3" << std::endl;
         std::cout << "CModbusSlave::ReadCoils m_uiCoilsNumber "  << (int)m_uiCoilsNumber << std::endl;
-        uiLength = ResponseException(uiSlave,
+        uiLength = m_pxModbusSlaveLinkLayer ->
+                   ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_DATA_ADDRESS,
                                      puiResponse);
@@ -375,14 +416,16 @@ uint16_t CModbusSlave::ReadDiscreteInputs(void)
 
     if (uiNumberB < 1 || MODBUS_MAX_READ_BITS < uiNumberB)
     {
-        uiLength = ResponseException(uiSlave,
+        uiLength = m_pxModbusSlaveLinkLayer ->
+                   ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_DATA_VALUE,
                                      puiResponse);
     }
     else if ((uiAddress + uiNumberB) > m_uiDiscreteInputsNumber)
     {
-        uiLength = ResponseException(uiSlave,
+        uiLength = m_pxModbusSlaveLinkLayer ->
+                   ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_DATA_ADDRESS,
                                      puiResponse);
@@ -428,23 +471,29 @@ uint16_t CModbusSlave::ReadHoldingRegisters(void)
     uint16_t uiNumberB = ((static_cast<uint16_t>(puiRequest[uiPduOffset + 3]) << 8) |
                           (static_cast<uint16_t>(puiRequest[uiPduOffset + 4])));
 
+    std::cout << "CModbusSlave::ReadHoldingRegisters uiAddress "  << (int)uiAddress << std::endl;
+    std::cout << "CModbusSlave::ReadHoldingRegisters uiNumberB "  << (int)uiNumberB << std::endl;
+
     if (uiNumberB < 1 || MODBUS_MAX_READ_REGISTERS < uiNumberB)
     {
-        uiLength = ResponseException(uiSlave,
+        uiLength = m_pxModbusSlaveLinkLayer ->
+                   ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_DATA_VALUE,
                                      puiResponse);
     }
     else if ((uiAddress + uiNumberB) > m_uiHoldingRegistersNumber)
     {
-        uiLength = ResponseException(uiSlave,
+        uiLength = m_pxModbusSlaveLinkLayer ->
+                   ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_DATA_ADDRESS,
                                      puiResponse);
     }
     else
     {
-        uiLength = ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
+        uiLength = m_pxModbusSlaveLinkLayer ->
+                   ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
         puiResponse[uiLength++] = (uiNumberB << 1);
         for (uint16_t i = 0; i < uiNumberB; i++)
         {
@@ -457,6 +506,7 @@ uint16_t CModbusSlave::ReadHoldingRegisters(void)
         }
     }
 
+    std::cout << "CModbusSlave::ReadHoldingRegisters uiLength "  << (int)uiLength << std::endl;
     return uiLength;
 }
 
@@ -480,21 +530,24 @@ uint16_t CModbusSlave::ReadInputRegisters(void)
 
     if (uiNumberB < 1 || MODBUS_MAX_READ_REGISTERS < uiNumberB)
     {
-        uiLength = ResponseException(uiSlave,
+        uiLength = m_pxModbusSlaveLinkLayer ->
+                   ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_DATA_VALUE,
                                      puiResponse);
     }
     else if ((uiAddress + uiNumberB) > m_uiInputRegistersNumber)
     {
-        uiLength = ResponseException(uiSlave,
+        uiLength = m_pxModbusSlaveLinkLayer ->
+                   ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_DATA_ADDRESS,
                                      puiResponse);
     }
     else
     {
-        uiLength = ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
+        uiLength = m_pxModbusSlaveLinkLayer ->
+                   ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
         puiResponse[uiLength++] = (uiNumberB << 1);
         for (uint16_t i = 0; i < uiNumberB; i++)
         {
@@ -523,7 +576,8 @@ uint16_t CModbusSlave::WriteSingleCoil(void)
 
     if (uiAddress >= m_uiCoilsNumber)
     {
-        uiLength = ResponseException(uiSlave,
+        uiLength = m_pxModbusSlaveLinkLayer ->
+                   ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_DATA_ADDRESS,
                                      puiResponse);
@@ -547,7 +601,8 @@ uint16_t CModbusSlave::WriteSingleCoil(void)
         }
         else
         {
-            uiLength = ResponseException(uiSlave,
+            uiLength = m_pxModbusSlaveLinkLayer ->
+                       ResponseException(uiSlave,
                                          uiFunctionCode,
                                          MODBUS_EXCEPTION_ILLEGAL_DATA_VALUE,
                                          puiResponse);
@@ -574,7 +629,8 @@ uint16_t CModbusSlave::WriteSingleRegister(void)
 
     if (uiAddress >= m_uiHoldingRegistersNumber)
     {
-        uiLength = ResponseException(uiSlave,
+        uiLength = m_pxModbusSlaveLinkLayer ->
+                   ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_DATA_ADDRESS,
                                      puiResponse);
@@ -609,14 +665,16 @@ uint16_t CModbusSlave::WriteMultipleCoils(void)
 
     if (uiNumberB < 1 || MODBUS_MAX_WRITE_BITS < uiNumberB)
     {
-        uiLength = ResponseException(uiSlave,
+        uiLength = m_pxModbusSlaveLinkLayer ->
+                   ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_DATA_VALUE,
                                      puiResponse);
     }
     else if ((uiAddress + uiNumberB) > m_uiCoilsNumber)
     {
-        uiLength = ResponseException(uiSlave,
+        uiLength = m_pxModbusSlaveLinkLayer ->
+                   ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_DATA_ADDRESS,
                                      puiResponse);
@@ -625,7 +683,8 @@ uint16_t CModbusSlave::WriteMultipleCoils(void)
     {
         SetBytesFromBits(m_puiCoils, uiAddress, uiNumberB, &puiRequest[uiPduOffset + 6]);
 
-        uiLength = ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
+        uiLength = m_pxModbusSlaveLinkLayer ->
+                   ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
         /* 4 to copy the bit address (2) and the quantity of bits */
         memcpy(puiResponse + uiLength, puiRequest + uiLength, 4);
         uiLength += 4;
@@ -653,14 +712,16 @@ uint16_t CModbusSlave::WriteMultipleRegisters(void)
 
     if (uiNumberB < 1 || MODBUS_MAX_WRITE_REGISTERS < uiNumberB)
     {
-        uiLength = ResponseException(uiSlave,
+        uiLength = m_pxModbusSlaveLinkLayer ->
+                   ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_DATA_VALUE,
                                      puiResponse);
     }
     else if ((uiAddress + uiNumberB) > m_uiHoldingRegistersNumber)
     {
-        uiLength = ResponseException(uiSlave,
+        uiLength = m_pxModbusSlaveLinkLayer ->
+                   ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_DATA_ADDRESS,
                                      puiResponse);
@@ -674,7 +735,8 @@ uint16_t CModbusSlave::WriteMultipleRegisters(void)
             uiPduOffset += 2;
         }
 
-        uiLength = ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
+        uiLength = m_pxModbusSlaveLinkLayer ->
+                   ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
         /* 4 to copy the bit address (2) and the quantity of bits */
         memcpy(puiResponse + uiLength, puiRequest + uiLength, 4);
         uiLength += 4;
@@ -717,7 +779,7 @@ uint16_t CModbusSlave::ReportSlaveID(void)
 
     CDeviceControl* pxDeviceControl =
         (CDeviceControl*)GetResources() ->
-        GetCommonTaskFromMapPointer("DeviceControl");
+        GetCommonTaskFromMapPointer("DeviceControlRtuUpperLevel");
 
     uiLength = pxDeviceControl ->
                ConfigurationRead(&puiResponse[uiPduOffset + 2]);
@@ -772,7 +834,8 @@ uint16_t CModbusSlave::Programming(void)
 //
 //    if (uiNumberB != (uiLength - 6))
 //    {
-//        uiLength = ResponseException(uiSlave,
+//        uiLength = m_pxModbusSlaveLinkLayer ->
+//    ResponseException(uiSlave,
 //                                     uiFunctionCode,
 //                                     MODBUS_EXCEPTION_ILLEGAL_DATA_ADDRESS,
 //                                     puiResponse);
@@ -780,7 +843,8 @@ uint16_t CModbusSlave::Programming(void)
 //    else
 //    {
 //        uint8_t uiBlockNumber;
-//        uiLength = ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
+//        uiLength = m_pxModbusSlaveLinkLayer ->
+//                   ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
 //        // Какой код операции?
 //        switch(puiRequest[uiPduOffset + REQUEST_COMMAND])
 //        {
@@ -800,7 +864,8 @@ uint16_t CModbusSlave::Programming(void)
 //            // Блок не существует?
 //            if (uiBlockNumber > CDataBase::BLOCKS_QUANTITY)
 //            {
-//                uiLength = ResponseException(uiSlave,
+//                uiLength = m_pxModbusSlaveLinkLayer ->
+//                      ResponseException(uiSlave,
 //                                             uiFunctionCode,
 //                                             MODBUS_EXCEPTION_ILLEGAL_DATA_ADDRESS,
 //                                             puiResponse);
@@ -825,7 +890,8 @@ uint16_t CModbusSlave::Programming(void)
 //            // Блок не существует?
 //            if (uiBlockNumber > CDataBase::BLOCKS_QUANTITY)
 //            {
-//                uiLength = ResponseException(uiSlave,
+//                uiLength = m_pxModbusSlaveLinkLayer ->
+//                                        ResponseException(uiSlave,
 //                                             uiFunctionCode,
 //                                             MODBUS_EXCEPTION_ILLEGAL_DATA_ADDRESS,
 //                                             puiResponse);
@@ -833,7 +899,8 @@ uint16_t CModbusSlave::Programming(void)
 //            // Размер блока не соответствует?
 //            else if ((puiRequest[uiPduOffset + REQUEST_LENGTH] - 2) != CDataBase::m_DStruct[uiBlockNumber].Size)
 //            {
-//                uiLength = ResponseException(uiSlave,
+//                uiLength = m_pxModbusSlaveLinkLayer ->
+//                                                ResponseException(uiSlave,
 //                                             uiFunctionCode,
 //                                             MODBUS_EXCEPTION_ILLEGAL_DATA_VALUE,
 //                                             puiResponse);
@@ -846,7 +913,8 @@ uint16_t CModbusSlave::Programming(void)
 //                {
 //                    CDataBase::SetStatus(1);
 //
-//                    uiLength = ResponseException(uiSlave,
+//                    uiLength = m_pxModbusSlaveLinkLayer ->
+//                                                        ResponseException(uiSlave,
 //                                                 uiFunctionCode,
 //                                                 MODBUS_EXCEPTION_ACKNOWLEDGE,
 //                                                 puiResponse);
@@ -855,7 +923,8 @@ uint16_t CModbusSlave::Programming(void)
 //                {
 //                    CDataBase::SetStatus(0);
 //
-//                    uiLength = ResponseException(uiSlave,
+//                    uiLength = m_pxModbusSlaveLinkLayer ->
+//                                                                ResponseException(uiSlave,
 //                                                 uiFunctionCode,
 //                                                 MODBUS_EXCEPTION_NEGATIVE_ACKNOWLEDGE,
 //                                                 puiResponse);
@@ -866,7 +935,8 @@ uint16_t CModbusSlave::Programming(void)
 //        case 0x03:
 //            if(!(CDataBase::GetStatus()))
 //            {
-//                uiLength = ResponseException(uiSlave,
+//                uiLength = m_pxModbusSlaveLinkLayer ->
+//                                                                        ResponseException(uiSlave,
 //                                             uiFunctionCode,
 //                                             MODBUS_EXCEPTION_SLAVE_OR_SERVER_BUSY,
 //                                             puiResponse);
@@ -874,7 +944,8 @@ uint16_t CModbusSlave::Programming(void)
 //            break;
 //
 //        default:
-//            uiLength = ResponseException(uiSlave,
+//            uiLength = m_pxModbusSlaveLinkLayer ->
+    //                                                                                ResponseException(uiSlave,
 //                                         uiFunctionCode,
 //                                         MODBUS_EXCEPTION_ILLEGAL_FUNCTION,
 //                                         puiResponse);
@@ -907,20 +978,57 @@ uint16_t CModbusSlave::PollProgramming(void)
         (CDataStore*)GetResources() ->
         GetCommonTaskFromMapPointer("DataStoreFileSystem");
 
+
+//    // Устройство хранения в прцессе записи?
+//    if (m_pxDeviceControl ->
+//            GetFsmOperationStatus() == CDfa::IN_PROGRESS)
+//    {
+//        std::cout << "CModbusSlave::PollProgramming 2" << std::endl;
+//
+//        uiLength = m_pxModbusSlaveLinkLayer ->
+//    ResponseException(uiSlave,
+//                                     uiFunctionCode,
+//                                     MODBUS_EXCEPTION_SLAVE_OR_SERVER_BUSY,
+//                                     puiResponse);
+//    }
+//    // Устройство хранения закончило запись успешно?
+//    else if (m_pxDeviceControl ->
+//             GetFsmOperationStatus() == CDfa::DONE_SUCCESSFULLY)
+//    {
+//        std::cout << "CModbusSlave::PollProgramming 3" << std::endl;
+//
+//        uiLength = m_pxModbusSlaveLinkLayer ->
+//                   ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
+//
+//    }
+//    // Устройство хранения закончило запись не успешно?
+//    else if (m_pxDeviceControl ->
+//             GetFsmOperationStatus() == CDfa::ERROR_OCCURED)
+//    {
+//        std::cout << "CModbusSlave::PollProgramming 4" << std::endl;
+//
+//        uiLength = m_pxModbusSlaveLinkLayer ->
+//                      ResponseException(uiSlave,
+//                                     uiFunctionCode,
+//                                     MODBUS_EXCEPTION_ACKNOWLEDGE,
+//                                     puiResponse);
+//    }
+
     // Ожидаем окончания записи автоматом устройства хранения.
     // Устройство хранения закончило запись успешно?
     if (pxDataStoreFileSystem -> IsDoneOk())
     {
-    std::cout << "CModbusSlave::PollProgramming 2" << std::endl;
+        std::cout << "CModbusSlave::PollProgramming 2" << std::endl;
 
         uiLength = m_pxModbusSlaveLinkLayer ->
-                    ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
+                   ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
 
 //        // номер блока базы данных
 //        puiResponse[uiPduOffset + 2] = puiRequest[uiPduOffset + 1];
 //        uiLength ++;
 
-//        uiLength = ResponseException(uiSlave,
+//        uiLength = m_pxModbusSlaveLinkLayer ->
+//        ResponseException(uiSlave,
 //                                     uiFunctionCode,
 //                                     MODBUS_EXCEPTION_ACKNOWLEDGE,
 //                                     puiResponse);
@@ -928,19 +1036,21 @@ uint16_t CModbusSlave::PollProgramming(void)
 //    // Устройство хранения закончило запись не успешно?
 //    else if (pxDataStoreFileSystem -> IsDoneError())
 //    {
-//        uiLength = ResponseException(uiSlave,
+//        uiLength = m_pxModbusSlaveLinkLayer ->
+    //    ResponseException(uiSlave,
 //                                     uiFunctionCode,
 //                                     MODBUS_EXCEPTION_SLAVE_OR_SERVER_BUSY,
 //                                     puiResponse);
 //    }
     else
     {
-    std::cout << "CModbusSlave::PollProgramming 3" << std::endl;
+        std::cout << "CModbusSlave::PollProgramming 3" << std::endl;
 
 //        uiLength = m_pxModbusSlaveLinkLayer ->
 //                    ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
 
-        uiLength = ResponseException(uiSlave,
+        uiLength = m_pxModbusSlaveLinkLayer ->
+                   ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_SLAVE_OR_SERVER_BUSY,
                                      puiResponse);
@@ -971,7 +1081,8 @@ uint16_t CModbusSlave::DataBaseRead(void)
             (uiBlockIndex > (CDataStore::MAX_BLOCKS_NUMBER - 1)))
     {
         std::cout << "CModbusSlave::DataBaseRead 2" << std::endl;
-        uiLength = ResponseException(uiSlave,
+        uiLength = m_pxModbusSlaveLinkLayer ->
+                   ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_DATA_VALUE,
                                      puiResponse);
@@ -982,7 +1093,7 @@ uint16_t CModbusSlave::DataBaseRead(void)
 
         CDeviceControl* pxDeviceControl =
             (CDeviceControl*)GetResources() ->
-            GetCommonTaskFromMapPointer("DeviceControl");
+            GetCommonTaskFromMapPointer("DeviceControlRtuUpperLevel");
 
 //        if (pxTask != 0)
 //        {
@@ -1054,30 +1165,30 @@ uint16_t CModbusSlave::DataBaseWrite(void)
             (uiBlockIndex > (CDataStore::MAX_BLOCKS_NUMBER - 1)))
     {
         std::cout << "CModbusSlave::DataBaseWrite 2" << std::endl;
-        uiLength = ResponseException(uiSlave,
+        uiLength = m_pxModbusSlaveLinkLayer ->
+                   ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_DATA_ADDRESS,
                                      puiResponse);
     }
     else
     {
-
         CDataStore* pxDataStoreFileSystem =
             (CDataStore*)GetResources() ->
             GetCommonTaskFromMapPointer("DataStoreFileSystem");
 
+        uiLength = pxDataStoreFileSystem ->
+                   GetBlockLength(uiBlockIndex);
+
+        memcpy(m_puiIntermediateBuff,
+               &puiRequest[uiPduOffset + 2],
+               uiLength);
+
         // Сохраним блок БД.
-//        // Успешно?
-//        if (pxDataStoreFileSystem ->
-//                Write(&puiRequest[uiPduOffset + 2], uiBlockIndex))
-//        {
         std::cout << "CModbusSlave::DataBaseWrite 3" << std::endl;
-        //        pxDataStoreFileSystem ->
-//        Write(&puiRequest[uiPduOffset + 2], uiBlockIndex);
         pxDataStoreFileSystem ->
-        WriteBlock(&puiRequest[uiPduOffset + 2],
-                   pxDataStoreFileSystem ->
-                   GetBlockLength(uiBlockIndex),
+        WriteBlock(m_puiIntermediateBuff,
+                   uiLength,
                    uiBlockIndex);
 
         uiLength = m_pxModbusSlaveLinkLayer ->
@@ -1088,21 +1199,6 @@ uint16_t CModbusSlave::DataBaseWrite(void)
         uiLength ++;
         puiResponse[uiPduOffset + 2] = puiRequest[uiPduOffset + 1];
         uiLength ++;
-
-////            uiLength = ResponseException(uiSlave,
-////                                         uiFunctionCode,
-////                                         MODBUS_EXCEPTION_ACKNOWLEDGE,
-////                                         puiResponse);
-//        }
-//        else
-//        {
-//            std::cout << "CModbusSlave::DataBaseWrite 3" << std::endl;
-//
-//            uiLength = ResponseException(uiSlave,
-//                                         uiFunctionCode,
-//                                         MODBUS_EXCEPTION_NEGATIVE_ACKNOWLEDGE,
-//                                         puiResponse);
-//        }
     }
 
     std::cout << "CModbusSlave::DataBaseWrite 7" << std::endl;
@@ -1201,7 +1297,8 @@ uint16_t CModbusSlave::RequestProcessing(void)
 
     default:
         std::cout << "CModbusSlave::RequestProcessing 4" << std::endl;
-        uiLength = ResponseException(uiSlave,
+        uiLength = m_pxModbusSlaveLinkLayer ->
+                   ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_FUNCTION,
                                      puiResponse);
@@ -1334,6 +1431,61 @@ uint8_t CModbusSlave::Fsm(void)
                 }
             }
         }
+
+
+        {
+            CTaskInterface* pxTask =
+                GetResources() ->
+                GetCommonTaskFromMapPointer(m_sDeviceControlName);
+
+            if (pxTask != 0)
+            {
+                std::cout << "CModbusSlave::Fsm INIT 2"  << std::endl;
+                if (pxTask -> GetFsmState() >= READY)
+                {
+                    SetDeviceControl((CDeviceControl*)pxTask);
+                    SetFsmState(READY);
+                    std::cout << "CModbusSlave::Fsm READY"  << std::endl;
+                }
+            }
+            else
+            {
+                std::cout << "CModbusSlave::Fsm INIT 3"  << std::endl;
+                if (GetTimerPointer() -> IsOverflow())
+                {
+                    SetFsmState(STOP);
+                    std::cout << "CModbusSlave::Fsm STOP"  << std::endl;
+                }
+            }
+        }
+
+
+//        {
+//            CTaskInterface* pxTask =
+//                GetResources() ->
+//                GetCommonTaskFromMapPointer(m_sDeviceControlLinkName);
+//
+//            if (pxTask != 0)
+//            {
+//                std::cout << "CModbusSlave::Fsm INIT 2"  << std::endl;
+//                if (pxTask -> GetFsmState() >= READY)
+//                {
+//                    SetDeviceControlLink((CLinkInterface*)pxTask);
+//                    SetFsmState(READY);
+//                    std::cout << "CModbusSlave::Fsm READY"  << std::endl;
+//                }
+//            }
+//            else
+//            {
+//                std::cout << "CModbusSlave::Fsm INIT 3"  << std::endl;
+//                if (GetTimerPointer() -> IsOverflow())
+//                {
+//                    SetFsmState(STOP);
+//                    std::cout << "CModbusSlave::Fsm STOP"  << std::endl;
+//                }
+//            }
+//        }
+
         break;
 
     case READY:
@@ -1362,13 +1514,15 @@ uint8_t CModbusSlave::Fsm(void)
 
     case DONE_OK:
         std::cout << "CModbusSlave::Fsm DONE_OK"  << std::endl;
-        SetFsmAnswerState(DONE_OK);
+        SetFsmOperationStatus(DONE_OK);
         SetFsmState(READY);
+        break;
 
     case DONE_ERROR:
         std::cout << "CModbusSlave::Fsm DONE_ERROR"  << std::endl;
-        SetFsmAnswerState(DONE_ERROR);
+        SetFsmOperationStatus(DONE_ERROR);
         SetFsmState(READY);
+        break;
 
     case COMMUNICATION_START:
         std::cout << "CModbusSlave::Fsm COMMUNICATION_START"  << std::endl;

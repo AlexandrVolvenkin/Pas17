@@ -31,6 +31,7 @@ public:
     virtual void AddCommonListTask(CTaskInterface* pxTask) {};
     virtual CTaskInterface* GetCommonListTaskPointer(char* pcTaskName) {};
     virtual void AddCommonTaskToMap(std::string sTaskName, CTaskInterface* pxTask) {};
+    virtual bool CheckCommonTaskMap(void) {};
     virtual CTaskInterface* GetCommonTaskFromMapPointer(std::string sTaskName) {};
     virtual std::list<CTaskInterface*>* GetCommonTasksListPointer(void) {};
 
@@ -58,6 +59,7 @@ public:
     void AddCurrentlyRunningTasksList(CTaskInterface* pxTask);
     CTaskInterface* GetCommonListTaskPointer(char* pcTaskName);
     void AddCommonTaskToMap(std::string sTaskName, CTaskInterface* pxTask);
+    bool CheckCommonTaskMap(void);
     CTaskInterface* GetCommonTaskFromMapPointer(std::string sTaskName);
 
     void ModbusWorkingArraysCreate(uint16_t uiCoilsNumber,

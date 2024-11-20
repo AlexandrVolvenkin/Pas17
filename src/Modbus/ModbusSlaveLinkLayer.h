@@ -85,6 +85,7 @@ public:
                                   uint16_t uiBitNumber,
                                   uint8_t *puiRequest) {};
     virtual uint16_t ResponseBasis(uint8_t, uint8_t, uint8_t * ) {};
+    virtual uint16_t ResponseException(uint8_t, uint8_t, uint8_t, uint8_t * ) {};
     virtual uint16_t Tail(uint8_t *, uint16_t ) {};
     virtual uint16_t Send(uint8_t *, uint16_t ) {};
 //    int16_t Receive(uint8_t * , uint16_t ) {};

@@ -238,6 +238,32 @@ void CResources::AddCommonTaskToMap(std::string sTaskName, CTaskInterface* pxTas
 }
 
 //-------------------------------------------------------------------------------
+bool CResources::CheckCommonTaskMap(void)
+{
+    std::cout << "CResources::CheckCommonTaskMap 1"  << std::endl;
+
+    for (const auto& pair : m_mpxCommonTaskMap)
+    {
+        std::string key = pair.first;
+        CTaskInterface* taskPtr = pair.second;
+
+        // Проверяем, не является ли указатель нулем или равен 0
+//        if (taskPtr == nullptr || *taskPtr == nullptr)
+        if (taskPtr == 0)
+        {
+            std::cout << "Task '" << key << "' has a NULL pointer or is set to zero." << std::endl;
+            return false;
+        }
+        else
+        {
+            std::cout << "Task '" << key << "' is valid and has a pointer to task." << std::endl;
+        }
+    }
+
+    return true;
+}
+
+//-------------------------------------------------------------------------------
 CTaskInterface* CResources::GetCommonTaskFromMapPointer(std::string sTaskName)
 {
     std::cout << "CResources::GetCommonTaskFromMapPointer 1"  << std::endl;

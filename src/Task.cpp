@@ -83,17 +83,17 @@ char* CTask::GetTaskNamePointer(void)
     return m_acTaskName;
 };
 
-//-------------------------------------------------------------------------------
-std::shared_ptr<CTaskInterface::TArgumentData> CTask::GetArgumentDataPointer(void)
-{
-    return m_pxArgumentData;
-};
-
-//-------------------------------------------------------------------------------
-std::shared_ptr<CDataContainerInterface> CTask::GetDataContainerPointer(void)
-{
-    return m_pxDataContainer;
-};
+////-------------------------------------------------------------------------------
+//std::shared_ptr<CTaskInterface::TArgumentData> CTask::GetArgumentDataPointer(void)
+//{
+//    return m_pxArgumentData;
+//};
+//
+////-------------------------------------------------------------------------------
+//std::shared_ptr<CDataContainerInterface> CTask::GetDataContainerPointer(void)
+//{
+//    return m_pxDataContainer;
+//};
 
 //-------------------------------------------------------------------------------
 void CTask::SetResources(CResources* pxResources)
@@ -114,10 +114,40 @@ void CTask::SetTaskCustomerName(std::string sName)
 }
 
 //-------------------------------------------------------------------------------
-void CTask::SetDataContainerPoiner(std::shared_ptr<CDataContainerInterface> pxDataContainer)
+void CTask::SetMessageBoxDataContainer(CDataContainerInterface* pxDataContainer)
 {
-    m_pxDataContainer = pxDataContainer;
+    m_pxMessageBoxDataContainer = pxDataContainer;
 }
+
+//-------------------------------------------------------------------------------
+CDataContainerInterface* CTask::GetMessageBoxDataContainerPointer(void)
+{
+    return m_pxMessageBoxDataContainer;
+};
+
+//-------------------------------------------------------------------------------
+void CTask::SetOperatingDataContainer(CDataContainerInterface* pxDataContainer)
+{
+    m_pxOperatingDataContainer = pxDataContainer;
+}
+
+//-------------------------------------------------------------------------------
+CDataContainerInterface* CTask::GetOperatingDataContainerPointer(void)
+{
+    return m_pxOperatingDataContainer;
+};
+
+//-------------------------------------------------------------------------------
+void CTask::SetCommandDataContainer(CDataContainerInterface* pxDataContainer)
+{
+    m_pxCommandDataContainer = pxDataContainer;
+}
+
+//-------------------------------------------------------------------------------
+CDataContainerInterface* CTask::GetCommandDataContainerPointer(void)
+{
+    return m_pxCommandDataContainer;
+};
 
 //-------------------------------------------------------------------------------
 void CTask::SetMessageBoxPoiner(std::shared_ptr<CMessageBoxInterface> pxMessageBox)
@@ -176,80 +206,3 @@ std::shared_ptr<CMessageBoxInterface> CTask::GetMessageBoxPointer(void)
 
 //-------------------------------------------------------------------------------
 
-
-
-
-
-////-------------------------------------------------------------------------------
-//CTaskContainer::CTaskContainer()
-//{
-//    std::cout << "CTaskContainer constructor 1"  << std::endl;
-////    SetFsmState(IDDLE);
-//}
-//
-////-------------------------------------------------------------------------------
-//CTaskContainer::~CTaskContainer()
-//{
-//    std::cout << "CTaskContainer destructor"  << std::endl;
-//}
-//
-////-------------------------------------------------------------------------------
-//uint8_t CTaskContainer::Init(void)
-//{
-//    std::cout << "CTaskContainer Init"  << std::endl;
-//}
-//
-//////-------------------------------------------------------------------------------
-////uint8_t CTaskContainer::Fsm(void)
-////{
-//////        std::cout << "CTaskContainer::Fsm 1"  << std::endl;
-////
-////    switch (GetFsmState())
-////    {
-////    case START:
-////        //std::cout << "CTaskContainer::Fsm START"  << std::endl;
-////        break;
-////
-////    case READY:
-////        //std::cout << "CTaskContainer::Fsm READY"  << std::endl;
-////        break;
-////
-////    case IDDLE:
-////        //std::cout << "CTaskContainer::Fsm IDDLE"  << std::endl;
-////        break;
-////
-////    case STOP:
-//////        //std::cout << "CTaskContainer::Fsm STOP"  << std::endl;
-////        SetFsmState(START);
-////        break;
-////
-////    default:
-////        break;
-////    }
-////
-////    return GetFsmState();
-////}
-
-//-------------------------------------------------------------------------------
-
-//есть выражение:
-//void ThreadPool::startup(const size_t threads)
-//{
-//    for (size_t i = 0; i < threads; ++i)
-//        workers.emplace_back( [this]
-//    {
-//
-//    },
-//                        );
-//}
-//
-//будет ли оно так же работать как это:
-//void ThreadPool::startup(const size_t threads)
-//{
-//    ThreadPool* local_this = this;
-//
-//    for (size_t i = 0; i < threads; ++i)
-//    {
-//        workers.emplace_back([local_this]);
-//    }
-//}

@@ -82,6 +82,8 @@
 		<Unit filename="src/InternalModule.h" />
 		<Unit filename="src/InternalModuleMuvr.cpp" />
 		<Unit filename="src/InternalModuleMuvr.h" />
+		<Unit filename="src/Link.cpp" />
+		<Unit filename="src/Link.h" />
 		<Unit filename="src/MainProductionCycle.cpp" />
 		<Unit filename="src/MainProductionCycle.h" />
 		<Unit filename="src/MessageBox.cpp" />

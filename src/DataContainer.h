@@ -43,6 +43,9 @@ public:
     void SetFsmCommandState(uint8_t value);
     uint8_t GetFsmCommandState() const;
 
+    void SetFsmOperationStatus(uint8_t value);
+    uint8_t GetFsmOperationStatus() const;
+
     void SetDataIndex(uint16_t value);
     uint16_t GetDataIndex() const;
 
@@ -64,8 +67,7 @@ public:
 
 public:
     uint8_t m_uiFsmCommandState;
-    uint8_t m_uiFsmAnswerState;
-//    CDataContainerInterface* m_pxCommandDataPointer;
+    uint8_t m_uiFsmOperationStatus;
     uint16_t m_uiDataIndex;
     uint8_t* m_puiDataPointer;
     uint32_t m_uiDataOffset;

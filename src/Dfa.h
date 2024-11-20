@@ -17,7 +17,14 @@
 class CDfa
 {
 public:
-    enum
+    enum EOperationStatus
+    {
+        IN_PROGRESS = 1,
+        DONE_SUCCESSFULLY,
+        ERROR_OCCURED,
+    };
+
+    enum EFsmStates
     {
         IDDLE = 1,
         STOP,
@@ -36,8 +43,8 @@ public:
     virtual void SetFsmState(uint8_t uiData);
     virtual void SetFsmCommandState(uint8_t uiData);
     virtual uint8_t GetFsmCommandState(void);
-    virtual void SetFsmAnswerState(uint8_t uiData);
-    virtual uint8_t GetFsmAnswerState(void);
+    virtual void SetFsmOperationStatus(uint8_t uiData);
+    virtual uint8_t GetFsmOperationStatus(void);
     virtual CTimer* GetTimerPointer(void);
     virtual bool IsDoneOk(void);
     virtual bool IsDoneError(void);
@@ -45,7 +52,7 @@ public:
 protected:
     uint8_t m_uiFsmState;
     uint8_t m_uiFsmCommandState;
-    uint8_t m_uiFsmAnswerState;
+    uint8_t m_uiFsmOperationStatus;
     CTimer m_xTimer;
 };
 

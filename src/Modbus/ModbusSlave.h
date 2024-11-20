@@ -24,6 +24,9 @@ class CTimer;
 class CPlatform;
 class CTask;
 class CResources;
+class CDeviceControl;
+class CLinkInterface;
+class CLink;
 
 //-------------------------------------------------------------------------------
 class CModbusSlave : public CTask
@@ -43,6 +46,7 @@ public:
     enum
     {
         MODBUS_EXCEPTION_CODE_OFFSET = 1,
+        MAX_MODBUS_MESSAGE_LENGTH = 256,
     };
 
     CModbusSlave();
@@ -51,8 +55,13 @@ public:
 
     void SetModbusSlaveLinkLayerName(std::string sName);
     void SetModbusSlaveLinkLayer(CModbusSlaveLinkLayer* pxModbusSlaveLinkLayer);
-//    void SetResources(CResources* pxResources);
-//    CResources* GetResources(void);
+
+    void SetDeviceControlName(std::string sName);
+    void SetDeviceControl(CDeviceControl* pxDeviceControl);
+
+    void SetDeviceControlLinkName(std::string sName);
+    void SetDeviceControlLink(CLinkInterface* pxLink);
+
     void ModbusWorkingArraysInit(void);
 
     void WorkingArraysInit(uint8_t *puiCoils,
@@ -89,11 +98,6 @@ public:
     uint16_t RequestProcessing(void);
 
     uint8_t Fsm(void);
-
-    void SetModbusSlaveLinkLayer(CModbusSlaveLinkLayerInterface* pxModbusSlaveLinkLayer)
-    {
-        m_pxModbusSlaveLinkLayer = pxModbusSlaveLinkLayer;
-    };
 
 //protected:
 //private:
@@ -175,6 +179,12 @@ public:
     std::string m_sModbusSlaveLinkLayerName;
     CModbusSlaveLinkLayerInterface* m_pxModbusSlaveLinkLayer;
 
+    std::string m_sDeviceControlName;
+    CDeviceControl* m_pxDeviceControl;
+
+    std::string m_sDeviceControlLinkName;
+    CLinkInterface* m_pxDeviceControlLink;
+
     uint8_t m_uiOwnAddress;
     uint8_t m_uiSlaveAddress;
     uint8_t m_uiFunctionCode;
@@ -186,6 +196,8 @@ public:
 
     uint8_t *m_puiRxBuffer;
     uint8_t *m_puiTxBuffer;
+    // Вспомогательный буфер.
+    uint8_t* m_puiIntermediateBuff;
 
     uint8_t *m_puiCoils;
     uint8_t *m_puiDiscreteInputs;

@@ -189,16 +189,18 @@ CDataStore::CDataStore()
             typeid(*this).name());
     m_pxStorageDevice = 0;
     m_puiIntermediateBuff = new uint8_t[CDataStore::MAX_SERVICE_SECTION_DATA_LENGTH];
-    m_pxCommandDataContainer = new CDataContainerDataBase();
-    m_pxOperatingDataContainer = new CDataContainerDataBase();
+    SetCommandDataContainer(new CDataContainerDataBase());
+//    m_pxCommandDataContainer = new CDataContainerDataBase();
+//    m_pxOperatingDataContainer = new CDataContainerDataBase();
+    SetMessageBoxDataContainer(0);
     SetFsmState(START);
 }
 
 //-------------------------------------------------------------------------------
 CDataStore::~CDataStore()
 {
-    delete m_puiIntermediateBuff;
-    delete m_pxOperatingDataContainer;
+    delete[] m_puiIntermediateBuff;
+//    delete m_pxOperatingDataContainer;
     delete m_pxCommandDataContainer;
 
 
@@ -510,6 +512,25 @@ uint8_t CDataStore::WriteBlock(uint8_t *puiSource, uint16_t uiLength, uint8_t ui
     SetFsmCommandState(START_WRITE_TEMPORARY_BLOCK_DATA);
 
     return 1;
+}
+
+//-------------------------------------------------------------------------------
+// Передаёт данные контекста записи блока автомату устройства хранения и запускает процесс записи.
+bool CDataStore::WriteBlock(CDataContainerDataBase* pxDataContainer)
+{
+    std::cout << "CDataStore WriteBlock 1"  << std::endl;
+    if (GetMessageBoxDataContainerPointer() == 0)
+    {
+        std::cout << "CDataStore WriteBlock 2"  << std::endl;
+//        m_pxCommandDataContainer = pxDataContainer;
+//        SetFsmCommandState(WRITE_DATA_START);
+        return true;
+    }
+    else
+    {
+        std::cout << "CDataStore WriteBlock 3"  << std::endl;
+        return false;
+    }
 }
 
 //-------------------------------------------------------------------------------
@@ -1097,7 +1118,7 @@ uint8_t CDataStore::Fsm(void)
             if (GetTimerPointer() -> IsOverflow())
             {
                 std::cout << "CDataStore::Fsm 12"  << std::endl;
-                m_pxStorageDevice -> SetFsmAnswerState(0);
+//                m_pxStorageDevice -> SetFsmOperationStatus(0);
                 SetFsmState(WRITE_ERROR);
             }
         }
@@ -1197,13 +1218,13 @@ uint8_t CDataStore::Fsm(void)
 
     case DATA_WRITED_SUCCESSFULLY:
         std::cout << "CDataStore::Fsm 25"  << std::endl;
-        SetFsmAnswerState(DONE_OK);
+        SetFsmOperationStatus(DONE_OK);
         SetFsmState(READY);
         break;
 
     case WRITE_ERROR:
         std::cout << "CDataStore::Fsm 26"  << std::endl;
-        SetFsmAnswerState(DONE_ERROR);
+        SetFsmOperationStatus(DONE_ERROR);
         SetFsmState(READY);
         break;
 

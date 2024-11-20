@@ -24,7 +24,7 @@ CMessageBoxGeneral::~CMessageBoxGeneral()
 }
 
 //-------------------------------------------------------------------------------
-void CMessageBoxGeneral::SetDataContainerPoiner(CDataContainerInterface* pxDataContainer)
+void CMessageBoxGeneral::SetDataContainer(CDataContainerInterface* pxDataContainer)
 {
     m_pxDataContainer = pxDataContainer;
 }

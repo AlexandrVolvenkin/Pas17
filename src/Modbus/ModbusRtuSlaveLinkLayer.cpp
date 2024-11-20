@@ -236,6 +236,19 @@ uint16_t CModbusRtuSlaveLinkLayer::ResponseBasis(uint8_t uiSlave, uint8_t uiFunc
 }
 
 //-------------------------------------------------------------------------------
+/* Build the exception response */
+uint16_t CModbusRtuSlaveLinkLayer::ResponseException(uint8_t uiSlave, uint8_t uiFunctionCode, uint8_t uiExceptionCode, uint8_t *puiResponse)
+{
+    uint16_t uiLength;
+
+    uiLength = ResponseBasis(uiSlave, (uiFunctionCode | 0x80), puiResponse);
+    /* Positive exception code */
+    puiResponse[uiLength++] = uiExceptionCode;
+
+    return uiLength;
+}
+
+//-------------------------------------------------------------------------------
 uint16_t CModbusRtuSlaveLinkLayer::Tail(uint8_t *puiMessage, uint16_t uiLength)
 {
     uint16_t uiCrc = usCrc16(puiMessage, uiLength);
@@ -346,14 +359,15 @@ uint8_t CModbusRtuSlaveLinkLayer::Fsm(void)
 
     case DONE_OK:
         std::cout << "CModbusRtuSlaveLinkLayer::Fsm DONE_OK"  << std::endl;
-        SetFsmAnswerState(DONE_OK);
+        SetFsmOperationStatus(DONE_OK);
         SetFsmState(READY);
         break;
 
     case DONE_ERROR:
         std::cout << "CModbusRtuSlaveLinkLayer::Fsm DONE_ERROR"  << std::endl;
-        SetFsmAnswerState(DONE_ERROR);
+        SetFsmOperationStatus(DONE_ERROR);
         SetFsmState(READY);
+        break;
 
     case COMMUNICATION_START:
         std::cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_START"  << std::endl;

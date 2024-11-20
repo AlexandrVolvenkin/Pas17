@@ -141,6 +141,7 @@ public:
     void SetStorageDevice(CStorageDeviceInterface* pxStorageDevice);
 
     uint8_t WriteBlock(uint8_t *puiSource, uint16_t uiLength, uint8_t uiBlock);
+    bool WriteBlock(CDataContainerDataBase* pxDataContainer);
     uint16_t ReadBlock(uint8_t *, uint8_t );
     void CrcOfBlocksCrcCreate(void);
     bool CrcOfBlocksCrcCheck(void);

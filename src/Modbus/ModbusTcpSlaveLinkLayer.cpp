@@ -266,6 +266,19 @@ uint16_t CModbusTcpSlaveLinkLayer::ResponseBasis(uint8_t uiSlave, uint8_t uiFunc
 }
 
 //-------------------------------------------------------------------------------
+/* Build the exception response */
+uint16_t CModbusTcpSlaveLinkLayer::ResponseException(uint8_t uiSlave, uint8_t uiFunctionCode, uint8_t uiExceptionCode, uint8_t *puiResponse)
+{
+    uint16_t uiLength;
+
+    uiLength = ResponseBasis(uiSlave, (uiFunctionCode | 0x80), puiResponse);
+    /* Positive exception code */
+    puiResponse[uiLength++] = uiExceptionCode;
+
+    return uiLength;
+}
+
+//-------------------------------------------------------------------------------
 uint16_t CModbusTcpSlaveLinkLayer::Tail(uint8_t *puiMessage, uint16_t uiLength)
 {
     m_auiTxBuffer[4] = ((m_uiFrameLength - 6) >> 8);
@@ -365,13 +378,13 @@ uint8_t CModbusTcpSlaveLinkLayer::Fsm(void)
 
     case DONE_OK:
         std::cout << "CModbusTcpSlaveLinkLayer::Fsm DONE_OK"  << std::endl;
-        SetFsmAnswerState(DONE_OK);
+        SetFsmOperationStatus(DONE_OK);
         SetFsmState(READY);
         break;
 
     case DONE_ERROR:
         std::cout << "CModbusTcpSlaveLinkLayer::Fsm DONE_ERROR"  << std::endl;
-        SetFsmAnswerState(DONE_ERROR);
+        SetFsmOperationStatus(DONE_ERROR);
         SetFsmState(READY);
         break;
 

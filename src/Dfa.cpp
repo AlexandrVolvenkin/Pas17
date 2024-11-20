@@ -53,15 +53,15 @@ uint8_t CDfa::GetFsmCommandState(void)
 }
 
 //-------------------------------------------------------------------------------
-void CDfa::SetFsmAnswerState(uint8_t uiData)
+void CDfa::SetFsmOperationStatus(uint8_t uiData)
 {
-    m_uiFsmAnswerState = uiData;
+    m_uiFsmOperationStatus = uiData;
 }
 
 //-------------------------------------------------------------------------------
-uint8_t CDfa::GetFsmAnswerState(void)
+uint8_t CDfa::GetFsmOperationStatus(void)
 {
-    return m_uiFsmAnswerState;
+    return m_uiFsmOperationStatus;
 }
 
 //-------------------------------------------------------------------------------
@@ -73,9 +73,9 @@ CTimer* CDfa::GetTimerPointer(void)
 //-------------------------------------------------------------------------------
 bool CDfa::IsDoneOk(void)
 {
-    if (m_uiFsmAnswerState == DONE_OK)
+    if (m_uiFsmOperationStatus == DONE_OK)
     {
-        SetFsmAnswerState(0);
+        SetFsmOperationStatus(0);
         return true;
     }
     else
@@ -87,9 +87,9 @@ bool CDfa::IsDoneOk(void)
 //-------------------------------------------------------------------------------
 bool CDfa::IsDoneError(void)
 {
-    if (m_uiFsmAnswerState == DONE_ERROR)
+    if (m_uiFsmOperationStatus == DONE_ERROR)
     {
-        SetFsmAnswerState(0);
+        SetFsmOperationStatus(0);
         return true;
     }
     else

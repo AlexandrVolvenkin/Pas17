@@ -17,7 +17,7 @@ class CDataContainerInterface;
 class CMessageBoxInterface
 {
 public:
-    virtual void SetDataContainerPoiner(CDataContainerInterface* pxDataContainer) {};
+    virtual void SetDataContainer(CDataContainerInterface* pxDataContainer) {};
     virtual CDataContainerInterface* GetDataContainerPointer(void) {};
 
 protected:
@@ -38,7 +38,7 @@ public:
     CMessageBoxGeneral();
     virtual ~CMessageBoxGeneral();
 
-    void SetDataContainerPoiner(CDataContainerInterface* pxDataContainer);
+    void SetDataContainer(CDataContainerInterface* pxDataContainer);
     CDataContainerInterface* GetDataContainerPointer(void);
 
 public:
