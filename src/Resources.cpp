@@ -9,6 +9,8 @@
 #include <map>
 #include <string>
 #include <typeinfo>
+#include <list>
+#include <algorithm>
 
 #include "Task.h"
 #include "DeviceControl.h"
@@ -193,6 +195,35 @@ void CResources::AddCurrentlyRunningTasksList(CTaskInterface* pxTask)
 }
 
 //-------------------------------------------------------------------------------
+void CResources::RemoveCurrentlyRunningTasksList(CTaskInterface* pxTask)
+{
+    std::cout << "CResources::RemoveCurrentlyRunningTasksList 1"  << std::endl;
+
+    std::list<CTaskInterface*>::iterator it;
+
+    for (it=m_lpxCurrentlyRunningTasksList.begin();
+            it!=m_lpxCurrentlyRunningTasksList.end();
+            ++it)
+    {
+        if (*it == pxTask)
+        {
+            std::cout << "CResources::RemoveCurrentlyRunningTasksList 2"  << std::endl;
+//            m_lpxCurrentlyRunningTasksList.erase(it);
+            break; // To avoid calling erase() on already erased elements
+        }
+    }
+
+//    auto it = std::find(m_lpxCurrentlyRunningTasksList.begin(),
+//                        m_lpxCurrentlyRunningTasksList.end(),
+//                        pxTask);
+//
+//    if (it != m_lpxCurrentlyRunningTasksList.end())
+//    {
+//        m_lpxCurrentlyRunningTasksList.remove(it);
+//    }
+}
+
+//-------------------------------------------------------------------------------
 CTaskInterface* CResources::GetCommonListTaskPointer(char* pcTaskName)
 {
     std::cout << "CResources::GetCommonListTaskPointer 1"  << std::endl;
@@ -333,63 +364,87 @@ CTaskInterface* CResources::GetCommonTaskFromMapPointer(std::string sTaskName)
 //{
 //    return &m_lpxCurrentlyRunningTasksList;
 //}
+
 //-------------------------------------------------------------------------------
+void CResources::CurrentlyRunningTasksExecution(void)
+{
+//    std::cout << "CResources CurrentlyRunningTasksExecution"  << std::endl;
 
+//        std::list<CTaskInterface*>::iterator xListIterator;
+//
+//        for(xListIterator =
+//                    GetResources() -> m_lpxCurrentlyRunningTasksList.begin();
+//                xListIterator !=
+//                GetResources() -> m_lpxCurrentlyRunningTasksList.end();
+//                xListIterator++)
+//        {
+//            (*xListIterator) -> Fsm();
+//        }
 
-//#include <iostream>
-//#include <map>
-//#include <string>
+    for(m_xCurrentlyRunningTasksListIterator =
+                m_lpxCurrentlyRunningTasksList.begin();
+            m_xCurrentlyRunningTasksListIterator !=
+            m_lpxCurrentlyRunningTasksList.end();
+            m_xCurrentlyRunningTasksListIterator++)
+    {
+        (*(m_xCurrentlyRunningTasksListIterator)) -> Fsm();
+    }
+}
+
+//-------------------------------------------------------------------------------
+uint8_t CResources::Fsm(void)
+{
+//    std::cout << "CResources::Fsm 1" << endl;
+    switch (GetFsmState())
+    {
+    case IDDLE:
+//        std::cout << "CResources::Fsm IDDLE"  << std::endl;
+//        GetResources() ->
+//        RemoveCurrentlyRunningTasksList(this);
+        break;
+
+    case STOP:
+//        //std::cout << "CResources::Fsm STOP"  << std::endl;
+        break;
+
+    case START:
+        std::cout << "CResources::Fsm START"  << std::endl;
+//        std::cout << "CResources::Fsm m_sTaskPerformerName" << " " << (m_sTaskPerformerName) << std::endl;
+        SetFsmState(INIT);
+        break;
+
+    case INIT:
+        std::cout << "CResources::Fsm INIT 1"  << std::endl;
+//        {
+//            CTaskInterface* pxTask =
+//                GetResources() ->
+//                GetCommonTaskFromMapPointer(m_sTaskPerformerName);
 //
-//class Object
-//{
-//public:
-//    Object(const std::string& name) : name(name) {}
-//    void display() const
-//    {
-//        std::cout << "Object name: " << name << std::endl;
-//    }
-//private:
-//    std::string name;
-//};
-//
-//int main()
-//{
-//    // Создаем std::map, где ключ - строка, значение - указатель на объект
-//    std::map<std::string, Object*> objectMap;
-//
-//    // Создаем несколько объектов и добавляем их в std::map
-//    Object* obj1 = new Object("Object1");
-//    Object* obj2 = new Object("Object2");
-//    Object* obj3 = new Object("Object3");
-//
-//    // Добавляем объекты в map
-//    objectMap["Object1"] = obj1;
-//    objectMap["Object2"] = obj2;
-//    objectMap["Object3"] = obj3;
-//
-//    // Получаем объект по имени и вызываем метод
-//    objectMap["Object1"]->display();
-//    objectMap["Object2"]->display();
-//    objectMap["Object3"]->display();
-//
-//    // Освобождаем память
-//    for (auto& pair : objectMap)
-//    {
-//        delete pair.second; // Удаляем указатели на объекты
-//    }
-//
-//    return 0;
-//}
-//
-////Объяснение кода:
-////
-////Определён класс Object, который имеет конструктор для инициализации имени объекта и метод
-////для отображения имени.
-////В main() создаётся std::map, где ключом является std::string, а значением — указатель на
-////Object.
-////Создаются объекты типа Object с различными именами, и их адреса хранятся в std::map, где имя
-////объекта является ключом.
-////Затем, по ключу из map, вызывается метод display() для отображения имени объекта.
-////В конце освободите выделенную память, удаляя указатели на объекты.
-////
-////Этот пример демонстрирует, как использовать std::map для хранения объектов и их имен.
+//            SetTaskPerformer(pxTask);
+//            SetFsmState(IDDLE);
+//            std::cout << "CResources::Fsm READY"  << std::endl;
+//        }
+
+        break;
+
+    case READY:
+        std::cout << "CResources::Fsm READY"  << std::endl;
+        break;
+
+    case DONE_OK:
+        std::cout << "CResources::Fsm DONE_OK"  << std::endl;
+        SetFsmOperationStatus(DONE_OK);
+        SetFsmState(READY);
+        break;
+
+    case DONE_ERROR:
+        std::cout << "CResources::Fsm DONE_ERROR"  << std::endl;
+        SetFsmOperationStatus(DONE_ERROR);
+        SetFsmState(READY);
+        break;
+
+    default:
+        break;
+    }
+}
+

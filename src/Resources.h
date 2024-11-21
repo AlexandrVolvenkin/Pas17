@@ -57,6 +57,7 @@ public:
 
     void AddCommonListTask(CTaskInterface* pxTask);
     void AddCurrentlyRunningTasksList(CTaskInterface* pxTask);
+    void RemoveCurrentlyRunningTasksList(CTaskInterface* pxTask);
     CTaskInterface* GetCommonListTaskPointer(char* pcTaskName);
     void AddCommonTaskToMap(std::string sTaskName, CTaskInterface* pxTask);
     bool CheckCommonTaskMap(void);
@@ -89,6 +90,9 @@ public:
 
 //    std::list<CTaskInterface*>* GetCommonTasksListPointer(void);
 //    std::list<CTaskInterface*>* GetCurrentlyRunningTasksListPointer(void);
+    void CurrentlyRunningTasksExecution(void);
+
+    uint8_t Fsm(void);
 
 //protected:
 //

@@ -199,10 +199,14 @@ uint8_t CMainProductionCycle::CreateTasks(void)
     m_xResources.AddCommonTaskToMap("DeviceControlLinkRtuUpperLevel",
                                     pxDeviceControlLinkRtuUpperLevel);
     pxDeviceControlLinkRtuUpperLevel ->
+    SetResources(&m_xResources);
+    pxDeviceControlLinkRtuUpperLevel ->
     SetTaskPerformerName("DeviceControlRtuUpperLevel");
     pxDeviceControlLinkRtuUpperLevel ->
     SetDataContainer(new CDataContainerDataBase());
     m_xResources.AddCurrentlyRunningTasksList(pxDeviceControlLinkRtuUpperLevel);
+
+
 
 //-------------------------------------------------------------------------------
     CTcpCommunicationDevice* pxTcpCommunicationDeviceUpperLevel = 0;
@@ -340,6 +344,8 @@ void CMainProductionCycle::CurrentlyRunningTasksExecution(void)
 uint8_t CMainProductionCycle::Fsm(void)
 {
 //        std::cout << "CMainProductionCycle::Fsm 1"  << std::endl;
+    GetResources() ->
+    CurrentlyRunningTasksExecution();
 
     switch (GetFsmState())
     {
@@ -402,7 +408,7 @@ uint8_t CMainProductionCycle::Fsm(void)
 
     case DATABASE_CHECK_TASK_READY_CHECK:
 //        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_TASK_READY_CHECK"  << std::endl;
-        CurrentlyRunningTasksExecution();
+        //CurrentlyRunningTasksExecution();
 
         GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
         SetFsmState(DATABASE_CHECK_TASK_READY_WAITING);
@@ -423,7 +429,7 @@ uint8_t CMainProductionCycle::Fsm(void)
 
     case DATABASE_CHECK_TASK_READY_WAITING:
 //        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_TASK_READY_WAITING"  << std::endl;
-        CurrentlyRunningTasksExecution();
+        //CurrentlyRunningTasksExecution();
 
         if ((m_pxDataStoreCheck -> GetFsmState()) == READY)
         {
@@ -443,7 +449,7 @@ uint8_t CMainProductionCycle::Fsm(void)
 
     case DATABASE_CHECK_BEGIN:
         std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_BEGIN"  << std::endl;
-        CurrentlyRunningTasksExecution();
+        //CurrentlyRunningTasksExecution();
         m_pxDataStoreCheck -> Check();
         GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
         SetFsmState(DATABASE_CHECK_END_WAITING);
@@ -477,7 +483,7 @@ uint8_t CMainProductionCycle::Fsm(void)
 
     case DATABASE_CHECK_END_WAITING:
 //        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_END_WAITING"  << std::endl;
-        CurrentlyRunningTasksExecution();
+        //CurrentlyRunningTasksExecution();
 
 //        if ((m_pxDataStoreCheck -> GetFsmState()) == CDataStoreCheck::DATA_STORE_CHECK_ERROR)
 //        {
@@ -509,7 +515,7 @@ uint8_t CMainProductionCycle::Fsm(void)
 
     case DATABASE_CHECK_RECAVERY_END_WAITING:
         std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_RECAVERY_END_WAITING"  << std::endl;
-        CurrentlyRunningTasksExecution();
+        //CurrentlyRunningTasksExecution();
 
         if ((m_pxDataStoreCheck -> GetFsmState()) == CDataStoreCheck::DATA_STORE_CHECK_ERROR)
         {
@@ -535,19 +541,19 @@ uint8_t CMainProductionCycle::Fsm(void)
 
     case DATABASE_CHECK_END_OK:
 //        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_END_OK"  << std::endl;
-        CurrentlyRunningTasksExecution();
+        //CurrentlyRunningTasksExecution();
         break;
 
     case DATABASE_CHECK_END_ERROR:
 //        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_END_ERROR"  << std::endl;
-        CurrentlyRunningTasksExecution();
+        //CurrentlyRunningTasksExecution();
         break;
 
     case MAIN_CYCLE_MODBUS_SLAVE:
 //        std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_MODBUS_SLAVE"  << std::endl;
 //        m_pxModbusTcpSlaveUpperLevel -> Fsm();
 //        m_pxModbusRtuSlaveUpperLevel -> Fsm();
-        CurrentlyRunningTasksExecution();
+        //CurrentlyRunningTasksExecution();
 
         usleep(1000);
         break;

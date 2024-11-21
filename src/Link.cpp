@@ -30,7 +30,8 @@ CLink::CLink()
 //-------------------------------------------------------------------------------
 CLink::~CLink()
 {
-    //dtor
+//    delete m_pxTaskPerformer;
+    delete m_pxDataContainer;
 }
 
 //-------------------------------------------------------------------------------
@@ -71,72 +72,36 @@ uint8_t CLink::Fsm(void)
     {
     case IDDLE:
 //        std::cout << "CLink::Fsm IDDLE"  << std::endl;
+//        GetResources() ->
+//        RemoveCurrentlyRunningTasksList(this);
         break;
 
     case STOP:
 //        //std::cout << "CLink::Fsm STOP"  << std::endl;
-        SetFsmState(START);
         break;
 
     case START:
         std::cout << "CLink::Fsm START"  << std::endl;
         std::cout << "CLink::Fsm m_sTaskPerformerName" << " " << (m_sTaskPerformerName) << std::endl;
-        GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
         SetFsmState(INIT);
         break;
 
     case INIT:
-//        std::cout << "CLink::Fsm INIT 1"  << std::endl;
-//        {
-//            CTaskInterface* pxTask =
-//                GetResources() ->
-//                GetCommonTaskFromMapPointer(m_sTaskPerformerName);
-//
-//            if (pxTask != 0)
-//            {
-//                std::cout << "CLink::Fsm INIT 2"  << std::endl;
-//                if (pxTask -> GetFsmState() >= READY)
-//                {
-//                    SetTaskPerformer(pxTask);
-//                    SetFsmState(READY);
-//                    std::cout << "CLink::Fsm READY"  << std::endl;
-//                }
-//            }
-//            else
-//            {
-//                std::cout << "CLink::Fsm INIT 3"  << std::endl;
-//                if (GetTimerPointer() -> IsOverflow())
-//                {
-//                    SetFsmState(STOP);
-//                    std::cout << "CLink::Fsm STOP"  << std::endl;
-//                }
-//            }
-//        }
+        std::cout << "CLink::Fsm INIT 1"  << std::endl;
+        {
+            CTaskInterface* pxTask =
+                GetResources() ->
+                GetCommonTaskFromMapPointer(m_sTaskPerformerName);
+
+            SetTaskPerformer(pxTask);
+            SetFsmState(IDDLE);
+            std::cout << "CLink::Fsm READY"  << std::endl;
+        }
 
         break;
 
     case READY:
         std::cout << "CLink::Fsm READY"  << std::endl;
-//        {
-//            if (m_pxCommandDataContainer != 0)
-//            {
-//                std::cout << "CLink::Fsm READY 2"  << std::endl;
-//                m_pxOperatingDataContainer = m_pxCommandDataContainer;
-//                SetFsmState(GetFsmCommandState());
-//                SetFsmCommandState(0);
-//                m_pxCommandDataContainer = 0;
-//            }
-//        }
-
-
-//        {
-//            if (GetFsmCommandState() != 0)
-//            {
-//                SetFsmState(GetFsmCommandState());
-//                SetFsmCommandState(0);
-//            }
-//        }
-//        SetFsmState(COMMUNICATION_START);
         break;
 
     case DONE_OK:
