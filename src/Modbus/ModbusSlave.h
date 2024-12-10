@@ -212,6 +212,7 @@ public:
     uint8_t m_uiOwnAddress;
     uint8_t m_uiSlaveAddress;
     uint8_t m_uiFunctionCode;
+    uint16_t  m_uiLength;
     uint16_t m_uiQuantity;
     uint16_t m_uiMessageLength;
     // таймоут по отсутствию подтверждения.

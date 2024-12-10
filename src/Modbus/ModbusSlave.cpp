@@ -1181,49 +1181,32 @@ uint16_t CModbusSlave::DataBaseRead(void)
         GetDataContainerPointer() ->
         SetContainerData(uiFunctionCode,
                          uiBlockIndex,
-                         &puiResponse[uiPduOffset + 3],
+                         m_puiIntermediateBuff,
                          0,
                          0);
 
-        CDeviceControl* pxDeviceControl =
-            (CDeviceControl*)GetResources() ->
-            GetCommonTaskFromMapPointer("DeviceControlRtuUpperLevel");
+        uiLength = ((CDeviceControl*)(m_pxDeviceControlLink ->
+                                      GetTaskPerformerPointer())) ->
+                   DataBaseBlockRead(m_puiIntermediateBuff, uiBlockIndex);
 
-//        if (pxTask != 0)
-//        {
-//            std::cout << "CModbusSlave::Fsm INIT 2"  << std::endl;
-//            if (pxTask -> GetFsmState() >= READY)
-//            {
-//                SetModbusSlaveLinkLayer((CModbusSlaveLinkLayer*)pxTask);
-//                SetFsmState(READY);
-//                std::cout << "CModbusSlave::Fsm READY"  << std::endl;
-//            }
-//        }
-//        else
-//        {
-//            std::cout << "CModbusSlave::Fsm INIT 3"  << std::endl;
-//            if (GetTimerPointer() -> IsOverflow())
-//            {
-//                SetFsmState(STOP);
-//                std::cout << "CModbusSlave::Fsm STOP"  << std::endl;
-//            }
-//        }
+        m_uiLength = uiLength;
 
-        uiLength = pxDeviceControl ->
-                   DataBaseBlockRead(&puiResponse[uiPduOffset + 3], uiBlockIndex);
-//        uiLength = m_pxResources ->
-//                   m_pxDeviceControl ->
+//        memcpy(&puiResponse[uiPduOffset + 3], m_puiIntermediateBuff, uiLength);
+
+//        puiResponse[uiPduOffset + 1] = uiLength + 1;
+//        uiLength ++;
+//
+//        uiLength += m_pxModbusSlaveLinkLayer ->
+//                    ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
+//
+//        // номер блока базы данных
+//        puiResponse[uiPduOffset + 2] = puiRequest[uiPduOffset + 1];
+//        uiLength ++;
+
+
+//        uiLength = pxDeviceControl ->
 //                   DataBaseBlockRead(&puiResponse[uiPduOffset + 3], uiBlockIndex);
-        // количество байт в пакете
-        puiResponse[uiPduOffset + 1] = uiLength + 1;
-        uiLength ++;
-
-        uiLength += m_pxModbusSlaveLinkLayer ->
-                    ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
-
-        // номер блока базы данных
-        puiResponse[uiPduOffset + 2] = puiRequest[uiPduOffset + 1];
-        uiLength ++;
+//        uiLength = 5;
     }
 
     std::cout << "CModbusSlave::DataBaseRead 7" << std::endl;
@@ -2246,9 +2229,9 @@ uint16_t CModbusSlave::DataBaseReadAnswer(void)
     }
     else
     {
-        CDeviceControl* pxDeviceControl =
-            (CDeviceControl*)GetResources() ->
-            GetCommonTaskFromMapPointer("DeviceControlRtuUpperLevelAnswer");
+//        CDeviceControl* pxDeviceControl =
+//            (CDeviceControl*)GetResources() ->
+//            GetCommonTaskFromMapPointer("DeviceControlRtuUpperLevelAnswer");
 
 //        if (pxTask != 0)
 //        {
@@ -2270,8 +2253,12 @@ uint16_t CModbusSlave::DataBaseReadAnswer(void)
 //            }
 //        }
 
-        uiLength = pxDeviceControl ->
-                   DataBaseBlockRead(&puiResponse[uiPduOffset + 3], uiBlockIndex);
+//        uiLength = pxDeviceControl ->
+//                   DataBaseBlockRead(&puiResponse[uiPduOffset + 3], uiBlockIndex);
+
+        uiLength = m_uiLength;
+
+        memcpy(&puiResponse[uiPduOffset + 3], m_puiIntermediateBuff, uiLength);
 
         puiResponse[uiPduOffset + 1] = uiLength + 1;
         uiLength ++;
