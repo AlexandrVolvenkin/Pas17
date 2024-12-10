@@ -19,7 +19,8 @@ using namespace std;
 //-------------------------------------------------------------------------------
 CDeviceControl::CDeviceControl()
 {
-    //ctor
+    std::cout << "CDeviceControl constructor"  << std::endl;
+    SetFsmState(START);
 }
 
 //-------------------------------------------------------------------------------
@@ -94,8 +95,9 @@ uint8_t CDeviceControl::Fsm(void)
 
     case START:
         std::cout << "CDeviceControl::Fsm START"  << std::endl;
-        GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
+//        GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
         SetFsmState(INIT);
+                    SetFsmState(READY);
         break;
 
     case INIT:
@@ -156,7 +158,7 @@ uint8_t CDeviceControl::Fsm(void)
         break;
 
     case READY:
-        std::cout << "CDeviceControl::Fsm READY"  << std::endl;
+//        std::cout << "CDeviceControl::Fsm READY"  << std::endl;
 //        {
 //            if (m_pxCommandDataContainer != 0)
 //            {

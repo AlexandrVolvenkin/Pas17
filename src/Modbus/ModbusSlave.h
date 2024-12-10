@@ -38,6 +38,7 @@ public:
         COMMUNICATION_RECEIVE_START,
         MESSAGE_RECEIVE_WAITING,
         REQUEST_PROCESSING,
+        ANSWER_PROCESSING_WAITING,
         BEFORE_ANSWERING_WAITING,
         MESSAGE_SEND,
         AFTER_ANSWERING_WAITING,
@@ -80,6 +81,7 @@ public:
     static const char *ModbusStringError(int errnum);
 //    void SlaveSet(uint8_t );
 
+//-------------------------------------------------------------------------------
     uint16_t ReadCoils(void);
     uint16_t ReadDiscreteInputs(void);
     uint16_t ReadHoldingRegisters(void);
@@ -97,6 +99,27 @@ public:
     uint16_t DataBaseWrite(void);
     uint16_t RequestProcessing(void);
 
+//-------------------------------------------------------------------------------
+    uint16_t ReadCoilsAnswer(void);
+    uint16_t ReadDiscreteInputsAnswer(void);
+    uint16_t ReadHoldingRegistersAnswer(void);
+    uint16_t ReadInputRegistersAnswer(void);
+    uint16_t WriteSingleCoilAnswer(void);
+    uint16_t WriteSingleRegisterAnswer(void);
+    uint16_t WriteMultipleCoilsAnswer(void);
+    uint16_t WriteMultipleRegistersAnswer(void);
+    uint16_t ReadExceptionStatusAnswer(void);
+    uint16_t ReportSlaveIDAnswer(void);
+    uint16_t WriteAndReadRegistersAnswer(void);
+    uint16_t ProgrammingAnswer(void);
+    uint16_t PollProgrammingAnswer(void);
+    uint16_t DataBaseReadAnswer(void);
+    uint16_t DataBaseWriteAnswer(void);
+//uint16_t RequestProcessingAnswer(void);
+
+    uint16_t AnswerProcessing(void);
+
+//-------------------------------------------------------------------------------
     uint8_t Fsm(void);
 
 //protected:

@@ -175,8 +175,8 @@ void CResources::AddCommonListTask(CTaskInterface* pxTask)
 {
     std::cout << "CResources::AddCommonListTask 1"  << std::endl;
 
-    std::cout << "CResources::AddCommonListTask this name" << " " << (this -> GetTaskNamePointer()) << std::endl;
-    std::cout << "CResources::AddCommonListTask pxTask name" << " " << (pxTask -> GetTaskNamePointer()) << std::endl;
+//    std::cout << "CResources::AddCommonListTask this name" << " " << (this -> GetTaskNamePointer()) << std::endl;
+//    std::cout << "CResources::AddCommonListTask pxTask name" << " " << (pxTask -> GetTaskNamePointer()) << std::endl;
 
     m_lpxCommonTasksList.push_back(pxTask);
 }
@@ -186,8 +186,8 @@ void CResources::AddCurrentlyRunningTasksList(CTaskInterface* pxTask)
 {
     std::cout << "CResources::AddCurrentlyRunningTasksList 1"  << std::endl;
 
-    std::cout << "CResources::AddCurrentlyRunningTasksList this name" << " " << (this -> GetTaskNamePointer()) << std::endl;
-    std::cout << "CResources::AddCurrentlyRunningTasksList pxTask name" << " " << (pxTask -> GetTaskNamePointer()) << std::endl;
+//    std::cout << "CResources::AddCurrentlyRunningTasksList this name" << " " << (this -> GetTaskNamePointer()) << std::endl;
+//    std::cout << "CResources::AddCurrentlyRunningTasksList pxTask name" << " " << (pxTask -> GetTaskNamePointer()) << std::endl;
 
     m_lpxCurrentlyRunningTasksList.push_back(pxTask);
 }
@@ -197,8 +197,8 @@ CTaskInterface* CResources::GetCommonListTaskPointer(char* pcTaskName)
 {
     std::cout << "CResources::GetCommonListTaskPointer 1"  << std::endl;
 
-    std::cout << "CResources::GetCommonListTaskPointer this name" << " " << (this -> GetTaskNamePointer()) << std::endl;
-    std::cout << "CResources::GetCommonListTaskPointer pcTaskName" << " " << pcTaskName << std::endl;
+//    std::cout << "CResources::GetCommonListTaskPointer this name" << " " << (this -> GetTaskNamePointer()) << std::endl;
+//    std::cout << "CResources::GetCommonListTaskPointer pcTaskName" << " " << pcTaskName << std::endl;
 
     std::list<CTaskInterface*>::iterator xListIterator;
 
@@ -229,8 +229,8 @@ void CResources::AddCommonTaskToMap(std::string sTaskName, CTaskInterface* pxTas
 {
     std::cout << "CResources::AddCommonTaskToMap 1"  << std::endl;
 
-    std::cout << "CResources::AddCommonTaskToMap this name" << " " << (this -> GetTaskNamePointer()) << std::endl;
-    std::cout << "CResources::AddCommonTaskToMap sTaskName" << " " << (sTaskName) << std::endl;
+//    std::cout << "CResources::AddCommonTaskToMap this name" << " " << (this -> GetTaskNamePointer()) << std::endl;
+//    std::cout << "CResources::AddCommonTaskToMap sTaskName" << " " << (sTaskName) << std::endl;
 
 //    m_lpxCommonTasksList.push_back(pxTask);
 //    m_mpxCommonTaskMap[sTaskName].push_back(pxTask);
@@ -268,8 +268,8 @@ CTaskInterface* CResources::GetCommonTaskFromMapPointer(std::string sTaskName)
 {
     std::cout << "CResources::GetCommonTaskFromMapPointer 1"  << std::endl;
 
-    std::cout << "CResources::GetCommonTaskFromMapPointer this name" << " " << (this -> GetTaskNamePointer()) << std::endl;
-    std::cout << "CResources::GetCommonTaskFromMapPointer sTaskName" << " " << (sTaskName) << std::endl;
+//    std::cout << "CResources::GetCommonTaskFromMapPointer this name" << " " << (this -> GetTaskNamePointer()) << std::endl;
+//    std::cout << "CResources::GetCommonTaskFromMapPointer sTaskName" << " " << (sTaskName) << std::endl;
 
     // Пытаемся получить значение по ключу 1
     std::map<std::string, CTaskInterface*>::iterator it = m_mpxCommonTaskMap.find(sTaskName);
@@ -278,7 +278,7 @@ CTaskInterface* CResources::GetCommonTaskFromMapPointer(std::string sTaskName)
     {
         // ключ найден
         std::cout << "CResources::GetCommonTaskFromMapPointer 2"  << std::endl;
-        std::cout << "CResources::GetCommonTaskFromMapPointer this name" << " " << ((it -> second) -> GetTaskNamePointer()) << std::endl;
+//        std::cout << "CResources::GetCommonTaskFromMapPointer this name" << " " << ((it -> second) -> GetTaskNamePointer()) << std::endl;
         return it -> second;
     }
     else

@@ -24,6 +24,7 @@
 //-------------------------------------------------------------------------------
 CLink::CLink()
 {
+    std::cout << "CLink constructor"  << std::endl;
     SetFsmState(START);
 }
 
@@ -83,40 +84,41 @@ uint8_t CLink::Fsm(void)
         std::cout << "CLink::Fsm m_sTaskPerformerName" << " " << (m_sTaskPerformerName) << std::endl;
         GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
         SetFsmState(INIT);
+//                    SetFsmState(READY);
         break;
 
     case INIT:
-//        std::cout << "CLink::Fsm INIT 1"  << std::endl;
-//        {
-//            CTaskInterface* pxTask =
-//                GetResources() ->
-//                GetCommonTaskFromMapPointer(m_sTaskPerformerName);
-//
-//            if (pxTask != 0)
-//            {
-//                std::cout << "CLink::Fsm INIT 2"  << std::endl;
-//                if (pxTask -> GetFsmState() >= READY)
-//                {
-//                    SetTaskPerformer(pxTask);
-//                    SetFsmState(READY);
-//                    std::cout << "CLink::Fsm READY"  << std::endl;
-//                }
-//            }
-//            else
-//            {
-//                std::cout << "CLink::Fsm INIT 3"  << std::endl;
-//                if (GetTimerPointer() -> IsOverflow())
-//                {
-//                    SetFsmState(STOP);
-//                    std::cout << "CLink::Fsm STOP"  << std::endl;
-//                }
-//            }
-//        }
+        std::cout << "CLink::Fsm INIT 1"  << std::endl;
+        {
+            CTaskInterface* pxTask =
+                GetResources() ->
+                GetCommonTaskFromMapPointer(m_sTaskPerformerName);
+
+            if (pxTask != 0)
+            {
+                std::cout << "CLink::Fsm INIT 2"  << std::endl;
+                if (pxTask -> GetFsmState() >= READY)
+                {
+                    SetTaskPerformer(pxTask);
+                    SetFsmState(READY);
+                    std::cout << "CLink::Fsm INIT 3"  << std::endl;
+                }
+            }
+            else
+            {
+                std::cout << "CLink::Fsm INIT 4"  << std::endl;
+                if (GetTimerPointer() -> IsOverflow())
+                {
+                    std::cout << "CLink::Fsm INIT 5"  << std::endl;
+                    SetFsmState(STOP);
+                }
+            }
+        }
 
         break;
 
     case READY:
-        std::cout << "CLink::Fsm READY"  << std::endl;
+//        std::cout << "CLink::Fsm READY"  << std::endl;
 //        {
 //            if (m_pxCommandDataContainer != 0)
 //            {

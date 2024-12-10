@@ -114,7 +114,7 @@ uint8_t CMainProductionCycle::CreateTasks(void)
                                     pxDeviceControl);
     pxDeviceControl ->
     SetResources(&m_xResources);
-//    m_xResources.AddCurrentlyRunningTasksList(pxDeviceControl);
+    m_xResources.AddCurrentlyRunningTasksList(pxDeviceControl);
 
 //-------------------------------------------------------------------------------
     CStorageDeviceFileSystem* pxStorageDeviceFileSystem = 0;
@@ -199,43 +199,48 @@ uint8_t CMainProductionCycle::CreateTasks(void)
     m_xResources.AddCommonTaskToMap("DeviceControlLinkRtuUpperLevel",
                                     pxDeviceControlLinkRtuUpperLevel);
     pxDeviceControlLinkRtuUpperLevel ->
+    SetResources(&m_xResources);
+    pxDeviceControlLinkRtuUpperLevel ->
     SetTaskPerformerName("DeviceControlRtuUpperLevel");
     pxDeviceControlLinkRtuUpperLevel ->
     SetDataContainer(new CDataContainerDataBase());
     m_xResources.AddCurrentlyRunningTasksList(pxDeviceControlLinkRtuUpperLevel);
 
-//-------------------------------------------------------------------------------
-    CTcpCommunicationDevice* pxTcpCommunicationDeviceUpperLevel = 0;
-    pxTcpCommunicationDeviceUpperLevel = new CTcpCommunicationDevice();
-    m_xResources.AddCommonTaskToMap("TcpCommunicationDeviceUpperLevel",
-                                    pxTcpCommunicationDeviceUpperLevel);
-    pxTcpCommunicationDeviceUpperLevel ->
-    SetResources(&m_xResources);
+    pxModbusRtuSlaveUpperLevel ->
+    SetDeviceControlLinkName("DeviceControlLinkRtuUpperLevel");
 
-//-------------------------------------------------------------------------------
-    CModbusTcpSlaveLinkLayer* pxModbusTcpSlaveLinkLayerUpperLevel = 0;
-    pxModbusTcpSlaveLinkLayerUpperLevel = new CModbusTcpSlaveLinkLayer();
-    m_xResources.AddCommonTaskToMap("ModbusTcpSlaveLinkLayerUpperLevel",
-                                    pxModbusTcpSlaveLinkLayerUpperLevel);
-    pxModbusTcpSlaveLinkLayerUpperLevel ->
-    SetResources(&m_xResources);
-    pxModbusTcpSlaveLinkLayerUpperLevel ->
-    SetCommunicationDeviceName("TcpCommunicationDeviceUpperLevel");
-
-//-------------------------------------------------------------------------------
-    CModbusSlave* pxModbusTcpSlaveUpperLevel = 0;
-    pxModbusTcpSlaveUpperLevel = new CModbusSlave();
-    m_xResources.AddCommonTaskToMap("ModbusTcpSlaveUpperLevel",
-                                    pxModbusTcpSlaveUpperLevel);
-    pxModbusTcpSlaveUpperLevel ->
-    SetResources(&m_xResources);
-    pxModbusTcpSlaveUpperLevel ->
-    SetModbusSlaveLinkLayerName("ModbusTcpSlaveLinkLayerUpperLevel");
-    pxModbusTcpSlaveUpperLevel ->
-    SetDeviceControlName("DeviceControlRtuUpperLevel");
-    pxModbusTcpSlaveUpperLevel ->
-    ModbusWorkingArraysInit();
-    m_xResources.AddCurrentlyRunningTasksList(pxModbusTcpSlaveUpperLevel);
+////-------------------------------------------------------------------------------
+//    CTcpCommunicationDevice* pxTcpCommunicationDeviceUpperLevel = 0;
+//    pxTcpCommunicationDeviceUpperLevel = new CTcpCommunicationDevice();
+//    m_xResources.AddCommonTaskToMap("TcpCommunicationDeviceUpperLevel",
+//                                    pxTcpCommunicationDeviceUpperLevel);
+//    pxTcpCommunicationDeviceUpperLevel ->
+//    SetResources(&m_xResources);
+//
+////-------------------------------------------------------------------------------
+//    CModbusTcpSlaveLinkLayer* pxModbusTcpSlaveLinkLayerUpperLevel = 0;
+//    pxModbusTcpSlaveLinkLayerUpperLevel = new CModbusTcpSlaveLinkLayer();
+//    m_xResources.AddCommonTaskToMap("ModbusTcpSlaveLinkLayerUpperLevel",
+//                                    pxModbusTcpSlaveLinkLayerUpperLevel);
+//    pxModbusTcpSlaveLinkLayerUpperLevel ->
+//    SetResources(&m_xResources);
+//    pxModbusTcpSlaveLinkLayerUpperLevel ->
+//    SetCommunicationDeviceName("TcpCommunicationDeviceUpperLevel");
+//
+////-------------------------------------------------------------------------------
+//    CModbusSlave* pxModbusTcpSlaveUpperLevel = 0;
+//    pxModbusTcpSlaveUpperLevel = new CModbusSlave();
+//    m_xResources.AddCommonTaskToMap("ModbusTcpSlaveUpperLevel",
+//                                    pxModbusTcpSlaveUpperLevel);
+//    pxModbusTcpSlaveUpperLevel ->
+//    SetResources(&m_xResources);
+//    pxModbusTcpSlaveUpperLevel ->
+//    SetModbusSlaveLinkLayerName("ModbusTcpSlaveLinkLayerUpperLevel");
+//    pxModbusTcpSlaveUpperLevel ->
+//    SetDeviceControlName("DeviceControlRtuUpperLevel");
+//    pxModbusTcpSlaveUpperLevel ->
+//    ModbusWorkingArraysInit();
+//    m_xResources.AddCurrentlyRunningTasksList(pxModbusTcpSlaveUpperLevel);
 }
 
 //-------------------------------------------------------------------------------
@@ -272,22 +277,22 @@ uint8_t CMainProductionCycle::InitTasks(void)
     SetOwnAddress(1);
 
 
-//-------------------------------------------------------------------------------
-    CTcpCommunicationDevice* pxTcpCommunicationDeviceUpperLevel =
-        (CTcpCommunicationDevice*)(GetResources() ->
-                                   GetCommonTaskFromMapPointer("TcpCommunicationDeviceUpperLevel"));
-
-    pxTcpCommunicationDeviceUpperLevel -> Init();
-    pxTcpCommunicationDeviceUpperLevel -> SetIpAddress("127.0.0.1");
-    pxTcpCommunicationDeviceUpperLevel -> SetPort(502);
-
-//-------------------------------------------------------------------------------
-    CModbusSlave* pxModbusTcpSlaveUpperLevel =
-        (CModbusSlave*)(GetResources() ->
-                        GetCommonTaskFromMapPointer("ModbusTcpSlaveUpperLevel"));
-
-    pxModbusTcpSlaveUpperLevel ->
-    SetOwnAddress(1);
+////-------------------------------------------------------------------------------
+//    CTcpCommunicationDevice* pxTcpCommunicationDeviceUpperLevel =
+//        (CTcpCommunicationDevice*)(GetResources() ->
+//                                   GetCommonTaskFromMapPointer("TcpCommunicationDeviceUpperLevel"));
+//
+//    pxTcpCommunicationDeviceUpperLevel -> Init();
+//    pxTcpCommunicationDeviceUpperLevel -> SetIpAddress("127.0.0.1");
+//    pxTcpCommunicationDeviceUpperLevel -> SetPort(502);
+//
+////-------------------------------------------------------------------------------
+//    CModbusSlave* pxModbusTcpSlaveUpperLevel =
+//        (CModbusSlave*)(GetResources() ->
+//                        GetCommonTaskFromMapPointer("ModbusTcpSlaveUpperLevel"));
+//
+//    pxModbusTcpSlaveUpperLevel ->
+//    SetOwnAddress(1);
 
 
 

@@ -15,6 +15,25 @@
 class CDataContainerInterface
 {
 public:
+
+    virtual void SetFsmCommandState(uint8_t value) {};
+    virtual uint8_t GetFsmCommandState() const {};
+
+    virtual void SetFsmOperationStatus(uint8_t value) {};
+    virtual uint8_t GetFsmOperationStatus() const {};
+
+    virtual void SetDataIndex(uint16_t value) {};
+    virtual uint16_t GetDataIndex() const {};
+
+    virtual void SetDataPointer(uint8_t* value) {};
+    virtual uint8_t* GetDataPointer() const {};
+
+    virtual void SetDataOffset(uint32_t value) {};
+    virtual uint32_t GetDataOffset() const {};
+
+    virtual void SetDataLength(uint32_t value) {};
+    virtual uint32_t GetDataLength() const {};
+
     virtual void SetContainerData(CDataContainerInterface* pxDataContainer) {};
     virtual void SetContainerData(uint8_t uiFsmCommandState,
                                   uint16_t uiDataIndex,

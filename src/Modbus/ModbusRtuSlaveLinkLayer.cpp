@@ -328,19 +328,19 @@ uint8_t CModbusRtuSlaveLinkLayer::Fsm(void)
                 std::cout << "CModbusRtuSlaveLinkLayer::Fsm INIT 2"  << std::endl;
                 if (pxTask -> GetFsmState() >= READY)
                 {
+                    std::cout << "CModbusRtuSlaveLinkLayer::Fsm INIT 3"  << std::endl;
                     SetCommunicationDevice((CCommunicationDeviceInterfaceNew*)pxTask);
                     SetFsmCommandState(0);
                     SetFsmState(READY);
-                    std::cout << "CModbusRtuSlaveLinkLayer::Fsm READY"  << std::endl;
                 }
             }
             else
             {
-                std::cout << "CModbusRtuSlaveLinkLayer::Fsm INIT 3"  << std::endl;
+                std::cout << "CModbusRtuSlaveLinkLayer::Fsm INIT 4"  << std::endl;
                 if (GetTimerPointer() -> IsOverflow())
                 {
+                    std::cout << "CModbusRtuSlaveLinkLayer::Fsm INIT 5"  << std::endl;
                     SetFsmState(STOP);
-                    std::cout << "CModbusRtuSlaveLinkLayer::Fsm STOP"  << std::endl;
                 }
             }
         }
