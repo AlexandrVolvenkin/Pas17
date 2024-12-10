@@ -1179,34 +1179,23 @@ uint16_t CModbusSlave::DataBaseRead(void)
 
         m_pxDeviceControlLink ->
         GetDataContainerPointer() ->
-        SetContainerData(uiFunctionCode,
+        SetContainerData(CDeviceControl::DATA_BASE_BLOCK_READ,
                          uiBlockIndex,
                          m_puiIntermediateBuff,
                          0,
                          0);
 
-        uiLength = ((CDeviceControl*)(m_pxDeviceControlLink ->
-                                      GetTaskPerformerPointer())) ->
-                   DataBaseBlockRead(m_puiIntermediateBuff, uiBlockIndex);
+        ((CDeviceControl*)(m_pxDeviceControlLink ->
+                           GetTaskPerformerPointer())) ->
+        SetCommandDataLink(m_pxDeviceControlLink);
 
-        m_uiLength = uiLength;
-
-//        memcpy(&puiResponse[uiPduOffset + 3], m_puiIntermediateBuff, uiLength);
-
-//        puiResponse[uiPduOffset + 1] = uiLength + 1;
-//        uiLength ++;
+//        uiLength = ((CDeviceControl*)(m_pxDeviceControlLink ->
+//                                      GetTaskPerformerPointer())) ->
+//                   DataBaseBlockRead(m_puiIntermediateBuff, uiBlockIndex);
 //
-//        uiLength += m_pxModbusSlaveLinkLayer ->
-//                    ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
-//
-//        // номер блока базы данных
-//        puiResponse[uiPduOffset + 2] = puiRequest[uiPduOffset + 1];
-//        uiLength ++;
+//        m_uiLength = uiLength;
 
-
-//        uiLength = pxDeviceControl ->
-//                   DataBaseBlockRead(&puiResponse[uiPduOffset + 3], uiBlockIndex);
-//        uiLength = 5;
+        uiLength = 5;
     }
 
     std::cout << "CModbusSlave::DataBaseRead 7" << std::endl;
@@ -2256,7 +2245,12 @@ uint16_t CModbusSlave::DataBaseReadAnswer(void)
 //        uiLength = pxDeviceControl ->
 //                   DataBaseBlockRead(&puiResponse[uiPduOffset + 3], uiBlockIndex);
 
-        uiLength = m_uiLength;
+        uiLength = m_pxDeviceControlLink ->
+                   GetDataContainerPointer() ->
+                   GetDataLength();
+        std::cout << "CModbusSlave::DataBaseReadAnswer uiLength "  << (int)uiLength << std::endl;
+
+        //        uiLength = m_uiLength;
 
         memcpy(&puiResponse[uiPduOffset + 3], m_puiIntermediateBuff, uiLength);
 
@@ -2841,37 +2835,37 @@ uint8_t CModbusSlave::Fsm(void)
 
     case ANSWER_PROCESSING_WAITING:
         std::cout << "CModbusSlave::Fsm ANSWER_PROCESSING_WAITING"  << std::endl;
-        GetTimerPointer() -> Set(m_uiTransmitDelayTimeout);
-        SetFsmState(ANSWER_PROCESSING);
+//        GetTimerPointer() -> Set(m_uiTransmitDelayTimeout);
+//        SetFsmState(ANSWER_PROCESSING);
 
-//        if (m_pxDeviceControlLink ->
-//                GetTaskPerformerPointer() ->
-//                IsDoneOk())
-//        {
-//            std::cout << "CModbusSlave::Fsm ANSWER_PROCESSING_WAITING 2"  << std::endl;
-//            GetTimerPointer() -> Set(m_uiTransmitDelayTimeout);
-//            SetFsmState(BEFORE_ANSWERING_WAITING);
-//        }
-//        else if (m_pxDeviceControlLink ->
-//                 GetTaskPerformerPointer() ->
-//                 IsDoneError())
-//        {
-//            std::cout << "CModbusSlave::Fsm ANSWER_PROCESSING_WAITING 3"  << std::endl;
-//            GetTimerPointer() -> Set(m_uiTransmitDelayTimeout);
-//            SetFsmState(BEFORE_ANSWERING_WAITING);
-//        }
-//        else
-//        {
-//            // Время ожидания выполнения запроса закончилось?
-//            if (GetTimerPointer() -> IsOverflow())
-//            {
-//                std::cout << "CModbusSlave::Fsm ANSWER_PROCESSING_WAITING 4"  << std::endl;
-//                m_pxDeviceControlLink ->
-//                GetDataContainerPointer() ->
-//                SetFsmCommandState(0);
-//                SetFsmState(MESSAGE_RECEIVE_WAITING);
-//            }
-//        }
+        if (m_pxDeviceControlLink ->
+                GetTaskPerformerPointer() ->
+                IsDoneOk())
+        {
+            std::cout << "CModbusSlave::Fsm ANSWER_PROCESSING_WAITING 2"  << std::endl;
+            GetTimerPointer() -> Set(m_uiTransmitDelayTimeout);
+            SetFsmState(ANSWER_PROCESSING);
+        }
+        else if (m_pxDeviceControlLink ->
+                 GetTaskPerformerPointer() ->
+                 IsDoneError())
+        {
+            std::cout << "CModbusSlave::Fsm ANSWER_PROCESSING_WAITING 3"  << std::endl;
+            GetTimerPointer() -> Set(m_uiTransmitDelayTimeout);
+            SetFsmState(MESSAGE_RECEIVE_WAITING);
+        }
+        else
+        {
+            // Время ожидания выполнения запроса закончилось?
+            if (GetTimerPointer() -> IsOverflow())
+            {
+                std::cout << "CModbusSlave::Fsm ANSWER_PROCESSING_WAITING 4"  << std::endl;
+                m_pxDeviceControlLink ->
+                GetDataContainerPointer() ->
+                SetFsmCommandState(0);
+                SetFsmState(MESSAGE_RECEIVE_WAITING);
+            }
+        }
         break;
 
     case ANSWER_PROCESSING:

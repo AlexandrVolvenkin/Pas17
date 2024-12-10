@@ -97,7 +97,7 @@ uint8_t CDeviceControl::Fsm(void)
         std::cout << "CDeviceControl::Fsm START"  << std::endl;
 //        GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
         SetFsmState(INIT);
-                    SetFsmState(READY);
+        SetFsmState(READY);
         break;
 
     case INIT:
@@ -159,7 +159,21 @@ uint8_t CDeviceControl::Fsm(void)
 
     case READY:
 //        std::cout << "CDeviceControl::Fsm READY"  << std::endl;
-//        {
+    {
+
+        if (GetCommandDataLink() != 0)
+        {
+            std::cout << "CDeviceControl::Fsm READY 2"  << std::endl;
+            SetOperatingDataLink(GetCommandDataLink());
+            SetFsmState(GetCommandDataLink() ->
+                        GetDataContainerPointer() ->
+                        GetFsmCommandState());
+            GetCommandDataLink() ->
+            GetDataContainerPointer() ->
+            SetFsmCommandState(0);
+            SetCommandDataLink(0);
+        }
+
 //            if (m_pxCommandDataContainer != 0)
 //            {
 //                std::cout << "CDeviceControl::Fsm READY 2"  << std::endl;
@@ -168,7 +182,7 @@ uint8_t CDeviceControl::Fsm(void)
 //                SetFsmCommandState(0);
 //                m_pxCommandDataContainer = 0;
 //            }
-//        }
+    }
 
 
 //        {
@@ -178,7 +192,7 @@ uint8_t CDeviceControl::Fsm(void)
 //                SetFsmCommandState(0);
 //            }
 //        }
-        break;
+    break;
 
     case DONE_OK:
         std::cout << "CDeviceControl::Fsm DONE_OK"  << std::endl;
@@ -189,6 +203,26 @@ uint8_t CDeviceControl::Fsm(void)
     case DONE_ERROR:
         std::cout << "CDeviceControl::Fsm DONE_ERROR"  << std::endl;
         SetFsmOperationStatus(DONE_ERROR);
+        SetFsmState(READY);
+        break;
+
+    case DATA_BASE_BLOCK_READ:
+        std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_READ"  << std::endl;
+
+        uint16_t uiLength;
+
+        uiLength = DataBaseBlockRead(GetOperatingDataLink() ->
+                                     GetDataContainerPointer() ->
+                                     GetDataPointer(),
+                                     GetOperatingDataLink() ->
+                                     GetDataContainerPointer() ->
+                                     GetDataIndex());
+
+        GetOperatingDataLink() ->
+        GetDataContainerPointer() ->
+        SetDataLength(uiLength);
+
+        SetFsmOperationStatus(DONE_OK);
         SetFsmState(READY);
         break;
 
