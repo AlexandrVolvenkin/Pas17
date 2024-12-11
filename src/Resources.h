@@ -23,6 +23,7 @@ class CDeviceControl;
 class CDataStore;
 class CConfigurationCreate;
 class CServiceMarket;
+class CLinkInterface;
 
 //-------------------------------------------------------------------------------
 class CResourcesInterface : public CTask
@@ -34,6 +35,7 @@ public:
     virtual bool CheckCommonTaskMap(void) {};
     virtual CTaskInterface* GetCommonTaskFromMapPointer(std::string sTaskName) {};
     virtual std::list<CTaskInterface*>* GetCommonTasksListPointer(void) {};
+    virtual CLinkInterface* CreateLinkByName(std::string sTaskName) {};
 
 };
 
@@ -61,6 +63,7 @@ public:
     void AddCommonTaskToMap(std::string sTaskName, CTaskInterface* pxTask);
     bool CheckCommonTaskMap(void);
     CTaskInterface* GetCommonTaskFromMapPointer(std::string sTaskName);
+    CLinkInterface* CreateLinkByName(std::string sTaskName);
 
     void ModbusWorkingArraysCreate(uint16_t uiCoilsNumber,
                                    uint16_t uiDiscreteInputsNumber,

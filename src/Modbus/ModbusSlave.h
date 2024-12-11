@@ -63,6 +63,7 @@ public:
 
     void SetDeviceControlLinkName(std::string sName);
     void SetDeviceControlLink(CLinkInterface* pxLink);
+    CLinkInterface* GetDeviceControlLink() const;
 
     void ModbusWorkingArraysInit(void);
 

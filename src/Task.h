@@ -33,6 +33,7 @@ public:
         STOP,
         START,
         INIT,
+//        READY_WAITING,
         READY,
         DONE_OK,
         DONE_ERROR,

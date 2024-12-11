@@ -12,6 +12,8 @@
 
 #include "Task.h"
 #include "DeviceControl.h"
+#include "Link.h"
+#include "DataContainer.h"
 #include "Resources.h"
 
 //-------------------------------------------------------------------------------
@@ -322,6 +324,42 @@ CTaskInterface* CResources::GetCommonTaskFromMapPointer(std::string sTaskName)
 //    return 0;
 }
 
+//-------------------------------------------------------------------------------
+CLinkInterface* CResources::CreateLinkByName(std::string sTaskName)
+{
+    std::cout << "CResources::CreateLinkByName 1"  << std::endl;
+
+//    std::cout << "CResources::CreateLinkByName this name" << " " << (this -> GetTaskNamePointer()) << std::endl;
+//    std::cout << "CResources::CreateLinkByName sTaskName" << " " << (sTaskName) << std::endl;
+
+
+    CTaskInterface* pxTask =
+        GetCommonTaskFromMapPointer(sTaskName);
+
+    if (pxTask != 0)
+    {
+        std::cout << "CResources::CreateLinkByName 2"  << std::endl;
+
+        CLinkInterface* pxLink = new CLink();
+        AddCommonTaskToMap(sTaskName + "Link",
+                           pxLink);
+        pxLink ->
+        SetResources(this);
+        pxLink ->
+        SetTaskPerformerName("sTaskName");
+        pxLink ->
+        SetTaskPerformer(pxTask);
+        AddCurrentlyRunningTasksList(pxLink);
+
+        return pxLink;
+    }
+    else
+    {
+        std::cout << "CResources::CreateLinkByName 3"  << std::endl;
+        return 0;
+    }
+}
+
 ////-------------------------------------------------------------------------------
 //std::list<CTaskInterface*>* CResources::GetCommonTasksListPointer(void)
 //{
@@ -334,62 +372,3 @@ CTaskInterface* CResources::GetCommonTaskFromMapPointer(std::string sTaskName)
 //    return &m_lpxCurrentlyRunningTasksList;
 //}
 //-------------------------------------------------------------------------------
-
-
-//#include <iostream>
-//#include <map>
-//#include <string>
-//
-//class Object
-//{
-//public:
-//    Object(const std::string& name) : name(name) {}
-//    void display() const
-//    {
-//        std::cout << "Object name: " << name << std::endl;
-//    }
-//private:
-//    std::string name;
-//};
-//
-//int main()
-//{
-//    // Создаем std::map, где ключ - строка, значение - указатель на объект
-//    std::map<std::string, Object*> objectMap;
-//
-//    // Создаем несколько объектов и добавляем их в std::map
-//    Object* obj1 = new Object("Object1");
-//    Object* obj2 = new Object("Object2");
-//    Object* obj3 = new Object("Object3");
-//
-//    // Добавляем объекты в map
-//    objectMap["Object1"] = obj1;
-//    objectMap["Object2"] = obj2;
-//    objectMap["Object3"] = obj3;
-//
-//    // Получаем объект по имени и вызываем метод
-//    objectMap["Object1"]->display();
-//    objectMap["Object2"]->display();
-//    objectMap["Object3"]->display();
-//
-//    // Освобождаем память
-//    for (auto& pair : objectMap)
-//    {
-//        delete pair.second; // Удаляем указатели на объекты
-//    }
-//
-//    return 0;
-//}
-//
-////Объяснение кода:
-////
-////Определён класс Object, который имеет конструктор для инициализации имени объекта и метод
-////для отображения имени.
-////В main() создаётся std::map, где ключом является std::string, а значением — указатель на
-////Object.
-////Создаются объекты типа Object с различными именами, и их адреса хранятся в std::map, где имя
-////объекта является ключом.
-////Затем, по ключу из map, вызывается метод display() для отображения имени объекта.
-////В конце освободите выделенную память, удаляя указатели на объекты.
-////
-////Этот пример демонстрирует, как использовать std::map для хранения объектов и их имен.
