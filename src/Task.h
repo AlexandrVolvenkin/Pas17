@@ -162,8 +162,8 @@ public:
     std::shared_ptr<CMessageBoxInterface> m_pxMessageBox;
 
     CDataContainerInterface* m_pxMessageBoxDataContainer;
-    CDataContainerInterface* m_pxCommandDataContainer;
-    CDataContainerInterface* m_pxOperatingDataContainer;
+//    CDataContainerInterface* m_pxCommandDataContainer;
+//    CDataContainerInterface* m_pxOperatingDataContainer;
 };
 
 //-------------------------------------------------------------------------------

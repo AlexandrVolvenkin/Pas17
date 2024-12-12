@@ -165,25 +165,7 @@ uint8_t CDeviceControl::Fsm(void)
             SetFsmCommandState(0);
             SetCommandDataLink(0);
         }
-
-//            if (m_pxCommandDataContainer != 0)
-//            {
-//                std::cout << "CDeviceControl::Fsm READY 2"  << std::endl;
-//                m_pxOperatingDataContainer = m_pxCommandDataContainer;
-//                SetFsmState(GetFsmCommandState());
-//                SetFsmCommandState(0);
-//                m_pxCommandDataContainer = 0;
-//            }
     }
-
-
-//        {
-//            if (GetFsmCommandState() != 0)
-//            {
-//                SetFsmState(GetFsmCommandState());
-//                SetFsmCommandState(0);
-//            }
-//        }
     break;
 
     case DONE_OK:
@@ -200,31 +182,91 @@ uint8_t CDeviceControl::Fsm(void)
 
     case DATA_BASE_BLOCK_READ:
         std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_READ"  << std::endl;
+        {
+            uint16_t uiLength = ((CDataStore*)(GetDataStoreLink() ->
+                                               GetTaskPerformerPointer())) ->
+                                ReadBlock(GetOperatingDataLink() ->
+                                          GetDataContainerPointer() ->
+                                          GetDataPointer(),
+                                          GetOperatingDataLink() ->
+                                          GetDataContainerPointer() ->
+                                          GetDataIndex());
 
-        uint16_t uiLength;
+            GetOperatingDataLink() ->
+            GetDataContainerPointer() ->
+            SetDataLength(uiLength);
 
-//        uiLength = DataBaseBlockRead(GetOperatingDataLink() ->
-//                                     GetDataContainerPointer() ->
-//                                     GetDataPointer(),
-//                                     GetOperatingDataLink() ->
-//                                     GetDataContainerPointer() ->
-//                                     GetDataIndex());
+            SetFsmOperationStatus(DONE_OK);
+            SetFsmState(READY);
+        }
+        break;
 
-        uiLength = ((CDataStore*)(GetDataStoreLink() ->
-                                  GetTaskPerformerPointer())) ->
-                   ReadBlock(GetOperatingDataLink() ->
-                             GetDataContainerPointer() ->
-                             GetDataPointer(),
-                             GetOperatingDataLink() ->
-                             GetDataContainerPointer() ->
-                             GetDataIndex());
+    case DATA_BASE_BLOCK_START_WRITE:
+        std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_START_WRITE"  << std::endl;
+        {
+            //        m_uiRequestRetryCounter = 0;
+            uint8_t uiBlockIndex = GetOperatingDataLink() ->
+                                   GetDataContainerPointer() ->
+                                   GetDataIndex();
+    std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_START_WRITE uiBlockIndex "  << (int)uiBlockIndex << std::endl;
 
-        GetOperatingDataLink() ->
-        GetDataContainerPointer() ->
-        SetDataLength(uiLength);
+            if (((CDataStore*)(GetDataStoreLink() ->
+                               GetTaskPerformerPointer())) ->
+                    WriteBlock(GetOperatingDataLink() ->
+                               GetDataContainerPointer() ->
+                               GetDataPointer(),
+                               ((CDataStore*)(GetDataStoreLink() ->
+                                              GetTaskPerformerPointer())) ->
+                               GetBlockLength(uiBlockIndex),
+                               uiBlockIndex
+                              ))
+            {
+                std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_START_WRITE 2"  << std::endl;
+                // Установим время ожидания окончания записи.
+                GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
+                SetFsmState(DATA_BASE_BLOCK_WRITE_END_WAITING);
+            }
+            else
+            {
+                std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_START_WRITE 3"  << std::endl;
+                SetFsmOperationStatus(DONE_ERROR);
+                SetFsmState(READY);
+            }
 
-        SetFsmOperationStatus(DONE_OK);
-        SetFsmState(READY);
+        }
+        break;
+
+    case DATA_BASE_BLOCK_WRITE_END_WAITING:
+        std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_WRITE_END_WAITING"  << std::endl;
+        // Ожидаем окончания записи автоматом устройства хранения.
+        // Устройство хранения закончило запись успешно?
+        if (GetDataStoreLink() ->
+                GetTaskPerformerPointer() ->
+                IsDoneOk())
+        {
+            std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_WRITE_END_WAITING 1"  << std::endl;
+            SetFsmOperationStatus(DONE_OK);
+            SetFsmState(READY);
+        }
+        // Устройство хранения закончило запись не успешно?
+        else if (GetDataStoreLink() ->
+                 GetTaskPerformerPointer() ->
+                 IsDoneError())
+        {
+            std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_WRITE_END_WAITING 2"  << std::endl;
+            SetFsmOperationStatus(DONE_ERROR);
+            SetFsmState(READY);
+        }
+        else
+        {
+            // Время ожидания окончания записи закончилось?
+            if (GetTimerPointer() -> IsOverflow())
+            {
+                std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_WRITE_END_WAITING 3"  << std::endl;
+                SetFsmOperationStatus(DONE_ERROR);
+                SetFsmState(READY);
+            }
+        }
         break;
 
     default:

@@ -189,9 +189,9 @@ CDataStore::CDataStore()
             typeid(*this).name());
     m_pxStorageDevice = 0;
     m_puiIntermediateBuff = new uint8_t[CDataStore::MAX_SERVICE_SECTION_DATA_LENGTH];
-    SetCommandDataContainer(new CDataContainerDataBase());
-//    m_pxCommandDataContainer = new CDataContainerDataBase();
-//    m_pxOperatingDataContainer = new CDataContainerDataBase();
+//    SetCommandDataContainer(new CDataContainerDataBase());
+    m_pxCommandDataContainer = new CDataContainerDataBase();
+    m_pxOperatingDataContainer = new CDataContainerDataBase();
     SetMessageBoxDataContainer(0);
     SetFsmState(START);
 }
@@ -381,6 +381,7 @@ uint8_t CDataStore::TemporaryBlockWritePrepare(void)
         m_xServiseSection.xServiseSectionData.uiStoredBlocksNumber += 1;
     }
 
+        std::cout << "CDataStore::TemporaryBlockWritePrepare 22"  << std::endl;
     // Вычислим контрольную сумму поступивших данных.
     m_xServiseSection.xServiseSectionData.
     axBlockPositionData[uiBlock].uiCrc =
@@ -490,6 +491,7 @@ uint8_t CDataStore::WriteBlock(uint8_t *puiSource, uint16_t uiLength, uint8_t ui
 {
     std::cout << "CDataStore::WriteBlock 1"  << std::endl;
     std::cout << "CDataStore::WriteBlock 1 uiBlock "  <<  (int)(uiBlock) << std::endl;
+    std::cout << "CDataStore::WriteBlock 1 uiLength "  <<  (int)(uiLength) << std::endl;
     // Произошёл выход за границы буфера?
     if (uiBlock >= (MAX_BLOCKS_NUMBER + SERVICE_SECTION_BLOCK_NUMBER))
     {
@@ -500,6 +502,7 @@ uint8_t CDataStore::WriteBlock(uint8_t *puiSource, uint16_t uiLength, uint8_t ui
 
     CDataContainerDataBase* pxDataContainer = m_pxCommandDataContainer;
 
+    std::cout << "CDataStore::WriteBlock 3"  << std::endl;
     pxDataContainer ->
     SetDataIndex(uiBlock);
     pxDataContainer ->
@@ -509,6 +512,7 @@ uint8_t CDataStore::WriteBlock(uint8_t *puiSource, uint16_t uiLength, uint8_t ui
     pxDataContainer ->
     SetDataLength(uiLength);
 
+    std::cout << "CDataStore::WriteBlock 4"  << std::endl;
     SetFsmCommandState(START_WRITE_TEMPORARY_BLOCK_DATA);
 
     return 1;

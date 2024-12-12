@@ -1056,53 +1056,13 @@ uint16_t CModbusSlave::PollProgramming(void)
     int8_t uiSlave = puiRequest[uiPduOffset - 1];
     int8_t uiFunctionCode = puiRequest[uiPduOffset];
 
-//    CDeviceControl* pxDeviceControl =
-//        (CDeviceControl*)GetResources() ->
-//        GetCommonTaskFromMapPointer("DeviceControl");
-
-    CDataStore* pxDataStoreFileSystem =
-        (CDataStore*)GetResources() ->
-        GetCommonTaskFromMapPointer("DataStoreFileSystem");
-
-
-//    // Устройство хранения в прцессе записи?
-//    if (m_pxDeviceControl ->
-//            GetFsmOperationStatus() == CDfa::IN_PROGRESS)
-//    {
-//        std::cout << "CModbusSlave::PollProgramming 2" << std::endl;
-//
-//        uiLength = m_pxModbusSlaveLinkLayer ->
-//    ResponseException(uiSlave,
-//                                     uiFunctionCode,
-//                                     MODBUS_EXCEPTION_SLAVE_OR_SERVER_BUSY,
-//                                     puiResponse);
-//    }
-//    // Устройство хранения закончило запись успешно?
-//    else if (m_pxDeviceControl ->
-//             GetFsmOperationStatus() == CDfa::DONE_SUCCESSFULLY)
-//    {
-//        std::cout << "CModbusSlave::PollProgramming 3" << std::endl;
-//
-//        uiLength = m_pxModbusSlaveLinkLayer ->
-//                   ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
-//
-//    }
-//    // Устройство хранения закончило запись не успешно?
-//    else if (m_pxDeviceControl ->
-//             GetFsmOperationStatus() == CDfa::ERROR_OCCURED)
-//    {
-//        std::cout << "CModbusSlave::PollProgramming 4" << std::endl;
-//
-//        uiLength = m_pxModbusSlaveLinkLayer ->
-//                      ResponseException(uiSlave,
-//                                     uiFunctionCode,
-//                                     MODBUS_EXCEPTION_ACKNOWLEDGE,
-//                                     puiResponse);
-//    }
+    CDeviceControl* pxDeviceControl =
+        (CDeviceControl*)GetResources() ->
+        GetCommonTaskFromMapPointer("DeviceControlRtuUpperLevel");
 
     // Ожидаем окончания записи автоматом устройства хранения.
     // Устройство хранения закончило запись успешно?
-    if (pxDataStoreFileSystem -> IsDoneOk())
+    if (pxDeviceControl -> IsDoneOk())
     {
         std::cout << "CModbusSlave::PollProgramming 2" << std::endl;
 
@@ -1130,10 +1090,7 @@ uint16_t CModbusSlave::PollProgramming(void)
 //    }
     else
     {
-        std::cout << "CModbusSlave::PollProgramming 3" << std::endl;
-
-//        uiLength = m_pxModbusSlaveLinkLayer ->
-//                    ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
+        std::cout << "CModbusSlave::PollProgramming 3" << std::endl;;
 
         uiLength = m_pxModbusSlaveLinkLayer ->
                    ResponseException(uiSlave,
@@ -1191,13 +1148,10 @@ uint16_t CModbusSlave::DataBaseRead(void)
                            GetTaskPerformerPointer())) ->
         SetCommandDataLink(m_pxDeviceControlLink);
 
-//        uiLength = ((CDeviceControl*)(m_pxDeviceControlLink ->
-//                                      GetTaskPerformerPointer())) ->
-//                   DataBaseBlockRead(m_puiIntermediateBuff, uiBlockIndex);
-//
-//        m_uiLength = uiLength;
-
         uiLength = 5;
+
+        // не нуль, ожидаем ответ
+        m_uiLength = uiLength;
     }
 
     std::cout << "CModbusSlave::DataBaseRead 7" << std::endl;
@@ -1241,23 +1195,25 @@ uint16_t CModbusSlave::DataBaseWrite(void)
     }
     else
     {
-        CDataStore* pxDataStoreFileSystem =
-            (CDataStore*)GetResources() ->
-            GetCommonTaskFromMapPointer("DataStoreFileSystem");
 
-        uiLength = pxDataStoreFileSystem ->
-                   GetBlockLength(uiBlockIndex);
+        std::cout << "CModbusSlave::DataBaseRead 4" << std::endl;
 
         memcpy(m_puiIntermediateBuff,
                &puiRequest[uiPduOffset + 2],
-               uiLength);
+               MAX_MODBUS_MESSAGE_LENGTH);
 
-        // Сохраним блок БД.
-        std::cout << "CModbusSlave::DataBaseWrite 3" << std::endl;
-        pxDataStoreFileSystem ->
-        WriteBlock(m_puiIntermediateBuff,
-                   uiLength,
-                   uiBlockIndex);
+        m_pxDeviceControlLink ->
+        GetDataContainerPointer() ->
+        SetContainerData(CDeviceControl::DATA_BASE_BLOCK_START_WRITE,
+                         uiBlockIndex,
+                         m_puiIntermediateBuff,
+                         0,
+                         0);
+
+        // отправим сообщение задача-исполнителю
+        ((CDeviceControl*)(m_pxDeviceControlLink ->
+                           GetTaskPerformerPointer())) ->
+        SetCommandDataLink(m_pxDeviceControlLink);
 
         uiLength = m_pxModbusSlaveLinkLayer ->
                    ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
@@ -1267,6 +1223,9 @@ uint16_t CModbusSlave::DataBaseWrite(void)
         uiLength ++;
         puiResponse[uiPduOffset + 2] = puiRequest[uiPduOffset + 1];
         uiLength ++;
+
+        // не ожидаем ответа
+        m_uiLength = 0;
     }
 
     std::cout << "CModbusSlave::DataBaseWrite 7" << std::endl;
@@ -1296,6 +1255,9 @@ uint16_t CModbusSlave::RequestProcessing(void)
         std::cout << "CModbusSlave::RequestProcessing 2" << std::endl;
         return 0;
     }
+
+    // не ожидаем ответа
+    m_uiLength = 0;
 
     switch (uiFunctionCode)
     {
@@ -2220,39 +2182,10 @@ uint16_t CModbusSlave::DataBaseReadAnswer(void)
     }
     else
     {
-//        CDeviceControl* pxDeviceControl =
-//            (CDeviceControl*)GetResources() ->
-//            GetCommonTaskFromMapPointer("DeviceControlRtuUpperLevelAnswer");
-
-//        if (pxTask != 0)
-//        {
-//            std::cout << "CModbusSlave::Fsm INIT 2"  << std::endl;
-//            if (pxTask -> GetFsmState() >= READY)
-//            {
-//                SetModbusSlaveLinkLayer((CModbusSlaveLinkLayer*)pxTask);
-//                SetFsmState(READY);
-//                std::cout << "CModbusSlave::Fsm READY"  << std::endl;
-//            }
-//        }
-//        else
-//        {
-//            std::cout << "CModbusSlave::Fsm INIT 3"  << std::endl;
-//            if (GetTimerPointer() -> IsOverflow())
-//            {
-//                SetFsmState(STOP);
-//                std::cout << "CModbusSlave::Fsm STOP"  << std::endl;
-//            }
-//        }
-
-//        uiLength = pxDeviceControl ->
-//                   DataBaseBlockRead(&puiResponse[uiPduOffset + 3], uiBlockIndex);
-
         uiLength = m_pxDeviceControlLink ->
                    GetDataContainerPointer() ->
                    GetDataLength();
         std::cout << "CModbusSlave::DataBaseReadAnswer uiLength "  << (int)uiLength << std::endl;
-
-        //        uiLength = m_uiLength;
 
         memcpy(&puiResponse[uiPduOffset + 3], m_puiIntermediateBuff, uiLength);
 
@@ -2302,23 +2235,24 @@ uint16_t CModbusSlave::DataBaseWriteAnswer(void)
     }
     else
     {
-        CDataStore* pxDataStoreFileSystem =
-            (CDataStore*)GetResources() ->
-            GetCommonTaskFromMapPointer("DataStoreFileSystemAnswer");
-
-        uint16_t uiLength = pxDataStoreFileSystem ->
-                            GetBlockLength(uiBlockIndex);
-
-        memcpy(m_puiIntermediateBuff,
-               &puiRequest[uiPduOffset + 2],
-               uiLength);
-
-        // Сохраним блок БД.
         std::cout << "CModbusSlave::DataBaseWriteAnswer 3" << std::endl;
-        pxDataStoreFileSystem ->
-        WriteBlock(m_puiIntermediateBuff,
-                   uiLength,
-                   uiBlockIndex);
+        //        CDataStore* pxDataStoreFileSystem =
+//            (CDataStore*)GetResources() ->
+//            GetCommonTaskFromMapPointer("DataStoreFileSystemAnswer");
+//
+//        uint16_t uiLength = pxDataStoreFileSystem ->
+//                            GetBlockLength(uiBlockIndex);
+//
+//        memcpy(m_puiIntermediateBuff,
+//               &puiRequest[uiPduOffset + 2],
+//               uiLength);
+//
+//        // Сохраним блок БД.
+//        std::cout << "CModbusSlave::DataBaseWriteAnswer 3" << std::endl;
+//        pxDataStoreFileSystem ->
+//        WriteBlock(m_puiIntermediateBuff,
+//                   uiLength,
+//                   uiBlockIndex);
 
         uiLength = m_pxModbusSlaveLinkLayer ->
                    ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
@@ -2801,9 +2735,10 @@ uint8_t CModbusSlave::Fsm(void)
 //        RequestProcessing();
 //            SetFsmState(BEFORE_ANSWERING_WAITING);
 
-        if (m_pxDeviceControlLink ->
-                GetDataContainerPointer() ->
-                GetFsmCommandState())
+//        if (m_pxDeviceControlLink ->
+//                GetDataContainerPointer() ->
+//                GetFsmCommandState())
+        if (m_uiLength)
         {
             std::cout << "CModbusSlave::Fsm REQUEST_PROCESSING 2"  << std::endl;
             GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);

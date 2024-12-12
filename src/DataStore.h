@@ -161,7 +161,7 @@ public:
 
     void SetBlockIndex(uint8_t uiBlockIndex);
 
-protected:
+//protected:
     void CreateServiceSection(void);
     uint8_t TemporaryServiceSectionWritePrepare(void);
     uint8_t ServiceSectionWritePrepare(void);

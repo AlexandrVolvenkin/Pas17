@@ -23,6 +23,8 @@ public:
     enum
     {
         DATA_BASE_BLOCK_READ = NEXT_STEP,
+        DATA_BASE_BLOCK_START_WRITE,
+        DATA_BASE_BLOCK_WRITE_END_WAITING,
     };
 
     CDeviceControl();

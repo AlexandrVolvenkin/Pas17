@@ -128,25 +128,25 @@ CDataContainerInterface* CTask::GetMessageBoxDataContainerPointer(void)
 //-------------------------------------------------------------------------------
 void CTask::SetOperatingDataContainer(CDataContainerInterface* pxDataContainer)
 {
-    m_pxOperatingDataContainer = pxDataContainer;
+//    m_pxOperatingDataContainer = pxDataContainer;
 }
 
 //-------------------------------------------------------------------------------
 CDataContainerInterface* CTask::GetOperatingDataContainerPointer(void)
 {
-    return m_pxOperatingDataContainer;
+//    return m_pxOperatingDataContainer;
 };
 
 //-------------------------------------------------------------------------------
 void CTask::SetCommandDataContainer(CDataContainerInterface* pxDataContainer)
 {
-    m_pxCommandDataContainer = pxDataContainer;
+//    m_pxCommandDataContainer = pxDataContainer;
 }
 
 //-------------------------------------------------------------------------------
 CDataContainerInterface* CTask::GetCommandDataContainerPointer(void)
 {
-    return m_pxCommandDataContainer;
+//    return m_pxCommandDataContainer;
 };
 
 //-------------------------------------------------------------------------------
