@@ -12,6 +12,7 @@ class Timer;
 class Platform;
 class CTask;
 class CResources;
+class CDataStore;
 class CLink;
 class CLinkInterface;
 
@@ -26,6 +27,30 @@ public:
 
     CDeviceControl();
     virtual ~CDeviceControl();
+
+    // Геттер для m_sDataStoreLinkName
+    std::string GetDataStoreLinkName() const
+    {
+        return m_sDataStoreLinkName;
+    }
+
+    // Сеттер для m_sDataStoreLinkName
+    void SetDataStoreLinkName(const std::string& sName)
+    {
+        m_sDataStoreLinkName = sName;
+    }
+
+    // Геттер для m_pxDataStoreLink
+    CLinkInterface* GetDataStoreLink() const
+    {
+        return m_pxDataStoreLink;
+    }
+
+    // Сеттер для m_pxDataStoreLink
+    void SetDataStoreLink(CLinkInterface* pxLink)
+    {
+        m_pxDataStoreLink = pxLink;
+    }
 
     // Геттер для m_pxCommandDataLink
     CLinkInterface* GetCommandDataLink() const
@@ -59,6 +84,9 @@ public:
     uint8_t Fsm(void);
 
 protected:
+    std::string m_sDataStoreLinkName;
+    CLinkInterface* m_pxDataStoreLink;
+
     CLinkInterface* m_pxCommandDataLink;
     CLinkInterface* m_pxOperatingDataLink;
 private:

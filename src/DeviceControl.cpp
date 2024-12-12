@@ -82,6 +82,7 @@ uint8_t CDeviceControl::GetFsmOperationStatus(void)
 uint8_t CDeviceControl::Fsm(void)
 {
 //    std::cout << "CDeviceControl::Fsm 1" << endl;
+    uint8_t uiReadyTaskCounter = 0;
     switch (GetFsmState())
     {
     case IDDLE:
@@ -89,71 +90,62 @@ uint8_t CDeviceControl::Fsm(void)
         break;
 
     case STOP:
-//        //std::cout << "CDeviceControl::Fsm STOP"  << std::endl;[[[]=
-        SetFsmState(START);
+//        //std::cout << "CDeviceControl::Fsm STOP"  << std::endl;
         break;
 
     case START:
         std::cout << "CDeviceControl::Fsm START"  << std::endl;
-//        GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
+        GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
         SetFsmState(INIT);
-        SetFsmState(READY);
         break;
 
     case INIT:
         std::cout << "CDeviceControl::Fsm INIT 1"  << std::endl;
-//        {
-//            CTaskInterface* pxTask =
-//                GetResources() ->
-//                GetCommonTaskFromMapPointer(m_sModbusSlaveLinkLayerName);
-//
-//            if (pxTask != 0)
-//            {
-//                std::cout << "CDeviceControl::Fsm INIT 2"  << std::endl;
-//                if (pxTask -> GetFsmState() >= READY)
-//                {
-//                    SetModbusSlaveLinkLayer((CDeviceControlLinkLayer*)pxTask);
-//                    SetFsmState(READY);
-//                    std::cout << "CDeviceControl::Fsm READY"  << std::endl;
-//                }
-//            }
-//            else
-//            {
-//                std::cout << "CDeviceControl::Fsm INIT 3"  << std::endl;
-//                if (GetTimerPointer() -> IsOverflow())
-//                {
-//                    SetFsmState(STOP);
-//                    std::cout << "CDeviceControl::Fsm STOP"  << std::endl;
-//                }
-//            }
-//        }
-//
-//
-//        {
-//            CTaskInterface* pxTask =
-//                GetResources() ->
-//                GetCommonTaskFromMapPointer(m_sDeviceControlName);
-//
-//            if (pxTask != 0)
-//            {
-//                std::cout << "CDeviceControl::Fsm INIT 2"  << std::endl;
-//                if (pxTask -> GetFsmState() >= READY)
-//                {
-//                    SetDeviceControl((CDeviceControl*)pxTask);
-//                    SetFsmState(READY);
-//                    std::cout << "CDeviceControl::Fsm READY"  << std::endl;
-//                }
-//            }
-//            else
-//            {
-//                std::cout << "CDeviceControl::Fsm INIT 3"  << std::endl;
-//                if (GetTimerPointer() -> IsOverflow())
-//                {
-//                    SetFsmState(STOP);
-//                    std::cout << "CDeviceControl::Fsm STOP"  << std::endl;
-//                }
-//            }
-//        }
+        {
+            if (GetDataStoreLink() == 0)
+            {
+                std::cout << "CDeviceControl::Fsm INIT 5"  << std::endl;
+                CLinkInterface* pxLink = GetResources() ->
+                                         CreateLinkByPerformerName(GetDataStoreLinkName());
+                if (pxLink != 0)
+                {
+                    std::cout << "CDeviceControl::Fsm INIT 6"  << std::endl;
+                    SetDataStoreLink(pxLink);
+                    CDataContainerDataBase* pxDataContainerDataBase = new CDataContainerDataBase();
+                    pxLink ->
+                    SetDataContainer(pxDataContainerDataBase);
+
+//                    auto pxDataContainer = std::make_shared<CDataContainerDataBase>();
+//                    pxLink ->
+//                    SetDataContainer(pxDataContainer.get());
+                    pxLink ->
+                    GetDataContainerPointer() ->
+                    SetContainerData(0,
+                                     0,
+                                     0,
+                                     0,
+                                     0);
+                }
+                else
+                {
+                    std::cout << "CDeviceControl::Fsm INIT 7"  << std::endl;
+                    if (GetTimerPointer() -> IsOverflow())
+                    {
+                        SetFsmState(STOP);
+                    }
+                }
+            }
+            else
+            {
+                std::cout << "CDeviceControl::Fsm INIT 8"  << std::endl;
+                uiReadyTaskCounter += 1;
+            }
+        }
+
+        if (uiReadyTaskCounter > 0)
+        {
+            SetFsmState(READY);
+        }
 
         break;
 
@@ -211,12 +203,21 @@ uint8_t CDeviceControl::Fsm(void)
 
         uint16_t uiLength;
 
-        uiLength = DataBaseBlockRead(GetOperatingDataLink() ->
-                                     GetDataContainerPointer() ->
-                                     GetDataPointer(),
-                                     GetOperatingDataLink() ->
-                                     GetDataContainerPointer() ->
-                                     GetDataIndex());
+//        uiLength = DataBaseBlockRead(GetOperatingDataLink() ->
+//                                     GetDataContainerPointer() ->
+//                                     GetDataPointer(),
+//                                     GetOperatingDataLink() ->
+//                                     GetDataContainerPointer() ->
+//                                     GetDataIndex());
+
+        uiLength = ((CDataStore*)(GetDataStoreLink() ->
+                                  GetTaskPerformerPointer())) ->
+                   ReadBlock(GetOperatingDataLink() ->
+                             GetDataContainerPointer() ->
+                             GetDataPointer(),
+                             GetOperatingDataLink() ->
+                             GetDataContainerPointer() ->
+                             GetDataIndex());
 
         GetOperatingDataLink() ->
         GetDataContainerPointer() ->

@@ -76,7 +76,6 @@ uint8_t CLink::Fsm(void)
 
     case STOP:
 //        //std::cout << "CLink::Fsm STOP"  << std::endl;
-        SetFsmState(START);
         break;
 
     case START:

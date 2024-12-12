@@ -2629,8 +2629,7 @@ uint8_t CModbusSlave::Fsm(void)
         break;
 
     case STOP:
-//        //std::cout << "CModbusSlave::Fsm STOP"  << std::endl;[[[]=
-        SetFsmState(START);
+//        //std::cout << "CModbusSlave::Fsm STOP"  << std::endl;
         break;
 
     case START:
@@ -2670,45 +2669,19 @@ uint8_t CModbusSlave::Fsm(void)
         }
 
 
-//        {
-//            CTaskInterface* pxTask =
-//                GetResources() ->
-//                GetCommonTaskFromMapPointer(m_sDeviceControlName);
-//
-//            if (pxTask != 0)
-//            {
-//                std::cout << "CModbusSlave::Fsm INIT 4"  << std::endl;
-//                if (pxTask -> GetFsmState() >= READY)
-//                {
-//                    SetDeviceControl((CDeviceControl*)pxTask);
-//                    SetFsmState(READY);
-//                    std::cout << "CModbusSlave::Fsm READY"  << std::endl;
-//                }
-//            }
-//            else
-//            {
-//                std::cout << "CModbusSlave::Fsm INIT 5"  << std::endl;
-//                if (GetTimerPointer() -> IsOverflow())
-//                {
-//                    SetFsmState(STOP);
-//                    std::cout << "CModbusSlave::Fsm STOP"  << std::endl;
-//                }
-//            }
-//        }
-
-
         {
             if (GetDeviceControlLink() == 0)
             {
-                    std::cout << "CModbusSlave::Fsm INIT 5"  << std::endl;
+                std::cout << "CModbusSlave::Fsm INIT 5"  << std::endl;
                 CLinkInterface* pxLink = GetResources() ->
-                                         CreateLinkByName(m_sDeviceControlName);
+                                         CreateLinkByPerformerName(m_sDeviceControlName);
                 if (pxLink != 0)
                 {
                     std::cout << "CModbusSlave::Fsm INIT 6"  << std::endl;
                     SetDeviceControlLink(pxLink);
-                pxLink ->
-                SetDataContainer(new CDataContainerDataBase());
+                    CDataContainerDataBase* pxDataContainerDataBase = new CDataContainerDataBase();
+                    pxLink ->
+                    SetDataContainer(pxDataContainerDataBase);
 
 //                    auto pxDataContainer = std::make_shared<CDataContainerDataBase>();
 //                    pxLink ->
@@ -2735,41 +2708,6 @@ uint8_t CModbusSlave::Fsm(void)
                 std::cout << "CModbusSlave::Fsm INIT 8"  << std::endl;
                 uiReadyTaskCounter += 1;
             }
-
-
-
-//            CTaskInterface* pxTask =
-//                GetResources() ->
-//                GetCommonTaskFromMapPointer(m_sDeviceControlLinkName);
-//
-//            if (pxTask != 0)
-//            {
-//                std::cout << "CModbusSlave::Fsm INIT 8"  << std::endl;
-//                if (pxTask -> GetFsmState() >= READY)
-//                {
-//                    std::cout << "CModbusSlave::Fsm INIT 9"  << std::endl;
-//                    SetDeviceControlLink((CLinkInterface*)pxTask);
-//
-//                    m_pxDeviceControlLink ->
-//                    GetDataContainerPointer() ->
-//                    SetContainerData(0,
-//                                     0,
-//                                     0,
-//                                     0,
-//                                     0);
-//
-//                    uiReadyTaskCounter += 1;
-////                    SetFsmState(READY);
-//                }
-//            }
-//            else
-//            {
-//                std::cout << "CModbusSlave::Fsm INIT 10"  << std::endl;
-//                if (GetTimerPointer() -> IsOverflow())
-//                {
-//                    SetFsmState(STOP);
-//                }
-//            }
         }
 
         if (uiReadyTaskCounter > 1)

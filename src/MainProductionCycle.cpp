@@ -114,6 +114,8 @@ uint8_t CMainProductionCycle::CreateTasks(void)
                                     pxDeviceControl);
     pxDeviceControl ->
     SetResources(&m_xResources);
+    pxDeviceControl ->
+    SetDataStoreLinkName("DataStoreFileSystem");
     m_xResources.AddCurrentlyRunningTasksList(pxDeviceControl);
 
 //-------------------------------------------------------------------------------

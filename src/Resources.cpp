@@ -325,12 +325,12 @@ CTaskInterface* CResources::GetCommonTaskFromMapPointer(std::string sTaskName)
 }
 
 //-------------------------------------------------------------------------------
-CLinkInterface* CResources::CreateLinkByName(std::string sTaskName)
+CLinkInterface* CResources::CreateLinkByPerformerName(std::string sTaskName)
 {
-    std::cout << "CResources::CreateLinkByName 1"  << std::endl;
+    std::cout << "CResources::CreateLinkByPerformerName 1"  << std::endl;
 
-//    std::cout << "CResources::CreateLinkByName this name" << " " << (this -> GetTaskNamePointer()) << std::endl;
-//    std::cout << "CResources::CreateLinkByName sTaskName" << " " << (sTaskName) << std::endl;
+//    std::cout << "CResources::CreateLinkByPerformerName this name" << " " << (this -> GetTaskNamePointer()) << std::endl;
+//    std::cout << "CResources::CreateLinkByPerformerName sTaskName" << " " << (sTaskName) << std::endl;
 
 
     CTaskInterface* pxTask =
@@ -338,7 +338,7 @@ CLinkInterface* CResources::CreateLinkByName(std::string sTaskName)
 
     if (pxTask != 0)
     {
-        std::cout << "CResources::CreateLinkByName 2"  << std::endl;
+        std::cout << "CResources::CreateLinkByPerformerName 2"  << std::endl;
 
         CLinkInterface* pxLink = new CLink();
         AddCommonTaskToMap(sTaskName + "Link",
@@ -355,7 +355,7 @@ CLinkInterface* CResources::CreateLinkByName(std::string sTaskName)
     }
     else
     {
-        std::cout << "CResources::CreateLinkByName 3"  << std::endl;
+        std::cout << "CResources::CreateLinkByPerformerName 3"  << std::endl;
         return 0;
     }
 }
