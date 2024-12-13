@@ -25,6 +25,9 @@
 #include "ModbusTcpSlaveLinkLayer.h"
 #include "ModbusRtuSlaveLinkLayer.h"
 
+#include "ModbusSmSlave.h"
+#include "ModbusSmSlaveLinkLayer.h"
+
 class CTask;
 //class CResources;
 class CLedBlinker;
