@@ -295,26 +295,6 @@ uint8_t CMainProductionCycle::InitTasks(void)
 
     pxModbusTcpSlaveUpperLevel ->
     SetOwnAddress(1);
-
-
-
-//    // Проход по всем элементам std::map с использованием итераторов
-//    std::map<std::string, CTaskInterface*>::iterator it;
-//
-//    while (1)
-//    {
-//        bool bTaskIsReady = 0;
-//
-//        for (it = GetResources() -> m_mpxCommonTaskMap.begin();
-//                it != GetResources() -> m_mpxCommonTaskMap.end();
-//                it++)
-//        {
-//            if ((it -> second -> Fsm()) < READY)
-//            {
-//                bTaskIsReady = 0;
-//            }
-//        }
-//    }
 }
 
 //-------------------------------------------------------------------------------
