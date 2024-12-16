@@ -2601,69 +2601,69 @@ uint8_t CModbusSlave::Fsm(void)
 
         std::cout << "CModbusSlave::Fsm INIT 1"  << std::endl;
         {
-            if (GetModbusSlaveLinkLayerLink() == 0)
-            {
-                std::cout << "CModbusSlave::Fsm INIT 2"  << std::endl;
-                CLinkInterface* pxLink = GetResources() ->
-                                         CreateLinkByPerformerName(m_sModbusSlaveLinkLayerName);
-                if (pxLink != 0)
-                {
-                    std::cout << "CModbusSlave::Fsm INIT 3"  << std::endl;
-                    SetModbusSlaveLinkLayerLink(pxLink);
-                    CDataContainerDataBase* pxDataContainerDataBase = new CDataContainerDataBase();
-                    pxLink ->
-                    SetDataContainer(pxDataContainerDataBase);
-
-//                    auto pxDataContainer = std::make_shared<CDataContainerDataBase>();
-//                    pxLink ->
-//                    SetDataContainer(pxDataContainer.get());
-                    pxLink ->
-                    GetDataContainerPointer() ->
-                    SetContainerData(0,
-                                     0,
-                                     0,
-                                     0,
-                                     0);
-                }
-                else
-                {
-                    std::cout << "CModbusSlave::Fsm INIT 4"  << std::endl;
-                    if (GetTimerPointer() -> IsOverflow())
-                    {
-                        SetFsmState(STOP);
-                    }
-                }
-            }
-            else
-            {
-                std::cout << "CModbusSlave::Fsm INIT 44"  << std::endl;
-                uiReadyTaskCounter += 1;
-            }
-
-
-//            CTaskInterface* pxTask =
-//                GetResources() ->
-//                GetCommonTaskFromMapPointer(m_sModbusSlaveLinkLayerName);
-//
-//            if (pxTask != 0)
+//            if (GetModbusSlaveLinkLayerLink() == 0)
 //            {
 //                std::cout << "CModbusSlave::Fsm INIT 2"  << std::endl;
-//                if (pxTask -> GetFsmState() >= READY)
+//                CLinkInterface* pxLink = GetResources() ->
+//                                         CreateLinkByPerformerName(m_sModbusSlaveLinkLayerName);
+//                if (pxLink != 0)
 //                {
 //                    std::cout << "CModbusSlave::Fsm INIT 3"  << std::endl;
-//                    SetModbusSlaveLinkLayer((CModbusSlaveLinkLayer*)pxTask);
-//                    uiReadyTaskCounter += 1;
-////                    SetFsmState(READY);
+//                    SetModbusSlaveLinkLayerLink(pxLink);
+//                    CDataContainerDataBase* pxDataContainerDataBase = new CDataContainerDataBase();
+//                    pxLink ->
+//                    SetDataContainer(pxDataContainerDataBase);
+//
+////                    auto pxDataContainer = std::make_shared<CDataContainerDataBase>();
+////                    pxLink ->
+////                    SetDataContainer(pxDataContainer.get());
+//                    pxLink ->
+//                    GetDataContainerPointer() ->
+//                    SetContainerData(0,
+//                                     0,
+//                                     0,
+//                                     0,
+//                                     0);
+//                }
+//                else
+//                {
+//                    std::cout << "CModbusSlave::Fsm INIT 4"  << std::endl;
+//                    if (GetTimerPointer() -> IsOverflow())
+//                    {
+//                        SetFsmState(STOP);
+//                    }
 //                }
 //            }
 //            else
 //            {
-//                std::cout << "CModbusSlave::Fsm INIT 4"  << std::endl;
-//                if (GetTimerPointer() -> IsOverflow())
-//                {
-//                    SetFsmState(STOP);
-//                }
+//                std::cout << "CModbusSlave::Fsm INIT 44"  << std::endl;
+//                uiReadyTaskCounter += 1;
 //            }
+
+
+            CTaskInterface* pxTask =
+                GetResources() ->
+                GetCommonTaskFromMapPointer(m_sModbusSlaveLinkLayerName);
+
+            if (pxTask != 0)
+            {
+                std::cout << "CModbusSlave::Fsm INIT 2"  << std::endl;
+                if (pxTask -> GetFsmState() >= READY)
+                {
+                    std::cout << "CModbusSlave::Fsm INIT 3"  << std::endl;
+                    SetModbusSlaveLinkLayer((CModbusSlaveLinkLayer*)pxTask);
+                    uiReadyTaskCounter += 1;
+//                    SetFsmState(READY);
+                }
+            }
+            else
+            {
+                std::cout << "CModbusSlave::Fsm INIT 4"  << std::endl;
+                if (GetTimerPointer() -> IsOverflow())
+                {
+                    SetFsmState(STOP);
+                }
+            }
         }
 
 

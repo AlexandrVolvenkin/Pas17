@@ -416,7 +416,7 @@ uint8_t CModbusSmSlaveLinkLayer::Fsm(void)
         break;
 
     case COMMUNICATION_RECEIVE_START:
-        std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_START"  << std::endl;
+//        std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_START"  << std::endl;
         m_uiFrameLength = 0;
         iBytesNumber =
             m_pxCommunicationDevice ->
@@ -451,8 +451,8 @@ uint8_t CModbusSmSlaveLinkLayer::Fsm(void)
         }
         else
         {
-            std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_START 4"  << std::endl;
-            cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_START errno " << errno << endl;
+//            std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_START 4"  << std::endl;
+//            cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_START errno " << errno << endl;
         }
         break;
 

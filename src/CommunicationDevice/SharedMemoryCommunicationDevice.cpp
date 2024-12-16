@@ -35,7 +35,9 @@ CSharedMemoryCommunicationDevice::~CSharedMemoryCommunicationDevice()
 //-------------------------------------------------------------------------------
 void CSharedMemoryCommunicationDevice::Init(void)
 {
+    std::cout << "CSharedMemoryCommunicationDevice::Init 1"  << std::endl;
 
+    SetFsmState(READY);
 }
 
 //-------------------------------------------------------------------------------
@@ -53,7 +55,8 @@ const char* CSharedMemoryCommunicationDevice::GetDeviceName(void)
 //-------------------------------------------------------------------------------
 int8_t CSharedMemoryCommunicationDevice::Open(void)
 {
-    cout << "CSharedMemoryCommunicationDevice::Open m_pccDeviceName " << m_pccDeviceName << endl;
+    std::cout << "CSharedMemoryCommunicationDevice::Open 1"  << std::endl;
+//    cout << "CSharedMemoryCommunicationDevice::Open m_pccDeviceName " << m_pccDeviceName << endl;
 
 //-------------------------------------------------------------------------------
     int fd;
@@ -95,6 +98,7 @@ int8_t CSharedMemoryCommunicationDevice::Open(void)
 //-------------------------------------------------------------------------------
 int8_t CSharedMemoryCommunicationDevice::Close(void)
 {
+    std::cout << "CSharedMemoryCommunicationDevice::Close 1"  << std::endl;
     munmap(m_puiTxBuffer,
            MODBUS_SM_MAX_ADU_LENGTH);
     munmap(m_puiRxBuffer,
@@ -104,7 +108,8 @@ int8_t CSharedMemoryCommunicationDevice::Close(void)
 //-------------------------------------------------------------------------------
 int16_t CSharedMemoryCommunicationDevice::Read(uint8_t *puiDestination, uint16_t uiLength)
 {
-    return read(m_iDeviceDescriptorServer, puiDestination, uiLength);
+    std::cout << "CSharedMemoryCommunicationDevice::Read 1"  << std::endl;
+//    return read(m_iDeviceDescriptorServer, puiDestination, uiLength);
 }
 
 //-------------------------------------------------------------------------------
@@ -112,7 +117,7 @@ int16_t CSharedMemoryCommunicationDevice::ReceiveStart(uint8_t *puiDestination,
         uint16_t uiLength,
         uint32_t uiReceiveTimeout)
 {
-    std::cout << "CSharedMemoryCommunicationDevice::ReceiveStart 1"  << std::endl;
+//    std::cout << "CSharedMemoryCommunicationDevice::ReceiveStart 1"  << std::endl;
 
     uint16_t uiLengthLocal = m_puiRxBuffer[0];
 
@@ -129,9 +134,10 @@ int16_t CSharedMemoryCommunicationDevice::ReceiveStart(uint8_t *puiDestination,
     }
     else
     {
-        cout << "CSharedMemoryCommunicationDevice::ReceiveStart 3" << endl;
+//        cout << "CSharedMemoryCommunicationDevice::ReceiveStart 3" << endl;
         return 0;
     }
+//        return 0;
 
 
 //    int rc;
