@@ -8,6 +8,7 @@ RM := rm -rf
 
 # All of the sources participating in the build are defined here
 -include sources.mk
+-include src/ModbusSM/subdir.mk
 -include src/Modbus/subdir.mk
 -include src/EveDisplay/subdir.mk
 -include src/CommunicationDevice/subdir.mk

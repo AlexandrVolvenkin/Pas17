@@ -52,6 +52,8 @@
 		<Unit filename="src/CommunicationDevice/CommunicationDevice.h" />
 		<Unit filename="src/CommunicationDevice/SerialPortCommunicationDevice.cpp" />
 		<Unit filename="src/CommunicationDevice/SerialPortCommunicationDevice.h" />
+		<Unit filename="src/CommunicationDevice/SharedMemoryCommunicationDevice.cpp" />
+		<Unit filename="src/CommunicationDevice/SharedMemoryCommunicationDevice.h" />
 		<Unit filename="src/CommunicationDevice/TcpCommunicationDevice.cpp" />
 		<Unit filename="src/CommunicationDevice/TcpCommunicationDevice.h" />
 		<Unit filename="src/Configuration.h" />

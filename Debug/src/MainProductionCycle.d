@@ -3,6 +3,7 @@ src/MainProductionCycle.o: ../src/MainProductionCycle.cpp ../src/Task.h \
  D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\CommunicationDevice/CommunicationDevice.h \
  D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\CommunicationDevice/SerialPortCommunicationDevice.h \
  D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\CommunicationDevice/TcpCommunicationDevice.h \
+ D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\CommunicationDevice/SharedMemoryCommunicationDevice.h \
  ../src/Resources.h ../src/TaskManager.h ../src/ServiceMarket.h \
  ../src/StorageDevice.h ../src/DataStore.h ../src/DataStoreCheck.h \
  ../src/InternalModule.h ../src/InternalModuleMuvr.h \
@@ -39,6 +40,8 @@ D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\Commun
 D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\CommunicationDevice/SerialPortCommunicationDevice.h:
 
 D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\CommunicationDevice/TcpCommunicationDevice.h:
+
+D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\CommunicationDevice/SharedMemoryCommunicationDevice.h:
 
 ../src/Resources.h:
 

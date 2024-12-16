@@ -7,28 +7,6 @@
 ////  email       : aav-36@mail.ru
 ////  GitHub      : https://github.com/AlexandrVolvenkin
 ////-------------------------------------------------------------------------------
-//
-//#include <stdint.h>
-//#include <iostream>
-//
-////-------------------------------------------------------------------------------
-//class CModbusSmSlaveLinkLayer
-//{
-//    public:
-//        CModbusSmSlaveLinkLayer();
-//        virtual ~CModbusSmSlaveLinkLayer();
-//
-//    protected:
-//
-//    private:
-//};
-
-
-
-
-
-
-
 #include <stdint.h>
 #include <thread>
 
@@ -40,8 +18,6 @@
  * RS232 / RS485 ADU = 253 bytes + slave (1 byte) + CRC (2 bytes) = 256 bytes
  */
 #define MODBUS_SM_MAX_ADU_LENGTH  256
-
-#define _MODBUS_SM_35_TIMEOUT        (((1000000UL / MODBUS_SM_BAUD_RATE) * 8UL * 4UL) / 1000) + 1
 
 #define _MODBUS_SM_HEADER_LENGTH      1
 #define _MODBUS_SM_PRESET_REQ_LENGTH  6
@@ -81,11 +57,11 @@ public:
     virtual ~CModbusSmSlaveLinkLayer();
 
     static void Process(CModbusSmSlaveLinkLayer* pxModbusSlaveLinkLayer);
-    void CommunicationDeviceInit(const char* pccDeviceName,
-                                 uint32_t uiBaudRate,
-                                 uint8_t uiDataBits,
-                                 char cParity,
-                                 uint8_t uiStopBit);
+//    void CommunicationDeviceInit(const char* pccDeviceName,
+//                                 uint32_t uiBaudRate,
+//                                 uint8_t uiDataBits,
+//                                 char cParity,
+//                                 uint8_t uiStopBit);
     uint8_t Fsm(void);
 
     uint8_t* GetRxBuffer(void);
@@ -152,10 +128,6 @@ private:
         m_uiGuardTimeout = uiData;
     };
 
-    uint16_t HEADER_LENGTH(void)
-    {
-        return 7;
-    };
     uint16_t CRC_LENGTH(void)
     {
         return 0;

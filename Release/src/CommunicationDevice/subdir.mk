@@ -6,16 +6,19 @@
 CPP_SRCS += \
 ../src/CommunicationDevice/CommunicationDevice.cpp \
 ../src/CommunicationDevice/SerialPortCommunicationDevice.cpp \
+../src/CommunicationDevice/SharedMemoryCommunicationDevice.cpp \
 ../src/CommunicationDevice/TcpCommunicationDevice.cpp 
 
 CPP_DEPS += \
 ./src/CommunicationDevice/CommunicationDevice.d \
 ./src/CommunicationDevice/SerialPortCommunicationDevice.d \
+./src/CommunicationDevice/SharedMemoryCommunicationDevice.d \
 ./src/CommunicationDevice/TcpCommunicationDevice.d 
 
 OBJS += \
 ./src/CommunicationDevice/CommunicationDevice.o \
 ./src/CommunicationDevice/SerialPortCommunicationDevice.o \
+./src/CommunicationDevice/SharedMemoryCommunicationDevice.o \
 ./src/CommunicationDevice/TcpCommunicationDevice.o 
 
 
@@ -31,7 +34,7 @@ src/CommunicationDevice/%.o: ../src/CommunicationDevice/%.cpp src/CommunicationD
 clean: clean-src-2f-CommunicationDevice
 
 clean-src-2f-CommunicationDevice:
-	-$(RM) ./src/CommunicationDevice/CommunicationDevice.d ./src/CommunicationDevice/CommunicationDevice.o ./src/CommunicationDevice/SerialPortCommunicationDevice.d ./src/CommunicationDevice/SerialPortCommunicationDevice.o ./src/CommunicationDevice/TcpCommunicationDevice.d ./src/CommunicationDevice/TcpCommunicationDevice.o
+	-$(RM) ./src/CommunicationDevice/CommunicationDevice.d ./src/CommunicationDevice/CommunicationDevice.o ./src/CommunicationDevice/SerialPortCommunicationDevice.d ./src/CommunicationDevice/SerialPortCommunicationDevice.o ./src/CommunicationDevice/SharedMemoryCommunicationDevice.d ./src/CommunicationDevice/SharedMemoryCommunicationDevice.o ./src/CommunicationDevice/TcpCommunicationDevice.d ./src/CommunicationDevice/TcpCommunicationDevice.o
 
 .PHONY: clean-src-2f-CommunicationDevice
 

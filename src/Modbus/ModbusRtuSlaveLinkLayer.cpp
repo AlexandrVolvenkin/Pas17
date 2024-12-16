@@ -348,6 +348,21 @@ uint8_t CModbusRtuSlaveLinkLayer::Fsm(void)
 
     case READY:
 //        std::cout << "CModbusRtuSlaveLinkLayer::Fsm READY"  << std::endl;
+//    {
+//
+//        if (GetCommandDataLink() != 0)
+//        {
+//            std::cout << "CDeviceControl::Fsm READY 2"  << std::endl;
+//            SetOperatingDataLink(GetCommandDataLink());
+//            SetFsmState(GetCommandDataLink() ->
+//                        GetDataContainerPointer() ->
+//                        GetFsmCommandState());
+//            GetCommandDataLink() ->
+//            GetDataContainerPointer() ->
+//            SetFsmCommandState(0);
+//            SetCommandDataLink(0);
+//        }
+//    }
 
         if (GetFsmCommandState() != 0)
         {

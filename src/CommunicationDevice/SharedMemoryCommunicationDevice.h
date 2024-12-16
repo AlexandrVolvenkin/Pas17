@@ -1,6 +1,5 @@
-﻿
-#ifndef CSERIALPORTCOMMUNICATIONDEVICE_H
-#define CSERIALPORTCOMMUNICATIONDEVICE_H
+#ifndef CSHAREDMEMORYCOMMUNICATIONDEVICE_H
+#define CSHAREDMEMORYCOMMUNICATIONDEVICE_H
 //-------------------------------------------------------------------------------
 //  Source      : FileName.cpp
 //  Created     : 01.06.2022
@@ -30,30 +29,23 @@ class CCommunicationDeviceNew;
 class CCommunicationDeviceInterfaceNew;
 
 //-------------------------------------------------------------------------------
-class CSerialPortCommunicationDevice : public CCommunicationDeviceNew
+class CSharedMemoryCommunicationDevice : public CCommunicationDeviceNew
 {
 public:
     enum
     {
-        UART_MAX_BUFF_LENGTH = 256,
-        UART_INTERMEDIATE_BUFF_LENGTH = 16
+        MODBUS_SM_MAX_ADU_LENGTH = 256,
     };
 
-    CSerialPortCommunicationDevice();
-    virtual ~CSerialPortCommunicationDevice();
+    CSharedMemoryCommunicationDevice();
+    virtual ~CSharedMemoryCommunicationDevice();
 
 //-------------------------------------------------------------------------------
     void Init(void);
     void SetDeviceName(const char* pccDeviceName);
     const char* GetDeviceName(void);
-    void SetBaudRate(uint32_t uiBaudRate);
-    void SetDataBits(uint8_t uiDataBits);
-    void SetParity(char cParity);
-    void SetStopBit(uint8_t uiStopBit);
     int8_t Open(void);
     int8_t Close(void);
-//    void Reset(void);
-//    bool IsDataAvailable(void);
     int16_t Write(uint8_t* puiDestination, uint16_t uiLength);
     int16_t Read(uint8_t* puiSource, uint16_t uiLength);
     int16_t ReceiveStart(uint8_t *puiDestination,
@@ -62,11 +54,6 @@ public:
     int16_t ReceiveContinue(uint8_t *puiDestination,
                             uint16_t uiLength,
                             uint32_t uiReceiveTimeout);
-    int Exchange(uint8_t uiAddress,
-                 unsigned char *pucTxBuff,
-                 unsigned char *pucRxBuff,
-                 int iLength,
-                 int iSpeed);
 
 //-------------------------------------------------------------------------------
 //private:
@@ -74,24 +61,11 @@ protected:
     const char *m_pccDeviceName;
     /* Socket or file descriptor */
     int32_t m_iDeviceDescriptorServer;
-    struct termios m_xTios;
-    struct serial_rs485 m_xRs485Conf;
-//    struct timeval *pto;
-//    fd_set readfds, writefds;
-//    uint32_t m_uiBaudRate;
-//    /* Parity: 'N', 'O', 'E' */
-//    char m_uiParity;
-////    uint8_t m_uiParity;
-//    uint8_t m_uiDataBits;
-//    uint8_t m_uiStopBit;
-//    // Флаг - данные записаны.
-//    bool m_bDataIsWrited = false;
-//    uint8_t* m_puiTxBuffer;
-//    uint16_t m_nuiTxBuffByteCounter;
-//    uint8_t* m_puiRxBuffer;
-//    uint16_t m_nuiRxBuffByteCounter;
-////    uint8_t m_auiIntermediateBuff[UART_INTERMEDIATE_BUFF_LENGTH];
+
+    uint8_t *m_puiRxBuffer;
+    uint8_t *m_puiTxBuffer;
 };
 
 //-------------------------------------------------------------------------------
-#endif // CSERIALPORTCOMMUNICATIONDEVICE_H
+
+#endif // CSHAREDMEMORYCOMMUNICATIONDEVICE_H

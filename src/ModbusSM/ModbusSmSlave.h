@@ -7,29 +7,6 @@
 ////  email       : aav-36@mail.ru
 ////  GitHub      : https://github.com/AlexandrVolvenkin
 ////-------------------------------------------------------------------------------
-//
-//#include <stdint.h>
-//#include <iostream>
-//
-////-------------------------------------------------------------------------------
-//class CModbusSmSlave
-//{
-//    public:
-//        CModbusSmSlave();
-//        virtual ~CModbusSmSlave();
-//
-//    protected:
-//
-//    private:
-//};
-
-
-
-
-
-
-
-
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -80,8 +57,11 @@ public:
     void SetModbusSlaveLinkLayerName(std::string sName);
     void SetModbusSlaveLinkLayer(CModbusSmSlaveLinkLayer* pxModbusSlaveLinkLayer);
 
+    void SetModbusSlaveLinkLayerLinkName(std::string sName);
+    void SetModbusSlaveLinkLayerLink(CLinkInterface* pxLink);
+    CLinkInterface* GetModbusSlaveLinkLayerLink() const;
+
     void SetDeviceControlName(std::string sName);
-    void SetDeviceControl(CDeviceControl* pxDeviceControl);
 
     void SetDeviceControlLinkName(std::string sName);
     void SetDeviceControlLink(CLinkInterface* pxLink);
@@ -106,39 +86,13 @@ public:
 //    void SlaveSet(uint8_t );
 
 //-------------------------------------------------------------------------------
-    uint16_t ReadCoils(void);
-    uint16_t ReadDiscreteInputs(void);
-    uint16_t ReadHoldingRegisters(void);
-    uint16_t ReadInputRegisters(void);
-    uint16_t WriteSingleCoil(void);
-    uint16_t WriteSingleRegister(void);
-    uint16_t WriteMultipleCoils(void);
-    uint16_t WriteMultipleRegisters(void);
     uint16_t ReadExceptionStatus(void);
     uint16_t ReportSlaveID(void);
-    uint16_t WriteAndReadRegisters(void);
-    uint16_t Programming(void);
-    uint16_t PollProgramming(void);
-    uint16_t DataBaseRead(void);
-    uint16_t DataBaseWrite(void);
     uint16_t RequestProcessing(void);
 
 //-------------------------------------------------------------------------------
-    uint16_t ReadCoilsAnswer(void);
-    uint16_t ReadDiscreteInputsAnswer(void);
-    uint16_t ReadHoldingRegistersAnswer(void);
-    uint16_t ReadInputRegistersAnswer(void);
-    uint16_t WriteSingleCoilAnswer(void);
-    uint16_t WriteSingleRegisterAnswer(void);
-    uint16_t WriteMultipleCoilsAnswer(void);
-    uint16_t WriteMultipleRegistersAnswer(void);
     uint16_t ReadExceptionStatusAnswer(void);
     uint16_t ReportSlaveIDAnswer(void);
-    uint16_t WriteAndReadRegistersAnswer(void);
-    uint16_t ProgrammingAnswer(void);
-    uint16_t PollProgrammingAnswer(void);
-    uint16_t DataBaseReadAnswer(void);
-    uint16_t DataBaseWriteAnswer(void);
     uint16_t AnswerProcessing(void);
 
 //-------------------------------------------------------------------------------
@@ -209,11 +163,6 @@ public:
     {
         m_uiMessageLength = uiData;
     };
-
-    virtual uint16_t HEADER_LENGTH(void)
-    {
-        return 1;
-    };
     virtual uint16_t CRC_LENGTH(void)
     {
         return 2;
@@ -224,9 +173,10 @@ public:
     std::string m_sModbusSlaveLinkLayerName;
     CModbusSlaveLinkLayerInterface* m_pxModbusSlaveLinkLayer;
 
-    std::string m_sDeviceControlName;
-    CDeviceControl* m_pxDeviceControl;
+    std::string m_sModbusSlaveLinkLayerLinkName;
+    CLinkInterface* m_pxModbusSlaveLinkLayerLink;
 
+    std::string m_sDeviceControlName;
     std::string m_sDeviceControlLinkName;
     CLinkInterface* m_pxDeviceControlLink;
 
@@ -244,18 +194,6 @@ public:
     uint8_t *m_puiTxBuffer;
     // Вспомогательный буфер.
     uint8_t* m_puiIntermediateBuff;
-
-    uint8_t *m_puiCoils;
-    uint8_t *m_puiDiscreteInputs;
-    uint16_t *m_puiHoldingRegisters;
-    uint16_t *m_puiInputRegisters;
-    uint16_t m_uiCoilsNumber;
-    uint16_t m_uiDiscreteInputsNumber;
-    uint16_t m_uiHoldingRegistersNumber;
-    uint16_t m_uiInputRegistersNumber;
-
-    friend class CModbusRtu;
-    friend class CModbusTcp;
 };
 
 //-------------------------------------------------------------------------------

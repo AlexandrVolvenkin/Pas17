@@ -27,11 +27,52 @@ CModbusSmSlaveLinkLayer::CModbusSmSlaveLinkLayer()
     m_pxCommunicationDevice = 0;
     SetFsmState(START);
 
-    m_pxThread = new std::thread(CModbusSmSlaveLinkLayer::Process, this);
-    std::thread::id th_id = m_pxThread -> get_id();
-    std::cout << "CModbusSmSlaveLinkLayer th_id" << " " << th_id << std::endl;
-    // не ждем завершения работы функции
-    m_pxThread -> detach();
+////    // Создание или открытие разделяемой памяти
+////    addr = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+////
+////    if (addr == MAP_FAILED)
+////    {
+////        perror("mmap");
+////        exit(EXIT_FAILURE);
+////    }
+////
+////    cout << "Shared memory created successfully at address: " << addr << endl;
+//
+////-------------------------------------------------------------------------------
+//    int fd;
+//
+//    fd = shm_open("SharedMemoryTxBuffer",
+//                  O_CREAT | O_RDWR,
+//                  S_IRWXU | S_IRWXG);
+//    if(fd < 0)
+//    {
+//        printf("%s\n", strerror(errno));
+//    }
+//    printf("Shared Memory Open: %s %d\n","SharedMemoryTxBuffer", fd);
+//    ftruncate(fd, MODBUS_SM_MAX_ADU_LENGTH);
+//    m_puiTxBuffer = (uint8_t*)mmap(0,
+//                                   MODBUS_SM_MAX_ADU_LENGTH,
+//                                   PROT_READ | PROT_WRITE, MAP_SHARED,
+//                                   fd,
+//                                   0);
+//    close(fd);
+//
+////-------------------------------------------------------------------------------
+//    fd = shm_open("SharedMemoryRxBuffer",
+//                  O_CREAT | O_RDWR,
+//                  S_IRWXU | S_IRWXG);
+//    if(fd < 0)
+//    {
+//        printf("%s\n", strerror(errno));
+//    }
+//    printf("Shared Memory Open: %s %d\n","SharedMemoryRxBuffer", fd);
+//    ftruncate(fd, MODBUS_SM_MAX_ADU_LENGTH);
+//    m_puiRxBuffer = (uint8_t*)mmap(0,
+//                                   MODBUS_SM_MAX_ADU_LENGTH,
+//                                   PROT_READ | PROT_WRITE, MAP_SHARED,
+//                                   fd,
+//                                   0);
+//    close(fd);
 }
 
 //-------------------------------------------------------------------------------
@@ -40,11 +81,10 @@ CModbusSmSlaveLinkLayer::~CModbusSmSlaveLinkLayer()
     m_pxCommunicationDevice -> Close();
     delete m_pxCommunicationDevice;
 
-    if (m_pxThread -> joinable())
-    {
-        m_pxThread -> join();
-    }
-    delete m_pxThread;
+//    munmap(m_puiTxBuffer,
+//           MODBUS_SM_MAX_ADU_LENGTH);
+//    munmap(m_puiRxBuffer,
+//           MODBUS_SM_MAX_ADU_LENGTH);
 }
 
 //-------------------------------------------------------------------------------
@@ -58,23 +98,23 @@ void CModbusSmSlaveLinkLayer::Process(CModbusSmSlaveLinkLayer* pxModbusSlaveLink
     }
 }
 
-////-------------------------------------------------------------------------------
-void CModbusSmSlaveLinkLayer::CommunicationDeviceInit(const char* pccDeviceName,
-        uint32_t uiBaudRate,
-        uint8_t uiDataBits,
-        char cParity,
-        uint8_t uiStopBit)
-{
-    cout << "CModbusSmSlaveLinkLayer::CommunicationDeviceInit 1" << endl;
-    m_pxCommunicationDevice -> Init();
-    m_pxCommunicationDevice -> SetDeviceName(pccDeviceName);
-    m_pxCommunicationDevice -> SetBaudRate(uiBaudRate);
-    m_pxCommunicationDevice -> SetDataBits(uiDataBits);
-    m_pxCommunicationDevice -> SetParity(cParity);
-    m_pxCommunicationDevice -> SetStopBit(uiStopBit);
-
-    m_uiGuardTimeout = 10;//((((1000000UL / uiBaudRate) * 8UL * 4UL) / 1000UL) + 1);
-}
+//////-------------------------------------------------------------------------------
+//void CModbusSmSlaveLinkLayer::CommunicationDeviceInit(const char* pccDeviceName,
+//        uint32_t uiBaudRate,
+//        uint8_t uiDataBits,
+//        char cParity,
+//        uint8_t uiStopBit)
+//{
+//    cout << "CModbusSmSlaveLinkLayer::CommunicationDeviceInit 1" << endl;
+//    m_pxCommunicationDevice -> Init();
+//    m_pxCommunicationDevice -> SetDeviceName(pccDeviceName);
+//    m_pxCommunicationDevice -> SetBaudRate(uiBaudRate);
+//    m_pxCommunicationDevice -> SetDataBits(uiDataBits);
+//    m_pxCommunicationDevice -> SetParity(cParity);
+//    m_pxCommunicationDevice -> SetStopBit(uiStopBit);
+//
+//    m_uiGuardTimeout = 10;//((((1000000UL / uiBaudRate) * 8UL * 4UL) / 1000UL) + 1);
+//}
 
 //-------------------------------------------------------------------------------
 void CModbusSmSlaveLinkLayer::ReceiveEnable(void)
@@ -401,7 +441,7 @@ uint8_t CModbusSmSlaveLinkLayer::Fsm(void)
 //                    i += 8;
 //                }
 //            }
-            SetFsmState(COMMUNICATION_RECEIVE_END);
+            SetFsmState(COMMUNICATION_FRAME_CHECK);
         }
         else if (iBytesNumber < 0)
         {
@@ -418,44 +458,44 @@ uint8_t CModbusSmSlaveLinkLayer::Fsm(void)
 
     case COMMUNICATION_RECEIVE_END:
         std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END"  << std::endl;
-        iBytesNumber =
-            m_pxCommunicationDevice ->
-            ReceiveContinue((m_auiRxBuffer + m_uiFrameLength),
-                            (MODBUS_SM_MAX_ADU_LENGTH - m_uiFrameLength),
-                            m_uiGuardTimeout);
-        if (iBytesNumber > 0)
-        {
-            std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END 2"  << std::endl;
-            cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END errno " << errno << endl;
-            m_uiFrameLength = m_uiFrameLength + iBytesNumber;
-        }
-        else if (iBytesNumber < 0)
-        {
-            std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END 3"  << std::endl;
-            cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END errno " << errno << endl;
-            SetFsmState(COMMUNICATION_RECEIVE_ERROR);
-        }
-        else
-        {
-            std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END 4"  << std::endl;
-            cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END errno " << errno << endl;
-            SetFsmState(COMMUNICATION_FRAME_CHECK);
-
-            {
-                cout << "CModbusSmSlaveLinkLayer::Fsm m_auiRxBuffer" << endl;
-                unsigned char *pucSourceTemp;
-                pucSourceTemp = (unsigned char*)m_auiRxBuffer;
-                for(int i=0; i<32; )
-                {
-                    for(int j=0; j<8; j++)
-                    {
-                        cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
-                    }
-                    cout << endl;
-                    i += 8;
-                }
-            }
-        }
+//        iBytesNumber =
+//            m_pxCommunicationDevice ->
+//            ReceiveContinue((m_auiRxBuffer + m_uiFrameLength),
+//                            (MODBUS_SM_MAX_ADU_LENGTH - m_uiFrameLength),
+//                            m_uiGuardTimeout);
+//        if (iBytesNumber > 0)
+//        {
+//            std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END 2"  << std::endl;
+//            cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END errno " << errno << endl;
+//            m_uiFrameLength = m_uiFrameLength + iBytesNumber;
+//        }
+//        else if (iBytesNumber < 0)
+//        {
+//            std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END 3"  << std::endl;
+//            cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END errno " << errno << endl;
+//            SetFsmState(COMMUNICATION_RECEIVE_ERROR);
+//        }
+//        else
+//        {
+//            std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END 4"  << std::endl;
+//            cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END errno " << errno << endl;
+//            SetFsmState(COMMUNICATION_FRAME_CHECK);
+//
+//            {
+//                cout << "CModbusSmSlaveLinkLayer::Fsm m_auiRxBuffer" << endl;
+//                unsigned char *pucSourceTemp;
+//                pucSourceTemp = (unsigned char*)m_auiRxBuffer;
+//                for(int i=0; i<32; )
+//                {
+//                    for(int j=0; j<8; j++)
+//                    {
+//                        cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+//                    }
+//                    cout << endl;
+//                    i += 8;
+//                }
+//            }
+//        }
         break;
 
     case COMMUNICATION_FRAME_CHECK:

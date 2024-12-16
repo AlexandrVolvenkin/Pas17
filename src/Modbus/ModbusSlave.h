@@ -58,6 +58,10 @@ public:
     void SetModbusSlaveLinkLayerName(std::string sName);
     void SetModbusSlaveLinkLayer(CModbusSlaveLinkLayer* pxModbusSlaveLinkLayer);
 
+    void SetModbusSlaveLinkLayerLinkName(std::string sName);
+    void SetModbusSlaveLinkLayerLink(CLinkInterface* pxLink);
+    CLinkInterface* GetModbusSlaveLinkLayerLink() const;
+
     void SetDeviceControlName(std::string sName);
     void SetDeviceControl(CDeviceControl* pxDeviceControl);
 
@@ -201,6 +205,9 @@ public:
 //-------------------------------------------------------------------------------
     std::string m_sModbusSlaveLinkLayerName;
     CModbusSlaveLinkLayerInterface* m_pxModbusSlaveLinkLayer;
+
+    std::string m_sModbusSlaveLinkLayerLinkName;
+    CLinkInterface* m_pxModbusSlaveLinkLayerLink;
 
     std::string m_sDeviceControlName;
     CDeviceControl* m_pxDeviceControl;
