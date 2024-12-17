@@ -36,6 +36,7 @@ public:
     virtual CTaskInterface* GetCommonTaskFromMapPointer(std::string sTaskName) {};
     virtual std::list<CTaskInterface*>* GetCommonTasksListPointer(void) {};
     virtual CLinkInterface* CreateLinkByPerformerName(std::string sTaskName) {};
+//    virtual uint8_t* CreateObjectBySize(size_t uiLength) {};
 
 };
 
@@ -64,6 +65,7 @@ public:
     bool CheckCommonTaskMap(void);
     CTaskInterface* GetCommonTaskFromMapPointer(std::string sTaskName);
     CLinkInterface* CreateLinkByPerformerName(std::string sTaskName);
+//    uint8_t* CreateObjectBySize(size_t uiLength);
 
     void ModbusWorkingArraysCreate(uint16_t uiCoilsNumber,
                                    uint16_t uiDiscreteInputsNumber,

@@ -1,5 +1,5 @@
-#ifndef CSHAREDMEMORYCOMMUNICATIONDEVICE_H
-#define CSHAREDMEMORYCOMMUNICATIONDEVICE_H
+﻿#ifndef CTCPCOMMUNICATIONDEVICE_H
+#define CTCPCOMMUNICATIONDEVICE_H
 //-------------------------------------------------------------------------------
 //  Source      : FileName.cpp
 //  Created     : 01.06.2022
@@ -29,23 +29,32 @@ class CCommunicationDeviceNew;
 class CCommunicationDeviceInterfaceNew;
 
 //-------------------------------------------------------------------------------
-class CSharedMemoryCommunicationDevice : public CCommunicationDeviceNew
+class CTcpCommunicationDevice : public CCommunicationDeviceNew
 {
 public:
     enum
     {
-        MODBUS_SM_MAX_ADU_LENGTH = 256,
+        UART_MAX_BUFF_LENGTH = 256,
+        UART_INTERMEDIATE_BUFF_LENGTH = 16
     };
 
-    CSharedMemoryCommunicationDevice();
-    virtual ~CSharedMemoryCommunicationDevice();
+    CTcpCommunicationDevice();
+    virtual ~CTcpCommunicationDevice();
 
 //-------------------------------------------------------------------------------
     void Init(void);
-    void SetDeviceName(const char* pccDeviceName);
-    const char* GetDeviceName(void);
+    void SetIpAddress(const char* pccIpAddress);
+    const char* GetIpAddress(void);
+    void SetPort(uint16_t uiPort);
+    int8_t Listen(void);
+    int8_t Accept(void);
+//    int8_t Accept(uint32_t uiBlockingTime);
+    int8_t Connect(void);
     int8_t Open(void);
     int8_t Close(void);
+    void CloseClient(void);
+//    void Reset(void);
+//    bool IsDataAvailable(void);
     int16_t Write(uint8_t* puiDestination, uint16_t uiLength);
     int16_t Read(uint8_t* puiSource, uint16_t uiLength);
     int16_t ReceiveStart(uint8_t *puiDestination,
@@ -54,18 +63,24 @@ public:
     int16_t ReceiveContinue(uint8_t *puiDestination,
                             uint16_t uiLength,
                             uint32_t uiReceiveTimeout);
+    int Exchange(uint8_t uiAddress,
+                 unsigned char *pucTxBuff,
+                 unsigned char *pucRxBuff,
+                 int iLength,
+                 int iSpeed);
 
 //-------------------------------------------------------------------------------
 //private:
-protected:
+//protected:
     const char *m_pccDeviceName;
+    const char *m_pccIpAddress;
+    uint32_t m_uiIpAddress;
+    uint16_t m_uiPort;
     /* Socket or file descriptor */
     int32_t m_iDeviceDescriptorServer;
-
-    uint8_t *m_puiClientToServerBuffer;
-    uint8_t *m_puiServerToClientBuffer;
+    int32_t m_iDeviceDescriptorClient;
+    struct sockaddr_in m_Address;
 };
 
 //-------------------------------------------------------------------------------
-
-#endif // CSHAREDMEMORYCOMMUNICATIONDEVICE_H
+#endif // CTCPCOMMUNICATIONDEVICE_H

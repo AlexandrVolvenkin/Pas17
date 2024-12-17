@@ -361,6 +361,14 @@ CLinkInterface* CResources::CreateLinkByPerformerName(std::string sTaskName)
 }
 
 ////-------------------------------------------------------------------------------
+//uint8_t* CResources::CreateObjectBySize(size_t uiLength)
+//{
+//    std::cout << "CResources::CreateObjectBySize 1"  << std::endl;
+//
+//    return new uint8_t[uiLength];
+//}
+
+////-------------------------------------------------------------------------------
 //std::list<CTaskInterface*>* CResources::GetCommonTasksListPointer(void)
 //{
 //    return &m_lpxCommonTasksList;
