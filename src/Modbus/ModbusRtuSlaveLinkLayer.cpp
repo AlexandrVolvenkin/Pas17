@@ -49,6 +49,13 @@ CModbusRtuSlaveLinkLayer::~CModbusRtuSlaveLinkLayer()
 }
 
 //-------------------------------------------------------------------------------
+size_t CModbusRtuSlaveLinkLayer::GetObjectLength(void)
+{
+    std::cout << "CModbusRtuSlaveLinkLayer GetObjectLength"  << std::endl;
+    return sizeof(*this);
+}
+
+//-------------------------------------------------------------------------------
 void CModbusRtuSlaveLinkLayer::Process(CModbusRtuSlaveLinkLayer* pxModbusSlaveLinkLayer)
 {
     cout << "CModbusRtuSlaveLinkLayer::Process 1" << endl;

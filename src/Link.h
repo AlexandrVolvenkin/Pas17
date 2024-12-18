@@ -31,6 +31,8 @@ public:
 //        CLinkInterface();
 //        virtual ~CLinkInterface();
 
+    virtual size_t GetObjectLength(void) {};
+
     virtual void SetTaskPerformerName(std::string sName) {};
     virtual void SetTaskPerformer(CTaskInterface* pxTaskPerformer) {};
     virtual CTaskInterface* GetTaskPerformerPointer(void) {};
@@ -56,6 +58,8 @@ class CLink : public CLinkInterface
 public:
     CLink();
     virtual ~CLink();
+
+    size_t GetObjectLength(void);
 
     void SetTaskPerformerName(std::string sName);
     void SetTaskPerformer(CTaskInterface* pxTaskPerformer);

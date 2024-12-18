@@ -62,6 +62,8 @@ public:
     CModbusTcpSlaveLinkLayer();
     virtual ~CModbusTcpSlaveLinkLayer();
 
+    size_t GetObjectLength(void);
+
     static void Process(CModbusTcpSlaveLinkLayer* pxModbusSlaveLinkLayer);
     void CommunicationDeviceInit(const char* pccIpAddress,
                                  uint16_t uiPort);

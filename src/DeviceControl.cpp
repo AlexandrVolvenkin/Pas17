@@ -29,6 +29,13 @@ CDeviceControl::~CDeviceControl()
     //dtor
 }
 
+//-------------------------------------------------------------------------------
+size_t CDeviceControl::GetObjectLength(void)
+{
+    std::cout << "CDeviceControl GetObjectLength"  << std::endl;
+    return sizeof(*this);
+}
+
 ////-------------------------------------------------------------------------------
 //void CDeviceControl::SetResources(CResources* pxResources)
 //{
@@ -100,52 +107,52 @@ uint8_t CDeviceControl::Fsm(void)
         break;
 
     case INIT:
-        std::cout << "CDeviceControl::Fsm INIT 1"  << std::endl;
-        {
-            if (GetDataStoreLink() == 0)
-            {
-                std::cout << "CDeviceControl::Fsm INIT 5"  << std::endl;
-                CLinkInterface* pxLink = GetResources() ->
-                                         CreateLinkByPerformerName(GetDataStoreLinkName());
-                if (pxLink != 0)
-                {
-                    std::cout << "CDeviceControl::Fsm INIT 6"  << std::endl;
-                    SetDataStoreLink(pxLink);
-                    CDataContainerDataBase* pxDataContainerDataBase = new CDataContainerDataBase();
-                    pxLink ->
-                    SetDataContainer(pxDataContainerDataBase);
-
-//                    auto pxDataContainer = std::make_shared<CDataContainerDataBase>();
+//        std::cout << "CDeviceControl::Fsm INIT 1"  << std::endl;
+//        {
+//            if (GetDataStoreLink() == 0)
+//            {
+//                std::cout << "CDeviceControl::Fsm INIT 5"  << std::endl;
+//                CLinkInterface* pxLink = GetResources() ->
+//                                         CreateLinkByPerformerName(GetDataStoreLinkName());
+//                if (pxLink != 0)
+//                {
+//                    std::cout << "CDeviceControl::Fsm INIT 6"  << std::endl;
+//                    SetDataStoreLink(pxLink);
+//                    CDataContainerDataBase* pxDataContainerDataBase = new CDataContainerDataBase();
 //                    pxLink ->
-//                    SetDataContainer(pxDataContainer.get());
-                    pxLink ->
-                    GetDataContainerPointer() ->
-                    SetContainerData(0,
-                                     0,
-                                     0,
-                                     0,
-                                     0);
-                }
-                else
-                {
-                    std::cout << "CDeviceControl::Fsm INIT 7"  << std::endl;
-                    if (GetTimerPointer() -> IsOverflow())
-                    {
-                        SetFsmState(STOP);
-                    }
-                }
-            }
-            else
-            {
-                std::cout << "CDeviceControl::Fsm INIT 8"  << std::endl;
-                uiReadyTaskCounter += 1;
-            }
-        }
-
-        if (uiReadyTaskCounter > 0)
-        {
-            SetFsmState(READY);
-        }
+//                    SetDataContainer(pxDataContainerDataBase);
+//
+////                    auto pxDataContainer = std::make_shared<CDataContainerDataBase>();
+////                    pxLink ->
+////                    SetDataContainer(pxDataContainer.get());
+//                    pxLink ->
+//                    GetDataContainerPointer() ->
+//                    SetContainerData(0,
+//                                     0,
+//                                     0,
+//                                     0,
+//                                     0);
+//                }
+//                else
+//                {
+//                    std::cout << "CDeviceControl::Fsm INIT 7"  << std::endl;
+//                    if (GetTimerPointer() -> IsOverflow())
+//                    {
+//                        SetFsmState(STOP);
+//                    }
+//                }
+//            }
+//            else
+//            {
+//                std::cout << "CDeviceControl::Fsm INIT 8"  << std::endl;
+//                uiReadyTaskCounter += 1;
+//            }
+//        }
+//
+//        if (uiReadyTaskCounter > 0)
+//        {
+//            SetFsmState(READY);
+//        }
 
         break;
 

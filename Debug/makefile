@@ -19,8 +19,6 @@ RM := rm -rf
 -include obj/Debug/src/subdir.mk
 -include obj/Debug/Pas17/src/CommunicationDevice/subdir.mk
 -include obj/Debug/Pas17/src/subdir.mk
--include ModbusSM/ModbusSM/subdir.mk
--include ModbusSM/CommunicationDevice/subdir.mk
 ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(strip $(C++_DEPS)),)
 -include $(C++_DEPS)

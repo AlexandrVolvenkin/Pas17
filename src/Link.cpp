@@ -35,6 +35,13 @@ CLink::~CLink()
 }
 
 //-------------------------------------------------------------------------------
+size_t CLink::GetObjectLength(void)
+{
+    std::cout << "CLink GetObjectLength"  << std::endl;
+    return sizeof(*this);
+}
+
+//-------------------------------------------------------------------------------
 void CLink::SetTaskPerformerName(std::string sName)
 {
     m_sTaskPerformerName = sName;

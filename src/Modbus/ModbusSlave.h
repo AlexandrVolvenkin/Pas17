@@ -55,6 +55,8 @@ public:
     CModbusSlave(CResources* pxResources);
     virtual ~CModbusSlave();
 
+    size_t GetObjectLength(void);
+
     void SetModbusSlaveLinkLayerName(std::string sName);
     void SetModbusSlaveLinkLayer(CModbusSlaveLinkLayer* pxModbusSlaveLinkLayer);
 

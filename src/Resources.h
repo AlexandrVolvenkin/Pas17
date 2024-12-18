@@ -11,6 +11,7 @@
 #include <stdint.h>
 #include <list>
 #include <map>
+#include <memory>
 #include <string>
 
 //#include "Dfa.h"
@@ -31,12 +32,12 @@ class CResourcesInterface : public CTask
 public:
     virtual void AddCommonListTask(CTaskInterface* pxTask) {};
     virtual CTaskInterface* GetCommonListTaskPointer(char* pcTaskName) {};
-    virtual void AddCommonTaskToMap(std::string sTaskName, CTaskInterface* pxTask) {};
+    virtual CTaskInterface* AddCommonTaskToMap(std::string sTaskName, std::shared_ptr<CTaskInterface>) {};
     virtual bool CheckCommonTaskMap(void) {};
     virtual CTaskInterface* GetCommonTaskFromMapPointer(std::string sTaskName) {};
     virtual std::list<CTaskInterface*>* GetCommonTasksListPointer(void) {};
     virtual CLinkInterface* CreateLinkByPerformerName(std::string sTaskName) {};
-//    virtual uint8_t* CreateObjectBySize(size_t uiLength) {};
+    virtual uint8_t* CreateObjectBySize(size_t uiLength) {};
 
 };
 
@@ -61,11 +62,11 @@ public:
     void AddCommonListTask(CTaskInterface* pxTask);
     void AddCurrentlyRunningTasksList(CTaskInterface* pxTask);
     CTaskInterface* GetCommonListTaskPointer(char* pcTaskName);
-    void AddCommonTaskToMap(std::string sTaskName, CTaskInterface* pxTask);
+    CTaskInterface* AddCommonTaskToMap(std::string sTaskName, std::shared_ptr<CTaskInterface> pxTask);
     bool CheckCommonTaskMap(void);
     CTaskInterface* GetCommonTaskFromMapPointer(std::string sTaskName);
     CLinkInterface* CreateLinkByPerformerName(std::string sTaskName);
-//    uint8_t* CreateObjectBySize(size_t uiLength);
+    uint8_t* CreateObjectBySize(size_t uiLength);
 
     void ModbusWorkingArraysCreate(uint16_t uiCoilsNumber,
                                    uint16_t uiDiscreteInputsNumber,
@@ -98,13 +99,17 @@ public:
 //protected:
 //
 //private:
+//    std::list<std::shared_ptr<CTaskInterface>> m_lpxCommonTasksList;
+//    std::list<std::shared_ptr<CTaskInterface>>::iterator m_xCommonTasksListIterator;
+
     std::list<CTaskInterface*> m_lpxCommonTasksList;
     std::list<CTaskInterface*>::iterator m_xCommonTasksListIterator;
     std::list<CTaskInterface*> m_lpxCurrentlyRunningTasksList;
     std::list<CTaskInterface*>::iterator m_xCurrentlyRunningTasksListIterator;
 
     // Создаем std::map, где ключ - строка, значение - указатель на объект
-    std::map<std::string, CTaskInterface*> m_mpxCommonTaskMap;
+//    std::map<std::string, CTaskInterface*> m_mpxCommonTaskMap;
+    std::map<std::string, std::shared_ptr<CTaskInterface>> m_mpxCommonTaskMap;
     std::string m_sTaskName;
 
     uint8_t m_uiAddress;

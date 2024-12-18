@@ -137,6 +137,8 @@ public:
     CDataStore();
     virtual ~CDataStore();
 
+    size_t GetObjectLength(void);
+
     void SetStorageDeviceName(std::string sName);
     void SetStorageDevice(CStorageDeviceInterface* pxStorageDevice);
 

@@ -58,6 +58,8 @@ public:
     CModbusRtuSlaveLinkLayer();
     virtual ~CModbusRtuSlaveLinkLayer();
 
+    size_t GetObjectLength(void);
+
     static void Process(CModbusRtuSlaveLinkLayer* pxModbusSlaveLinkLayer);
     void CommunicationDeviceInit(const char* pccDeviceName,
                                  uint32_t uiBaudRate,

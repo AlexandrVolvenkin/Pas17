@@ -30,6 +30,8 @@ public:
     CDeviceControl();
     virtual ~CDeviceControl();
 
+    size_t GetObjectLength(void);
+
     // Геттер для m_sDataStoreLinkName
     std::string GetDataStoreLinkName() const
     {

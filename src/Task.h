@@ -71,6 +71,8 @@ public:
     virtual void SetMessageBoxPoiner(std::shared_ptr<CMessageBoxInterface> pxMessageBox) {};
     virtual std::shared_ptr<CMessageBoxInterface> GetMessageBoxPointer(void) {};
 
+    virtual size_t GetObjectLength(void) {};
+
     virtual void SetResources(CResources* pxResources) {};
     virtual CResources* GetResources(void) {};
     virtual void SetTaskCustomerName(std::string sName) {};
@@ -137,6 +139,7 @@ public:
 
     void SetMessageBoxPoiner(std::shared_ptr<CMessageBoxInterface> pxMessageBox);
     std::shared_ptr<CMessageBoxInterface> GetMessageBoxPointer(void);
+    size_t GetObjectLength(void);
 
 //    uint8_t Init(void);
     uint8_t Fsm(void);

@@ -81,19 +81,19 @@ CTimer* CTask::GetTimerPointer(void)
 char* CTask::GetTaskNamePointer(void)
 {
     return m_acTaskName;
-};
+}
 
 ////-------------------------------------------------------------------------------
 //std::shared_ptr<CTaskInterface::TArgumentData> CTask::GetArgumentDataPointer(void)
 //{
 //    return m_pxArgumentData;
-//};
+//}
 //
 ////-------------------------------------------------------------------------------
 //std::shared_ptr<CDataContainerInterface> CTask::GetDataContainerPointer(void)
 //{
 //    return m_pxDataContainer;
-//};
+//}
 
 //-------------------------------------------------------------------------------
 void CTask::SetResources(CResources* pxResources)
@@ -123,7 +123,7 @@ void CTask::SetMessageBoxDataContainer(CDataContainerInterface* pxDataContainer)
 CDataContainerInterface* CTask::GetMessageBoxDataContainerPointer(void)
 {
     return m_pxMessageBoxDataContainer;
-};
+}
 
 //-------------------------------------------------------------------------------
 void CTask::SetOperatingDataContainer(CDataContainerInterface* pxDataContainer)
@@ -135,7 +135,7 @@ void CTask::SetOperatingDataContainer(CDataContainerInterface* pxDataContainer)
 CDataContainerInterface* CTask::GetOperatingDataContainerPointer(void)
 {
 //    return m_pxOperatingDataContainer;
-};
+}
 
 //-------------------------------------------------------------------------------
 void CTask::SetCommandDataContainer(CDataContainerInterface* pxDataContainer)
@@ -147,7 +147,7 @@ void CTask::SetCommandDataContainer(CDataContainerInterface* pxDataContainer)
 CDataContainerInterface* CTask::GetCommandDataContainerPointer(void)
 {
 //    return m_pxCommandDataContainer;
-};
+}
 
 //-------------------------------------------------------------------------------
 void CTask::SetMessageBoxPoiner(std::shared_ptr<CMessageBoxInterface> pxMessageBox)
@@ -159,7 +159,14 @@ void CTask::SetMessageBoxPoiner(std::shared_ptr<CMessageBoxInterface> pxMessageB
 std::shared_ptr<CMessageBoxInterface> CTask::GetMessageBoxPointer(void)
 {
     return m_pxMessageBox;
-};
+}
+
+//-------------------------------------------------------------------------------
+size_t CTask::GetObjectLength(void)
+{
+    std::cout << "CTask GetObjectLength"  << std::endl;
+    return sizeof(*this);
+}
 
 ////-------------------------------------------------------------------------------
 //uint8_t CTask::Init(void)

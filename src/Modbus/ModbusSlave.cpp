@@ -43,6 +43,13 @@ CModbusSlave::~CModbusSlave()
 }
 
 //-------------------------------------------------------------------------------
+size_t CModbusSlave::GetObjectLength(void)
+{
+    std::cout << "CModbusSlave GetObjectLength"  << std::endl;
+    return sizeof(*this);
+}
+
+//-------------------------------------------------------------------------------
 void CModbusSlave::SetModbusSlaveLinkLayerName(std::string sName)
 {
     m_sModbusSlaveLinkLayerName = sName;

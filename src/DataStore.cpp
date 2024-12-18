@@ -207,6 +207,13 @@ CDataStore::~CDataStore()
 }
 
 //-------------------------------------------------------------------------------
+size_t CDataStore::GetObjectLength(void)
+{
+    std::cout << "CDataStore GetObjectLength"  << std::endl;
+    return sizeof(*this);
+}
+
+//-------------------------------------------------------------------------------
 void CDataStore::SetStorageDeviceName(std::string sName)
 {
     m_sStorageDeviceName = sName;

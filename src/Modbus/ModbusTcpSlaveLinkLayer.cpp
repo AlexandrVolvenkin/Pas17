@@ -48,6 +48,13 @@ CModbusTcpSlaveLinkLayer::~CModbusTcpSlaveLinkLayer()
 }
 
 //-------------------------------------------------------------------------------
+size_t CModbusTcpSlaveLinkLayer::GetObjectLength(void)
+{
+    std::cout << "CModbusTcpSlaveLinkLayer GetObjectLength"  << std::endl;
+    return sizeof(*this);
+}
+
+//-------------------------------------------------------------------------------
 void CModbusTcpSlaveLinkLayer::Process(CModbusTcpSlaveLinkLayer* pxModbusSlaveLinkLayer)
 {
     cout << "CModbusTcpSlaveLinkLayer::Process 1" << endl;
