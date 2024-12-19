@@ -225,39 +225,39 @@ uint8_t CMainProductionCycle::CreateTasks(void)
     m_xResources.AddCurrentlyRunningTasksList(pxModbusTcpSlaveUpperLevel);
 
 
-//-------------------------------------------------------------------------------
-    CSharedMemoryCommunicationDevice* pxSharedMemoryCommunicationDeviceEveDisplay = 0;
-    pxSharedMemoryCommunicationDeviceEveDisplay =
-        static_cast<CSharedMemoryCommunicationDevice*>(m_xResources.AddCommonTaskToMap("SharedMemoryCommunicationDeviceEveDisplay",
-                std::make_shared<CSharedMemoryCommunicationDevice>()));
-    pxSharedMemoryCommunicationDeviceEveDisplay ->
-    SetResources(&m_xResources);
-
-//-------------------------------------------------------------------------------
-    CModbusSmSlaveLinkLayer* pxModbusSmSlaveLinkLayerEveDisplay = 0;
-    pxModbusSmSlaveLinkLayerEveDisplay =
-        static_cast<CModbusSmSlaveLinkLayer*>(m_xResources.AddCommonTaskToMap("ModbusSmSlaveLinkLayerEveDisplay",
-                                   std::make_shared<CModbusSmSlaveLinkLayer>()));
-    pxModbusSmSlaveLinkLayerEveDisplay ->
-    SetResources(&m_xResources);
-    pxModbusSmSlaveLinkLayerEveDisplay ->
-    SetCommunicationDeviceName("SharedMemoryCommunicationDeviceEveDisplay");
-    m_xResources.AddCurrentlyRunningTasksList(pxModbusSmSlaveLinkLayerEveDisplay);
-
-//-------------------------------------------------------------------------------
-    CModbusSmSlave* pxModbusSmSlaveEveDisplay = 0;
-    pxModbusSmSlaveEveDisplay =
-        static_cast<CModbusSmSlave*>(m_xResources.AddCommonTaskToMap("ModbusSmSlaveEveDisplay",
-                                   std::make_shared<CModbusSmSlave>()));
-    pxModbusSmSlaveEveDisplay ->
-    SetResources(&m_xResources);
-    pxModbusSmSlaveEveDisplay ->
-    SetModbusSlaveLinkLayerName("ModbusSmSlaveLinkLayerEveDisplay");
-    pxModbusSmSlaveEveDisplay ->
-    SetDeviceControlName("DeviceControlRtuUpperLevel");
+////-------------------------------------------------------------------------------
+//    CSharedMemoryCommunicationDevice* pxSharedMemoryCommunicationDeviceEveDisplay = 0;
+//    pxSharedMemoryCommunicationDeviceEveDisplay =
+//        static_cast<CSharedMemoryCommunicationDevice*>(m_xResources.AddCommonTaskToMap("SharedMemoryCommunicationDeviceEveDisplay",
+//                std::make_shared<CSharedMemoryCommunicationDevice>()));
+//    pxSharedMemoryCommunicationDeviceEveDisplay ->
+//    SetResources(&m_xResources);
+//
+////-------------------------------------------------------------------------------
+//    CModbusSmSlaveLinkLayer* pxModbusSmSlaveLinkLayerEveDisplay = 0;
+//    pxModbusSmSlaveLinkLayerEveDisplay =
+//        static_cast<CModbusSmSlaveLinkLayer*>(m_xResources.AddCommonTaskToMap("ModbusSmSlaveLinkLayerEveDisplay",
+//                                   std::make_shared<CModbusSmSlaveLinkLayer>()));
+//    pxModbusSmSlaveLinkLayerEveDisplay ->
+//    SetResources(&m_xResources);
+//    pxModbusSmSlaveLinkLayerEveDisplay ->
+//    SetCommunicationDeviceName("SharedMemoryCommunicationDeviceEveDisplay");
+//    m_xResources.AddCurrentlyRunningTasksList(pxModbusSmSlaveLinkLayerEveDisplay);
+//
+////-------------------------------------------------------------------------------
+//    CModbusSmSlave* pxModbusSmSlaveEveDisplay = 0;
+//    pxModbusSmSlaveEveDisplay =
+//        static_cast<CModbusSmSlave*>(m_xResources.AddCommonTaskToMap("ModbusSmSlaveEveDisplay",
+//                                   std::make_shared<CModbusSmSlave>()));
 //    pxModbusSmSlaveEveDisplay ->
-//    ModbusWorkingArraysInit();
-    m_xResources.AddCurrentlyRunningTasksList(pxModbusSmSlaveEveDisplay);
+//    SetResources(&m_xResources);
+//    pxModbusSmSlaveEveDisplay ->
+//    SetModbusSlaveLinkLayerName("ModbusSmSlaveLinkLayerEveDisplay");
+//    pxModbusSmSlaveEveDisplay ->
+//    SetDeviceControlName("DeviceControlRtuUpperLevel");
+////    pxModbusSmSlaveEveDisplay ->
+////    ModbusWorkingArraysInit();
+//    m_xResources.AddCurrentlyRunningTasksList(pxModbusSmSlaveEveDisplay);
 
 }
 
@@ -313,21 +313,21 @@ uint8_t CMainProductionCycle::InitTasks(void)
     SetOwnAddress(1);
 
 
-//-------------------------------------------------------------------------------
-    CSharedMemoryCommunicationDevice* pxSharedMemoryCommunicationDeviceEveDisplay =
-        (CSharedMemoryCommunicationDevice*)(GetResources() ->
-                                            GetTaskPointerByNameFromMap("SharedMemoryCommunicationDeviceEveDisplay"));
-
-    pxSharedMemoryCommunicationDeviceEveDisplay -> Init();
-//    pxSharedMemoryCommunicationDeviceEveDisplay -> SetDeviceName("/dev/ttyO1");
-
-//-------------------------------------------------------------------------------
-    CModbusSmSlave* pxModbusSmSlaveEveDisplay =
-        (CModbusSmSlave*)(GetResources() ->
-                          GetTaskPointerByNameFromMap("ModbusSmSlaveEveDisplay"));
-
-    pxModbusSmSlaveEveDisplay ->
-    SetOwnAddress(1);
+////-------------------------------------------------------------------------------
+//    CSharedMemoryCommunicationDevice* pxSharedMemoryCommunicationDeviceEveDisplay =
+//        (CSharedMemoryCommunicationDevice*)(GetResources() ->
+//                                            GetTaskPointerByNameFromMap("SharedMemoryCommunicationDeviceEveDisplay"));
+//
+//    pxSharedMemoryCommunicationDeviceEveDisplay -> Init();
+////    pxSharedMemoryCommunicationDeviceEveDisplay -> SetDeviceName("/dev/ttyO1");
+//
+////-------------------------------------------------------------------------------
+//    CModbusSmSlave* pxModbusSmSlaveEveDisplay =
+//        (CModbusSmSlave*)(GetResources() ->
+//                          GetTaskPointerByNameFromMap("ModbusSmSlaveEveDisplay"));
+//
+//    pxModbusSmSlaveEveDisplay ->
+//    SetOwnAddress(1);
 
 
 
