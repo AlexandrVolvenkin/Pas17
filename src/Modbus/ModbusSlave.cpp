@@ -896,7 +896,7 @@ uint16_t CModbusSlave::ReportSlaveID(void)
 
     CDeviceControl* pxDeviceControl =
         (CDeviceControl*)GetResources() ->
-        GetCommonTaskFromMapPointer("DeviceControlRtuUpperLevel");
+        GetTaskPointerByNameFromMap("DeviceControlRtuUpperLevel");
 
     uiLength = pxDeviceControl ->
                ConfigurationRead(&puiResponse[uiPduOffset + 2]);
@@ -1089,7 +1089,7 @@ uint16_t CModbusSlave::PollProgramming(void)
 
     CDeviceControl* pxDeviceControl =
         (CDeviceControl*)GetResources() ->
-        GetCommonTaskFromMapPointer("DeviceControlRtuUpperLevel");
+        GetTaskPointerByNameFromMap("DeviceControlRtuUpperLevel");
 
     // Ожидаем окончания записи автоматом устройства хранения.
     // Устройство хранения закончило запись успешно?
@@ -1227,7 +1227,7 @@ uint16_t CModbusSlave::DataBaseWrite(void)
     else
     {
 
-        std::cout << "CModbusSlave::DataBaseRead 4" << std::endl;
+        std::cout << "CModbusSlave::DataBaseWrite 4" << std::endl;
 
         memcpy(m_puiIntermediateBuff,
                &puiRequest[uiPduOffset + 2],
@@ -1904,7 +1904,7 @@ uint16_t CModbusSlave::ReportSlaveIDAnswer(void)
 
     CDeviceControl* pxDeviceControl =
         (CDeviceControl*)GetResources() ->
-        GetCommonTaskFromMapPointer("DeviceControlRtuUpperLevel");
+        GetTaskPointerByNameFromMap("DeviceControlRtuUpperLevel");
 
     uiLength = pxDeviceControl ->
                ConfigurationRead(&puiResponse[uiPduOffset + 2]);
@@ -2096,11 +2096,11 @@ uint16_t CModbusSlave::PollProgrammingAnswer(void)
 
 //    CDeviceControl* pxDeviceControl =
 //        (CDeviceControl*)GetResources() ->
-//        GetCommonTaskFromMapPointer("DeviceControl");
+//        GetTaskPointerByNameFromMap("DeviceControl");
 
     CDataStore* pxDataStoreFileSystemAnswer =
         (CDataStore*)GetResources() ->
-        GetCommonTaskFromMapPointer("DataStoreFileSystemAnswer");
+        GetTaskPointerByNameFromMap("DataStoreFileSystemAnswer");
 
 
 //    // Устройство хранения в прцессе записи?
@@ -2269,7 +2269,7 @@ uint16_t CModbusSlave::DataBaseWriteAnswer(void)
         std::cout << "CModbusSlave::DataBaseWriteAnswer 3" << std::endl;
         //        CDataStore* pxDataStoreFileSystem =
 //            (CDataStore*)GetResources() ->
-//            GetCommonTaskFromMapPointer("DataStoreFileSystemAnswer");
+//            GetTaskPointerByNameFromMap("DataStoreFileSystemAnswer");
 //
 //        uint16_t uiLength = pxDataStoreFileSystem ->
 //                            GetBlockLength(uiBlockIndex);
@@ -2650,7 +2650,7 @@ uint8_t CModbusSlave::Fsm(void)
 
             CTaskInterface* pxTask =
                 GetResources() ->
-                GetCommonTaskFromMapPointer(m_sModbusSlaveLinkLayerName);
+                GetTaskPointerByNameFromMap(m_sModbusSlaveLinkLayerName);
 
             if (pxTask != 0)
             {
@@ -2684,7 +2684,13 @@ uint8_t CModbusSlave::Fsm(void)
                 {
                     std::cout << "CModbusSlave::Fsm INIT 6"  << std::endl;
                     SetDeviceControlLink(pxLink);
+//                    CDataContainerDataBase* pxDataContainerDataBase;
                     CDataContainerDataBase* pxDataContainerDataBase = new CDataContainerDataBase();
+//                    pxDataContainerDataBase =
+//                        static_cast<CDataContainerDataBase*>(GetResources() ->
+//                                AddDataContainer(std::make_shared<CDataContainerDataBase>()));
+//        static_cast<CModbusSmSlave*>(m_xResources.AddCommonTaskToMap("ModbusSmSlaveEveDisplay",
+//                                   std::make_shared<CModbusSmSlave>()));
                     pxLink ->
                     SetDataContainer(pxDataContainerDataBase);
 

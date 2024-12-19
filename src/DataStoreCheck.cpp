@@ -85,7 +85,7 @@ uint8_t CDataStoreCheck::Fsm(void)
         {
             CTaskInterface* pxTask =
                 GetResources() ->
-                GetCommonTaskFromMapPointer(m_sStorageDeviceName);
+                GetTaskPointerByNameFromMap(m_sStorageDeviceName);
 
             if (pxTask != 0)
             {

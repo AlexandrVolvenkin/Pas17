@@ -173,6 +173,30 @@ uint16_t CResources::GetInputRegistersNumber(void)
 }
 
 //-------------------------------------------------------------------------------
+CDataContainerInterface* CResources::AddDataContainer(std::shared_ptr<CDataContainerInterface> pxDataContainer)
+{
+    std::cout << "CResources::AddDataContainer 1"  << std::endl;
+
+    m_lpxDataContainerList.push_back(pxDataContainer);
+    return pxDataContainer.get();
+}
+
+////-------------------------------------------------------------------------------
+//// Геттер для получения списка shared_ptr<CDataContainerInterface>
+//std::shared_ptr<std::list<std::shared_ptr<CDataContainerInterface>>> CResources::GetDataContainerList() const
+//{
+//    return m_lpxDataContainerList;
+//}
+//
+//
+////-------------------------------------------------------------------------------
+//// Сеттер для установки списка shared_ptr<CDataContainerInterface>
+//void CResources::SetDataContainerList(std::shared_ptr<std::list<std::shared_ptr<CDataContainerInterface>>> pDataContainerList)
+//{
+//    m_lpxDataContainerList = pDataContainerList;
+//}
+
+//-------------------------------------------------------------------------------
 void CResources::AddCommonListTask(CTaskInterface* pxTask)
 {
     std::cout << "CResources::AddCommonListTask 1"  << std::endl;
@@ -288,12 +312,12 @@ bool CResources::CheckCommonTaskMap(void)
 }
 
 ////-------------------------------------------------------------------------------
-//CTaskInterface* CResources::GetCommonTaskFromMapPointer(std::string sTaskName)
+//CTaskInterface* CResources::GetTaskPointerByNameFromMap(std::string sTaskName)
 //{
-//    std::cout << "CResources::GetCommonTaskFromMapPointer 1"  << std::endl;
+//    std::cout << "CResources::GetTaskPointerByNameFromMap 1"  << std::endl;
 //
-////    std::cout << "CResources::GetCommonTaskFromMapPointer this name" << " " << (this -> GetTaskNamePointer()) << std::endl;
-////    std::cout << "CResources::GetCommonTaskFromMapPointer sTaskName" << " " << (sTaskName) << std::endl;
+////    std::cout << "CResources::GetTaskPointerByNameFromMap this name" << " " << (this -> GetTaskNamePointer()) << std::endl;
+////    std::cout << "CResources::GetTaskPointerByNameFromMap sTaskName" << " " << (sTaskName) << std::endl;
 //
 //    // Пытаемся получить значение по ключу 1
 //    std::map<std::string, CTaskInterface*>::iterator it = m_mpxCommonTaskMap.find(sTaskName);
@@ -301,13 +325,13 @@ bool CResources::CheckCommonTaskMap(void)
 //    if (it != m_mpxCommonTaskMap.end())
 //    {
 //        // ключ найден
-//        std::cout << "CResources::GetCommonTaskFromMapPointer 2"  << std::endl;
-////        std::cout << "CResources::GetCommonTaskFromMapPointer this name" << " " << ((it -> second) -> GetTaskNamePointer()) << std::endl;
+//        std::cout << "CResources::GetTaskPointerByNameFromMap 2"  << std::endl;
+////        std::cout << "CResources::GetTaskPointerByNameFromMap this name" << " " << ((it -> second) -> GetTaskNamePointer()) << std::endl;
 //        return it -> second;
 //    }
 //    else
 //    {
-//        std::cout << "CResources::GetCommonTaskFromMapPointer 3"  << std::endl;
+//        std::cout << "CResources::GetTaskPointerByNameFromMap 3"  << std::endl;
 //        return 0;
 //    }
 //
@@ -319,22 +343,22 @@ bool CResources::CheckCommonTaskMap(void)
 ////    }
 //}
 
-CTaskInterface* CResources::GetCommonTaskFromMapPointer(std::string sTaskName)
+CTaskInterface* CResources::GetTaskPointerByNameFromMap(std::string sTaskName)
 {
-    std::cout << "CResources::GetCommonTaskFromMapPointer 1"  << std::endl;
+    std::cout << "CResources::GetTaskPointerByNameFromMap 1"  << std::endl;
     auto it = m_mpxCommonTaskMap.find(sTaskName);
 
     if (it != m_mpxCommonTaskMap.end())
     {
         // ключ найден
-        std::cout << "CResources::GetCommonTaskFromMapPointer 2" << std::endl;
-//            std::cout << "CResources::GetCommonTaskFromMapPointer this name" << " "
+        std::cout << "CResources::GetTaskPointerByNameFromMap 2" << std::endl;
+//            std::cout << "CResources::GetTaskPointerByNameFromMap this name" << " "
 //                      << ((it -> second) -> GetTaskNamePointer()) << std::endl;
         return it -> second.get(); // Преобразование shared_ptr в raw указатель
     }
     else
     {
-        std::cout << "CResources::GetCommonTaskFromMapPointer 3" << std::endl;
+        std::cout << "CResources::GetTaskPointerByNameFromMap 3" << std::endl;
         return nullptr; // Вернем nullptr, если ключ не найден
     }
 }
@@ -349,7 +373,7 @@ CLinkInterface* CResources::CreateLinkByPerformerName(std::string sTaskName)
 
 
     CTaskInterface* pxTask =
-        GetCommonTaskFromMapPointer(sTaskName);
+        GetTaskPointerByNameFromMap(sTaskName);
 
     if (pxTask != 0)
     {
@@ -361,6 +385,7 @@ CLinkInterface* CResources::CreateLinkByPerformerName(std::string sTaskName)
         pxLink =
             static_cast<CLink*>(AddCommonTaskToMap(sTaskName + "Link",
                                 std::make_shared<CLink>()));
+    std::cout << "CResources::CreateLinkByPerformerName 22 " << sTaskName + "Link" << std::endl;
         pxLink ->
         SetResources(this);
         pxLink ->

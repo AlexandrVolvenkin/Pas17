@@ -98,7 +98,7 @@ uint8_t CLink::Fsm(void)
 //        {
 //            CTaskInterface* pxTask =
 //                GetResources() ->
-//                GetCommonTaskFromMapPointer(m_sTaskPerformerName);
+//                GetTaskPointerByNameFromMap(m_sTaskPerformerName);
 //
 //            if (pxTask != 0)
 //            {

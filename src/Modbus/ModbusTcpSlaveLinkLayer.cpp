@@ -347,7 +347,7 @@ uint8_t CModbusTcpSlaveLinkLayer::Fsm(void)
         {
             CTaskInterface* pxTask =
                 GetResources() ->
-                GetCommonTaskFromMapPointer(m_sCommunicationDeviceName);
+                GetTaskPointerByNameFromMap(m_sCommunicationDeviceName);
 
             if (pxTask != 0)
             {

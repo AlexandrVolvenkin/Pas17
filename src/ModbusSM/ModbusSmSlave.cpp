@@ -375,7 +375,7 @@ uint16_t CModbusSmSlave::ReportSlaveID(void)
 
     CDeviceControl* pxDeviceControl =
         (CDeviceControl*)GetResources() ->
-        GetCommonTaskFromMapPointer("DeviceControlRtuUpperLevel");
+        GetTaskPointerByNameFromMap("DeviceControlRtuUpperLevel");
 
     uiLength = pxDeviceControl ->
                ConfigurationRead(&puiResponse[uiPduOffset + 2]);
@@ -489,7 +489,7 @@ uint16_t CModbusSmSlave::ReportSlaveIDAnswer(void)
 
     CDeviceControl* pxDeviceControl =
         (CDeviceControl*)GetResources() ->
-        GetCommonTaskFromMapPointer("DeviceControlRtuUpperLevel");
+        GetTaskPointerByNameFromMap("DeviceControlRtuUpperLevel");
 
     uiLength = pxDeviceControl ->
                ConfigurationRead(&puiResponse[uiPduOffset + 2]);
@@ -662,7 +662,7 @@ uint8_t CModbusSmSlave::Fsm(void)
         {
             CTaskInterface* pxTask =
                 GetResources() ->
-                GetCommonTaskFromMapPointer(m_sModbusSlaveLinkLayerName);
+                GetTaskPointerByNameFromMap(m_sModbusSlaveLinkLayerName);
 
             if (pxTask != 0)
             {

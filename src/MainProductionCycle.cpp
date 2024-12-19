@@ -277,7 +277,7 @@ uint8_t CMainProductionCycle::InitTasks(void)
 //-------------------------------------------------------------------------------
     CSerialPortCommunicationDevice* pxSerialPortCommunicationDeviceCom1 =
         (CSerialPortCommunicationDevice*)(GetResources() ->
-                                          GetCommonTaskFromMapPointer("SerialPortCommunicationDeviceCom1"));
+                                          GetTaskPointerByNameFromMap("SerialPortCommunicationDeviceCom1"));
 
     pxSerialPortCommunicationDeviceCom1 -> Init();
     pxSerialPortCommunicationDeviceCom1 -> SetDeviceName("/dev/ttyO1");
@@ -289,7 +289,7 @@ uint8_t CMainProductionCycle::InitTasks(void)
 //-------------------------------------------------------------------------------
     CModbusSlave* pxModbusRtuSlaveUpperLevel =
         (CModbusSlave*)(GetResources() ->
-                        GetCommonTaskFromMapPointer("ModbusRtuSlaveUpperLevel"));
+                        GetTaskPointerByNameFromMap("ModbusRtuSlaveUpperLevel"));
 
     pxModbusRtuSlaveUpperLevel ->
     SetOwnAddress(1);
@@ -298,7 +298,7 @@ uint8_t CMainProductionCycle::InitTasks(void)
 //-------------------------------------------------------------------------------
     CTcpCommunicationDevice* pxTcpCommunicationDeviceUpperLevel =
         (CTcpCommunicationDevice*)(GetResources() ->
-                                   GetCommonTaskFromMapPointer("TcpCommunicationDeviceUpperLevel"));
+                                   GetTaskPointerByNameFromMap("TcpCommunicationDeviceUpperLevel"));
 
     pxTcpCommunicationDeviceUpperLevel -> Init();
     pxTcpCommunicationDeviceUpperLevel -> SetIpAddress("127.0.0.1");
@@ -307,7 +307,7 @@ uint8_t CMainProductionCycle::InitTasks(void)
 //-------------------------------------------------------------------------------
     CModbusSlave* pxModbusTcpSlaveUpperLevel =
         (CModbusSlave*)(GetResources() ->
-                        GetCommonTaskFromMapPointer("ModbusTcpSlaveUpperLevel"));
+                        GetTaskPointerByNameFromMap("ModbusTcpSlaveUpperLevel"));
 
     pxModbusTcpSlaveUpperLevel ->
     SetOwnAddress(1);
@@ -316,7 +316,7 @@ uint8_t CMainProductionCycle::InitTasks(void)
 //-------------------------------------------------------------------------------
     CSharedMemoryCommunicationDevice* pxSharedMemoryCommunicationDeviceEveDisplay =
         (CSharedMemoryCommunicationDevice*)(GetResources() ->
-                                            GetCommonTaskFromMapPointer("SharedMemoryCommunicationDeviceEveDisplay"));
+                                            GetTaskPointerByNameFromMap("SharedMemoryCommunicationDeviceEveDisplay"));
 
     pxSharedMemoryCommunicationDeviceEveDisplay -> Init();
 //    pxSharedMemoryCommunicationDeviceEveDisplay -> SetDeviceName("/dev/ttyO1");
@@ -324,7 +324,7 @@ uint8_t CMainProductionCycle::InitTasks(void)
 //-------------------------------------------------------------------------------
     CModbusSmSlave* pxModbusSmSlaveEveDisplay =
         (CModbusSmSlave*)(GetResources() ->
-                          GetCommonTaskFromMapPointer("ModbusSmSlaveEveDisplay"));
+                          GetTaskPointerByNameFromMap("ModbusSmSlaveEveDisplay"));
 
     pxModbusSmSlaveEveDisplay ->
     SetOwnAddress(1);

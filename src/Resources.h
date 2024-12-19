@@ -34,7 +34,7 @@ public:
     virtual CTaskInterface* GetCommonListTaskPointer(char* pcTaskName) {};
     virtual CTaskInterface* AddCommonTaskToMap(std::string sTaskName, std::shared_ptr<CTaskInterface>) {};
     virtual bool CheckCommonTaskMap(void) {};
-    virtual CTaskInterface* GetCommonTaskFromMapPointer(std::string sTaskName) {};
+    virtual CTaskInterface* GetTaskPointerByNameFromMap(std::string sTaskName) {};
     virtual std::list<CTaskInterface*>* GetCommonTasksListPointer(void) {};
     virtual CLinkInterface* CreateLinkByPerformerName(std::string sTaskName) {};
     virtual uint8_t* CreateObjectBySize(size_t uiLength) {};
@@ -60,11 +60,12 @@ public:
     virtual ~CResources();
 
     void AddCommonListTask(CTaskInterface* pxTask);
+    CDataContainerInterface* AddDataContainer(std::shared_ptr<CDataContainerInterface> pxDataContainer);
     void AddCurrentlyRunningTasksList(CTaskInterface* pxTask);
     CTaskInterface* GetCommonListTaskPointer(char* pcTaskName);
     CTaskInterface* AddCommonTaskToMap(std::string sTaskName, std::shared_ptr<CTaskInterface> pxTask);
     bool CheckCommonTaskMap(void);
-    CTaskInterface* GetCommonTaskFromMapPointer(std::string sTaskName);
+    CTaskInterface* GetTaskPointerByNameFromMap(std::string sTaskName);
     CLinkInterface* CreateLinkByPerformerName(std::string sTaskName);
     uint8_t* CreateObjectBySize(size_t uiLength);
 
@@ -106,6 +107,7 @@ public:
     std::list<CTaskInterface*>::iterator m_xCommonTasksListIterator;
     std::list<CTaskInterface*> m_lpxCurrentlyRunningTasksList;
     std::list<CTaskInterface*>::iterator m_xCurrentlyRunningTasksListIterator;
+    std::list<std::shared_ptr<CDataContainerInterface>> m_lpxDataContainerList;
 
     // Создаем std::map, где ключ - строка, значение - указатель на объект
 //    std::map<std::string, CTaskInterface*> m_mpxCommonTaskMap;
