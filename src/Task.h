@@ -59,23 +59,26 @@ public:
 //    virtual void SetDataContainer(std::shared_ptr<CDataContainerInterface> pxDataContainer) {};
 //    virtual std::shared_ptr<CDataContainerInterface> GetDataContainerPointer(void) {};
 
-    virtual void SetMessageBoxDataContainer(CDataContainerInterface* pxDataContainer) {};
-    virtual CDataContainerInterface* GetMessageBoxDataContainerPointer(void) {};
+//    virtual void SetMessageBoxDataContainer(CDataContainerInterface* pxDataContainer) {};
+//    virtual CDataContainerInterface* GetMessageBoxDataContainerPointer(void) {};
 
-    virtual void SetOperatingDataContainer(CDataContainerInterface* pxDataContainer) {};
-    virtual CDataContainerInterface* GetOperatingDataContainerPointer(void) {};
+//    virtual void SetOperatingDataContainer(CDataContainerInterface* pxDataContainer) {};
+//    virtual CDataContainerInterface* GetOperatingDataContainerPointer(void) {};
+//
+//    virtual void SetCommandDataContainer(CDataContainerInterface* pxDataContainer) {};
+//    virtual CDataContainerInterface* GetCommandDataContainerPointer(void) {};
 
-    virtual void SetCommandDataContainer(CDataContainerInterface* pxDataContainer) {};
-    virtual CDataContainerInterface* GetCommandDataContainerPointer(void) {};
+//    virtual void SetMessageBoxPoiner(std::shared_ptr<CMessageBoxInterface> pxMessageBox) {};
+//    virtual std::shared_ptr<CMessageBoxInterface> GetMessageBoxPointer(void) {};
 
-    virtual void SetMessageBoxPoiner(std::shared_ptr<CMessageBoxInterface> pxMessageBox) {};
-    virtual std::shared_ptr<CMessageBoxInterface> GetMessageBoxPointer(void) {};
+//    virtual bool SetTaskData(CDataContainerInterface* pxDataContainer) {};
+//    virtual CDataContainerInterface* GetTaskData(void) {};
 
     virtual size_t GetObjectLength(void) {};
 
     virtual void SetResources(CResources* pxResources) {};
     virtual CResources* GetResources(void) {};
-    virtual void SetTaskCustomerName(std::string sName) {};
+//    virtual void SetTaskCustomerName(std::string sName) {};
 //    virtual uint8_t Init(void) {};
 //    virtual uint8_t Fsm(void) {};
 //    virtual uint8_t GetFsmState(void) {};
@@ -126,28 +129,32 @@ public:
 
     void SetResources(CResources* pxResources);
     CResources* GetResources(void);
-    void SetTaskCustomerName(std::string sName);
+//    void SetTaskCustomerName(std::string sName);
 
-    void SetMessageBoxDataContainer(CDataContainerInterface* pxDataContainer);
-    CDataContainerInterface* GetMessageBoxDataContainerPointer(void);
+//    void SetMessageBoxDataContainer(CDataContainerInterface* pxDataContainer);
+//    CDataContainerInterface* GetMessageBoxDataContainerPointer(void);
 
-    void SetOperatingDataContainer(CDataContainerInterface* pxDataContainer);
-    CDataContainerInterface* GetOperatingDataContainerPointer(void);
+//    void SetOperatingDataContainer(CDataContainerInterface* pxDataContainer);
+//    CDataContainerInterface* GetOperatingDataContainerPointer(void);
+//
+//    void SetCommandDataContainer(CDataContainerInterface* pxDataContainer);
+//    CDataContainerInterface* GetCommandDataContainerPointer(void);
+//
+//    void SetMessageBoxPoiner(std::shared_ptr<CMessageBoxInterface> pxMessageBox);
+//    std::shared_ptr<CMessageBoxInterface> GetMessageBoxPointer(void);
 
-    void SetCommandDataContainer(CDataContainerInterface* pxDataContainer);
-    CDataContainerInterface* GetCommandDataContainerPointer(void);
+//    bool SetTaskData(CDataContainerInterface* pxDataContainer);
+//    CDataContainerInterface* GetTaskData(void);
 
-    void SetMessageBoxPoiner(std::shared_ptr<CMessageBoxInterface> pxMessageBox);
-    std::shared_ptr<CMessageBoxInterface> GetMessageBoxPointer(void);
     size_t GetObjectLength(void);
 
 //    uint8_t Init(void);
-    uint8_t Fsm(void);
+//    uint8_t Fsm(void);
 //    void AddCurrentlyRunningTask(CTaskInterface* pxTask);
 //    void AddCommonTask(CTaskInterface* pxTask);
-    uint8_t GetFsmState(void);
-    void SetFsmState(uint8_t uiData);
-    CTimer* GetTimerPointer(void);
+//    uint8_t GetFsmState(void);
+//    void SetFsmState(uint8_t uiData);
+//    CTimer* GetTimerPointer(void);
 
     char* GetTaskNamePointer(void);
     std::shared_ptr<TArgumentData> GetArgumentDataPointer(void);
@@ -157,14 +164,14 @@ public:
 //    std::string m_sTaskName;
 //    CTimer m_xTimer;
     CResources* m_pxResources;
-    std::string m_sTaskCustomerName;
-    CTaskInterface* m_pxTaskCustomer;
+//    std::string m_sTaskCustomerName;
+//    CTaskInterface* m_pxTaskCustomer;
 //    TArgumentData* m_pxArgumentData;
 //    std::shared_ptr<TArgumentData> m_pxArgumentData;
 //    std::shared_ptr<CDataContainerInterface> m_pxDataContainer;
-    std::shared_ptr<CMessageBoxInterface> m_pxMessageBox;
+//    std::shared_ptr<CMessageBoxInterface> m_pxMessageBox;
 
-    CDataContainerInterface* m_pxMessageBoxDataContainer;
+////    CDataContainerInterface* m_pxMessageBoxDataContainer;
 //    CDataContainerInterface* m_pxCommandDataContainer;
 //    CDataContainerInterface* m_pxOperatingDataContainer;
 };

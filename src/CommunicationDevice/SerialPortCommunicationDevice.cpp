@@ -395,7 +395,7 @@ int16_t CSerialPortCommunicationDevice::ReceiveStart(uint8_t *puiDestination,
         uint16_t uiLength,
         uint32_t uiReceiveTimeout)
 {
-    std::cout << "CSerialPortCommunicationDevice::ReceiveStart 1"  << std::endl;
+//    std::cout << "CSerialPortCommunicationDevice::ReceiveStart 1"  << std::endl;
 
     int rc;
     fd_set rfds;
@@ -414,22 +414,22 @@ int16_t CSerialPortCommunicationDevice::ReceiveStart(uint8_t *puiDestination,
     {
         if (errno == ETIMEDOUT)
         {
-            cout << "CSerialPortCommunicationDevice::ReceiveStart ETIMEDOUT" << endl;
+//            cout << "CSerialPortCommunicationDevice::ReceiveStart ETIMEDOUT" << endl;
             return 0;
         }
 
-        std::cout << "CSerialPortCommunicationDevice::ReceiveStart timeout"  << std::endl;
+//        std::cout << "CSerialPortCommunicationDevice::ReceiveStart timeout"  << std::endl;
         return rc;
     }
     else if( FD_ISSET( m_iDeviceDescriptorServer, &rfds ) )
     {
-        std::cout << "CSerialPortCommunicationDevice::ReceiveStart FD_ISSET"  << std::endl;
+//        std::cout << "CSerialPortCommunicationDevice::ReceiveStart FD_ISSET"  << std::endl;
         rc = read(m_iDeviceDescriptorServer, (char*)puiDestination, uiLength);
 //        rc = recv(m_iDeviceDescriptorServer, (char*)puiDestination, uiLength, 0);
 
         if (rc < 0)
         {
-            std::cout << "CSerialPortCommunicationDevice::ReceiveStart recv error"  << std::endl;
+//            std::cout << "CSerialPortCommunicationDevice::ReceiveStart recv error"  << std::endl;
             return rc;
         }
         else
@@ -450,19 +450,19 @@ int16_t CSerialPortCommunicationDevice::ReceiveStart(uint8_t *puiDestination,
 //                    i += 8;
 //                }
 
-                std::cout << "CSerialPortCommunicationDevice::ReceiveStart recv rc "  << (int)rc  << std::endl;
+//                std::cout << "CSerialPortCommunicationDevice::ReceiveStart recv rc "  << (int)rc  << std::endl;
                 return rc;
             }
             else
             {
-                std::cout << "CSerialPortCommunicationDevice::ReceiveStart recv 0 " << std::endl;
+//                std::cout << "CSerialPortCommunicationDevice::ReceiveStart recv 0 " << std::endl;
                 return -1;
             }
         }
     }
     else
     {
-        cout << "CSerialPortCommunicationDevice::ReceiveStart 6" << endl;
+//        cout << "CSerialPortCommunicationDevice::ReceiveStart 6" << endl;
         return 0;
     }
 }
@@ -472,7 +472,7 @@ int16_t CSerialPortCommunicationDevice::ReceiveContinue(uint8_t *puiDestination,
         uint16_t uiLength,
         uint32_t uiReceiveTimeout)
 {
-    std::cout << "CSerialPortCommunicationDevice::ReceiveContinue 1"  << std::endl;
+//    std::cout << "CSerialPortCommunicationDevice::ReceiveContinue 1"  << std::endl;
 
     int rc;
     fd_set rfds;
@@ -491,22 +491,22 @@ int16_t CSerialPortCommunicationDevice::ReceiveContinue(uint8_t *puiDestination,
     {
         if (errno == ETIMEDOUT)
         {
-            cout << "CSerialPortCommunicationDevice::ReceiveContinue ETIMEDOUT" << endl;
+//            cout << "CSerialPortCommunicationDevice::ReceiveContinue ETIMEDOUT" << endl;
             return 0;
         }
 
-        std::cout << "CSerialPortCommunicationDevice::ReceiveContinue timeout"  << std::endl;
+//        std::cout << "CSerialPortCommunicationDevice::ReceiveContinue timeout"  << std::endl;
         return rc;
     }
     else if( FD_ISSET( m_iDeviceDescriptorServer, &rfds ) )
     {
-        std::cout << "CSerialPortCommunicationDevice::ReceiveContinue FD_ISSET"  << std::endl;
+//        std::cout << "CSerialPortCommunicationDevice::ReceiveContinue FD_ISSET"  << std::endl;
         rc = read(m_iDeviceDescriptorServer, (char*)puiDestination, uiLength);
 //        rc = recv(m_iDeviceDescriptorServer, (char*)puiDestination, uiLength, 0);
 
         if (rc < 0)
         {
-            std::cout << "CSerialPortCommunicationDevice::ReceiveContinue recv error"  << std::endl;
+//            std::cout << "CSerialPortCommunicationDevice::ReceiveContinue recv error"  << std::endl;
             return rc;
         }
         else
@@ -527,19 +527,19 @@ int16_t CSerialPortCommunicationDevice::ReceiveContinue(uint8_t *puiDestination,
 //                    i += 8;
 //                }
 
-                std::cout << "CSerialPortCommunicationDevice::ReceiveContinue recv rc "  << (int)rc  << std::endl;
+//                std::cout << "CSerialPortCommunicationDevice::ReceiveContinue recv rc "  << (int)rc  << std::endl;
                 return rc;
             }
             else
             {
-                std::cout << "CSerialPortCommunicationDevice::ReceiveContinue recv 0 " << std::endl;
+//                std::cout << "CSerialPortCommunicationDevice::ReceiveContinue recv 0 " << std::endl;
                 return -1;
             }
         }
     }
     else
     {
-        cout << "CSerialPortCommunicationDevice::ReceiveContinue 6" << endl;
+//        cout << "CSerialPortCommunicationDevice::ReceiveContinue 6" << endl;
         return 0;
     }
 }

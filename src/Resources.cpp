@@ -27,6 +27,7 @@ CResources::CResources()
 
     m_lpxCommonTasksList.clear();
     m_mpxCommonTaskMap.clear();
+    m_lpxDataContainerList.clear();
 
     SetResources(this);
 //    m_pxResources -> AddCommonListTask(this);
@@ -170,15 +171,6 @@ void CResources::SetInputRegistersNumber(uint16_t uiData)
 uint16_t CResources::GetInputRegistersNumber(void)
 {
     return m_uiInputRegistersNumber;
-}
-
-//-------------------------------------------------------------------------------
-CDataContainerInterface* CResources::AddDataContainer(std::shared_ptr<CDataContainerInterface> pxDataContainer)
-{
-    std::cout << "CResources::AddDataContainer 1"  << std::endl;
-
-    m_lpxDataContainerList.push_back(pxDataContainer);
-    return pxDataContainer.get();
 }
 
 ////-------------------------------------------------------------------------------
@@ -377,24 +369,24 @@ CLinkInterface* CResources::CreateLinkByPerformerName(std::string sTaskName)
 
     if (pxTask != 0)
     {
-        std::cout << "CResources::CreateLinkByPerformerName 2"  << std::endl;
-        CLinkInterface* pxLink;
-//        CLinkInterface* pxLink = new CLink();
-//        AddCommonTaskToMap(sTaskName + "Link",
-//                           pxLink);
-        pxLink =
-            static_cast<CLink*>(AddCommonTaskToMap(sTaskName + "Link",
-                                std::make_shared<CLink>()));
-    std::cout << "CResources::CreateLinkByPerformerName 22 " << sTaskName + "Link" << std::endl;
-        pxLink ->
-        SetResources(this);
-        pxLink ->
-        SetTaskPerformerName("sTaskName");
-        pxLink ->
-        SetTaskPerformer(pxTask);
-        AddCurrentlyRunningTasksList(pxLink);
+//        std::cout << "CResources::CreateLinkByPerformerName 2"  << std::endl;
+//        CLinkInterface* pxLink;
+////        CLinkInterface* pxLink = new CLink();
+////        AddCommonTaskToMap(sTaskName + "Link",
+////                           pxLink);
+//        pxLink =
+//            static_cast<CLink*>(AddCommonTaskToMap(sTaskName + "Link",
+//                                std::make_shared<CLink>()));
+//        std::cout << "CResources::CreateLinkByPerformerName 22 " << sTaskName + "Link" << std::endl;
+//        pxLink ->
+//        SetResources(this);
+//        pxLink ->
+//        SetTaskPerformerName("sTaskName");
+//        pxLink ->
+//        SetTaskPerformer(pxTask);
+//        AddCurrentlyRunningTasksList(pxLink);
 
-        return pxLink;
+//        return pxLink;
     }
     else
     {
@@ -422,4 +414,14 @@ uint8_t* CResources::CreateObjectBySize(size_t uiLength)
 //{
 //    return &m_lpxCurrentlyRunningTasksList;
 //}
+
+//-------------------------------------------------------------------------------
+CDataContainerInterface* CResources::AddDataContainer(std::shared_ptr<CDataContainerInterface> pxDataContainer)
+{
+    std::cout << "CResources::AddDataContainer 1"  << std::endl;
+
+    m_lpxDataContainerList.push_back(pxDataContainer);
+    return pxDataContainer.get();
+}
+
 //-------------------------------------------------------------------------------

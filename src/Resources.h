@@ -38,6 +38,7 @@ public:
     virtual std::list<CTaskInterface*>* GetCommonTasksListPointer(void) {};
     virtual CLinkInterface* CreateLinkByPerformerName(std::string sTaskName) {};
     virtual uint8_t* CreateObjectBySize(size_t uiLength) {};
+    virtual CDataContainerInterface* AddDataContainer(std::shared_ptr<CDataContainerInterface> pxDataContainer) {};
 
 };
 
@@ -60,7 +61,6 @@ public:
     virtual ~CResources();
 
     void AddCommonListTask(CTaskInterface* pxTask);
-    CDataContainerInterface* AddDataContainer(std::shared_ptr<CDataContainerInterface> pxDataContainer);
     void AddCurrentlyRunningTasksList(CTaskInterface* pxTask);
     CTaskInterface* GetCommonListTaskPointer(char* pcTaskName);
     CTaskInterface* AddCommonTaskToMap(std::string sTaskName, std::shared_ptr<CTaskInterface> pxTask);
@@ -68,6 +68,7 @@ public:
     CTaskInterface* GetTaskPointerByNameFromMap(std::string sTaskName);
     CLinkInterface* CreateLinkByPerformerName(std::string sTaskName);
     uint8_t* CreateObjectBySize(size_t uiLength);
+    CDataContainerInterface* AddDataContainer(std::shared_ptr<CDataContainerInterface> pxDataContainer);
 
     void ModbusWorkingArraysCreate(uint16_t uiCoilsNumber,
                                    uint16_t uiDiscreteInputsNumber,

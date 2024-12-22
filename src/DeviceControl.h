@@ -15,6 +15,8 @@ class CResources;
 class CDataStore;
 class CLink;
 class CLinkInterface;
+class CDataContainerInterface;
+class CDataContainerDataBase;
 
 //-------------------------------------------------------------------------------
 class CDeviceControl : public CTask
@@ -31,6 +33,30 @@ public:
     virtual ~CDeviceControl();
 
     size_t GetObjectLength(void);
+
+    // Геттер для m_sDataStoreName
+    std::string GetDataStoreName() const
+    {
+        return m_sDataStoreName;
+    }
+
+    // Сеттер для m_sDataStoreName
+    void SetDataStoreName(const std::string& sName)
+    {
+        m_sDataStoreName = sName;
+    }
+
+    // Геттер для m_pxDataStore
+    CDataStore* GetDataStore() const
+    {
+        return m_pxDataStore;
+    }
+
+    // Сеттер для m_pxDataStore
+    void SetDataStore(CDataStore* pxDataStore)
+    {
+        m_pxDataStore = pxDataStore;
+    }
 
     // Геттер для m_sDataStoreLinkName
     std::string GetDataStoreLinkName() const
@@ -80,19 +106,33 @@ public:
         m_pxOperatingDataLink = pxValue;
     }
 
+    uint8_t Init(void);
+    bool SetTaskData(CDataContainerDataBase* pxDataContainer);
+    bool GetTaskData(CDataContainerDataBase* pxDataContainer);
+    CDataContainerDataBase* GetTaskData(void);
+
     uint16_t ConfigurationRead(uint8_t *puiDestination);
     uint16_t DataBaseBlockRead(uint8_t *puiDestination, uint8_t uiBlockIndex);
+    uint16_t DataBaseBlockReadAnswer(void);
     uint16_t DataBaseBlockWrite(uint8_t *puiSource, uint8_t uiBlockIndex);
     uint8_t GetFsmOperationStatus(void);
 
     uint8_t Fsm(void);
 
 protected:
+    std::string m_sDataStoreName;
+    CDataStore* m_pxDataStore;
+
     std::string m_sDataStoreLinkName;
     CLinkInterface* m_pxDataStoreLink;
 
     CLinkInterface* m_pxCommandDataLink;
     CLinkInterface* m_pxOperatingDataLink;
+
+    uint8_t* m_puiIntermediateBuff;
+
+    CDataContainerDataBase* m_pxCommandDataContainer;
+    CDataContainerDataBase* m_pxOperatingDataContainer;
 private:
 };
 

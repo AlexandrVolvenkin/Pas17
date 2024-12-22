@@ -194,7 +194,6 @@ uint8_t CStorageDeviceFileSystem::Fsm(void)
 
     case START:
         std::cout << "CStorageDeviceFileSystem::Fsm START"  << std::endl;
-        std::cout << "CStorageDeviceFileSystem::Fsm m_sTaskCustomerName" << " " << (m_sTaskCustomerName) << std::endl;
         SetFsmState(INIT);
         break;
 

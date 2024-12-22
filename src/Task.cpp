@@ -53,29 +53,29 @@ CTask::~CTask()
     std::cout << "CTask destructor"  << std::endl;
 }
 
-//-------------------------------------------------------------------------------
-uint8_t CTask::Fsm(void)
-{
+////-------------------------------------------------------------------------------
+//uint8_t CTask::Fsm(void)
+//{
+//
+//}
 
-}
-
-//-------------------------------------------------------------------------------
-uint8_t CTask::GetFsmState(void)
-{
-    return m_uiFsmState;
-}
-
-//-------------------------------------------------------------------------------
-void CTask::SetFsmState(uint8_t uiData)
-{
-    m_uiFsmState = uiData;
-}
-
-//-------------------------------------------------------------------------------
-CTimer* CTask::GetTimerPointer(void)
-{
-    return &m_xTimer;
-}
+////-------------------------------------------------------------------------------
+//uint8_t CTask::GetFsmState(void)
+//{
+//    return m_uiFsmState;
+//}
+//
+////-------------------------------------------------------------------------------
+//void CTask::SetFsmState(uint8_t uiData)
+//{
+//    m_uiFsmState = uiData;
+//}
+//
+////-------------------------------------------------------------------------------
+//CTimer* CTask::GetTimerPointer(void)
+//{
+//    return &m_xTimer;
+//}
 
 //-------------------------------------------------------------------------------
 char* CTask::GetTaskNamePointer(void)
@@ -107,59 +107,71 @@ CResources* CTask::GetResources(void)
     return m_pxResources;
 }
 
-//-------------------------------------------------------------------------------
-void CTask::SetTaskCustomerName(std::string sName)
-{
-    m_sTaskCustomerName = sName;
-}
+////-------------------------------------------------------------------------------
+//void CTask::SetTaskCustomerName(std::string sName)
+//{
+//    m_sTaskCustomerName = sName;
+//}
 
-//-------------------------------------------------------------------------------
-void CTask::SetMessageBoxDataContainer(CDataContainerInterface* pxDataContainer)
-{
-    m_pxMessageBoxDataContainer = pxDataContainer;
-}
+////-------------------------------------------------------------------------------
+//void CTask::SetMessageBoxDataContainer(CDataContainerInterface* pxDataContainer)
+//{
+//    m_pxMessageBoxDataContainer = pxDataContainer;
+//}
+//
+////-------------------------------------------------------------------------------
+//CDataContainerInterface* CTask::GetMessageBoxDataContainerPointer(void)
+//{
+//    return m_pxMessageBoxDataContainer;
+//}
 
-//-------------------------------------------------------------------------------
-CDataContainerInterface* CTask::GetMessageBoxDataContainerPointer(void)
-{
-    return m_pxMessageBoxDataContainer;
-}
-
-//-------------------------------------------------------------------------------
-void CTask::SetOperatingDataContainer(CDataContainerInterface* pxDataContainer)
-{
+////-------------------------------------------------------------------------------
+//void CTask::SetOperatingDataContainer(CDataContainerInterface* pxDataContainer)
+//{
 //    m_pxOperatingDataContainer = pxDataContainer;
-}
-
-//-------------------------------------------------------------------------------
-CDataContainerInterface* CTask::GetOperatingDataContainerPointer(void)
-{
+//}
+//
+////-------------------------------------------------------------------------------
+//CDataContainerInterface* CTask::GetOperatingDataContainerPointer(void)
+//{
 //    return m_pxOperatingDataContainer;
-}
-
-//-------------------------------------------------------------------------------
-void CTask::SetCommandDataContainer(CDataContainerInterface* pxDataContainer)
-{
+//}
+//
+////-------------------------------------------------------------------------------
+//void CTask::SetCommandDataContainer(CDataContainerInterface* pxDataContainer)
+//{
 //    m_pxCommandDataContainer = pxDataContainer;
-}
-
-//-------------------------------------------------------------------------------
-CDataContainerInterface* CTask::GetCommandDataContainerPointer(void)
-{
+//}
+//
+////-------------------------------------------------------------------------------
+//CDataContainerInterface* CTask::GetCommandDataContainerPointer(void)
+//{
 //    return m_pxCommandDataContainer;
-}
+//}
 
-//-------------------------------------------------------------------------------
-void CTask::SetMessageBoxPoiner(std::shared_ptr<CMessageBoxInterface> pxMessageBox)
-{
-    m_pxMessageBox = pxMessageBox;
-}
+////-------------------------------------------------------------------------------
+//void CTask::SetMessageBoxPoiner(std::shared_ptr<CMessageBoxInterface> pxMessageBox)
+//{
+//    m_pxMessageBox = pxMessageBox;
+//}
+//
+////-------------------------------------------------------------------------------
+//std::shared_ptr<CMessageBoxInterface> CTask::GetMessageBoxPointer(void)
+//{
+//    return m_pxMessageBox;
+//}
 
-//-------------------------------------------------------------------------------
-std::shared_ptr<CMessageBoxInterface> CTask::GetMessageBoxPointer(void)
-{
-    return m_pxMessageBox;
-}
+////-------------------------------------------------------------------------------
+//void CTask::SetTaskData(CDataContainerInterface* pxDataContainer)
+//{
+//
+//}
+//
+////-------------------------------------------------------------------------------
+//CDataContainerInterface* CTask::GetTaskData(void)
+//{
+//    return 0;
+//}
 
 //-------------------------------------------------------------------------------
 size_t CTask::GetObjectLength(void)

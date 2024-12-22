@@ -53,13 +53,13 @@ private:
 
 
 //-------------------------------------------------------------------------------
-class CLink : public CLinkInterface
+class CLink// : public CLinkInterface
 {
 public:
-    CLink();
-    virtual ~CLink();
-
-    size_t GetObjectLength(void);
+//    CLink();
+//    virtual ~CLink();
+//
+//    size_t GetObjectLength(void);
 
     void SetTaskPerformerName(std::string sName);
     void SetTaskPerformer(CTaskInterface* pxTaskPerformer);
@@ -68,7 +68,7 @@ public:
     void SetDataContainer(CDataContainerInterface* pxDataContainer);
     CDataContainerInterface* GetDataContainerPointer(void);
 
-    uint8_t Fsm(void);
+//    uint8_t Fsm(void);
 
 protected:
 
@@ -80,45 +80,3 @@ private:
 
 //-------------------------------------------------------------------------------
 #endif // CLINK_H
-
-
-
-
-//// CLink.h
-//#ifndef __CLINK_H__
-//#define __CLINK_H__
-//
-//#include <string>
-//
-//class CTaskInterface {
-//    // Define the interface for task performers
-//};
-//
-//class CDataContainerInterface {
-//    // Define the interface for data container
-//};
-//
-//class CLink {
-//public:
-//    // Constructors and destructor
-//    CLink(const std::string& performerName, CTaskInterface* performer, CDataContainerInterface* dataContainer);
-//    ~CLink();
-//
-//    // Setters and getters for the fields
-//    void setTaskPerformerName(const std::string& performerName);
-//    std::string getTaskPerformerName() const;
-//
-//    void setTaskPerformer(CTaskInterface* performer);
-//    CTaskInterface* getTaskPerformer() const;
-//
-//    void setDataContainer(CDataContainerInterface* dataContainer);
-//    CDataContainerInterface* getDataContainer() const;
-//
-//private:
-//    std::string m_sTaskPerformerName;
-//    CTaskInterface* m_pxTaskPerformer;
-//    CDataContainerInterface* m_pxDataContainer;
-//};
-//
-//#endif // __CLINK_H__
-//

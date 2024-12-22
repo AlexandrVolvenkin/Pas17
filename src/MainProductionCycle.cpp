@@ -115,8 +115,10 @@ uint8_t CMainProductionCycle::CreateTasks(void)
                                      std::make_shared<CDeviceControl>()));
     pxDeviceControl ->
     SetResources(&m_xResources);
+//    pxDeviceControl ->
+//    SetDataStoreLinkName("DataStoreFileSystem");
     pxDeviceControl ->
-    SetDataStoreLinkName("DataStoreFileSystem");
+    SetDataStoreName("DataStoreFileSystem");
     m_xResources.AddCurrentlyRunningTasksList(pxDeviceControl);
 
 //-------------------------------------------------------------------------------
@@ -448,10 +450,10 @@ uint8_t CMainProductionCycle::Fsm(void)
 //        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_TASK_READY_WAITING"  << std::endl;
         CurrentlyRunningTasksExecution();
 
-        if ((m_pxDataStoreCheck -> GetFsmState()) == READY)
+        if ((m_pxDataStoreCheck -> GetFsmState()) >= READY)
         {
-            SetFsmState(MAIN_CYCLE_MODBUS_SLAVE);
-//            SetFsmState(DATABASE_CHECK_BEGIN);
+//            SetFsmState(MAIN_CYCLE_MODBUS_SLAVE);
+            SetFsmState(DATABASE_CHECK_BEGIN);
             std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_TASK_READY_WAITING 1"  << std::endl;
         }
         else
@@ -469,11 +471,11 @@ uint8_t CMainProductionCycle::Fsm(void)
         CurrentlyRunningTasksExecution();
         m_pxDataStoreCheck -> Check();
         GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
-        SetFsmState(DATABASE_CHECK_END_WAITING);
 
 //        m_pxDataStoreFileSystem -> CreateServiceSection();
 //        m_pxDataStoreFileSystem -> WriteBlock(auiTempBlock, sizeof(auiTempBlock), 0);
 
+        SetFsmState(DATABASE_CHECK_END_WAITING);
 //
 //        if (!(m_pxDataStoreCheck -> Check()))
 //        {
@@ -502,46 +504,48 @@ uint8_t CMainProductionCycle::Fsm(void)
 //        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_END_WAITING"  << std::endl;
         CurrentlyRunningTasksExecution();
 
-//        if ((m_pxDataStoreCheck -> GetFsmState()) == CDataStoreCheck::DATA_STORE_CHECK_ERROR)
-//        {
-//        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_END_WAITING 1"  << std::endl;
-//            m_pxDataStoreFileSystem -> CreateServiceSection();
-//            m_pxDataStoreFileSystem -> WriteBlock(auiTempBlock, sizeof(auiTempBlock), 0);
-//            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
-//            SetFsmState(DATABASE_CHECK_RECAVERY_END_WAITING);
-////            std::cout << "CDataStore::Fsm DATABASE_CHECK_END_ERROR"  << std::endl;
-//        }
-//        else if (((m_pxDataStoreCheck -> GetFsmState()) == CDataStoreCheck::DATA_STORE_NEW_VERSION_ACCEPTED) ||
-//                 ((m_pxDataStoreCheck -> GetFsmState()) == CDataStoreCheck::DATA_STORE_OLD_VERSION_ACCEPTED) ||
-//                 ((m_pxDataStoreCheck -> GetFsmState()) == CDataStoreCheck::DATA_STORE_CHECK_OK))
-//        {
-//        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_END_WAITING 2"  << std::endl;
-//            SetFsmState(DATABASE_CHECK_END_OK);
-////            std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_END_OK"  << std::endl;
-//        }
-//        else
-//        {
-//            if (GetTimerPointer() -> IsOverflow())
-//            {
-//                SetFsmState(STOP);
-////                std::cout << "CMainProductionCycle::Fsm STOP"  << std::endl;
-//        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_END_WAITING 3"  << std::endl;
-//            }
-//        }
+        if ((m_pxDataStoreCheck -> GetFsmOperationStatus()) == CDataStoreCheck::DATA_STORE_CHECK_ERROR)
+        {
+            std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_END_WAITING 1"  << std::endl;
+            m_pxDataStoreFileSystem -> CreateServiceSection();
+            m_pxDataStoreFileSystem -> WriteBlock(auiTempBlock, sizeof(auiTempBlock), 0);
+            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
+            SetFsmState(DATABASE_CHECK_RECAVERY_END_WAITING);
+//            std::cout << "CDataStore::Fsm DATABASE_CHECK_END_ERROR"  << std::endl;
+        }
+        else if (((m_pxDataStoreCheck -> GetFsmOperationStatus()) == CDataStoreCheck::DATA_STORE_NEW_VERSION_ACCEPTED) ||
+                 ((m_pxDataStoreCheck -> GetFsmOperationStatus()) == CDataStoreCheck::DATA_STORE_OLD_VERSION_ACCEPTED) ||
+                 ((m_pxDataStoreCheck -> GetFsmOperationStatus()) == CDataStoreCheck::DATA_STORE_CHECK_OK))
+        {
+            std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_END_WAITING 2"  << std::endl;
+            SetFsmState(DATABASE_CHECK_END_OK);
+//            std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_END_OK"  << std::endl;
+        }
+        else
+        {
+            if (GetTimerPointer() -> IsOverflow())
+            {
+                m_pxDataStoreCheck ->
+                SetFsmCommandState(0);
+                SetFsmState(STOP);
+//                std::cout << "CMainProductionCycle::Fsm STOP"  << std::endl;
+                std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_END_WAITING 3"  << std::endl;
+            }
+        }
         break;
 
     case DATABASE_CHECK_RECAVERY_END_WAITING:
         std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_RECAVERY_END_WAITING"  << std::endl;
         CurrentlyRunningTasksExecution();
 
-        if ((m_pxDataStoreCheck -> GetFsmState()) == CDataStoreCheck::DATA_STORE_CHECK_ERROR)
+        if ((m_pxDataStoreCheck -> GetFsmOperationStatus()) == CDataStoreCheck::DATA_STORE_CHECK_ERROR)
         {
             SetFsmState(DATABASE_CHECK_END_ERROR);
             std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_RECAVERY_END_WAITING 1"  << std::endl;
         }
-        else if (((m_pxDataStoreCheck -> GetFsmState()) == CDataStoreCheck::DATA_STORE_NEW_VERSION_ACCEPTED) ||
-                 ((m_pxDataStoreCheck -> GetFsmState()) == CDataStoreCheck::DATA_STORE_OLD_VERSION_ACCEPTED) ||
-                 ((m_pxDataStoreCheck -> GetFsmState()) == CDataStoreCheck::DATA_STORE_CHECK_OK))
+        else if (((m_pxDataStoreCheck -> GetFsmOperationStatus()) == CDataStoreCheck::DATA_STORE_NEW_VERSION_ACCEPTED) ||
+                 ((m_pxDataStoreCheck -> GetFsmOperationStatus()) == CDataStoreCheck::DATA_STORE_OLD_VERSION_ACCEPTED) ||
+                 ((m_pxDataStoreCheck -> GetFsmOperationStatus()) == CDataStoreCheck::DATA_STORE_CHECK_OK))
         {
             SetFsmState(DATABASE_CHECK_END_OK);
             std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_RECAVERY_END_WAITING 2"  << std::endl;
@@ -559,6 +563,7 @@ uint8_t CMainProductionCycle::Fsm(void)
     case DATABASE_CHECK_END_OK:
 //        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_END_OK"  << std::endl;
         CurrentlyRunningTasksExecution();
+        SetFsmState(MAIN_CYCLE_MODBUS_SLAVE);
         break;
 
     case DATABASE_CHECK_END_ERROR:

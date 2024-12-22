@@ -25,7 +25,7 @@ CModbusSmSlave::CModbusSmSlave()
 {
     std::cout << "CModbusSmSlave constructor"  << std::endl;
     m_pxModbusSlaveLinkLayer = 0;
-    m_pxDeviceControlLink = 0;
+//    m_pxDeviceControlLink = 0;
     // получим имя класса.
     sprintf(GetTaskNamePointer(),
             "%s",

@@ -440,7 +440,7 @@ uint8_t CModbusRtuSlaveLinkLayer::Fsm(void)
         break;
 
     case COMMUNICATION_RECEIVE_END:
-        std::cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END"  << std::endl;
+//        std::cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END"  << std::endl;
         iBytesNumber =
             m_pxCommunicationDevice ->
             ReceiveContinue((m_auiRxBuffer + m_uiFrameLength),
@@ -454,14 +454,14 @@ uint8_t CModbusRtuSlaveLinkLayer::Fsm(void)
         }
         else if (iBytesNumber < 0)
         {
-            std::cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END 3"  << std::endl;
-            cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END errno " << errno << endl;
+//            std::cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END 3"  << std::endl;
+//            cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END errno " << errno << endl;
             SetFsmState(COMMUNICATION_RECEIVE_ERROR);
         }
         else
         {
-            std::cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END 4"  << std::endl;
-            cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END errno " << errno << endl;
+//            std::cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END 4"  << std::endl;
+//            cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END errno " << errno << endl;
             SetFsmState(COMMUNICATION_FRAME_CHECK);
 
             {

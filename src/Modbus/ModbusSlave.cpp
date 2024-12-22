@@ -26,7 +26,6 @@ CModbusSlave::CModbusSlave()
     std::cout << "CModbusSlave constructor"  << std::endl;
     m_pxModbusSlaveLinkLayer = 0;
     m_pxDeviceControl = 0;
-    m_pxDeviceControlLink = 0;
     // получим имя класса.
     sprintf(GetTaskNamePointer(),
             "%s",
@@ -40,6 +39,14 @@ CModbusSlave::~CModbusSlave()
 {
     delete[] m_puiIntermediateBuff;
     WorkingArraysDelete();
+}
+
+//-------------------------------------------------------------------------------
+uint8_t CModbusSlave::Init(void)
+{
+    std::cout << "CModbusSlave Init"  << std::endl;
+    m_pxOperatingDataContainer = static_cast<CDataContainerDataBase*>(GetResources() ->
+                                 AddDataContainer(std::make_shared<CDataContainerDataBase>()));
 }
 
 //-------------------------------------------------------------------------------
@@ -62,30 +69,6 @@ void CModbusSlave::SetModbusSlaveLinkLayer(CModbusSlaveLinkLayer* pxModbusSlaveL
 }
 
 //-------------------------------------------------------------------------------
-void CModbusSlave::SetModbusSlaveLinkLayerLinkName(const std::string sName)
-{
-    m_sModbusSlaveLinkLayerLinkName = sName;
-}
-
-////-------------------------------------------------------------------------------
-//std::string CModbusSlave::GetModbusSlaveLinkLayerLinkName() const
-//{
-//    return m_sModbusSlaveLinkLayerLinkName;
-//}
-
-//-------------------------------------------------------------------------------
-void CModbusSlave::SetModbusSlaveLinkLayerLink(CLinkInterface* pxLink)
-{
-    m_pxModbusSlaveLinkLayerLink = pxLink;
-}
-
-//-------------------------------------------------------------------------------
-CLinkInterface* CModbusSlave::GetModbusSlaveLinkLayerLink() const
-{
-    return m_pxModbusSlaveLinkLayerLink;
-}
-
-//-------------------------------------------------------------------------------
 void CModbusSlave::SetDeviceControlName(std::string sName)
 {
     m_sDeviceControlName = sName;
@@ -98,27 +81,9 @@ void CModbusSlave::SetDeviceControl(CDeviceControl* pxDeviceControl)
 }
 
 //-------------------------------------------------------------------------------
-void CModbusSlave::SetDeviceControlLinkName(const std::string sName)
+CDeviceControl* CModbusSlave::GetDeviceContro(void)
 {
-    m_sDeviceControlLinkName = sName;
-}
-
-////-------------------------------------------------------------------------------
-//std::string CModbusSlave::GetDeviceControlLinkName() const
-//{
-//    return m_sDeviceControlLinkName;
-//}
-
-//-------------------------------------------------------------------------------
-void CModbusSlave::SetDeviceControlLink(CLinkInterface* pxLink)
-{
-    m_pxDeviceControlLink = pxLink;
-}
-
-//-------------------------------------------------------------------------------
-CLinkInterface* CModbusSlave::GetDeviceControlLink() const
-{
-    return m_pxDeviceControlLink;
+    return m_pxDeviceControl;
 }
 
 //-------------------------------------------------------------------------------
@@ -1167,17 +1132,35 @@ uint16_t CModbusSlave::DataBaseRead(void)
 
         m_uiFunctionCode = uiFunctionCode;
 
-        m_pxDeviceControlLink ->
-        GetDataContainerPointer() ->
-        SetContainerData(CDeviceControl::DATA_BASE_BLOCK_READ,
-                         uiBlockIndex,
-                         m_puiIntermediateBuff,
-                         0,
-                         0);
+//        CDataContainerDataBase xDataContainer;
+//        xDataContainer.m_uiFsmCommandState = CDeviceControl::DATA_BASE_BLOCK_READ;
+//        xDataContainer.m_uiDataIndex = uiBlockIndex;
+//        m_pxDeviceControl ->
+//        SetTaskData(&xDataContainer);
 
-        ((CDeviceControl*)(m_pxDeviceControlLink ->
-                           GetTaskPerformerPointer())) ->
-        SetCommandDataLink(m_pxDeviceControlLink);
+        m_pxOperatingDataContainer -> m_uiFsmCommandState = CDeviceControl::DATA_BASE_BLOCK_READ;
+        m_pxOperatingDataContainer -> m_uiDataIndex = uiBlockIndex;
+        m_pxOperatingDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+        m_pxDeviceControl ->
+        SetTaskData(m_pxOperatingDataContainer);
+
+//        uint8_t m_uiFsmCommandState;
+//        uint8_t m_uiFsmOperationStatus;
+//        uint16_t m_uiDataIndex;
+//        uint8_t* m_puiDataPointer;
+//        uint32_t m_uiDataOffset;
+//        uint32_t m_uiDataLength;
+//        m_pxDeviceControlLink ->
+//        GetDataContainerPointer() ->
+//        SetContainerData(CDeviceControl::DATA_BASE_BLOCK_READ,
+//                         uiBlockIndex,
+//                         m_puiIntermediateBuff,
+//                         0,
+//                         0);
+//
+//        ((CDeviceControl*)(m_pxDeviceControlLink ->
+//                           GetTaskPerformerPointer())) ->
+//        SetCommandDataLink(m_pxDeviceControlLink);
 
         uiLength = 5;
 
@@ -1233,18 +1216,24 @@ uint16_t CModbusSlave::DataBaseWrite(void)
                &puiRequest[uiPduOffset + 2],
                MAX_MODBUS_MESSAGE_LENGTH);
 
-        m_pxDeviceControlLink ->
-        GetDataContainerPointer() ->
-        SetContainerData(CDeviceControl::DATA_BASE_BLOCK_START_WRITE,
-                         uiBlockIndex,
-                         m_puiIntermediateBuff,
-                         0,
-                         0);
+        m_pxOperatingDataContainer -> m_uiFsmCommandState = CDeviceControl::DATA_BASE_BLOCK_START_WRITE;
+        m_pxOperatingDataContainer -> m_uiDataIndex = uiBlockIndex;
+        m_pxOperatingDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+        m_pxDeviceControl ->
+        SetTaskData(m_pxOperatingDataContainer);
 
-        // отправим сообщение задаче-исполнителю
-        ((CDeviceControl*)(m_pxDeviceControlLink ->
-                           GetTaskPerformerPointer())) ->
-        SetCommandDataLink(m_pxDeviceControlLink);
+//        m_pxDeviceControlLink ->
+//        GetDataContainerPointer() ->
+//        SetContainerData(CDeviceControl::DATA_BASE_BLOCK_START_WRITE,
+//                         uiBlockIndex,
+//                         m_puiIntermediateBuff,
+//                         0,
+//                         0);
+//
+//        // отправим сообщение задаче-исполнителю
+//        ((CDeviceControl*)(m_pxDeviceControlLink ->
+//                           GetTaskPerformerPointer())) ->
+//        SetCommandDataLink(m_pxDeviceControlLink);
 
         uiLength = m_pxModbusSlaveLinkLayer ->
                    ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
@@ -2213,12 +2202,24 @@ uint16_t CModbusSlave::DataBaseReadAnswer(void)
     }
     else
     {
-        uiLength = m_pxDeviceControlLink ->
-                   GetDataContainerPointer() ->
-                   GetDataLength();
+//        CDataContainerDataBase* pxDataContainer =
+//            m_pxDeviceControl ->
+//            GetTaskData();
+//        uiLength = pxDataContainer -> m_uiDataLength;
+
+        m_pxDeviceControl ->
+        GetTaskData(m_pxOperatingDataContainer);
+
+        uiLength = m_pxOperatingDataContainer -> m_uiDataLength;
+
+//        uiLength = m_pxDeviceControlLink ->
+//                   GetDataContainerPointer() ->
+//                   GetDataLength();
         std::cout << "CModbusSlave::DataBaseReadAnswer uiLength "  << (int)uiLength << std::endl;
 
-        memcpy(&puiResponse[uiPduOffset + 3], m_puiIntermediateBuff, uiLength);
+        memcpy(&puiResponse[uiPduOffset + 3],
+               (m_pxOperatingDataContainer -> m_puiDataPointer),
+               uiLength);
 
         puiResponse[uiPduOffset + 1] = uiLength + 1;
         uiLength ++;
@@ -2600,6 +2601,7 @@ uint8_t CModbusSlave::Fsm(void)
     case START:
         std::cout << "CModbusSlave::Fsm START"  << std::endl;
         std::cout << "CModbusSlave::Fsm m_sModbusSlaveLinkLayerName" << " " << (m_sModbusSlaveLinkLayerName) << std::endl;
+        Init();
         GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
         SetFsmState(INIT);
         break;
@@ -2608,46 +2610,6 @@ uint8_t CModbusSlave::Fsm(void)
 
         std::cout << "CModbusSlave::Fsm INIT 1"  << std::endl;
         {
-//            if (GetModbusSlaveLinkLayerLink() == 0)
-//            {
-//                std::cout << "CModbusSlave::Fsm INIT 2"  << std::endl;
-//                CLinkInterface* pxLink = GetResources() ->
-//                                         CreateLinkByPerformerName(m_sModbusSlaveLinkLayerName);
-//                if (pxLink != 0)
-//                {
-//                    std::cout << "CModbusSlave::Fsm INIT 3"  << std::endl;
-//                    SetModbusSlaveLinkLayerLink(pxLink);
-//                    CDataContainerDataBase* pxDataContainerDataBase = new CDataContainerDataBase();
-//                    pxLink ->
-//                    SetDataContainer(pxDataContainerDataBase);
-//
-////                    auto pxDataContainer = std::make_shared<CDataContainerDataBase>();
-////                    pxLink ->
-////                    SetDataContainer(pxDataContainer.get());
-//                    pxLink ->
-//                    GetDataContainerPointer() ->
-//                    SetContainerData(0,
-//                                     0,
-//                                     0,
-//                                     0,
-//                                     0);
-//                }
-//                else
-//                {
-//                    std::cout << "CModbusSlave::Fsm INIT 4"  << std::endl;
-//                    if (GetTimerPointer() -> IsOverflow())
-//                    {
-//                        SetFsmState(STOP);
-//                    }
-//                }
-//            }
-//            else
-//            {
-//                std::cout << "CModbusSlave::Fsm INIT 44"  << std::endl;
-//                uiReadyTaskCounter += 1;
-//            }
-
-
             CTaskInterface* pxTask =
                 GetResources() ->
                 GetTaskPointerByNameFromMap(m_sModbusSlaveLinkLayerName);
@@ -2675,49 +2637,28 @@ uint8_t CModbusSlave::Fsm(void)
 
 
         {
-            if (GetDeviceControlLink() == 0)
-            {
-                std::cout << "CModbusSlave::Fsm INIT 5"  << std::endl;
-                CLinkInterface* pxLink = GetResources() ->
-                                         CreateLinkByPerformerName(m_sDeviceControlName);
-                if (pxLink != 0)
-                {
-                    std::cout << "CModbusSlave::Fsm INIT 6"  << std::endl;
-                    SetDeviceControlLink(pxLink);
-//                    CDataContainerDataBase* pxDataContainerDataBase;
-                    CDataContainerDataBase* pxDataContainerDataBase = new CDataContainerDataBase();
-//                    pxDataContainerDataBase =
-//                        static_cast<CDataContainerDataBase*>(GetResources() ->
-//                                AddDataContainer(std::make_shared<CDataContainerDataBase>()));
-//        static_cast<CModbusSmSlave*>(m_xResources.AddCommonTaskToMap("ModbusSmSlaveEveDisplay",
-//                                   std::make_shared<CModbusSmSlave>()));
-                    pxLink ->
-                    SetDataContainer(pxDataContainerDataBase);
+            CTaskInterface* pxTask =
+                GetResources() ->
+                GetTaskPointerByNameFromMap(m_sDeviceControlName);
 
-//                    auto pxDataContainer = std::make_shared<CDataContainerDataBase>();
-//                    pxLink ->
-//                    SetDataContainer(pxDataContainer.get());
-                    pxLink ->
-                    GetDataContainerPointer() ->
-                    SetContainerData(0,
-                                     0,
-                                     0,
-                                     0,
-                                     0);
-                }
-                else
+            if (pxTask != 0)
+            {
+                std::cout << "CModbusSlave::Fsm INIT 2"  << std::endl;
+                if (pxTask -> GetFsmState() >= READY)
                 {
-                    std::cout << "CModbusSlave::Fsm INIT 7"  << std::endl;
-                    if (GetTimerPointer() -> IsOverflow())
-                    {
-                        SetFsmState(STOP);
-                    }
+                    std::cout << "CModbusSlave::Fsm INIT 3"  << std::endl;
+                    SetDeviceControl((CDeviceControl*)pxTask);
+                    uiReadyTaskCounter += 1;
+//                    SetFsmState(READY);
                 }
             }
             else
             {
-                std::cout << "CModbusSlave::Fsm INIT 8"  << std::endl;
-                uiReadyTaskCounter += 1;
+                std::cout << "CModbusSlave::Fsm INIT 4"  << std::endl;
+                if (GetTimerPointer() -> IsOverflow())
+                {
+                    SetFsmState(STOP);
+                }
             }
         }
 
@@ -2771,19 +2712,6 @@ uint8_t CModbusSlave::Fsm(void)
 
     case COMMUNICATION_START:
         std::cout << "CModbusSlave::Fsm COMMUNICATION_START"  << std::endl;
-
-//        GetModbusSlaveLinkLayerLink() ->
-//        GetDataContainerPointer() ->
-//        SetContainerData(CModbusSlaveLinkLayerInterface::COMMUNICATION_START,
-//                         0,
-//                         m_puiIntermediateBuff,
-//                         0,
-//                         0);
-//
-//        ((CModbusSlaveLinkLayerInterface*)(GetModbusSlaveLinkLayerLink() ->
-//                                           GetTaskPerformerPointer())) ->
-//        SetCommandDataLink(GetModbusSlaveLinkLayerLink());
-
         m_pxModbusSlaveLinkLayer ->
         CommunicationStart();
         SetFsmState(MESSAGE_RECEIVE_WAITING);
@@ -2814,52 +2742,41 @@ uint8_t CModbusSlave::Fsm(void)
         std::cout << "CModbusSlave::Fsm REQUEST_PROCESSING"  << std::endl;
         if (RequestProcessing())
         {
-            //            GetTimerPointer() -> Set(m_uiTransmitDelayTimeout);
-//            SetFsmState(BEFORE_ANSWERING_WAITING);
+            if (m_uiLength)
+            {
+                std::cout << "CModbusSlave::Fsm REQUEST_PROCESSING 2"  << std::endl;
+                GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
+                SetFsmState(ANSWER_PROCESSING_WAITING);
+            }
+            else
+            {
+                std::cout << "CModbusSlave::Fsm REQUEST_PROCESSING 3"  << std::endl;
+                GetTimerPointer() -> Set(m_uiTransmitDelayTimeout);
+                SetFsmState(BEFORE_ANSWERING_WAITING);
+            }
         }
         else
         {
             SetFsmState(MESSAGE_RECEIVE_WAITING);
-            break;
         }
 
-//        RequestProcessing();
-//            SetFsmState(BEFORE_ANSWERING_WAITING);
-
-//        if (m_pxDeviceControlLink ->
-//                GetDataContainerPointer() ->
-//                GetFsmCommandState())
-        if (m_uiLength)
-        {
-            std::cout << "CModbusSlave::Fsm REQUEST_PROCESSING 2"  << std::endl;
-            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
-            SetFsmState(ANSWER_PROCESSING_WAITING);
-//            SetFsmState(BEFORE_ANSWERING_WAITING);
-        }
-        else
-        {
-            std::cout << "CModbusSlave::Fsm REQUEST_PROCESSING 3"  << std::endl;
-            GetTimerPointer() -> Set(m_uiTransmitDelayTimeout);
-            SetFsmState(BEFORE_ANSWERING_WAITING);
-        }
         break;
 
     case ANSWER_PROCESSING_WAITING:
 //        std::cout << "CModbusSlave::Fsm ANSWER_PROCESSING_WAITING"  << std::endl;
-//        GetTimerPointer() -> Set(m_uiTransmitDelayTimeout);
-//        SetFsmState(ANSWER_PROCESSING);
+    {
+        m_pxDeviceControl ->
+        GetTaskData(m_pxOperatingDataContainer);
 
-        if (m_pxDeviceControlLink ->
-                GetTaskPerformerPointer() ->
-                IsDoneOk())
+        uint8_t uiFsmState = m_pxOperatingDataContainer -> m_uiFsmCommandState;
+
+        if (uiFsmState == DONE_OK)
         {
             std::cout << "CModbusSlave::Fsm ANSWER_PROCESSING_WAITING 2"  << std::endl;
             GetTimerPointer() -> Set(m_uiTransmitDelayTimeout);
             SetFsmState(ANSWER_PROCESSING);
         }
-        else if (m_pxDeviceControlLink ->
-                 GetTaskPerformerPointer() ->
-                 IsDoneError())
+        else if (uiFsmState == DONE_ERROR)
         {
             std::cout << "CModbusSlave::Fsm ANSWER_PROCESSING_WAITING 3"  << std::endl;
             GetTimerPointer() -> Set(m_uiTransmitDelayTimeout);
@@ -2871,13 +2788,13 @@ uint8_t CModbusSlave::Fsm(void)
             if (GetTimerPointer() -> IsOverflow())
             {
                 std::cout << "CModbusSlave::Fsm ANSWER_PROCESSING_WAITING 4"  << std::endl;
-                m_pxDeviceControlLink ->
-                GetDataContainerPointer() ->
-                SetFsmCommandState(0);
+//                m_pxDeviceControl ->
+//                SetFsmCommandState(0);
                 SetFsmState(MESSAGE_RECEIVE_WAITING);
             }
         }
-        break;
+    }
+    break;
 
     case ANSWER_PROCESSING:
         std::cout << "CModbusSlave::Fsm ANSWER_PROCESSING"  << std::endl;
@@ -2889,27 +2806,7 @@ uint8_t CModbusSlave::Fsm(void)
         else
         {
             SetFsmState(MESSAGE_RECEIVE_WAITING);
-            break;
         }
-
-//        RequestProcessing();
-//            SetFsmState(BEFORE_ANSWERING_WAITING);
-
-//        if (m_pxDeviceControlLink ->
-//                GetDataContainerPointer() ->
-//                GetFsmCommandState())
-//        {
-//            std::cout << "CModbusSlave::Fsm ANSWER_PROCESSING 2"  << std::endl;
-//            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
-//            SetFsmState(ANSWER_PROCESSING_WAITING);
-////            SetFsmState(BEFORE_ANSWERING_WAITING);
-//        }
-//        else
-//        {
-//            std::cout << "CModbusSlave::Fsm ANSWER_PROCESSING 3"  << std::endl;
-//            GetTimerPointer() -> Set(m_uiTransmitDelayTimeout);
-//            SetFsmState(BEFORE_ANSWERING_WAITING);
-//        }
         break;
 
     case BEFORE_ANSWERING_WAITING:
@@ -2917,9 +2814,7 @@ uint8_t CModbusSlave::Fsm(void)
         // Закончилось время паузы между приёмом и передачей(5 милисекунд)?
         if (GetTimerPointer() -> IsOverflow())
         {
-//            GetTimerPointer() -> Set(m_uiConfirmationTimeout);
-            //            m_pxModbusSlaveLinkLayer ->
-//            SetFsmState(CModbusSlaveLinkLayerInterface::COMMUNICATION_TRANSMIT_START);
+            GetTimerPointer() -> Set(m_uiConfirmationTimeout);
             m_pxModbusSlaveLinkLayer ->
             TransmitStart();
             SetFsmState(AFTER_ANSWERING_WAITING);
@@ -2944,6 +2839,17 @@ uint8_t CModbusSlave::Fsm(void)
         {
             std::cout << "CModbusSlave::Fsm AFTER_ANSWERING_WAITING 3"  << std::endl;
             SetFsmState(COMMUNICATION_START);
+        }
+        else
+        {
+            // Время ожидания выполнения запроса закончилось?
+            if (GetTimerPointer() -> IsOverflow())
+            {
+                std::cout << "CModbusSlave::Fsm AFTER_ANSWERING_WAITING 4"  << std::endl;
+//                m_pxDeviceControl ->
+//                SetFsmCommandState(0);
+                SetFsmState(MESSAGE_RECEIVE_WAITING);
+            }
         }
         break;
 

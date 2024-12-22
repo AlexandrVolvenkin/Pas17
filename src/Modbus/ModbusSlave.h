@@ -55,21 +55,24 @@ public:
     CModbusSlave(CResources* pxResources);
     virtual ~CModbusSlave();
 
+    uint8_t Init(void);
     size_t GetObjectLength(void);
 
     void SetModbusSlaveLinkLayerName(std::string sName);
     void SetModbusSlaveLinkLayer(CModbusSlaveLinkLayer* pxModbusSlaveLinkLayer);
 
-    void SetModbusSlaveLinkLayerLinkName(std::string sName);
-    void SetModbusSlaveLinkLayerLink(CLinkInterface* pxLink);
-    CLinkInterface* GetModbusSlaveLinkLayerLink() const;
+//    void SetModbusSlaveLinkLayerLinkName(std::string sName);
+//    void SetModbusSlaveLinkLayerLink(CLinkInterface* pxLink);
+//    CLinkInterface* GetModbusSlaveLinkLayerLink() const;
 
     void SetDeviceControlName(std::string sName);
     void SetDeviceControl(CDeviceControl* pxDeviceControl);
+    CDeviceControl* GetDeviceContro(void);
 
-    void SetDeviceControlLinkName(std::string sName);
-    void SetDeviceControlLink(CLinkInterface* pxLink);
-    CLinkInterface* GetDeviceControlLink() const;
+//    void SetDeviceControlLinkName(std::string sName);
+//    void SetDeviceControlLink(CLinkInterface* pxLink);
+//    CLinkInterface* GetDeviceControlLink() const;
+////    CLink* GetDeviceControlLink();
 
     void ModbusWorkingArraysInit(void);
 
@@ -208,14 +211,15 @@ public:
     std::string m_sModbusSlaveLinkLayerName;
     CModbusSlaveLinkLayerInterface* m_pxModbusSlaveLinkLayer;
 
-    std::string m_sModbusSlaveLinkLayerLinkName;
-    CLinkInterface* m_pxModbusSlaveLinkLayerLink;
+//    std::string m_sModbusSlaveLinkLayerLinkName;
+//    CLinkInterface* m_pxModbusSlaveLinkLayerLink;
 
     std::string m_sDeviceControlName;
     CDeviceControl* m_pxDeviceControl;
 
-    std::string m_sDeviceControlLinkName;
-    CLinkInterface* m_pxDeviceControlLink;
+//    std::string m_sDeviceControlLinkName;
+//    CLinkInterface* m_pxDeviceControlLink;
+////    CLink m_xDeviceControlLink;
 
     uint8_t m_uiOwnAddress;
     uint8_t m_uiSlaveAddress;
@@ -243,6 +247,8 @@ public:
 
     friend class CModbusRtu;
     friend class CModbusTcp;
+
+    CDataContainerDataBase* m_pxOperatingDataContainer;
 };
 
 //-------------------------------------------------------------------------------

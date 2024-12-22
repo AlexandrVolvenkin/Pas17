@@ -29,7 +29,7 @@ CDataStoreCheck::CDataStoreCheck()
             "%s",
             typeid(*this).name());
     m_pxStorageDevice = 0;
-    m_pxCommandDataContainer = new CDataContainerDataBase();
+//    m_pxCommandDataContainer = new CDataContainerDataBase();
 //    m_pxOperatingDataContainer = new CDataContainerDataBase();
     SetFsmState(START);
 }
@@ -37,8 +37,18 @@ CDataStoreCheck::CDataStoreCheck()
 //-------------------------------------------------------------------------------
 CDataStoreCheck::~CDataStoreCheck()
 {
-    delete m_pxOperatingDataContainer;
-    delete m_pxCommandDataContainer;
+//    delete m_pxOperatingDataContainer;
+//    delete m_pxCommandDataContainer;
+}
+
+//-------------------------------------------------------------------------------
+uint8_t CDataStoreCheck::Init(void)
+{
+    std::cout << "CDataStore Init"  << std::endl;
+    m_pxCommandDataContainer = static_cast<CDataContainerDataBase*>(GetResources() ->
+                               AddDataContainer(std::make_shared<CDataContainerDataBase>()));
+    m_pxOperatingDataContainer = static_cast<CDataContainerDataBase*>(GetResources() ->
+                                 AddDataContainer(std::make_shared<CDataContainerDataBase>()));
 }
 
 //-------------------------------------------------------------------------------
@@ -76,6 +86,7 @@ uint8_t CDataStoreCheck::Fsm(void)
 
     case START:
         std::cout << "CDataStoreCheck::Fsm START"  << std::endl;
+        Init();
         GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
         SetFsmState(INIT);
         break;
@@ -118,6 +129,7 @@ uint8_t CDataStoreCheck::Fsm(void)
 
 //-------------------------------------------------------------------------------
     case DATA_STORE_CHECK_START:
+        std::cout << "CDataStoreCheck::Fsm DATA_STORE_CHECK_START"  << std::endl;
         // Сбросим ошибки декодирования алгоритмом Хемминга.
         CHammingCodes::SetErrorCode(CHammingCodes::NONE_ERROR);
         m_uiRecoveryAttemptCounter = 0;
@@ -125,13 +137,16 @@ uint8_t CDataStoreCheck::Fsm(void)
         break;
 
     case TEMPORARY_SERVICE_SECTION_DATA_CHECK:
+        std::cout << "CDataStoreCheck::Fsm TEMPORARY_SERVICE_SECTION_DATA_CHECK 1"  << std::endl;
         // Временный служебный блок не повреждён?
         if (ReadTemporaryServiceSection())
         {
+            std::cout << "CDataStoreCheck::Fsm TEMPORARY_SERVICE_SECTION_DATA_CHECK 2"  << std::endl;
             SetFsmState(TEMPORARY_SERVICE_SECTION_LINKED_BLOCKS_CHECK);
         }
         else
         {
+            std::cout << "CDataStoreCheck::Fsm TEMPORARY_SERVICE_SECTION_DATA_CHECK 3"  << std::endl;
             // Временный служебный блок повреждён, вероятно во время последнего сеанса записи.
             // Проверим целостность хранилища по постоянному служебному блоку.
             SetFsmState(SERVICE_SECTION_DATA_CHECK);
@@ -166,8 +181,8 @@ uint8_t CDataStoreCheck::Fsm(void)
                                i);
 
 
-                    CDataContainerDataBase* pxCommandDataContainer =
-                        static_cast<CDataContainerDataBase*>(GetCommandDataContainerPointer());
+//                    CDataContainerDataBase* pxCommandDataContainer =
+//                        static_cast<CDataContainerDataBase*>(GetCommandDataContainerPointer());
 
 //    pxDataContainer ->
 //    SetDataIndex(uiBlock);
@@ -344,27 +359,27 @@ uint8_t CDataStoreCheck::Fsm(void)
 
     case DATA_STORE_NEW_VERSION_ACCEPTED:
         // Хранилище обновлено.
-        cerr << "DATA_STORE_NEW_VERSION_ACCEPTED" << endl;
+        cerr << "CDataStoreCheck::Fsm DATA_STORE_NEW_VERSION_ACCEPTED" << endl;
         SetFsmOperationStatus(DATA_STORE_NEW_VERSION_ACCEPTED);
         SetFsmState(READY);
         break;
 
     case DATA_STORE_OLD_VERSION_ACCEPTED:
         // Хранилище не обновлено.
-        cerr << "DATA_STORE_OLD_VERSION_ACCEPTED" << endl;
+        cerr << "CDataStoreCheck::Fsm DATA_STORE_OLD_VERSION_ACCEPTED" << endl;
         SetFsmOperationStatus(DATA_STORE_OLD_VERSION_ACCEPTED);
         SetFsmState(READY);
         break;
 
     case DATA_STORE_CHECK_OK:
-        cerr << "DATA_STORE_CHECK_OK" << endl;
+        cerr << "CDataStoreCheck::Fsm DATA_STORE_CHECK_OK" << endl;
         SetFsmOperationStatus(DATA_STORE_CHECK_OK);
         SetFsmState(READY);
         break;
 
     case DATA_STORE_CHECK_ERROR:
         // Хранилище повреждено.
-        cerr << "DATA_STORE_CHECK_ERROR" << endl;
+        cerr << "CDataStoreCheck::Fsm DATA_STORE_CHECK_ERROR" << endl;
         SetFsmOperationStatus(DATA_STORE_CHECK_ERROR);
         SetFsmState(STOP);
         break;
