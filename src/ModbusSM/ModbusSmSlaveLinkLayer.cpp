@@ -356,7 +356,7 @@ uint8_t CModbusSmSlaveLinkLayer::Fsm(void)
         break;
 
     case INIT:
-        std::cout << "CModbusSmSlaveLinkLayer::Fsm INIT 1"  << std::endl;
+//        std::cout << "CModbusSmSlaveLinkLayer::Fsm INIT 1"  << std::endl;
         {
             CTaskInterface* pxTask =
                 GetResources() ->
@@ -364,10 +364,10 @@ uint8_t CModbusSmSlaveLinkLayer::Fsm(void)
 
             if (pxTask != 0)
             {
-                std::cout << "CModbusSmSlaveLinkLayer::Fsm INIT 2"  << std::endl;
+//                std::cout << "CModbusSmSlaveLinkLayer::Fsm INIT 2"  << std::endl;
                 if (pxTask -> GetFsmState() >= READY)
                 {
-                    std::cout << "CModbusSmSlaveLinkLayer::Fsm INIT 3"  << std::endl;
+//                    std::cout << "CModbusSmSlaveLinkLayer::Fsm INIT 3"  << std::endl;
                     SetCommunicationDevice((CCommunicationDeviceInterfaceNew*)pxTask);
                     SetFsmCommandState(0);
                     SetFsmState(READY);
@@ -375,7 +375,7 @@ uint8_t CModbusSmSlaveLinkLayer::Fsm(void)
             }
             else
             {
-                std::cout << "CModbusSmSlaveLinkLayer::Fsm INIT 4"  << std::endl;
+//                std::cout << "CModbusSmSlaveLinkLayer::Fsm INIT 4"  << std::endl;
                 if (GetTimerPointer() -> IsOverflow())
                 {
                     std::cout << "CModbusSmSlaveLinkLayer::Fsm INIT 5"  << std::endl;

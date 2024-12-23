@@ -44,7 +44,7 @@ CDataStoreCheck::~CDataStoreCheck()
 //-------------------------------------------------------------------------------
 uint8_t CDataStoreCheck::Init(void)
 {
-    std::cout << "CDataStore Init"  << std::endl;
+    std::cout << "CDataStoreCheck Init"  << std::endl;
     m_pxCommandDataContainer = static_cast<CDataContainerDataBase*>(GetResources() ->
                                AddDataContainer(std::make_shared<CDataContainerDataBase>()));
     m_pxOperatingDataContainer = static_cast<CDataContainerDataBase*>(GetResources() ->

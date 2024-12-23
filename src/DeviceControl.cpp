@@ -184,7 +184,7 @@ uint8_t CDeviceControl::Fsm(void)
         break;
 
     case INIT:
-        std::cout << "CDeviceControl::Fsm INIT 1"  << std::endl;
+//        std::cout << "CDeviceControl::Fsm INIT 1"  << std::endl;
         {
             CTaskInterface* pxTask =
                 GetResources() ->
@@ -192,10 +192,10 @@ uint8_t CDeviceControl::Fsm(void)
 
             if (pxTask != 0)
             {
-                std::cout << "CModbusSlave::Fsm INIT 2"  << std::endl;
+//                std::cout << "CDeviceControl::Fsm INIT 2"  << std::endl;
                 if (pxTask -> GetFsmState() >= READY)
                 {
-                    std::cout << "CModbusSlave::Fsm INIT 3"  << std::endl;
+//                    std::cout << "CDeviceControl::Fsm INIT 3"  << std::endl;
                     SetDataStore((CDataStore*)pxTask);
                     uiReadyTaskCounter += 1;
 //                    SetFsmState(READY);
@@ -203,9 +203,10 @@ uint8_t CDeviceControl::Fsm(void)
             }
             else
             {
-                std::cout << "CModbusSlave::Fsm INIT 4"  << std::endl;
+//                std::cout << "CDeviceControl::Fsm INIT 4"  << std::endl;
                 if (GetTimerPointer() -> IsOverflow())
                 {
+                std::cout << "CDeviceControl::Fsm INIT 5"  << std::endl;
                     SetFsmState(STOP);
                 }
             }

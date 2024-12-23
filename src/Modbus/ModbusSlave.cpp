@@ -2608,7 +2608,7 @@ uint8_t CModbusSlave::Fsm(void)
 
     case INIT:
 
-        std::cout << "CModbusSlave::Fsm INIT 1"  << std::endl;
+//        std::cout << "CModbusSlave::Fsm INIT 1"  << std::endl;
         {
             CTaskInterface* pxTask =
                 GetResources() ->
@@ -2616,10 +2616,10 @@ uint8_t CModbusSlave::Fsm(void)
 
             if (pxTask != 0)
             {
-                std::cout << "CModbusSlave::Fsm INIT 2"  << std::endl;
+//                std::cout << "CModbusSlave::Fsm INIT 2"  << std::endl;
                 if (pxTask -> GetFsmState() >= READY)
                 {
-                    std::cout << "CModbusSlave::Fsm INIT 3"  << std::endl;
+//                    std::cout << "CModbusSlave::Fsm INIT 3"  << std::endl;
                     SetModbusSlaveLinkLayer((CModbusSlaveLinkLayer*)pxTask);
                     uiReadyTaskCounter += 1;
 //                    SetFsmState(READY);
@@ -2627,9 +2627,10 @@ uint8_t CModbusSlave::Fsm(void)
             }
             else
             {
-                std::cout << "CModbusSlave::Fsm INIT 4"  << std::endl;
+//                std::cout << "CModbusSlave::Fsm INIT 4"  << std::endl;
                 if (GetTimerPointer() -> IsOverflow())
                 {
+                std::cout << "CModbusSlave::Fsm INIT 5"  << std::endl;
                     SetFsmState(STOP);
                 }
             }
@@ -2643,10 +2644,10 @@ uint8_t CModbusSlave::Fsm(void)
 
             if (pxTask != 0)
             {
-                std::cout << "CModbusSlave::Fsm INIT 2"  << std::endl;
+//                std::cout << "CModbusSlave::Fsm INIT 2"  << std::endl;
                 if (pxTask -> GetFsmState() >= READY)
                 {
-                    std::cout << "CModbusSlave::Fsm INIT 3"  << std::endl;
+//                    std::cout << "CModbusSlave::Fsm INIT 3"  << std::endl;
                     SetDeviceControl((CDeviceControl*)pxTask);
                     uiReadyTaskCounter += 1;
 //                    SetFsmState(READY);
@@ -2654,9 +2655,10 @@ uint8_t CModbusSlave::Fsm(void)
             }
             else
             {
-                std::cout << "CModbusSlave::Fsm INIT 4"  << std::endl;
+//                std::cout << "CModbusSlave::Fsm INIT 4"  << std::endl;
                 if (GetTimerPointer() -> IsOverflow())
                 {
+                std::cout << "CModbusSlave::Fsm INIT 5"  << std::endl;
                     SetFsmState(STOP);
                 }
             }
@@ -2827,7 +2829,7 @@ uint8_t CModbusSlave::Fsm(void)
         break;
 
     case AFTER_ANSWERING_WAITING:
-        std::cout << "CModbusSlave::Fsm AFTER_ANSWERING_WAITING"  << std::endl;
+//        std::cout << "CModbusSlave::Fsm AFTER_ANSWERING_WAITING"  << std::endl;
         if (m_pxModbusSlaveLinkLayer -> IsDoneOk())
         {
             std::cout << "CModbusSlave::Fsm AFTER_ANSWERING_WAITING 2"  << std::endl;

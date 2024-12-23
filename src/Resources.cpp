@@ -337,20 +337,20 @@ bool CResources::CheckCommonTaskMap(void)
 
 CTaskInterface* CResources::GetTaskPointerByNameFromMap(std::string sTaskName)
 {
-    std::cout << "CResources::GetTaskPointerByNameFromMap 1"  << std::endl;
+//    std::cout << "CResources::GetTaskPointerByNameFromMap 1"  << std::endl;
     auto it = m_mpxCommonTaskMap.find(sTaskName);
 
     if (it != m_mpxCommonTaskMap.end())
     {
         // ключ найден
-        std::cout << "CResources::GetTaskPointerByNameFromMap 2" << std::endl;
+//        std::cout << "CResources::GetTaskPointerByNameFromMap 2" << std::endl;
 //            std::cout << "CResources::GetTaskPointerByNameFromMap this name" << " "
 //                      << ((it -> second) -> GetTaskNamePointer()) << std::endl;
         return it -> second.get(); // Преобразование shared_ptr в raw указатель
     }
     else
     {
-        std::cout << "CResources::GetTaskPointerByNameFromMap 3" << std::endl;
+//        std::cout << "CResources::GetTaskPointerByNameFromMap 3" << std::endl;
         return nullptr; // Вернем nullptr, если ключ не найден
     }
 }

@@ -54,18 +54,14 @@ public:
     CModbusSmSlave(CResources* pxResources);
     virtual ~CModbusSmSlave();
 
+    uint8_t Init(void);
+
     void SetModbusSlaveLinkLayerName(std::string sName);
     void SetModbusSlaveLinkLayer(CModbusSmSlaveLinkLayer* pxModbusSlaveLinkLayer);
 
-    void SetModbusSlaveLinkLayerLinkName(std::string sName);
-    void SetModbusSlaveLinkLayerLink(CLinkInterface* pxLink);
-    CLinkInterface* GetModbusSlaveLinkLayerLink() const;
-
     void SetDeviceControlName(std::string sName);
-
-    void SetDeviceControlLinkName(std::string sName);
-    void SetDeviceControlLink(CLinkInterface* pxLink);
-    CLinkInterface* GetDeviceControlLink() const;
+    void SetDeviceControl(CDeviceControl* pxDeviceControl);
+    CDeviceControl* GetDeviceContro(void);
 
     void ModbusWorkingArraysInit(void);
 
@@ -173,12 +169,8 @@ public:
     std::string m_sModbusSlaveLinkLayerName;
     CModbusSlaveLinkLayerInterface* m_pxModbusSlaveLinkLayer;
 
-    std::string m_sModbusSlaveLinkLayerLinkName;
-    CLinkInterface* m_pxModbusSlaveLinkLayerLink;
-
     std::string m_sDeviceControlName;
-    std::string m_sDeviceControlLinkName;
-    CLinkInterface* m_pxDeviceControlLink;
+    CDeviceControl* m_pxDeviceControl;
 
     uint8_t m_uiOwnAddress;
     uint8_t m_uiSlaveAddress;
@@ -194,6 +186,8 @@ public:
     uint8_t *m_puiTxBuffer;
     // Вспомогательный буфер.
     uint8_t* m_puiIntermediateBuff;
+
+    CDataContainerDataBase* m_pxOperatingDataContainer;
 };
 
 //-------------------------------------------------------------------------------

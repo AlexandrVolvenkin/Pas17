@@ -554,11 +554,9 @@ uint8_t CDataStore::ReadTemporaryServiceSection(void)
     uint16_t uiEncodedLength =
         (CHammingCodes::CalculateEncodedDataLength(sizeof(struct TServiseSection)));
 
-    std::cout << "CDataStore::ReadTemporaryServiceSection 11 " << std::endl;
     // получим указатель на контейнер с данными задачи
     CDataContainerDataBase* pxDataContainer = m_pxOperatingDataContainer;
 
-    std::cout << "CDataStore::ReadTemporaryServiceSection 12 " << std::endl;
     pxDataContainer ->
     SetDataIndex(0);
     pxDataContainer ->
@@ -568,7 +566,6 @@ uint8_t CDataStore::ReadTemporaryServiceSection(void)
     pxDataContainer ->
     SetDataLength(uiEncodedLength);
 
-    std::cout << "CDataStore::ReadTemporaryServiceSection 13 " << std::endl;
     // Прочитаем закодированные данные.
     // При чтении данных возникла ошибка?
     if (!(m_pxStorageDevice -> ReadBlock(pxDataContainer)))
@@ -845,21 +842,21 @@ uint16_t CDataStore::ReadBlock(uint8_t *puiDestination, uint8_t uiBlock)
     uint16_t uiEncodedLength;
     uint16_t uiSourceOffset;
 
-    for(int i=0; i<100; i++)
-    {
-        // Блок существует?
-        if ((m_xServiseSection.xServiseSectionData.
-                axBlockPositionData[i].uiLength != 0) &&
-                (m_xServiseSection.xServiseSectionData.
-                 axBlockPositionData[i].uiEncodedLength != 0))
-        {
-            std::cout << "CDataStore::ReadBlock Block ok " << i << std::endl;
-        }
-        else
-        {
-            std::cout << "CDataStore::ReadBlock Block error " << i << std::endl;
-        }
-    }
+//    for(int i=0; i<100; i++)
+//    {
+//        // Блок существует?
+//        if ((m_xServiseSection.xServiseSectionData.
+//                axBlockPositionData[i].uiLength != 0) &&
+//                (m_xServiseSection.xServiseSectionData.
+//                 axBlockPositionData[i].uiEncodedLength != 0))
+//        {
+//            std::cout << "CDataStore::ReadBlock Block ok " << i << std::endl;
+//        }
+//        else
+//        {
+//            std::cout << "CDataStore::ReadBlock Block error " << i << std::endl;
+//        }
+//    }
 
     // Блок существует?
     if ((m_xServiseSection.xServiseSectionData.
