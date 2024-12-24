@@ -200,6 +200,23 @@ size_t CTask::GetObjectLength(void)
 //
 //}
 
+//-------------------------------------------------------------------------------
+bool CTask::IsTaskReady(void)
+{
+    uint8_t uiFsmState = GetFsmState();
+
+    if ((uiFsmState == READY) ||
+            (uiFsmState == DONE_OK) ||
+            (uiFsmState == DONE_ERROR))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
 ////-------------------------------------------------------------------------------
 //uint8_t CTask::Fsm(void)
 //{

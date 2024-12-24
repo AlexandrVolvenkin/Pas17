@@ -20,6 +20,8 @@ class CTask;
 class CResources;
 class CCommunicationDeviceNew;
 class CCommunicationDeviceInterfaceNew;
+class CDataContainerInterface;
+class CDataContainerDataBase;
 
 //-------------------------------------------------------------------------------
 class CModbusSlaveLinkLayerInterface : public CTask
@@ -39,11 +41,13 @@ public:
 
 //    CModbusSlaveLinkLayerInterface();
 //    virtual ~CModbusSlaveLinkLayerInterface();
-
+    virtual uint8_t Init(void) {};
     virtual void SetCommunicationDeviceName(std::string sName) {};
     virtual void SetCommunicationDevice(CCommunicationDeviceInterfaceNew* pxCommunicationDevice) {};
     void CommunicationDeviceInit(const char* pccIpAddress,
                                  uint16_t uiPort) {};
+    virtual bool SetTaskData(CDataContainerDataBase* pxDataContainer) {};
+    virtual bool GetTaskData(CDataContainerDataBase* pxDataContainer) {};
     uint8_t Fsm(void) {};
 
     virtual uint8_t* GetRxBuffer(void) {};
@@ -88,8 +92,6 @@ public:
     virtual uint16_t ResponseException(uint8_t, uint8_t, uint8_t, uint8_t * ) {};
     virtual uint16_t Tail(uint8_t *, uint16_t ) {};
     virtual uint16_t Send(uint8_t *, uint16_t ) {};
-//    int16_t Receive(uint8_t * , uint16_t ) {};
-//    uint16_t GetFrameLength(void) {};
     virtual int8_t FrameCheck(uint8_t * , uint16_t ) {};
 
     virtual uint16_t GetFrameLength(void) {};

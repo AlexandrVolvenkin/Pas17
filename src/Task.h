@@ -75,6 +75,7 @@ public:
 //    virtual CDataContainerInterface* GetTaskData(void) {};
 
     virtual size_t GetObjectLength(void) {};
+    virtual bool IsTaskReady(void) {};
 
     virtual void SetResources(CResources* pxResources) {};
     virtual CResources* GetResources(void) {};
@@ -147,6 +148,7 @@ public:
 //    CDataContainerInterface* GetTaskData(void);
 
     size_t GetObjectLength(void);
+    bool IsTaskReady(void);
 
 //    uint8_t Init(void);
 //    uint8_t Fsm(void);
