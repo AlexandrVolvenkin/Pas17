@@ -129,6 +129,12 @@ void CModbusSmSlave::ModbusWorkingArraysInit(void)
     m_uiHoldingRegistersNumber = m_pxResources -> GetHoldingRegistersNumber();
     m_puiInputRegisters = m_pxResources -> GetInputRegisters();
     m_uiInputRegistersNumber = m_pxResources -> GetInputRegistersNumber();
+
+    m_puiDiscreteInputs[0] = 0;
+    m_puiDiscreteInputs[1] = 1;
+    m_puiDiscreteInputs[2] = 2;
+    m_puiDiscreteInputs[3] = 3;
+    m_puiDiscreteInputs[4] = 4;
 }
 
 //-------------------------------------------------------------------------------
