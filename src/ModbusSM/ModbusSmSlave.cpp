@@ -121,14 +121,14 @@ const char *CModbusSmSlave::ModbusStringError(int errnum)
 void CModbusSmSlave::ModbusWorkingArraysInit(void)
 {
     std::cout << "CModbusSmSlave ModbusWorkingArraysInit 1"  << std::endl;
-//    m_puiCoils = m_pxResources -> GetCoils();
-//    m_uiCoilsNumber = m_pxResources -> GetCoilsNumber();
-//    m_puiDiscreteInputs = m_pxResources -> GetDiscreteInputs();
-//    m_uiDiscreteInputsNumber = m_pxResources -> GetDiscreteInputsNumber();
-//    m_puiHoldingRegisters = m_pxResources -> GetHoldingRegisters();
-//    m_uiHoldingRegistersNumber = m_pxResources -> GetHoldingRegistersNumber();
-//    m_puiInputRegisters = m_pxResources -> GetInputRegisters();
-//    m_uiInputRegistersNumber = m_pxResources -> GetInputRegistersNumber();
+    m_puiCoils = m_pxResources -> GetCoils();
+    m_uiCoilsNumber = m_pxResources -> GetCoilsNumber();
+    m_puiDiscreteInputs = m_pxResources -> GetDiscreteInputs();
+    m_uiDiscreteInputsNumber = m_pxResources -> GetDiscreteInputsNumber();
+    m_puiHoldingRegisters = m_pxResources -> GetHoldingRegisters();
+    m_uiHoldingRegistersNumber = m_pxResources -> GetHoldingRegistersNumber();
+    m_puiInputRegisters = m_pxResources -> GetInputRegisters();
+    m_uiInputRegistersNumber = m_pxResources -> GetInputRegistersNumber();
 }
 
 //-------------------------------------------------------------------------------
@@ -321,6 +321,63 @@ uint16_t CModbusSmSlave::ByteToBitPack(uint16_t uiAddress,
 }
 
 //-------------------------------------------------------------------------------
+uint16_t CModbusSmSlave::ReadDiscreteInputs(void)
+{
+    std::cout << "CModbusSmSlave::ReadDiscreteInputs 1" << std::endl;
+
+    uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
+    uint8_t * puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
+    uint8_t * puiResponse = m_pxModbusSlaveLinkLayer -> GetTxBuffer();
+    uint16_t  uiLength = m_pxModbusSlaveLinkLayer -> GetFrameLength();
+
+    int8_t uiSlave = puiRequest[uiPduOffset - 1];
+    int8_t uiFunctionCode = puiRequest[uiPduOffset];
+    uint16_t uiAddress = ((static_cast<uint16_t>(puiRequest[uiPduOffset + 1]) << 8) |
+                          (static_cast<uint16_t>(puiRequest[uiPduOffset + 2])));
+
+    uint16_t uiNumberB = ((static_cast<uint16_t>(puiRequest[uiPduOffset + 3]) << 8) |
+                          (static_cast<uint16_t>(puiRequest[uiPduOffset + 4])));
+
+    if (uiNumberB < 1 || MODBUS_MAX_READ_BITS < uiNumberB)
+    {
+        uiLength = m_pxModbusSlaveLinkLayer ->
+                   ResponseException(uiSlave,
+                                     uiFunctionCode,
+                                     MODBUS_EXCEPTION_ILLEGAL_DATA_VALUE,
+                                     puiResponse);
+    }
+    else if ((uiAddress + uiNumberB) > m_uiDiscreteInputsNumber)
+    {
+        uiLength = m_pxModbusSlaveLinkLayer ->
+                   ResponseException(uiSlave,
+                                     uiFunctionCode,
+                                     MODBUS_EXCEPTION_ILLEGAL_DATA_ADDRESS,
+                                     puiResponse);
+    }
+    else
+    {
+        std::cout << "CModbusSmSlave::ReadDiscreteInputs 4" << std::endl;
+        uiLength = m_pxModbusSlaveLinkLayer ->
+                   ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
+
+        if (uiNumberB % 8)
+        {
+            puiResponse[uiLength++] = ((uiNumberB / 8) + 1);
+        }
+        else
+        {
+            puiResponse[uiLength++] = (uiNumberB / 8);
+        }
+        uiLength = ByteToBitPack(uiAddress,
+                                 uiNumberB,
+                                 m_puiDiscreteInputs,
+                                 puiResponse,
+                                 uiLength);
+    }
+    return uiLength;
+}
+
+//-------------------------------------------------------------------------------
 uint16_t CModbusSmSlave::ReadExceptionStatus(void)
 {
 //    errno = ENOPROTOOPT;
@@ -398,6 +455,10 @@ uint16_t CModbusSmSlave::RequestProcessing(void)
     switch (uiFunctionCode)
     {
         std::cout << "CModbusSmSlave::RequestProcessing 3" << std::endl;
+
+    case _FC_READ_DISCRETE_INPUTS:
+        uiLength = ReadDiscreteInputs();
+        break;
 
     case _FC_READ_EXCEPTION_STATUS:
         uiLength = ReadExceptionStatus();

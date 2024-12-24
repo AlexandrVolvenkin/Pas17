@@ -82,6 +82,7 @@ public:
 //    void SlaveSet(uint8_t );
 
 //-------------------------------------------------------------------------------
+    uint16_t ReadDiscreteInputs(void);
     uint16_t ReadExceptionStatus(void);
     uint16_t ReportSlaveID(void);
     uint16_t RequestProcessing(void);
@@ -186,6 +187,15 @@ public:
     uint8_t *m_puiTxBuffer;
     // Вспомогательный буфер.
     uint8_t* m_puiIntermediateBuff;
+
+    uint8_t *m_puiCoils;
+    uint8_t *m_puiDiscreteInputs;
+    uint16_t *m_puiHoldingRegisters;
+    uint16_t *m_puiInputRegisters;
+    uint16_t m_uiCoilsNumber;
+    uint16_t m_uiDiscreteInputsNumber;
+    uint16_t m_uiHoldingRegistersNumber;
+    uint16_t m_uiInputRegistersNumber;
 
     CDataContainerDataBase* m_pxOperatingDataContainer;
 };

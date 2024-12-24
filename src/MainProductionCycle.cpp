@@ -155,12 +155,12 @@ uint8_t CMainProductionCycle::CreateTasks(void)
     m_pxDataStoreCheck = pxDataStoreCheck;
 
 
-////-------------------------------------------------------------------------------
-//    m_xResources.ModbusWorkingArraysCreate(COILS_WORK_ARRAY_LENGTH,
-//                                           DISCRETE_INPUTS_ARRAY_LENGTH,
-//                                           HOLDING_REGISTERS_ARRAY_LENGTH,
-//                                           INPUT_REGISTERS_ARRAY_LENGTH);
-//
+//-------------------------------------------------------------------------------
+    m_xResources.ModbusWorkingArraysCreate(COILS_WORK_ARRAY_LENGTH,
+                                           DISCRETE_INPUTS_ARRAY_LENGTH,
+                                           HOLDING_REGISTERS_ARRAY_LENGTH,
+                                           INPUT_REGISTERS_ARRAY_LENGTH);
+
 //    CSerialPortCommunicationDevice* pxSerialPortCommunicationDeviceCom1 = 0;
 //    pxSerialPortCommunicationDeviceCom1 =
 //        static_cast<CSerialPortCommunicationDevice*>(m_xResources.AddCommonTaskToMap("SerialPortCommunicationDeviceCom1",
@@ -257,8 +257,8 @@ uint8_t CMainProductionCycle::CreateTasks(void)
     SetModbusSlaveLinkLayerName("ModbusSmSlaveLinkLayerEveDisplay");
     pxModbusSmSlaveEveDisplay ->
     SetDeviceControlName("DeviceControlRtuUpperLevel");
-//    pxModbusSmSlaveEveDisplay ->
-//    ModbusWorkingArraysInit();
+    pxModbusSmSlaveEveDisplay ->
+    ModbusWorkingArraysInit();
     m_xResources.AddCurrentlyRunningTasksList(pxModbusSmSlaveEveDisplay);
 
 }
