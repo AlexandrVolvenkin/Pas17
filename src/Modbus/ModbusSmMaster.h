@@ -1,5 +1,5 @@
-﻿#ifndef CMODBUSMASTER_H
-#define CMODBUSMASTER_H
+#ifndef CMODBUSSMMASTER_H
+#define CMODBUSSMMASTER_H
 ////-------------------------------------------------------------------------------
 ////  Source      : FileName.cpp
 ////  Created     : 01.06.2022
@@ -17,6 +17,7 @@
 #include <time.h>
 
 #include "Modbus.h"
+#include "ModbusSmMasterLinkLayer.h"
 
 class CTimer;
 class CPlatform;
@@ -30,7 +31,7 @@ class CModbusMasterLinkLayerInterface;
 class CModbusSmMasterLinkLayer;
 
 //-------------------------------------------------------------------------------
-class CModbusMaster : public CTask
+class CModbusSmMaster : public CTask
 {
 public:
     enum
@@ -56,14 +57,14 @@ public:
         MAX_MODBUS_MESSAGE_LENGTH = 256,
     };
 
-    CModbusMaster();
-    CModbusMaster(CResources* pxResources);
-    virtual ~CModbusMaster();
+    CModbusSmMaster();
+    CModbusSmMaster(CResources* pxResources);
+    virtual ~CModbusSmMaster();
 
     uint8_t Init(void);
 
     void SetModbusMasterLinkLayerName(std::string sName);
-    void SetModbusMasterLinkLayer(CModbusMasterLinkLayer* pxModbusMasterLinkLayer);
+    void SetModbusMasterLinkLayer(CModbusSmMasterLinkLayer* pxModbusMasterLinkLayer);
 
     void SetDeviceControlName(std::string sName);
     void SetDeviceControl(CDeviceControl* pxDeviceControl);
@@ -194,4 +195,5 @@ public:
 
 //-------------------------------------------------------------------------------
 
-#endif // CMODBUSMASTER_H
+
+#endif // CMODBUSSMMASTER_H

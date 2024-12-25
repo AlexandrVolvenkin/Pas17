@@ -178,7 +178,7 @@ int16_t CSharedMemoryCommunicationDevice::ReceiveContinue(uint8_t *puiDestinatio
         uint16_t uiLength,
         uint32_t uiReceiveTimeout)
 {
-    std::cout << "CSharedMemoryCommunicationDevice::ReceiveContinue 1"  << std::endl;
+//    std::cout << "CSharedMemoryCommunicationDevice::ReceiveContinue 1"  << std::endl;
 
 //    uint16_t uiLengthLocal = m_puiClientToServerBuffer[0];
 //
@@ -199,11 +199,27 @@ int16_t CSharedMemoryCommunicationDevice::ReceiveContinue(uint8_t *puiDestinatio
 //        return 0;
 //    }
 
+
     uint16_t uiLengthLocal = m_puiServerToClientBuffer[0];
 
     if (uiLengthLocal)
     {
         cout << "CSharedMemoryCommunicationDevice::ReceiveContinue 2" << endl;
+        {
+            cout << "CSharedMemoryCommunicationDevice::ReceiveContinue m_puiServerToClientBuffer" << endl;
+            unsigned char *pucSourceTemp;
+            pucSourceTemp = (unsigned char*)m_puiServerToClientBuffer;
+            for(int i=0; i<32; )
+            {
+                for(int j=0; j<8; j++)
+                {
+                    cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+                }
+                cout << endl;
+                i += 8;
+            }
+        }
+
         m_puiServerToClientBuffer[0] = 0;
 
         memcpy(puiDestination,
@@ -214,7 +230,7 @@ int16_t CSharedMemoryCommunicationDevice::ReceiveContinue(uint8_t *puiDestinatio
     }
     else
     {
-        cout << "CSharedMemoryCommunicationDevice::ReceiveContinue 3" << endl;
+//        cout << "CSharedMemoryCommunicationDevice::ReceiveContinue 3" << endl;
         return 0;
     }
 }

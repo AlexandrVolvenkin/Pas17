@@ -1,4 +1,4 @@
-﻿
+
 //-------------------------------------------------------------------------------
 //  Source      : FileName.cpp
 //  Created     : 01.06.2022
@@ -17,17 +17,14 @@
 #include "DeviceControl.h"
 #include "Link.h"
 #include "DataContainer.h"
-#include "ModbusMaster.h"
-#include "ModbusSlaveLinkLayer.h"
-#include "ModbusMasterLinkLayer.h"
-#include "ModbusSmMasterLinkLayer.h"
+#include "ModbusSmMaster.h"
 
 using namespace std;
 
 //-------------------------------------------------------------------------------
-CModbusMaster::CModbusMaster()
+CModbusSmMaster::CModbusSmMaster()
 {
-    std::cout << "CModbusMaster constructor"  << std::endl;
+    std::cout << "CModbusSmMaster constructor"  << std::endl;
     m_pxModbusMasterLinkLayer = 0;
     m_pxDeviceControl = 0;
     // получим имя класса.
@@ -39,51 +36,51 @@ CModbusMaster::CModbusMaster()
 }
 
 //-------------------------------------------------------------------------------
-CModbusMaster::~CModbusMaster()
+CModbusSmMaster::~CModbusSmMaster()
 {
     delete[] m_puiIntermediateBuff;
 }
 
 //-------------------------------------------------------------------------------
-uint8_t CModbusMaster::Init(void)
+uint8_t CModbusSmMaster::Init(void)
 {
-    std::cout << "CModbusMaster Init"  << std::endl;
+    std::cout << "CModbusSmMaster Init"  << std::endl;
     m_pxOperatingDataContainer = static_cast<CDataContainerDataBase*>(GetResources() ->
                                  AddDataContainer(std::make_shared<CDataContainerDataBase>()));
 }
 
 //-------------------------------------------------------------------------------
-void CModbusMaster::SetModbusMasterLinkLayerName(std::string sName)
+void CModbusSmMaster::SetModbusMasterLinkLayerName(std::string sName)
 {
     m_sModbusMasterLinkLayerName = sName;
 }
 
 //-------------------------------------------------------------------------------
-void CModbusMaster::SetModbusMasterLinkLayer(CModbusMasterLinkLayer* pxModbusMasterLinkLayer)
+void CModbusSmMaster::SetModbusMasterLinkLayer(CModbusSmMasterLinkLayer* pxModbusMasterLinkLayer)
 {
     m_pxModbusMasterLinkLayer = pxModbusMasterLinkLayer;
 }
 
 //-------------------------------------------------------------------------------
-void CModbusMaster::SetDeviceControlName(std::string sName)
+void CModbusSmMaster::SetDeviceControlName(std::string sName)
 {
     m_sDeviceControlName = sName;
 }
 
 //-------------------------------------------------------------------------------
-void CModbusMaster::SetDeviceControl(CDeviceControl* pxDeviceControl)
+void CModbusSmMaster::SetDeviceControl(CDeviceControl* pxDeviceControl)
 {
     m_pxDeviceControl = pxDeviceControl;
 }
 
 //-------------------------------------------------------------------------------
-CDeviceControl* CModbusMaster::GetDeviceContro(void)
+CDeviceControl* CModbusSmMaster::GetDeviceContro(void)
 {
     return m_pxDeviceControl;
 }
 
 //-------------------------------------------------------------------------------
-const char *CModbusMaster::ModbusStringError(int errnum)
+const char *CModbusSmMaster::ModbusStringError(int errnum)
 {
     switch (errnum)
     {
@@ -121,9 +118,9 @@ const char *CModbusMaster::ModbusStringError(int errnum)
 }
 
 //-------------------------------------------------------------------------------
-void CModbusMaster::ModbusWorkingArraysInit(void)
+void CModbusSmMaster::ModbusWorkingArraysInit(void)
 {
-    std::cout << "CModbusMaster ModbusWorkingArraysInit 1"  << std::endl;
+    std::cout << "CModbusSmMaster ModbusWorkingArraysInit 1"  << std::endl;
     m_puiCoils = m_pxResources -> GetCoils();
     m_uiCoilsNumber = m_pxResources -> GetCoilsNumber();
     m_puiDiscreteInputs = m_pxResources -> GetDiscreteInputs();
@@ -134,9 +131,15 @@ void CModbusMaster::ModbusWorkingArraysInit(void)
     m_uiInputRegistersNumber = m_pxResources -> GetInputRegistersNumber();
 }
 
+////-------------------------------------------------------------------------------
+//void CModbusSmMaster::SlaveSet(uint8_t uiSlave)
+//{
+//    m_uiOwnAddress = uiSlave;
+//}
+
 //-------------------------------------------------------------------------------
 /* Build the exception response */
-uint16_t CModbusMaster::ResponseException(uint8_t uiSlave, uint8_t uiFunctionCode, uint8_t uiExceptionCode, uint8_t *puiResponse)
+uint16_t CModbusSmMaster::ResponseException(uint8_t uiSlave, uint8_t uiFunctionCode, uint8_t uiExceptionCode, uint8_t *puiResponse)
 {
     uint16_t uiLength;
 
@@ -149,11 +152,11 @@ uint16_t CModbusMaster::ResponseException(uint8_t uiSlave, uint8_t uiFunctionCod
 }
 
 //-------------------------------------------------------------------------------
-uint16_t CModbusMaster::ByteToBitPack(uint16_t uiAddress,
-                                      uint16_t uiNumberB,
-                                      uint8_t *m_puiCoils,
-                                      uint8_t *puiResponse,
-                                      uint16_t uiLength)
+uint16_t CModbusSmMaster::ByteToBitPack(uint16_t uiAddress,
+                                        uint16_t uiNumberB,
+                                        uint8_t *m_puiCoils,
+                                        uint8_t *puiResponse,
+                                        uint16_t uiLength)
 {
     uint8_t uiData = 0;
     uint8_t uiShift = 0;
@@ -185,7 +188,7 @@ uint16_t CModbusMaster::ByteToBitPack(uint16_t uiAddress,
 }
 
 //-----------------------------------------------------------------------------------------------------
-int8_t CModbusMaster::ReadDiscreteInputsRequest(uint8_t uiSlaveAddress,
+int8_t CModbusSmMaster::ReadDiscreteInputsRequest(uint8_t uiSlaveAddress,
         uint16_t uiAddress,
         uint16_t uiNumberB)
 {
@@ -229,62 +232,62 @@ int8_t CModbusMaster::ReadDiscreteInputsRequest(uint8_t uiSlaveAddress,
 }
 
 //-------------------------------------------------------------------------------
-uint16_t CModbusMaster::ReadDiscreteInputsAnswer(void)
+uint16_t CModbusSmMaster::ReadDiscreteInputsAnswer(void)
 {
-    std::cout << "CModbusMaster::ReadDiscreteInputsAnswer 1" << std::endl;
+    std::cout << "CModbusSmMaster::ReadDiscreteInputsAnswer 1" << std::endl;
 
     uint16_t uiPduOffset = m_pxModbusMasterLinkLayer -> GetPduOffset();
     uint8_t * puiRequest = m_pxModbusMasterLinkLayer -> GetRxBuffer();
 
 
-    {
-        cout << "CModbusMaster::ReadDiscreteInputsAnswer puiRequest" << endl;
-        unsigned char *pucSourceTemp;
-        pucSourceTemp = (unsigned char*)puiRequest;
-        for(int i=0; i<32; )
-        {
-            for(int j=0; j<8; j++)
             {
-                cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+                cout << "CModbusSmMaster::ReadDiscreteInputsAnswer puiRequest" << endl;
+                unsigned char *pucSourceTemp;
+                pucSourceTemp = (unsigned char*)puiRequest;
+                for(int i=0; i<32; )
+                {
+                    for(int j=0; j<8; j++)
+                    {
+                        cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+                    }
+                    cout << endl;
+                    i += 8;
+                }
             }
-            cout << endl;
-            i += 8;
-        }
-    }
     SetBytesFromBits(m_puiDiscreteInputs,
                      m_uiAddress,
                      m_uiQuantity,
                      &puiRequest[uiPduOffset + 2]);
 
-    {
-        cout << "CModbusMaster::ReadDiscreteInputsAnswer m_puiDiscreteInputs" << endl;
-        unsigned char *pucSourceTemp;
-        pucSourceTemp = (unsigned char*)m_puiDiscreteInputs;
-        for(int i=0; i<32; )
-        {
-            for(int j=0; j<8; j++)
             {
-                cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+                cout << "CModbusSmMaster::ReadDiscreteInputsAnswer m_puiDiscreteInputs" << endl;
+                unsigned char *pucSourceTemp;
+                pucSourceTemp = (unsigned char*)m_puiDiscreteInputs;
+                for(int i=0; i<32; )
+                {
+                    for(int j=0; j<8; j++)
+                    {
+                        cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+                    }
+                    cout << endl;
+                    i += 8;
+                }
             }
-            cout << endl;
-            i += 8;
-        }
-    }
 
     return m_uiQuantity;
 }
 
 //-------------------------------------------------------------------------------
-uint16_t CModbusMaster::ReadExceptionStatus(void)
+uint16_t CModbusSmMaster::ReadExceptionStatus(void)
 {
 //    errno = ENOPROTOOPT;
     return -1;
 }
 
 //-------------------------------------------------------------------------------
-uint16_t CModbusMaster::ReportSlaveID(void)
+uint16_t CModbusSmMaster::ReportSlaveID(void)
 {
-    std::cout << "CModbusMaster::ReportSlaveID 1" << std::endl;
+    std::cout << "CModbusSmMaster::ReportSlaveID 1" << std::endl;
 
     uint16_t uiPduOffset = m_pxModbusMasterLinkLayer -> GetPduOffset();
     uint8_t * puiRequest = m_pxModbusMasterLinkLayer -> GetRxBuffer();
@@ -294,10 +297,10 @@ uint16_t CModbusMaster::ReportSlaveID(void)
     int8_t uiSlave = puiRequest[uiPduOffset - 1];
     int8_t uiFunctionCode = puiRequest[uiPduOffset];
 
-    std::cout << "CModbusMaster::ReportSlaveID uiSlave "  << (int)uiSlave << std::endl;
-    std::cout << "CModbusMaster::ReportSlaveID uiFunctionCode "  << (int)uiFunctionCode << std::endl;
+    std::cout << "CModbusSmMaster::ReportSlaveID uiSlave "  << (int)uiSlave << std::endl;
+    std::cout << "CModbusSmMaster::ReportSlaveID uiFunctionCode "  << (int)uiFunctionCode << std::endl;
 
-    std::cout << "CModbusMaster::ReportSlaveID 4" << std::endl;
+    std::cout << "CModbusSmMaster::ReportSlaveID 4" << std::endl;
 
     CDeviceControl* pxDeviceControl =
         (CDeviceControl*)GetResources() ->
@@ -319,7 +322,7 @@ uint16_t CModbusMaster::ReportSlaveID(void)
     uiLength += m_pxModbusMasterLinkLayer ->
                 ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
 
-    std::cout << "CModbusMaster::ReportSlaveID 7" << std::endl;
+    std::cout << "CModbusSmMaster::ReportSlaveID 7" << std::endl;
     return uiLength;
 
 
@@ -363,16 +366,16 @@ uint16_t CModbusMaster::ReportSlaveID(void)
 ////AnswerProcessing
 
 //-------------------------------------------------------------------------------
-uint16_t CModbusMaster::ReadExceptionStatusAnswer(void)
+uint16_t CModbusSmMaster::ReadExceptionStatusAnswer(void)
 {
 //    errno = ENOPROTOOPT;
     return -1;
 }
 
 //-------------------------------------------------------------------------------
-uint16_t CModbusMaster::ReportSlaveIDAnswer(void)
+uint16_t CModbusSmMaster::ReportSlaveIDAnswer(void)
 {
-    std::cout << "CModbusMaster::ReportSlaveIDAnswer 1" << std::endl;
+    std::cout << "CModbusSmMaster::ReportSlaveIDAnswer 1" << std::endl;
 
     uint16_t uiPduOffset = m_pxModbusMasterLinkLayer -> GetPduOffset();
     uint8_t * puiRequest = m_pxModbusMasterLinkLayer -> GetRxBuffer();
@@ -382,10 +385,10 @@ uint16_t CModbusMaster::ReportSlaveIDAnswer(void)
     int8_t uiSlave = puiRequest[uiPduOffset - 1];
     int8_t uiFunctionCode = puiRequest[uiPduOffset];
 
-    std::cout << "CModbusMaster::ReportSlaveIDAnswer uiSlave "  << (int)uiSlave << std::endl;
-    std::cout << "CModbusMaster::ReportSlaveIDAnswer uiFunctionCode "  << (int)uiFunctionCode << std::endl;
+    std::cout << "CModbusSmMaster::ReportSlaveIDAnswer uiSlave "  << (int)uiSlave << std::endl;
+    std::cout << "CModbusSmMaster::ReportSlaveIDAnswer uiFunctionCode "  << (int)uiFunctionCode << std::endl;
 
-    std::cout << "CModbusMaster::ReportSlaveIDAnswer 4" << std::endl;
+    std::cout << "CModbusSmMaster::ReportSlaveIDAnswer 4" << std::endl;
 
     CDeviceControl* pxDeviceControl =
         (CDeviceControl*)GetResources() ->
@@ -407,14 +410,14 @@ uint16_t CModbusMaster::ReportSlaveIDAnswer(void)
     uiLength += m_pxModbusMasterLinkLayer ->
                 ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
 
-    std::cout << "CModbusMaster::ReportSlaveIDAnswer 7" << std::endl;
+    std::cout << "CModbusSmMaster::ReportSlaveIDAnswer 7" << std::endl;
     return uiLength;
 }
 
 //-------------------------------------------------------------------------------
-uint16_t CModbusMaster::AnswerProcessing(void)
+uint16_t CModbusSmMaster::AnswerProcessing(void)
 {
-    std::cout << "CModbusMaster::AnswerProcessing 1" << std::endl;
+    std::cout << "CModbusSmMaster::AnswerProcessing 1" << std::endl;
 
     uint16_t uiPduOffset = m_pxModbusMasterLinkLayer -> GetPduOffset();
     uint8_t * puiRequest = m_pxModbusMasterLinkLayer -> GetRxBuffer();
@@ -424,20 +427,20 @@ uint16_t CModbusMaster::AnswerProcessing(void)
     int8_t uiSlave = puiRequest[uiPduOffset - 1];
     int8_t uiFunctionCode = puiRequest[uiPduOffset];
 
-    std::cout << "CModbusMaster::AnswerProcessing uiSlave "  << (int)uiSlave << std::endl;
-    std::cout << "CModbusMaster::AnswerProcessing uiFunctionCode "  << (int)uiFunctionCode << std::endl;
+    std::cout << "CModbusSmMaster::AnswerProcessing uiSlave "  << (int)uiSlave << std::endl;
+    std::cout << "CModbusSmMaster::AnswerProcessing uiFunctionCode "  << (int)uiFunctionCode << std::endl;
 
     /* Filter on the Modbus unit identifier (slave) in RTU mode */
     if (uiSlave != m_uiOwnAddress && uiSlave != MODBUS_BROADCAST_ADDRESS)
     {
-        std::cout << "CModbusMaster::AnswerProcessing 2" << std::endl;
+        std::cout << "CModbusSmMaster::AnswerProcessing 2" << std::endl;
         return 0;
     }
 
     // проверяем сохранённый локально текущий код функции.
     switch (m_uiFunctionCode)
     {
-        std::cout << "CModbusMaster::AnswerProcessing 3" << std::endl;
+        std::cout << "CModbusSmMaster::AnswerProcessing 3" << std::endl;
 
     case _FC_READ_DISCRETE_INPUTS:
         uiLength = ReadDiscreteInputsAnswer();
@@ -452,7 +455,7 @@ uint16_t CModbusMaster::AnswerProcessing(void)
         break;
 
     default:
-        std::cout << "CModbusMaster::AnswerProcessing 4" << std::endl;
+        std::cout << "CModbusSmMaster::AnswerProcessing 4" << std::endl;
         uiLength = m_pxModbusMasterLinkLayer ->
                    ResponseException(uiSlave,
                                      uiFunctionCode,
@@ -461,12 +464,12 @@ uint16_t CModbusMaster::AnswerProcessing(void)
         break;
     }
 
-    std::cout << "CModbusMaster::AnswerProcessing 5" << std::endl;
+    std::cout << "CModbusSmMaster::AnswerProcessing 5" << std::endl;
     return uiLength;
 }
 
 //-------------------------------------------------------------------------------
-void CModbusMaster::SetByteFromBits(uint8_t *dest, uint16_t index, const uint8_t value)
+void CModbusSmMaster::SetByteFromBits(uint8_t *dest, uint16_t index, const uint8_t value)
 {
     uint16_t i;
 
@@ -477,8 +480,8 @@ void CModbusMaster::SetByteFromBits(uint8_t *dest, uint16_t index, const uint8_t
 }
 
 //-------------------------------------------------------------------------------
-void CModbusMaster::SetBytesFromBits(uint8_t *dest, uint16_t index, uint16_t nb_bits,
-                                     const uint8_t *tab_byte)
+void CModbusSmMaster::SetBytesFromBits(uint8_t *dest, uint16_t index, uint16_t nb_bits,
+                                       const uint8_t *tab_byte)
 {
     uint16_t i;
     uint16_t shift = 0;
@@ -493,8 +496,8 @@ void CModbusMaster::SetBytesFromBits(uint8_t *dest, uint16_t index, uint16_t nb_
 }
 
 //-------------------------------------------------------------------------------
-uint8_t CModbusMaster::GetByteFromBits(const uint8_t *src, uint16_t index,
-                                       uint16_t nb_bits)
+uint8_t CModbusSmMaster::GetByteFromBits(const uint8_t *src, uint16_t index,
+        uint16_t nb_bits)
 {
     uint16_t i;
     uint8_t value = 0;
@@ -515,7 +518,7 @@ uint8_t CModbusMaster::GetByteFromBits(const uint8_t *src, uint16_t index,
 }
 
 //-------------------------------------------------------------------------------
-float CModbusMaster::GetFloat(const uint16_t *src)
+float CModbusSmMaster::GetFloat(const uint16_t *src)
 {
     float f = 0.0f;
     uint32_t i;
@@ -527,7 +530,7 @@ float CModbusMaster::GetFloat(const uint16_t *src)
 }
 
 //-------------------------------------------------------------------------------
-void CModbusMaster::SetFloat(float f, uint16_t *dest)
+void CModbusSmMaster::SetFloat(float f, uint16_t *dest)
 {
     uint32_t i = 0;
 
@@ -537,30 +540,30 @@ void CModbusMaster::SetFloat(float f, uint16_t *dest)
 }
 
 //-------------------------------------------------------------------------------
-uint8_t CModbusMaster::Fsm(void)
+uint8_t CModbusSmMaster::Fsm(void)
 {
-//    std::cout << "CModbusMaster::Fsm 1" << endl;
+//    std::cout << "CModbusSmMaster::Fsm 1" << endl;
     uint8_t uiReadyTaskCounter = 0;
     switch (GetFsmState())
     {
     case IDDLE:
-//        std::cout << "CModbusMaster::Fsm IDDLE"  << std::endl;
+//        std::cout << "CModbusSmMaster::Fsm IDDLE"  << std::endl;
         break;
 
     case STOP:
-//        //std::cout << "CModbusMaster::Fsm STOP"  << std::endl;
+//        //std::cout << "CModbusSmMaster::Fsm STOP"  << std::endl;
         break;
 
     case START:
-        std::cout << "CModbusMaster::Fsm START"  << std::endl;
-        std::cout << "CModbusMaster::Fsm m_sModbusMasterLinkLayerName" << " " << (m_sModbusMasterLinkLayerName) << std::endl;
+        std::cout << "CModbusSmMaster::Fsm START"  << std::endl;
+        std::cout << "CModbusSmMaster::Fsm m_sModbusMasterLinkLayerName" << " " << (m_sModbusMasterLinkLayerName) << std::endl;
         Init();
         GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
         SetFsmState(INIT);
         break;
 
     case INIT:
-//        std::cout << "CModbusMaster::Fsm INIT 1"  << std::endl;
+//        std::cout << "CModbusSmMaster::Fsm INIT 1"  << std::endl;
     {
         CTaskInterface* pxTask =
             GetResources() ->
@@ -568,20 +571,20 @@ uint8_t CModbusMaster::Fsm(void)
 
         if (pxTask != 0)
         {
-//                std::cout << "CModbusMaster::Fsm INIT 2"  << std::endl;
+//                std::cout << "CModbusSmMaster::Fsm INIT 2"  << std::endl;
             if (pxTask -> GetFsmState() >= READY)
             {
-//                    std::cout << "CModbusMaster::Fsm INIT 3"  << std::endl;
-                SetModbusMasterLinkLayer((CModbusMasterLinkLayer*)pxTask);
+//                    std::cout << "CModbusSmMaster::Fsm INIT 3"  << std::endl;
+                SetModbusMasterLinkLayer((CModbusSmMasterLinkLayer*)pxTask);
                 uiReadyTaskCounter += 1;
             }
         }
         else
         {
-//                std::cout << "CModbusMaster::Fsm INIT 4"  << std::endl;
+//                std::cout << "CModbusSmMaster::Fsm INIT 4"  << std::endl;
             if (GetTimerPointer() -> IsOverflow())
             {
-                std::cout << "CModbusMaster::Fsm INIT 5"  << std::endl;
+                std::cout << "CModbusSmMaster::Fsm INIT 5"  << std::endl;
                 SetFsmState(STOP);
             }
         }
@@ -595,20 +598,20 @@ uint8_t CModbusMaster::Fsm(void)
 
         if (pxTask != 0)
         {
-//                std::cout << "CModbusMaster::Fsm INIT 2"  << std::endl;
+//                std::cout << "CModbusSmMaster::Fsm INIT 2"  << std::endl;
             if (pxTask -> GetFsmState() >= READY)
             {
-//                    std::cout << "CModbusMaster::Fsm INIT 3"  << std::endl;
+//                    std::cout << "CModbusSmMaster::Fsm INIT 3"  << std::endl;
                 SetDeviceControl((CDeviceControl*)pxTask);
                 uiReadyTaskCounter += 1;
             }
         }
         else
         {
-            //                std::cout << "CModbusMaster::Fsm INIT 4"  << std::endl;
+            //                std::cout << "CModbusSmMaster::Fsm INIT 4"  << std::endl;
             if (GetTimerPointer() -> IsOverflow())
             {
-                std::cout << "CModbusMaster::Fsm INIT 5"  << std::endl;
+                std::cout << "CModbusSmMaster::Fsm INIT 5"  << std::endl;
                 SetFsmState(STOP);
             }
         }
@@ -616,27 +619,27 @@ uint8_t CModbusMaster::Fsm(void)
 
     if (uiReadyTaskCounter > 1)
     {
-        std::cout << "CModbusMaster::Fsm INIT 9"  << std::endl;
+        std::cout << "CModbusSmMaster::Fsm INIT 9"  << std::endl;
         SetFsmState(COMMUNICATION_START);
     }
     break;
 
     case READY:
-//        std::cout << "CModbusMaster::Fsm READY"  << std::endl;
+//        std::cout << "CModbusSmMaster::Fsm READY"  << std::endl;
         break;
 
     case DONE_OK:
-//        std::cout << "CModbusMaster::Fsm DONE_OK"  << std::endl;
+//        std::cout << "CModbusSmMaster::Fsm DONE_OK"  << std::endl;
         SetFsmOperationStatus(DONE_OK);
         break;
 
     case DONE_ERROR:
-//        std::cout << "CModbusMaster::Fsm DONE_ERROR"  << std::endl;
+//        std::cout << "CModbusSmMaster::Fsm DONE_ERROR"  << std::endl;
         SetFsmOperationStatus(DONE_ERROR);
         break;
 
     case COMMUNICATION_START:
-        std::cout << "CModbusMaster::Fsm COMMUNICATION_START"  << std::endl;
+        std::cout << "CModbusSmMaster::Fsm COMMUNICATION_START"  << std::endl;
         m_pxOperatingDataContainer -> m_uiFsmCommandState =
             CModbusSmMasterLinkLayer::COMMUNICATION_START;
         m_pxModbusMasterLinkLayer ->
@@ -645,7 +648,7 @@ uint8_t CModbusMaster::Fsm(void)
         break;
 
     case COMMUNICATION_RECEIVE_START:
-        std::cout << "CModbusMaster::Fsm COMMUNICATION_RECEIVE_START"  << std::endl;
+        std::cout << "CModbusSmMaster::Fsm COMMUNICATION_RECEIVE_START"  << std::endl;
         m_pxOperatingDataContainer -> m_uiFsmCommandState =
             CModbusSmMasterLinkLayer::COMMUNICATION_RECEIVE_START;
         m_pxModbusMasterLinkLayer ->
@@ -654,7 +657,7 @@ uint8_t CModbusMaster::Fsm(void)
         break;
 
     case MESSAGE_RECEIVE_WAITING:
-//        std::cout << "CModbusMaster::Fsm MESSAGE_RECEIVE_WAITING"  << std::endl;
+//        std::cout << "CModbusSmMaster::Fsm MESSAGE_RECEIVE_WAITING"  << std::endl;
     {
         m_pxModbusMasterLinkLayer ->
         GetTaskData(m_pxOperatingDataContainer);
@@ -663,19 +666,19 @@ uint8_t CModbusMaster::Fsm(void)
 
         if (uiFsmState == DONE_OK)
         {
-            std::cout << "CModbusMaster::Fsm MESSAGE_RECEIVE_WAITING 2"  << std::endl;
+            std::cout << "CModbusSmMaster::Fsm MESSAGE_RECEIVE_WAITING 2"  << std::endl;
             SetFsmState(ANSWER_PROCESSING);
         }
         else if (uiFsmState == DONE_ERROR)
         {
-            std::cout << "CModbusMaster::Fsm MESSAGE_RECEIVE_WAITING 3"  << std::endl;
+            std::cout << "CModbusSmMaster::Fsm MESSAGE_RECEIVE_WAITING 3"  << std::endl;
             SetFsmState(DONE_ERROR);
         }
     }
     break;
 
     case ANSWER_PROCESSING:
-        std::cout << "CModbusMaster::Fsm ANSWER_PROCESSING"  << std::endl;
+        std::cout << "CModbusSmMaster::Fsm ANSWER_PROCESSING"  << std::endl;
         if (AnswerProcessing())
         {
             SetFsmState(DONE_OK);
@@ -688,17 +691,17 @@ uint8_t CModbusMaster::Fsm(void)
         break;
 
     case REQUEST_START:
-        std::cout << "CModbusMaster::Fsm REQUEST_START"  << std::endl;
+        std::cout << "CModbusSmMaster::Fsm REQUEST_START"  << std::endl;
         GetTimerPointer() -> Set(m_uiTransmitDelayTimeout);
         SetFsmState(BEFORE_REQUEST_WAITING);
         break;
 
     case BEFORE_REQUEST_WAITING:
-//        std::cout << "CModbusMaster::Fsm BEFORE_REQUEST_WAITING"  << std::endl;
+//        std::cout << "CModbusSmMaster::Fsm BEFORE_REQUEST_WAITING"  << std::endl;
         // Закончилось время паузы между приёмом и передачей(5 милисекунд)?
         if (GetTimerPointer() -> IsOverflow())
         {
-            std::cout << "CModbusMaster::Fsm BEFORE_REQUEST_WAITING 2"  << std::endl;
+            std::cout << "CModbusSmMaster::Fsm BEFORE_REQUEST_WAITING 2"  << std::endl;
             GetTimerPointer() -> Set(m_uiConfirmationTimeout);
             m_pxOperatingDataContainer -> m_uiFsmCommandState =
                 CModbusSmMasterLinkLayer::COMMUNICATION_TRANSMIT_START;
@@ -709,7 +712,7 @@ uint8_t CModbusMaster::Fsm(void)
         break;
 
     case AFTER_REQUEST_WAITING:
-//        std::cout << "CModbusMaster::Fsm AFTER_REQUEST_WAITING"  << std::endl;
+//        std::cout << "CModbusSmMaster::Fsm AFTER_REQUEST_WAITING"  << std::endl;
     {
         m_pxModbusMasterLinkLayer ->
         GetTaskData(m_pxOperatingDataContainer);
@@ -718,12 +721,12 @@ uint8_t CModbusMaster::Fsm(void)
 
         if (uiFsmState == DONE_OK)
         {
-            std::cout << "CModbusMaster::Fsm AFTER_REQUEST_WAITING 2"  << std::endl;
+            std::cout << "CModbusSmMaster::Fsm AFTER_REQUEST_WAITING 2"  << std::endl;
             SetFsmState(COMMUNICATION_RECEIVE_START);
         }
         else if (uiFsmState == DONE_ERROR)
         {
-            std::cout << "CModbusMaster::Fsm AFTER_REQUEST_WAITING 3"  << std::endl;
+            std::cout << "CModbusSmMaster::Fsm AFTER_REQUEST_WAITING 3"  << std::endl;
             SetFsmState(DONE_ERROR);
         }
         else
@@ -731,7 +734,7 @@ uint8_t CModbusMaster::Fsm(void)
             // Время ожидания выполнения запроса закончилось?
             if (GetTimerPointer() -> IsOverflow())
             {
-                std::cout << "CModbusMaster::Fsm AFTER_REQUEST_WAITING 4"  << std::endl;
+                std::cout << "CModbusSmMaster::Fsm AFTER_REQUEST_WAITING 4"  << std::endl;
                 SetFsmState(DONE_ERROR);
             }
         }

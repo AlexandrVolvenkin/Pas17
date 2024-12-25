@@ -10,6 +10,10 @@ CPP_SRCS += \
 ../src/Modbus/ModbusRtuSlaveLinkLayer.cpp \
 ../src/Modbus/ModbusSlave.cpp \
 ../src/Modbus/ModbusSlaveLinkLayer.cpp \
+../src/Modbus/ModbusSmMaster.cpp \
+../src/Modbus/ModbusSmMasterLinkLayer.cpp \
+../src/Modbus/ModbusSmSlave.cpp \
+../src/Modbus/ModbusSmSlaveLinkLayer.cpp \
 ../src/Modbus/ModbusTcpMasterLinkLayer.cpp \
 ../src/Modbus/ModbusTcpSlaveLinkLayer.cpp 
 
@@ -20,6 +24,10 @@ CPP_DEPS += \
 ./src/Modbus/ModbusRtuSlaveLinkLayer.d \
 ./src/Modbus/ModbusSlave.d \
 ./src/Modbus/ModbusSlaveLinkLayer.d \
+./src/Modbus/ModbusSmMaster.d \
+./src/Modbus/ModbusSmMasterLinkLayer.d \
+./src/Modbus/ModbusSmSlave.d \
+./src/Modbus/ModbusSmSlaveLinkLayer.d \
 ./src/Modbus/ModbusTcpMasterLinkLayer.d \
 ./src/Modbus/ModbusTcpSlaveLinkLayer.d 
 
@@ -30,6 +38,10 @@ OBJS += \
 ./src/Modbus/ModbusRtuSlaveLinkLayer.o \
 ./src/Modbus/ModbusSlave.o \
 ./src/Modbus/ModbusSlaveLinkLayer.o \
+./src/Modbus/ModbusSmMaster.o \
+./src/Modbus/ModbusSmMasterLinkLayer.o \
+./src/Modbus/ModbusSmSlave.o \
+./src/Modbus/ModbusSmSlaveLinkLayer.o \
 ./src/Modbus/ModbusTcpMasterLinkLayer.o \
 ./src/Modbus/ModbusTcpSlaveLinkLayer.o 
 
@@ -46,7 +58,7 @@ src/Modbus/%.o: ../src/Modbus/%.cpp src/Modbus/subdir.mk
 clean: clean-src-2f-Modbus
 
 clean-src-2f-Modbus:
-	-$(RM) ./src/Modbus/ModbusMaster.d ./src/Modbus/ModbusMaster.o ./src/Modbus/ModbusMasterLinkLayer.d ./src/Modbus/ModbusMasterLinkLayer.o ./src/Modbus/ModbusRtuMasterLinkLayer.d ./src/Modbus/ModbusRtuMasterLinkLayer.o ./src/Modbus/ModbusRtuSlaveLinkLayer.d ./src/Modbus/ModbusRtuSlaveLinkLayer.o ./src/Modbus/ModbusSlave.d ./src/Modbus/ModbusSlave.o ./src/Modbus/ModbusSlaveLinkLayer.d ./src/Modbus/ModbusSlaveLinkLayer.o ./src/Modbus/ModbusTcpMasterLinkLayer.d ./src/Modbus/ModbusTcpMasterLinkLayer.o ./src/Modbus/ModbusTcpSlaveLinkLayer.d ./src/Modbus/ModbusTcpSlaveLinkLayer.o
+	-$(RM) ./src/Modbus/ModbusMaster.d ./src/Modbus/ModbusMaster.o ./src/Modbus/ModbusMasterLinkLayer.d ./src/Modbus/ModbusMasterLinkLayer.o ./src/Modbus/ModbusRtuMasterLinkLayer.d ./src/Modbus/ModbusRtuMasterLinkLayer.o ./src/Modbus/ModbusRtuSlaveLinkLayer.d ./src/Modbus/ModbusRtuSlaveLinkLayer.o ./src/Modbus/ModbusSlave.d ./src/Modbus/ModbusSlave.o ./src/Modbus/ModbusSlaveLinkLayer.d ./src/Modbus/ModbusSlaveLinkLayer.o ./src/Modbus/ModbusSmMaster.d ./src/Modbus/ModbusSmMaster.o ./src/Modbus/ModbusSmMasterLinkLayer.d ./src/Modbus/ModbusSmMasterLinkLayer.o ./src/Modbus/ModbusSmSlave.d ./src/Modbus/ModbusSmSlave.o ./src/Modbus/ModbusSmSlaveLinkLayer.d ./src/Modbus/ModbusSmSlaveLinkLayer.o ./src/Modbus/ModbusTcpMasterLinkLayer.d ./src/Modbus/ModbusTcpMasterLinkLayer.o ./src/Modbus/ModbusTcpSlaveLinkLayer.d ./src/Modbus/ModbusTcpSlaveLinkLayer.o
 
 .PHONY: clean-src-2f-Modbus
 

@@ -20,10 +20,9 @@ src/MainProductionCycle.o: ../src/MainProductionCycle.cpp ../src/Task.h \
  ../src/MainProductionCycle.h ../src/DeviceControl.h \
  D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\Modbus/ModbusSlave.h \
  D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\Modbus/ModbusRtuSlaveLinkLayer.h \
- D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\ModbusSM/ModbusSmSlave.h \
- D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\Modbus/Modbus.h \
- D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\ModbusSM/ModbusSmSlaveLinkLayer.h \
- D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\ModbusSM/ModbusSmSlaveLinkLayer.h
+ D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\Modbus/ModbusSmSlave.h \
+ D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\Modbus/ModbusSmSlaveLinkLayer.h \
+ D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\Modbus/ModbusSmSlaveLinkLayer.h
 
 ../src/Task.h:
 
@@ -89,10 +88,8 @@ D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\Modbus
 
 D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\Modbus/ModbusRtuSlaveLinkLayer.h:
 
-D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\ModbusSM/ModbusSmSlave.h:
+D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\Modbus/ModbusSmSlave.h:
 
-D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\Modbus/Modbus.h:
+D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\Modbus/ModbusSmSlaveLinkLayer.h:
 
-D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\ModbusSM/ModbusSmSlaveLinkLayer.h:
-
-D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\ModbusSM/ModbusSmSlaveLinkLayer.h:
+D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\Modbus/ModbusSmSlaveLinkLayer.h:

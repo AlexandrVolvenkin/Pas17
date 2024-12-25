@@ -92,10 +92,6 @@
 		<Unit filename="src/MainProductionCycle.h" />
 		<Unit filename="src/MessageBox.cpp" />
 		<Unit filename="src/MessageBox.h" />
-		<Unit filename="src/ModbusSM/ModbusSmSlave.cpp" />
-		<Unit filename="src/ModbusSM/ModbusSmSlave.h" />
-		<Unit filename="src/ModbusSM/ModbusSmSlaveLinkLayer.cpp" />
-		<Unit filename="src/ModbusSM/ModbusSmSlaveLinkLayer.h" />
 		<Unit filename="src/Modbus/Modbus.h" />
 		<Unit filename="src/Modbus/ModbusMaster.cpp" />
 		<Unit filename="src/Modbus/ModbusMaster.h" />
@@ -109,6 +105,14 @@
 		<Unit filename="src/Modbus/ModbusSlave.h" />
 		<Unit filename="src/Modbus/ModbusSlaveLinkLayer.cpp" />
 		<Unit filename="src/Modbus/ModbusSlaveLinkLayer.h" />
+		<Unit filename="src/Modbus/ModbusSmMaster.cpp" />
+		<Unit filename="src/Modbus/ModbusSmMaster.h" />
+		<Unit filename="src/Modbus/ModbusSmMasterLinkLayer.cpp" />
+		<Unit filename="src/Modbus/ModbusSmMasterLinkLayer.h" />
+		<Unit filename="src/Modbus/ModbusSmSlave.cpp" />
+		<Unit filename="src/Modbus/ModbusSmSlave.h" />
+		<Unit filename="src/Modbus/ModbusSmSlaveLinkLayer.cpp" />
+		<Unit filename="src/Modbus/ModbusSmSlaveLinkLayer.h" />
 		<Unit filename="src/Modbus/ModbusTcpMasterLinkLayer.cpp" />
 		<Unit filename="src/Modbus/ModbusTcpMasterLinkLayer.h" />
 		<Unit filename="src/Modbus/ModbusTcpSlaveLinkLayer.cpp" />

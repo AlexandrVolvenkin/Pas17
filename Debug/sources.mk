@@ -33,5 +33,4 @@ src/CommunicationDevice \
 src \
 src/EveDisplay \
 src/Modbus \
-src/ModbusSM \
 
