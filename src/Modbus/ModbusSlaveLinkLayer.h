@@ -96,29 +96,6 @@ public:
 
     virtual uint16_t GetFrameLength(void) {};
     virtual void SetFrameLength(uint16_t uiData) {};
-//
-//    bool IsDataWrited(void)
-//    {
-//        return m_pxCommunicationDevice -> IsDataWrited();
-//    };
-//
-//    uint16_t GetGuardTimeout(void)
-//    {
-//        return m_uiGuardTimeout;
-//    };
-//    void SetGuardTimeout(uint16_t uiData)
-//    {
-//        m_uiGuardTimeout = uiData;
-//    };
-//
-//    uint16_t HEADER_LENGTH(void)
-//    {
-//        return 7;
-//    };
-//    uint16_t CRC_LENGTH(void)
-//    {
-//        return 0;
-//    };
 
 protected:
 private:

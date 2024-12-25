@@ -18,6 +18,7 @@
 #include "Link.h"
 #include "DataContainer.h"
 #include "ModbusSmMaster.h"
+#include "ModbusSmMasterLinkLayer.h"
 
 using namespace std;
 
@@ -131,26 +132,6 @@ void CModbusSmMaster::ModbusWorkingArraysInit(void)
     m_uiInputRegistersNumber = m_pxResources -> GetInputRegistersNumber();
 }
 
-////-------------------------------------------------------------------------------
-//void CModbusSmMaster::SlaveSet(uint8_t uiSlave)
-//{
-//    m_uiOwnAddress = uiSlave;
-//}
-
-//-------------------------------------------------------------------------------
-/* Build the exception response */
-uint16_t CModbusSmMaster::ResponseException(uint8_t uiSlave, uint8_t uiFunctionCode, uint8_t uiExceptionCode, uint8_t *puiResponse)
-{
-    uint16_t uiLength;
-
-    uiLength = m_pxModbusMasterLinkLayer ->
-               ResponseBasis(uiSlave, (uiFunctionCode | 0x80), puiResponse);
-    /* Positive exception code */
-    puiResponse[uiLength++] = uiExceptionCode;
-
-    return uiLength;
-}
-
 //-------------------------------------------------------------------------------
 uint16_t CModbusSmMaster::ByteToBitPack(uint16_t uiAddress,
                                         uint16_t uiNumberB,
@@ -240,39 +221,39 @@ uint16_t CModbusSmMaster::ReadDiscreteInputsAnswer(void)
     uint8_t * puiRequest = m_pxModbusMasterLinkLayer -> GetRxBuffer();
 
 
+    {
+        cout << "CModbusSmMaster::ReadDiscreteInputsAnswer puiRequest" << endl;
+        unsigned char *pucSourceTemp;
+        pucSourceTemp = (unsigned char*)puiRequest;
+        for(int i=0; i<32; )
+        {
+            for(int j=0; j<8; j++)
             {
-                cout << "CModbusSmMaster::ReadDiscreteInputsAnswer puiRequest" << endl;
-                unsigned char *pucSourceTemp;
-                pucSourceTemp = (unsigned char*)puiRequest;
-                for(int i=0; i<32; )
-                {
-                    for(int j=0; j<8; j++)
-                    {
-                        cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
-                    }
-                    cout << endl;
-                    i += 8;
-                }
+                cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
             }
+            cout << endl;
+            i += 8;
+        }
+    }
     SetBytesFromBits(m_puiDiscreteInputs,
                      m_uiAddress,
                      m_uiQuantity,
                      &puiRequest[uiPduOffset + 2]);
 
+    {
+        cout << "CModbusSmMaster::ReadDiscreteInputsAnswer m_puiDiscreteInputs" << endl;
+        unsigned char *pucSourceTemp;
+        pucSourceTemp = (unsigned char*)m_puiDiscreteInputs;
+        for(int i=0; i<32; )
+        {
+            for(int j=0; j<8; j++)
             {
-                cout << "CModbusSmMaster::ReadDiscreteInputsAnswer m_puiDiscreteInputs" << endl;
-                unsigned char *pucSourceTemp;
-                pucSourceTemp = (unsigned char*)m_puiDiscreteInputs;
-                for(int i=0; i<32; )
-                {
-                    for(int j=0; j<8; j++)
-                    {
-                        cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
-                    }
-                    cout << endl;
-                    i += 8;
-                }
+                cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
             }
+            cout << endl;
+            i += 8;
+        }
+    }
 
     return m_uiQuantity;
 }

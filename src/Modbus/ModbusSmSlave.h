@@ -55,6 +55,7 @@ public:
     virtual ~CModbusSmSlave();
 
     uint8_t Init(void);
+//    size_t GetObjectLength(void);
 
     void SetModbusSlaveLinkLayerName(std::string sName);
     void SetModbusSlaveLinkLayer(CModbusSmSlaveLinkLayer* pxModbusSlaveLinkLayer);
@@ -79,7 +80,6 @@ public:
                              uint16_t uiInputRegistersNumber);
     void WorkingArraysDelete(void);
     static const char *ModbusStringError(int errnum);
-//    void SlaveSet(uint8_t );
 
 //-------------------------------------------------------------------------------
     uint16_t ReadExceptionStatus(void);
@@ -97,19 +97,6 @@ public:
 //protected:
 //private:
 
-//    virtual bool IsDataWrited(void) = 0;
-//    int8_t MessengerIsReady(void);
-//    virtual uint16_t Tail(uint8_t *, uint16_t ) = 0;
-    uint16_t RequestBasis(uint8_t uiSlave,
-                          uint8_t uiFunctionCode,
-                          uint16_t uiAddress,
-                          uint16_t uiBitNumber,
-                          uint8_t *puiRequest);
-    uint16_t ResponseBasis(uint8_t, uint8_t, uint8_t * );
-    uint16_t ResponseException(uint8_t, uint8_t, uint8_t, uint8_t * );
-//    uint16_t SendMessage(uint8_t *, uint16_t );
-//    virtual uint16_t Send(uint8_t *, uint16_t ) = 0;
-
     uint16_t ByteToBitPack(uint16_t,
                            uint16_t,
                            uint8_t *,
@@ -124,22 +111,11 @@ public:
     void SetFloat(float, uint16_t * );
 
 public:
-//-------------------------------------------------------------------------------
-// ModbusMaster
-//    int8_t ReadCoilsRequest(uint16_t uiAddress,
-//                            uint16_t uiBitNumber);
-//    uint16_t ReadCoilsReply(uint8_t *puiDestination);
-//    uint8_t CheckConfirmation(uint8_t *puiDestination, uint16_t uiLength);
-    int8_t ReadDiscreteInputsRequest(uint8_t uiSlaveAddress,
-                                     uint16_t uiAddress,
-                                     uint16_t uiBitNumber);
-    uint16_t ReadDiscreteInputsReceive(uint8_t *puiMessage, uint16_t uiLength);
 
 
 //private:
 //protected:
 
-//    static uint8_t CheckConfirmation(uint8_t *puiResponse, uint16_t uiLength);
     uint16_t AnswerProcessing(uint8_t *puiResponse, uint16_t uiFrameLength);
 
     uint8_t GetOwnAddress(void)
@@ -176,6 +152,7 @@ public:
     uint8_t m_uiSlaveAddress;
     uint8_t m_uiFunctionCode;
     uint16_t  m_uiLength;
+    uint16_t m_uiAddress;
     uint16_t m_uiQuantity;
     uint16_t m_uiMessageLength;
     // таймоут по отсутствию подтверждения.
@@ -186,6 +163,15 @@ public:
     uint8_t *m_puiTxBuffer;
     // Вспомогательный буфер.
     uint8_t* m_puiIntermediateBuff;
+
+    uint8_t *m_puiCoils;
+    uint8_t *m_puiDiscreteInputs;
+    uint16_t *m_puiHoldingRegisters;
+    uint16_t *m_puiInputRegisters;
+    uint16_t m_uiCoilsNumber;
+    uint16_t m_uiDiscreteInputsNumber;
+    uint16_t m_uiHoldingRegistersNumber;
+    uint16_t m_uiInputRegistersNumber;
 
     CDataContainerDataBase* m_pxOperatingDataContainer;
 };

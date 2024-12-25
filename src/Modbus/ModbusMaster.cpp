@@ -135,20 +135,6 @@ void CModbusMaster::ModbusWorkingArraysInit(void)
 }
 
 //-------------------------------------------------------------------------------
-/* Build the exception response */
-uint16_t CModbusMaster::ResponseException(uint8_t uiSlave, uint8_t uiFunctionCode, uint8_t uiExceptionCode, uint8_t *puiResponse)
-{
-    uint16_t uiLength;
-
-    uiLength = m_pxModbusMasterLinkLayer ->
-               ResponseBasis(uiSlave, (uiFunctionCode | 0x80), puiResponse);
-    /* Positive exception code */
-    puiResponse[uiLength++] = uiExceptionCode;
-
-    return uiLength;
-}
-
-//-------------------------------------------------------------------------------
 uint16_t CModbusMaster::ByteToBitPack(uint16_t uiAddress,
                                       uint16_t uiNumberB,
                                       uint8_t *m_puiCoils,

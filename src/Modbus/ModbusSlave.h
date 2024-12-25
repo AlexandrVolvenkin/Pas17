@@ -67,7 +67,6 @@ public:
 
     void ModbusWorkingArraysInit(void);
     static const char *ModbusStringError(int errnum);
-//    void SlaveSet(uint8_t );
 
 //-------------------------------------------------------------------------------
     uint16_t ReadCoils(void);

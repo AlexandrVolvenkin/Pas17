@@ -38,7 +38,6 @@ CModbusSmSlave::CModbusSmSlave()
 CModbusSmSlave::~CModbusSmSlave()
 {
     delete[] m_puiIntermediateBuff;
-    WorkingArraysDelete();
 }
 
 //-------------------------------------------------------------------------------
@@ -121,167 +120,14 @@ const char *CModbusSmSlave::ModbusStringError(int errnum)
 void CModbusSmSlave::ModbusWorkingArraysInit(void)
 {
     std::cout << "CModbusSmSlave ModbusWorkingArraysInit 1"  << std::endl;
-//    m_puiCoils = m_pxResources -> GetCoils();
-//    m_uiCoilsNumber = m_pxResources -> GetCoilsNumber();
-//    m_puiDiscreteInputs = m_pxResources -> GetDiscreteInputs();
-//    m_uiDiscreteInputsNumber = m_pxResources -> GetDiscreteInputsNumber();
-//    m_puiHoldingRegisters = m_pxResources -> GetHoldingRegisters();
-//    m_uiHoldingRegistersNumber = m_pxResources -> GetHoldingRegistersNumber();
-//    m_puiInputRegisters = m_pxResources -> GetInputRegisters();
-//    m_uiInputRegistersNumber = m_pxResources -> GetInputRegistersNumber();
-}
-
-//-------------------------------------------------------------------------------
-void CModbusSmSlave::WorkingArraysInit(uint8_t *puiCoils,
-                                       uint8_t *puiDiscreteInputs,
-                                       uint16_t *puiHoldingRegisters,
-                                       uint16_t *puiInputRegisters,
-                                       uint16_t uiCoilsNumber,
-                                       uint16_t uiDiscreteInputsNumber,
-                                       uint16_t uiHoldingRegistersNumber,
-                                       uint16_t uiInputRegistersNumber)
-{
-//    m_puiCoils = puiCoils;
-//    m_puiDiscreteInputs = puiDiscreteInputs;
-//    m_puiHoldingRegisters = puiHoldingRegisters;
-//    m_puiInputRegisters = puiInputRegisters;
-//    m_uiCoilsNumber = uiCoilsNumber;
-//    m_uiDiscreteInputsNumber = uiDiscreteInputsNumber;
-//    m_uiHoldingRegistersNumber = uiHoldingRegistersNumber;
-//    m_uiInputRegistersNumber = uiInputRegistersNumber;
-}
-
-//-------------------------------------------------------------------------------
-void CModbusSmSlave::WorkingArraysCreate(uint16_t uiCoilsNumber,
-        uint16_t uiDiscreteInputsNumber,
-        uint16_t uiHoldingRegistersNumber,
-        uint16_t uiInputRegistersNumber)
-{
-//    m_puiCoils = new uint8_t(uiCoilsNumber);
-//    m_puiDiscreteInputs = new uint8_t(uiDiscreteInputsNumber);
-//    m_puiHoldingRegisters = new uint16_t(uiHoldingRegistersNumber);
-//    m_puiInputRegisters = new uint16_t(uiInputRegistersNumber);
-//
-//    m_uiCoilsNumber = uiCoilsNumber;
-//    m_uiDiscreteInputsNumber = uiDiscreteInputsNumber;
-//    m_uiHoldingRegistersNumber = uiHoldingRegistersNumber;
-//    m_uiInputRegistersNumber = uiInputRegistersNumber;
-}
-
-//-------------------------------------------------------------------------------
-void CModbusSmSlave::WorkingArraysDelete(void)
-{
-//    delete m_puiCoils;
-//    delete m_puiDiscreteInputs;
-//    delete m_puiHoldingRegisters;
-//    delete m_puiInputRegisters;
-}
-
-////-------------------------------------------------------------------------------
-//void CModbusSmSlave::SlaveSet(uint8_t uiSlave)
-//{
-//    m_uiOwnAddress = uiSlave;
-//}
-
-//-------------------------------------------------------------------------------
-/* Builds a TCP request header */
-uint16_t CModbusSmSlave::RequestBasis(uint8_t uiSlave,
-                                      uint8_t uiFunctionCode,
-                                      uint16_t uiAddress,
-                                      uint16_t uiBitNumber,
-                                      uint8_t *puiRequest)
-{
-//    /* Extract from MODBUS Messaging on TCP/IP Implementation Guide V1.0b
-//       (page 23/46):
-//       The transaction identifier is used to associate the future response
-//       with the request. So, at a time, on a TCP connection, this identifier
-//       must be unique. */
-//
-//    /* Transaction ID */
-//    if (m_uiRequestTransactionId < UINT16_MAX)
-//    {
-//        m_uiRequestTransactionId++;
-//    }
-//    else
-//    {
-//        m_uiRequestTransactionId = 0;
-//    }
-//    puiRequest[0] = (m_uiRequestTransactionId >> 8);
-//    puiRequest[1] = (m_uiRequestTransactionId & 0x00ff);
-//
-//    /* Protocol Modbus */
-//    puiRequest[2] = 0;
-//    puiRequest[3] = 0;
-//
-//    /* Length will be defined later by set_puiRequest_length_tcp at offsets 4
-//       and 5 */
-//
-//    puiRequest[6] = uiSlave;
-//    puiRequest[7] = uiFunctionCode;
-//    puiRequest[8] = (static_cast<uint8_t>(uiAddress >> 8));
-//    puiRequest[9] = (static_cast<uint8_t>(uiAddress & 0x00ff));
-//    puiRequest[10] = (static_cast<uint8_t>(uiBitNumber >> 8));
-//    puiRequest[11] = (static_cast<uint8_t>(uiBitNumber & 0x00ff));
-
-//    return _MODBUS_TCP_PRESET_REQ_LENGTH;
-}
-
-//-------------------------------------------------------------------------------
-/* Builds a TCP response header */
-uint16_t CModbusSmSlave::ResponseBasis(uint8_t uiSlave, uint8_t uiFunctionCode, uint8_t *puiResponse)
-{
-//    /* Extract from MODBUS Messaging on TCP/IP Implementation
-//       Guide V1.0b (page 23/46):
-//       The transaction identifier is used to associate the future
-//       response with the puiRequestuest. */
-//    puiResponse[0] = (m_uiResponseTransactionId >> 8);
-//    puiResponse[1] = (m_uiResponseTransactionId & 0x00ff);
-//
-//    /* Protocol Modbus */
-//    puiResponse[2] = 0;
-//    puiResponse[3] = 0;
-//
-//    /* Length will be set later by send_msg (4 and 5) */
-//
-//    /* The slave ID is copied from the indication */
-//    puiResponse[6] = uiSlave;
-//    puiResponse[7] = uiFunctionCode;
-//
-//    return _MODBUS_TCP_PRESET_RSP_LENGTH;
-}
-
-////-------------------------------------------------------------------------------
-//int8_t CModbusSmSlave::MessengerIsReady(void)
-//{
-////    if (GetFsmState() == IDDLE)
-////    {
-////        return 1;
-////    }
-////    else
-////    {
-////        return 0;
-////    }
-//}
-//
-////-------------------------------------------------------------------------------
-//uint16_t CModbusSmSlave::SendMessage(uint8_t *puiMessage, uint16_t uiLength)
-//{
-//    uiLength = Tail(puiMessage, uiLength);
-//    return Send(puiMessage, uiLength);
-//}
-
-//-------------------------------------------------------------------------------
-/* Build the exception response */
-uint16_t CModbusSmSlave::ResponseException(uint8_t uiSlave, uint8_t uiFunctionCode, uint8_t uiExceptionCode, uint8_t *puiResponse)
-{
-    uint16_t uiLength;
-
-    uiLength = m_pxModbusSlaveLinkLayer ->
-               ResponseBasis(uiSlave, (uiFunctionCode | 0x80), puiResponse);
-    /* Positive exception code */
-    puiResponse[uiLength++] = uiExceptionCode;
-
-    return uiLength;
+    m_puiCoils = m_pxResources -> GetCoils();
+    m_uiCoilsNumber = m_pxResources -> GetCoilsNumber();
+    m_puiDiscreteInputs = m_pxResources -> GetDiscreteInputs();
+    m_uiDiscreteInputsNumber = m_pxResources -> GetDiscreteInputsNumber();
+    m_puiHoldingRegisters = m_pxResources -> GetHoldingRegisters();
+    m_uiHoldingRegistersNumber = m_pxResources -> GetHoldingRegistersNumber();
+    m_puiInputRegisters = m_pxResources -> GetInputRegisters();
+    m_uiInputRegistersNumber = m_pxResources -> GetInputRegistersNumber();
 }
 
 //-------------------------------------------------------------------------------

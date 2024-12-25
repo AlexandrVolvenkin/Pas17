@@ -5,6 +5,7 @@
 //  email       : aav-36@mail.ru
 //  GitHub      : https://github.com/AlexandrVolvenkin
 //-------------------------------------------------------------------------------
+
 #include <iostream>
 #include <string.h>
 #include <typeinfo>
@@ -14,9 +15,10 @@
 #include "Task.h"
 #include "Resources.h"
 #include "CommunicationDevice.h"
-#include <Crc.h>
-#include "ModbusSlaveLinkLayer.h"
 #include "ModbusSmSlaveLinkLayer.h"
+#include <Crc.h>
+#include "DataContainer.h"
+#include "ModbusSlaveLinkLayer.h"
 
 using namespace std;
 
@@ -26,65 +28,58 @@ CModbusSmSlaveLinkLayer::CModbusSmSlaveLinkLayer()
     std::cout << "CModbusSmSlaveLinkLayer constructor"  << std::endl;
     m_pxCommunicationDevice = 0;
     SetFsmState(START);
-
-////    // Создание или открытие разделяемой памяти
-////    addr = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
-////
-////    if (addr == MAP_FAILED)
-////    {
-////        perror("mmap");
-////        exit(EXIT_FAILURE);
-////    }
-////
-////    cout << "Shared memory created successfully at address: " << addr << endl;
-//
-////-------------------------------------------------------------------------------
-//    int fd;
-//
-//    fd = shm_open("SharedMemoryTxBuffer",
-//                  O_CREAT | O_RDWR,
-//                  S_IRWXU | S_IRWXG);
-//    if(fd < 0)
-//    {
-//        printf("%s\n", strerror(errno));
-//    }
-//    printf("Shared Memory Open: %s %d\n","SharedMemoryTxBuffer", fd);
-//    ftruncate(fd, MODBUS_SM_MAX_ADU_LENGTH);
-//    m_puiTxBuffer = (uint8_t*)mmap(0,
-//                                   MODBUS_SM_MAX_ADU_LENGTH,
-//                                   PROT_READ | PROT_WRITE, MAP_SHARED,
-//                                   fd,
-//                                   0);
-//    close(fd);
-//
-////-------------------------------------------------------------------------------
-//    fd = shm_open("SharedMemoryRxBuffer",
-//                  O_CREAT | O_RDWR,
-//                  S_IRWXU | S_IRWXG);
-//    if(fd < 0)
-//    {
-//        printf("%s\n", strerror(errno));
-//    }
-//    printf("Shared Memory Open: %s %d\n","SharedMemoryRxBuffer", fd);
-//    ftruncate(fd, MODBUS_SM_MAX_ADU_LENGTH);
-//    m_puiRxBuffer = (uint8_t*)mmap(0,
-//                                   MODBUS_SM_MAX_ADU_LENGTH,
-//                                   PROT_READ | PROT_WRITE, MAP_SHARED,
-//                                   fd,
-//                                   0);
-//    close(fd);
 }
 
 //-------------------------------------------------------------------------------
 CModbusSmSlaveLinkLayer::~CModbusSmSlaveLinkLayer()
 {
     m_pxCommunicationDevice -> Close();
-    delete m_pxCommunicationDevice;
+}
 
-//    munmap(m_puiTxBuffer,
-//           MODBUS_SM_MAX_ADU_LENGTH);
-//    munmap(m_puiRxBuffer,
-//           MODBUS_SM_MAX_ADU_LENGTH);
+//-------------------------------------------------------------------------------
+uint8_t CModbusSmSlaveLinkLayer::Init(void)
+{
+    std::cout << "CModbusSmSlaveLinkLayer Init"  << std::endl;
+    m_pxOperatingDataContainer = static_cast<CDataContainerDataBase*>(GetResources() ->
+                                 AddDataContainer(std::make_shared<CDataContainerDataBase>()));
+}
+
+//-------------------------------------------------------------------------------
+bool CModbusSmSlaveLinkLayer::SetTaskData(CDataContainerDataBase* pxDataContainer)
+{
+//    std::cout << "CModbusSmSlaveLinkLayer::SetTaskData 1" << std::endl;
+    uint8_t uiFsmState = GetFsmState();
+
+    if (IsTaskReady())
+    {
+        std::cout << "CModbusSmSlaveLinkLayer::SetTaskData 2" << std::endl;
+        *m_pxOperatingDataContainer = *pxDataContainer;
+        SetFsmState(m_pxOperatingDataContainer -> m_uiFsmCommandState);
+        return true;
+    }
+    else
+    {
+        std::cout << "CModbusSmSlaveLinkLayer::SetTaskData 3" << std::endl;
+        return false;
+    }
+}
+
+//-------------------------------------------------------------------------------
+bool CModbusSmSlaveLinkLayer::GetTaskData(CDataContainerDataBase* pxDataContainer)
+{
+//    std::cout << "CModbusSmSlaveLinkLayer::GetTaskData 1" << std::endl;
+
+    m_pxOperatingDataContainer -> m_uiFsmCommandState = GetFsmState();
+    *pxDataContainer = *m_pxOperatingDataContainer;
+
+    return true;
+}
+
+//-------------------------------------------------------------------------------
+size_t CModbusSmSlaveLinkLayer::GetObjectLength(void)
+{
+    std::cout << "CModbusSmSlaveLinkLayer GetObjectLength"  << std::endl;
+    return sizeof(*this);
 }
 
 //-------------------------------------------------------------------------------
@@ -161,7 +156,6 @@ void CModbusSmSlaveLinkLayer::ReceiveStart(void)
 //-------------------------------------------------------------------------------
 void CModbusSmSlaveLinkLayer::TransmitStart(void)
 {
-    cout << "CModbusSmSlaveLinkLayer::TransmitStart 1" << endl;
     SetFsmCommandState(COMMUNICATION_TRANSMIT_START);
 }
 
@@ -352,69 +346,57 @@ uint8_t CModbusSmSlaveLinkLayer::Fsm(void)
     case START:
         std::cout << "CModbusSmSlaveLinkLayer::Fsm START"  << std::endl;
         std::cout << "CModbusSmSlaveLinkLayer::Fsm m_sCommunicationDeviceName" << " " << (m_sCommunicationDeviceName) << std::endl;
+        Init();
         GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
         SetFsmState(INIT);
         break;
 
     case INIT:
 //        std::cout << "CModbusSmSlaveLinkLayer::Fsm INIT 1"  << std::endl;
-        {
-            CTaskInterface* pxTask =
-                GetResources() ->
-                GetTaskPointerByNameFromMap(m_sCommunicationDeviceName);
+    {
+        CTaskInterface* pxTask =
+            GetResources() ->
+            GetTaskPointerByNameFromMap(m_sCommunicationDeviceName);
 
-            if (pxTask != 0)
-            {
+        if (pxTask != 0)
+        {
 //                std::cout << "CModbusSmSlaveLinkLayer::Fsm INIT 2"  << std::endl;
-                if (pxTask -> GetFsmState() >= READY)
-                {
-//                    std::cout << "CModbusSmSlaveLinkLayer::Fsm INIT 3"  << std::endl;
-                    SetCommunicationDevice((CCommunicationDeviceInterfaceNew*)pxTask);
-                    SetFsmCommandState(0);
-                    SetFsmState(READY);
-                }
-            }
-            else
+            if (pxTask -> GetFsmState() >= READY)
             {
-//                std::cout << "CModbusSmSlaveLinkLayer::Fsm INIT 4"  << std::endl;
-                if (GetTimerPointer() -> IsOverflow())
-                {
-                    std::cout << "CModbusSmSlaveLinkLayer::Fsm INIT 5"  << std::endl;
-                    SetFsmState(STOP);
-                }
+//                    std::cout << "CModbusSmSlaveLinkLayer::Fsm INIT 3"  << std::endl;
+                SetCommunicationDevice((CCommunicationDeviceInterfaceNew*)pxTask);
+                SetFsmState(READY);
             }
         }
-        break;
+        else
+        {
+//                std::cout << "CModbusSmSlaveLinkLayer::Fsm INIT 4"  << std::endl;
+            if (GetTimerPointer() -> IsOverflow())
+            {
+                std::cout << "CModbusSmSlaveLinkLayer::Fsm INIT 5"  << std::endl;
+                SetFsmState(STOP);
+            }
+        }
+    }
+    break;
 
     case READY:
 //        std::cout << "CModbusSmSlaveLinkLayer::Fsm READY"  << std::endl;
-
-        if (GetFsmCommandState() != 0)
-        {
-            std::cout << "CModbusSmSlaveLinkLayer::Fsm READY 2"  << std::endl;
-            SetFsmState(GetFsmCommandState());
-            SetFsmCommandState(0);
-        }
         break;
 
     case DONE_OK:
-        std::cout << "CModbusSmSlaveLinkLayer::Fsm DONE_OK"  << std::endl;
-        SetFsmOperationStatus(DONE_OK);
-        SetFsmState(READY);
+//        std::cout << "CModbusSmSlaveLinkLayer::Fsm DONE_OK"  << std::endl;
         break;
 
     case DONE_ERROR:
-        std::cout << "CModbusSmSlaveLinkLayer::Fsm DONE_ERROR"  << std::endl;
-        SetFsmOperationStatus(DONE_ERROR);
-        SetFsmState(READY);
+//        std::cout << "CModbusSmSlaveLinkLayer::Fsm DONE_ERROR"  << std::endl;
         break;
 
     case COMMUNICATION_START:
         std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_START"  << std::endl;
         m_pxCommunicationDevice -> Open();
         m_uiFrameLength = 0;
-//        SetFsmState(COMMUNICATION_RECEIVE_START);
-        SetFsmState(COMMUNICATION_FRAME_RECEIVED);
+        SetFsmState(COMMUNICATION_RECEIVE_START);
         break;
 
     case COMMUNICATION_RECEIVE_START:
@@ -429,21 +411,7 @@ uint8_t CModbusSmSlaveLinkLayer::Fsm(void)
         {
             std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_START 2"  << std::endl;
             m_uiFrameLength = m_uiFrameLength + iBytesNumber;
-//            {
-//                cout << "CModbusSmSlaveLinkLayer::Fsm m_auiRxBuffer" << endl;
-//                unsigned char *pucSourceTemp;
-//                pucSourceTemp = (unsigned char*)m_auiRxBuffer;
-//                for(int i=0; i<32; )
-//                {
-//                    for(int j=0; j<8; j++)
-//                    {
-//                        cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
-//                    }
-//                    cout << endl;
-//                    i += 8;
-//                }
-//            }
-            SetFsmState(COMMUNICATION_FRAME_CHECK);
+            SetFsmState(COMMUNICATION_RECEIVE_END);
         }
         else if (iBytesNumber < 0)
         {
@@ -458,50 +426,77 @@ uint8_t CModbusSmSlaveLinkLayer::Fsm(void)
         }
         break;
 
+    case COMMUNICATION_RECEIVE_CONTINUE:
+//        std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_CONTINUE"  << std::endl;
+        m_uiFrameLength = 0;
+        iBytesNumber =
+            m_pxCommunicationDevice ->
+            ReceiveContinue((m_auiRxBuffer + m_uiFrameLength),
+                            (MODBUS_SM_MAX_ADU_LENGTH - m_uiFrameLength),
+                            m_uiReceiveTimeout);
+        if (iBytesNumber > 0)
+        {
+            std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_CONTINUE 2"  << std::endl;
+            m_uiFrameLength = m_uiFrameLength + iBytesNumber;
+            SetFsmState(COMMUNICATION_FRAME_CHECK);
+        }
+        else if (iBytesNumber < 0)
+        {
+            std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_CONTINUE 3"  << std::endl;
+            cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_CONTINUE errno " << errno << endl;
+            SetFsmState(COMMUNICATION_RECEIVE_ERROR);
+        }
+        else
+        {
+//            std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_CONTINUE 4"  << std::endl;
+//            cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_CONTINUE errno " << errno << endl;
+        }
+        break;
+
     case COMMUNICATION_RECEIVE_END:
-        std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END"  << std::endl;
-//        iBytesNumber =
-//            m_pxCommunicationDevice ->
-//            ReceiveContinue((m_auiRxBuffer + m_uiFrameLength),
-//                            (MODBUS_SM_MAX_ADU_LENGTH - m_uiFrameLength),
-//                            m_uiGuardTimeout);
-//        if (iBytesNumber > 0)
-//        {
-//            std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END 2"  << std::endl;
-//            cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END errno " << errno << endl;
-//            m_uiFrameLength = m_uiFrameLength + iBytesNumber;
-//        }
-//        else if (iBytesNumber < 0)
-//        {
+//        std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END"  << std::endl;
+        iBytesNumber =
+            m_pxCommunicationDevice ->
+            ReceiveContinue((m_auiRxBuffer + m_uiFrameLength),
+                            (MODBUS_SM_MAX_ADU_LENGTH - m_uiFrameLength),
+                            m_uiGuardTimeout);
+        if (iBytesNumber > 0)
+        {
+            std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END 2"  << std::endl;
+            cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END errno " << errno << endl;
+            m_uiFrameLength = m_uiFrameLength + iBytesNumber;
+        }
+        else if (iBytesNumber < 0)
+        {
 //            std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END 3"  << std::endl;
 //            cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END errno " << errno << endl;
-//            SetFsmState(COMMUNICATION_RECEIVE_ERROR);
-//        }
-//        else
-//        {
+            SetFsmState(COMMUNICATION_RECEIVE_ERROR);
+        }
+        else
+        {
 //            std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END 4"  << std::endl;
 //            cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END errno " << errno << endl;
-//            SetFsmState(COMMUNICATION_FRAME_CHECK);
-//
-//            {
-//                cout << "CModbusSmSlaveLinkLayer::Fsm m_auiRxBuffer" << endl;
-//                unsigned char *pucSourceTemp;
-//                pucSourceTemp = (unsigned char*)m_auiRxBuffer;
-//                for(int i=0; i<32; )
-//                {
-//                    for(int j=0; j<8; j++)
-//                    {
-//                        cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
-//                    }
-//                    cout << endl;
-//                    i += 8;
-//                }
-//            }
-//        }
+            SetFsmState(COMMUNICATION_FRAME_CHECK);
+        }
         break;
 
     case COMMUNICATION_FRAME_CHECK:
         std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_FRAME_CHECK 1"  << std::endl;
+
+            {
+                cout << "CModbusSmSlaveLinkLayer::Fsm m_auiRxBuffer" << endl;
+                unsigned char *pucSourceTemp;
+                pucSourceTemp = (unsigned char*)m_auiRxBuffer;
+                for(int i=0; i<32; )
+                {
+                    for(int j=0; j<8; j++)
+                    {
+                        cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+                    }
+                    cout << endl;
+                    i += 8;
+                }
+            }
         if (FrameCheck(m_auiRxBuffer, m_uiFrameLength))
         {
             std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_FRAME_CHECK 2"  << std::endl;
@@ -510,33 +505,17 @@ uint8_t CModbusSmSlaveLinkLayer::Fsm(void)
         else
         {
             std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_FRAME_CHECK 3"  << std::endl;
-            SetFsmState(COMMUNICATION_RECEIVE_ERROR);
+            SetFsmState(COMMUNICATION_RECEIVE_CONTINUE);
         }
         break;
 
     case COMMUNICATION_FRAME_RECEIVED:
         std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_FRAME_RECEIVED"  << std::endl;
-
         SetFsmState(DONE_OK);
         break;
 
     case COMMUNICATION_TRANSMIT_START:
         std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_TRANSMIT_START"  << std::endl;
-
-//        {
-//            cout << "CModbusSmSlaveLinkLayer::Fsm m_auiTxBuffer" << endl;
-//            unsigned char *pucSourceTemp;
-//            pucSourceTemp = (unsigned char*)m_auiTxBuffer;
-//            for(int i=0; i<32; )
-//            {
-//                for(int j=0; j<8; j++)
-//                {
-//                    cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
-//                }
-//                cout << endl;
-//                i += 8;
-//            }
-//        }
         std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_TRANSMIT_START m_uiFrameLength "  << (int)m_uiFrameLength << std::endl;
         m_pxCommunicationDevice -> Write(m_auiTxBuffer, m_uiFrameLength);
         SetFsmState(COMMUNICATION_FRAME_TRANSMITED);
@@ -544,7 +523,6 @@ uint8_t CModbusSmSlaveLinkLayer::Fsm(void)
 
     case COMMUNICATION_FRAME_TRANSMITED:
         std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_FRAME_TRANSMITED"  << std::endl;
-        SetFsmState(DONE_OK);
         {
             cout << "CModbusSmSlaveLinkLayer::Fsm m_auiTxBuffer" << endl;
             unsigned char *pucSourceTemp;
@@ -559,6 +537,7 @@ uint8_t CModbusSmSlaveLinkLayer::Fsm(void)
                 i += 8;
             }
         }
+        SetFsmState(DONE_OK);
         break;
 
     case COMMUNICATION_RECEIVE_ERROR:
@@ -572,4 +551,3 @@ uint8_t CModbusSmSlaveLinkLayer::Fsm(void)
 }
 
 //-------------------------------------------------------------------------------
-

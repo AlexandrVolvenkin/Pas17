@@ -94,35 +94,10 @@ public:
     virtual uint16_t ResponseException(uint8_t, uint8_t, uint8_t, uint8_t * ) {};
     virtual uint16_t Tail(uint8_t *, uint16_t ) {};
     virtual uint16_t Send(uint8_t *, uint16_t ) {};
-//    int16_t Receive(uint8_t * , uint16_t ) {};
-//    uint16_t GetFrameLength(void) {};
     virtual int8_t FrameCheck(uint8_t *, uint16_t ) {};
 
     virtual uint16_t GetFrameLength(void) {};
     virtual void SetFrameLength(uint16_t uiData) {};
-//
-//    bool IsDataWrited(void)
-//    {
-//        return m_pxCommunicationDevice -> IsDataWrited();
-//    };
-//
-//    uint16_t GetGuardTimeout(void)
-//    {
-//        return m_uiGuardTimeout;
-//    };
-//    void SetGuardTimeout(uint16_t uiData)
-//    {
-//        m_uiGuardTimeout = uiData;
-//    };
-//
-//    uint16_t HEADER_LENGTH(void)
-//    {
-//        return 7;
-//    };
-//    uint16_t CRC_LENGTH(void)
-//    {
-//        return 0;
-//    };
 
 protected:
 private:

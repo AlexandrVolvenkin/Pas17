@@ -153,7 +153,6 @@ private:
 
     uint8_t m_auiRxBuffer[MODBUS_TCP_MAX_ADU_LENGTH];
     uint8_t m_auiTxBuffer[MODBUS_TCP_MAX_ADU_LENGTH];
-//    uint16_t m_uiRxBytesNumber;
     uint16_t m_uiFrameLength;
     std::thread* m_pxThread;
     CDataContainerDataBase* m_pxOperatingDataContainer;

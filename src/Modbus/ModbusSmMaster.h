@@ -17,7 +17,6 @@
 #include <time.h>
 
 #include "Modbus.h"
-#include "ModbusSmMasterLinkLayer.h"
 
 class CTimer;
 class CPlatform;
@@ -62,6 +61,7 @@ public:
     virtual ~CModbusSmMaster();
 
     uint8_t Init(void);
+//    size_t GetObjectLength(void);
 
     void SetModbusMasterLinkLayerName(std::string sName);
     void SetModbusMasterLinkLayer(CModbusSmMasterLinkLayer* pxModbusMasterLinkLayer);
@@ -72,7 +72,6 @@ public:
 
     void ModbusWorkingArraysInit(void);
     static const char *ModbusStringError(int errnum);
-//    void SlaveSet(uint8_t );
 
 //-------------------------------------------------------------------------------
     int8_t ReadDiscreteInputsRequest(uint8_t uiSlaveAddress,
@@ -132,8 +131,6 @@ public:
 //private:
 //protected:
 
-//    static uint8_t CheckConfirmation(uint8_t *puiResponse, uint16_t uiLength);
-    uint16_t AnswerProcessing(uint8_t *puiResponse, uint16_t uiFrameLength);
 
     uint8_t GetOwnAddress(void)
     {

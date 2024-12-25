@@ -61,6 +61,7 @@ public:
     virtual ~CModbusMaster();
 
     uint8_t Init(void);
+//    size_t GetObjectLength(void);
 
     void SetModbusMasterLinkLayerName(std::string sName);
     void SetModbusMasterLinkLayer(CModbusMasterLinkLayer* pxModbusMasterLinkLayer);
@@ -71,7 +72,6 @@ public:
 
     void ModbusWorkingArraysInit(void);
     static const char *ModbusStringError(int errnum);
-//    void SlaveSet(uint8_t );
 
 //-------------------------------------------------------------------------------
     int8_t ReadDiscreteInputsRequest(uint8_t uiSlaveAddress,

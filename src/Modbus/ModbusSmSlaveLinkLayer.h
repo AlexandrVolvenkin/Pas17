@@ -56,12 +56,16 @@ public:
     CModbusSmSlaveLinkLayer();
     virtual ~CModbusSmSlaveLinkLayer();
 
+    uint8_t Init(void);
+    size_t GetObjectLength(void);
     static void Process(CModbusSmSlaveLinkLayer* pxModbusSlaveLinkLayer);
 //    void CommunicationDeviceInit(const char* pccDeviceName,
 //                                 uint32_t uiBaudRate,
 //                                 uint8_t uiDataBits,
 //                                 char cParity,
 //                                 uint8_t uiStopBit);
+    bool SetTaskData(CDataContainerDataBase* pxDataContainer);
+    bool GetTaskData(CDataContainerDataBase* pxDataContainer);
     uint8_t Fsm(void);
 
     uint8_t* GetRxBuffer(void);
@@ -82,7 +86,6 @@ public:
 protected:
 private:
 
-//    void Reset(void);
     void ReceiveEnable(void);
     void ReceiveDisable(void);
     void TransmitEnable(void);
@@ -114,11 +117,6 @@ private:
         m_uiFrameLength = uiData;
     };
 
-//    bool IsDataWrited(void)
-//    {
-//        return m_pxCommunicationDevice -> IsDataWrited();
-//    };
-
     uint16_t GetGuardTimeout(void)
     {
         return m_uiGuardTimeout;
@@ -133,7 +131,6 @@ private:
         return 0;
     };
 
-//    CSerialPort* m_pxCommunicationDevice;
     uint16_t m_uiRequestTransactionId = 0;
     uint16_t m_uiResponseTransactionId = 0;
     // таймоут по отсутствию следующего байта 3.5 бода.
@@ -149,6 +146,7 @@ private:
 //    uint16_t m_uiRxBytesNumber;
     uint16_t m_uiFrameLength;
     std::thread* m_pxThread;
+    CDataContainerDataBase* m_pxOperatingDataContainer;
 };
 
 //-------------------------------------------------------------------------------
