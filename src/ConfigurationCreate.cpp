@@ -25,16 +25,4 @@ CConfigurationCreate::~CConfigurationCreate()
     //dtor
 }
 
-////-------------------------------------------------------------------------------
-//void CConfigurationCreate::SetResources(CResources* pxResources)
-//{
-//    m_pxResources = pxResources;
-//}
-//
-////-------------------------------------------------------------------------------
-//CResources* CConfigurationCreate::GetResources(void)
-//{
-//    return m_pxResources;
-//}
-
 //-------------------------------------------------------------------------------

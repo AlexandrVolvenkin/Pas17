@@ -12,6 +12,7 @@
 #include "Task.h"
 #include "Platform.h"
 #include "CommunicationDevice.h"
+#include "SpiCommunicationDevice.h"
 #include "SerialPortCommunicationDevice.h"
 #include "TcpCommunicationDevice.h"
 #include "SharedMemoryCommunicationDevice.h"
@@ -30,7 +31,6 @@
 #include "Link.h"
 #include "DataContainer.h"
 
-#include "EVE_HAL.h"
 #include "MainProductionCycle.h"
 
 //class CMainThreadProduction;
@@ -57,7 +57,7 @@ uint8_t auiTempBlock[]
     0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF
 };
 
-CSpi xSpiCommunicationDevice;
+//CSpi xSpiCommunicationDevice;
 
 
 //-------------------------------------------------------------------------------
@@ -106,7 +106,7 @@ uint8_t CMainProductionCycle::CreateTasks(void)
 {
     std::cout << "CMainProductionCycle CreateTasks"  << std::endl;
 
-    m_pxSpiCommunicationDevice = new CSpi();
+    m_pxSpiCommunicationDevice = new CSpiCommunicationDevice();
 
 //-------------------------------------------------------------------------------
     CDeviceControl* pxDeviceControl = 0;
@@ -276,8 +276,8 @@ uint8_t CMainProductionCycle::InitTasks(void)
     cout << "CGpio::Init" << endl;
 //	CPlatform::LedInitialization();
 //	cout << "CPlatform::LedInitialization" << endl;
-    m_pxSpiCommunicationDevice -> Init();
-    cout << "m_pxSpiCommunicationDevice -> Open" << endl;
+//    m_pxSpiCommunicationDevice -> Init();
+//    cout << "m_pxSpiCommunicationDevice -> Open" << endl;
 
 
 //-------------------------------------------------------------------------------

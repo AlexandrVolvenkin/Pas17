@@ -18,8 +18,8 @@ class CTimer;
 class CPlatform;
 class CTask;
 class CResources;
-class CCommunicationDeviceNew;
-class CCommunicationDeviceInterfaceNew;
+class CCommunicationDevice;
+class CCommunicationDeviceInterface;
 class CDataContainerInterface;
 class CDataContainerDataBase;
 
@@ -43,7 +43,7 @@ public:
 //    virtual ~CModbusSlaveLinkLayerInterface();
     virtual uint8_t Init(void) {};
     virtual void SetCommunicationDeviceName(std::string sName) {};
-    virtual void SetCommunicationDevice(CCommunicationDeviceInterfaceNew* pxCommunicationDevice) {};
+    virtual void SetCommunicationDevice(CCommunicationDeviceInterface* pxCommunicationDevice) {};
     void CommunicationDeviceInit(const char* pccIpAddress,
                                  uint16_t uiPort) {};
     virtual bool SetTaskData(CDataContainerDataBase* pxDataContainer) {};
@@ -118,11 +118,11 @@ public:
     virtual ~CModbusSlaveLinkLayer();
 
     void SetCommunicationDeviceName(std::string sName);
-    void SetCommunicationDevice(CCommunicationDeviceInterfaceNew* pxCommunicationDevice);
+    void SetCommunicationDevice(CCommunicationDeviceInterface* pxCommunicationDevice);
 
 protected:
     std::string m_sCommunicationDeviceName;
-    CCommunicationDeviceInterfaceNew* m_pxCommunicationDevice;
+    CCommunicationDeviceInterface* m_pxCommunicationDevice;
 private:
 };
 //-------------------------------------------------------------------------------

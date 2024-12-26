@@ -8,26 +8,13 @@
 #ifndef CCOMMUNICATIONDEVICE_H
 #define CCOMMUNICATIONDEVICE_H
 
-#include <iostream>
-#include <random>
-#include <iomanip>
 #include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <string.h>
-#include <assert.h>
-#include <time.h>
-#include <termios.h>
-#include <linux/serial.h>
-#include <sys/types.h>
-#include <sys/select.h>
 
 class CTask;
 class CResources;
 
 //-------------------------------------------------------------------------------
-class CCommunicationDeviceInterfaceNew : public CTask
+class CCommunicationDeviceInterface : public CTask
 {
 public:
     virtual void Init(void) {};
@@ -66,7 +53,6 @@ public:
                          unsigned char* pucRxBuff,
                          int iLength,
                          int iSpeed) {};
-//    virtual bool IsDataWrited(void) {};
 };
 
 //-------------------------------------------------------------------------------
@@ -77,13 +63,12 @@ public:
 
 
 
-
 //-------------------------------------------------------------------------------
-class CCommunicationDeviceNew : public CCommunicationDeviceInterfaceNew
+class CCommunicationDevice : public CCommunicationDeviceInterface
 {
 public:
-    CCommunicationDeviceNew();
-    virtual ~CCommunicationDeviceNew();
+    CCommunicationDevice();
+    virtual ~CCommunicationDevice();
 
 protected:
 

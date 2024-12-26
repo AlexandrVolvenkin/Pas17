@@ -19,7 +19,7 @@ CTimer::CTimer()
 //-------------------------------------------------------------------------------
 CTimer::CTimer(uint16_t uiTime)
 {
-    m_uiLastSystemTick = CPlatform::GetCurrentTime();
+    m_uiLastSystemTick = GetCurrentTime();
     m_uiTime = uiTime;
 }
 
@@ -30,22 +30,33 @@ CTimer::~CTimer()
 }
 
 //-------------------------------------------------------------------------------
+uint16_t CTimer::GetCurrentTime(void)
+{
+    struct timeval xCurrentTime;
+
+    gettimeofday( &xCurrentTime, NULL );
+
+    return static_cast<uint16_t>(((xCurrentTime.tv_sec * 1000) +
+                                  (xCurrentTime.tv_usec / 1000)));
+}
+
+//-------------------------------------------------------------------------------
 void CTimer::Set(uint16_t uiTime)
 {
-    m_uiLastSystemTick = CPlatform::GetCurrentTime();
+    m_uiLastSystemTick = GetCurrentTime();
     m_uiTime = uiTime;
 }
 
 //-------------------------------------------------------------------------------
 void CTimer::Reset(void)
 {
-    m_uiLastSystemTick = CPlatform::GetCurrentTime();
+    m_uiLastSystemTick = GetCurrentTime();
 }
 
 //-------------------------------------------------------------------------------
 bool CTimer::IsOverflow(void)
 {
-    return ((uint16_t)(CPlatform::GetCurrentTime() - (uint16_t)m_uiLastSystemTick)  >=
+    return ((uint16_t)(GetCurrentTime() - (uint16_t)m_uiLastSystemTick)  >=
             m_uiTime);
 }
 

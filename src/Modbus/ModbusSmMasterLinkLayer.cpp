@@ -359,7 +359,7 @@ uint8_t CModbusSmMasterLinkLayer::Fsm(void)
             if (pxTask -> GetFsmState() >= READY)
             {
 //                    std::cout << "CModbusSmMasterLinkLayer::Fsm INIT 3"  << std::endl;
-                SetCommunicationDevice((CCommunicationDeviceInterfaceNew*)pxTask);
+                SetCommunicationDevice((CCommunicationDeviceInterface*)pxTask);
                 SetFsmState(READY);
             }
         }

@@ -395,7 +395,7 @@ uint8_t CModbusTcpSlaveLinkLayer::Fsm(void)
                 if (pxTask -> GetFsmState() >= READY)
                 {
 //                    std::cout << "CModbusTcpSlaveLinkLayer::Fsm INIT 3"  << std::endl;
-                    SetCommunicationDevice((CCommunicationDeviceInterfaceNew*)pxTask);
+                    SetCommunicationDevice((CCommunicationDeviceInterface*)pxTask);
                     SetFsmState(READY);
                 }
             }

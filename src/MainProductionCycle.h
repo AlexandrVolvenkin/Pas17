@@ -90,7 +90,7 @@ private:
     CDataStore* m_pxDataStoreFileSystem;
     CDataStoreCheck* m_pxDataStoreCheck;
 
-    CSpi* m_pxSpiCommunicationDevice;
+    CSpiCommunicationDevice* m_pxSpiCommunicationDevice;
     CInternalModuleInterface* m_pxInternalModule;
     CInternalModuleInterface* m_pxInternalModuleMuvr;
 

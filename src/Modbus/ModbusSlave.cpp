@@ -2166,6 +2166,7 @@ uint8_t CModbusSlave::Fsm(void)
         std::cout << "CModbusSlave::Fsm REQUEST_PROCESSING"  << std::endl;
         if (RequestProcessing())
         {
+            // ожидаем ответ от асинхронной функции модбас?
             if (m_uiLength)
             {
                 std::cout << "CModbusSlave::Fsm REQUEST_PROCESSING 2"  << std::endl;
@@ -2174,6 +2175,8 @@ uint8_t CModbusSlave::Fsm(void)
             }
             else
             {
+                // функция модбас не асинхронная и не требует ожидать результат её работы.
+                // идём сразу на передачу ответа модбас
                 std::cout << "CModbusSlave::Fsm REQUEST_PROCESSING 3"  << std::endl;
                 GetTimerPointer() -> Set(m_uiTransmitDelayTimeout);
                 SetFsmState(BEFORE_ANSWERING_WAITING);

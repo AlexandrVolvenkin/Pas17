@@ -24,17 +24,14 @@ class CTask;
 class CResources;
 
 //-------------------------------------------------------------------------------
-class CConfigurationCreate : public CTask//, public CDfa
+class CConfigurationCreate : public CTask
 {
     public:
         CConfigurationCreate();
         virtual ~CConfigurationCreate();
 
-//    void SetResources(CResources* pxResources);
-//    CResources* GetResources(void);
-
 private:
-//    CResources* m_pxResources;
+
 };
 
 #endif // CCONFIGURATIONCREATE_H

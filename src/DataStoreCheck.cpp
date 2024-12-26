@@ -29,16 +29,13 @@ CDataStoreCheck::CDataStoreCheck()
             "%s",
             typeid(*this).name());
     m_pxStorageDevice = 0;
-//    m_pxCommandDataContainer = new CDataContainerDataBase();
-//    m_pxOperatingDataContainer = new CDataContainerDataBase();
     SetFsmState(START);
 }
 
 //-------------------------------------------------------------------------------
 CDataStoreCheck::~CDataStoreCheck()
 {
-//    delete m_pxOperatingDataContainer;
-//    delete m_pxCommandDataContainer;
+
 }
 
 //-------------------------------------------------------------------------------

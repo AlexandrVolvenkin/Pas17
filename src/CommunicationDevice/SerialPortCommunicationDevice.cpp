@@ -19,10 +19,10 @@ using namespace std;
 CSerialPortCommunicationDevice::CSerialPortCommunicationDevice()
 {
     std::cout << "CSerialPortCommunicationDevice constructor"  << std::endl;
-    // получим имя класса.
-    sprintf(GetTaskNamePointer(),
-            "%s",
-            typeid(*this).name());
+//    // получим имя класса.
+//    sprintf(GetTaskNamePointer(),
+//            "%s",
+//            typeid(*this).name());
 
 }
 //-------------------------------------------------------------------------------

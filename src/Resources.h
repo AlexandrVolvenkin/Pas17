@@ -36,7 +36,6 @@ public:
     virtual bool CheckCommonTaskMap(void) {};
     virtual CTaskInterface* GetTaskPointerByNameFromMap(std::string sTaskName) {};
     virtual std::list<CTaskInterface*>* GetCommonTasksListPointer(void) {};
-    virtual CLinkInterface* CreateLinkByPerformerName(std::string sTaskName) {};
     virtual uint8_t* CreateObjectBySize(size_t uiLength) {};
     virtual CDataContainerInterface* AddDataContainer(std::shared_ptr<CDataContainerInterface> pxDataContainer) {};
 
@@ -66,7 +65,6 @@ public:
     CTaskInterface* AddCommonTaskToMap(std::string sTaskName, std::shared_ptr<CTaskInterface> pxTask);
     bool CheckCommonTaskMap(void);
     CTaskInterface* GetTaskPointerByNameFromMap(std::string sTaskName);
-    CLinkInterface* CreateLinkByPerformerName(std::string sTaskName);
     uint8_t* CreateObjectBySize(size_t uiLength);
     CDataContainerInterface* AddDataContainer(std::shared_ptr<CDataContainerInterface> pxDataContainer);
 
@@ -95,15 +93,9 @@ public:
     void SetInputRegistersNumber(uint16_t uiData);
     uint16_t GetInputRegistersNumber(void);
 
-//    std::list<CTaskInterface*>* GetCommonTasksListPointer(void);
-//    std::list<CTaskInterface*>* GetCurrentlyRunningTasksListPointer(void);
-
 //protected:
 //
 //private:
-//    std::list<std::shared_ptr<CTaskInterface>> m_lpxCommonTasksList;
-//    std::list<std::shared_ptr<CTaskInterface>>::iterator m_xCommonTasksListIterator;
-
     std::list<CTaskInterface*> m_lpxCommonTasksList;
     std::list<CTaskInterface*>::iterator m_xCommonTasksListIterator;
     std::list<CTaskInterface*> m_lpxCurrentlyRunningTasksList;
@@ -111,7 +103,6 @@ public:
     std::list<std::shared_ptr<CDataContainerInterface>> m_lpxDataContainerList;
 
     // Создаем std::map, где ключ - строка, значение - указатель на объект
-//    std::map<std::string, CTaskInterface*> m_mpxCommonTaskMap;
     std::map<std::string, std::shared_ptr<CTaskInterface>> m_mpxCommonTaskMap;
     std::string m_sTaskName;
 
@@ -119,16 +110,6 @@ public:
     uint8_t *m_puiRxBuffer;
     uint8_t *m_puiTxBuffer;
     uint8_t *m_puiErrorCode;
-//    uint8_t *m_puiDiscreteOutputState;
-//    uint8_t m_uiUsedDiscreteOutputState;
-//    TDiscreteOutputControl *m_pxDiscreteOutputControl;
-//    uint8_t m_uiUsedDiscreteOutputs;
-//    TOutputData *m_pxDiscreteOutputDataBase;
-////    uint8_t *m_puiExternalReceiptAddress;
-////    uint8_t *m_puiExternalResetAddress;
-//    uint8_t m_uiUsedDiscreteOutputDataBase;
-//    uint8_t* m_puiErrorAlarmDataArray;
-//    uint8_t m_uiUsedErrorAlarmDataArray;
 
     uint8_t *m_puiCoils;
 

@@ -50,7 +50,9 @@ class Timer;
 class Platform;
 class CTask;
 class CResources;
+class CCommunicationDevice;
 class CCommunicationDeviceInterface;
+class CSpiCommunicationDevice;
 
 enum
 {
@@ -78,7 +80,7 @@ enum
 
 
 //-------------------------------------------------------------------------------
-class CInternalModuleInterface : public CTask//, public CDfa
+class CInternalModuleInterface : public CTask
 {
 public:
     enum

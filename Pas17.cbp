@@ -54,6 +54,8 @@
 		<Unit filename="src/CommunicationDevice/SerialPortCommunicationDevice.h" />
 		<Unit filename="src/CommunicationDevice/SharedMemoryCommunicationDevice.cpp" />
 		<Unit filename="src/CommunicationDevice/SharedMemoryCommunicationDevice.h" />
+		<Unit filename="src/CommunicationDevice/SpiCommunicationDevice.cpp" />
+		<Unit filename="src/CommunicationDevice/SpiCommunicationDevice.h" />
 		<Unit filename="src/CommunicationDevice/TcpCommunicationDevice.cpp" />
 		<Unit filename="src/CommunicationDevice/TcpCommunicationDevice.h" />
 		<Unit filename="src/Configuration.h" />
@@ -71,15 +73,6 @@
 		<Unit filename="src/DeviceControl.h" />
 		<Unit filename="src/Dfa.cpp" />
 		<Unit filename="src/Dfa.h" />
-		<Unit filename="src/EveDisplay/EVE_CMD.cpp" />
-		<Unit filename="src/EveDisplay/EVE_CMD.h" />
-		<Unit filename="src/EveDisplay/EVE_HAL.cpp" />
-		<Unit filename="src/EveDisplay/EVE_HAL.h" />
-		<Unit filename="src/EveDisplay/EVE_Resources.h" />
-		<Unit filename="src/EveDisplay/Hardware.cpp" />
-		<Unit filename="src/EveDisplay/Hardware.h" />
-		<Unit filename="src/EveDisplay/USPI.cpp" />
-		<Unit filename="src/EveDisplay/USPI.h" />
 		<Unit filename="src/HammingCodes.cpp" />
 		<Unit filename="src/HammingCodes.h" />
 		<Unit filename="src/InternalModule.cpp" />

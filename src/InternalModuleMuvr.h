@@ -116,7 +116,9 @@ class CTimer;
 class CPlatform;
 class CTask;
 class CResources;
+class CCommunicationDevice;
 class CCommunicationDeviceInterface;
+class CSpiCommunicationDevice;
 class CInternalModule;
 
 //-------------------------------------------------------------------------------

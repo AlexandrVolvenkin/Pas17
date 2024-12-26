@@ -364,7 +364,7 @@ uint8_t CModbusSmSlaveLinkLayer::Fsm(void)
             if (pxTask -> GetFsmState() >= READY)
             {
 //                    std::cout << "CModbusSmSlaveLinkLayer::Fsm INIT 3"  << std::endl;
-                SetCommunicationDevice((CCommunicationDeviceInterfaceNew*)pxTask);
+                SetCommunicationDevice((CCommunicationDeviceInterface*)pxTask);
                 SetFsmState(READY);
             }
         }
@@ -411,7 +411,7 @@ uint8_t CModbusSmSlaveLinkLayer::Fsm(void)
         {
             std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_START 2"  << std::endl;
             m_uiFrameLength = m_uiFrameLength + iBytesNumber;
-            SetFsmState(COMMUNICATION_RECEIVE_END);
+            SetFsmState(COMMUNICATION_FRAME_CHECK);
         }
         else if (iBytesNumber < 0)
         {

@@ -11,6 +11,8 @@
 #include "Resources.h"
 #include "DataStore.h"
 #include "Crc.h"
+#include "CommunicationDevice.h"
+#include "SpiCommunicationDevice.h"
 #include "InternalModule.h"
 
 using namespace std;
