@@ -35,6 +35,8 @@ class CConfigurationCreate;
 class CDataStoreCheck;
 //class CDataStore;
 //class CDeviceControl;
+class CDataContainerInterface;
+class CDataContainerDataBase;
 
 //-------------------------------------------------------------------------------
 class CMainProductionCycle : public CTask//, public CDfa

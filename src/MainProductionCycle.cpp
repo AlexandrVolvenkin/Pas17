@@ -377,12 +377,17 @@ uint8_t CMainProductionCycle::InitTasks(void)
 
     pxSpiCommunicationDeviceSpi0 -> Init();
 
-//-------------------------------------------------------------------------------
-//    InternalModule* pxInternalModuleCommon =
-//        (InternalModule*)(GetResources() ->
+////-------------------------------------------------------------------------------
+//    CInternalModule* pxInternalModuleCommon =
+//        (CInternalModule*)(GetResources() ->
 //                          GetTaskPointerByNameFromMap("InternalModuleCommon"));
 
-
+//-------------------------------------------------------------------------------
+    CInternalModuleMuvr* pxInternalModuleMuvr =
+        (CInternalModuleMuvr*)(GetResources() ->
+                               GetTaskPointerByNameFromMap("InternalModuleMuvr"));
+    pxInternalModuleMuvr ->
+    SetAddress(0);
 
 }
 
@@ -620,7 +625,7 @@ uint8_t CMainProductionCycle::Fsm(void)
 
         if (GetTimerPointer() -> IsOverflow())
         {
-        std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_START_WAITING 2"  << std::endl;
+            std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_START_WAITING 2"  << std::endl;
             GetTimerPointer() -> Set(100);
             SetFsmState(MAIN_CYCLE_MODULES_INTERACTION);
         }
@@ -629,28 +634,37 @@ uint8_t CMainProductionCycle::Fsm(void)
 
     case MAIN_CYCLE_MODULES_INTERACTION:
         std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_MODULES_INTERACTION"  << std::endl;
-        CurrentlyRunningTasksExecution();
-
-        m_pxInternalModule ->
-        GetModuleType(0);
         {
+            CurrentlyRunningTasksExecution();
 
-//            CInternalModuleMuvr xInternalModuleMuvr;
-////            CInternalModule xInternalModuleMuvr;
-//            xInternalModuleMuvr.
-//            GetModuleType(0);
+            //        m_pxInternalModule ->
+            //        GetModuleType(0);
+            //        {
+            //
+            ////            CInternalModuleMuvr xInternalModuleMuvr;
+            //////            CInternalModule xInternalModuleMuvr;
+            ////            xInternalModuleMuvr.
+            ////            GetModuleType(0);
+            //
+            ////            CInternalModuleMuvr xInternalModuleMuvr;
+            //////            CInternalModule xInternalModuleMuvr;
+            ////            xInternalModuleMuvr.
+            ////            DataBaseRead(0);
+            ////            m_pxInternalModuleMuvr ->
+            ////            DataBaseRead(0);
+            //            m_pxInternalModuleMuvr ->
+            //            GetModuleType(0);
+            //
+            //        }
 
-//            CInternalModuleMuvr xInternalModuleMuvr;
-////            CInternalModule xInternalModuleMuvr;
-//            xInternalModuleMuvr.
-//            DataBaseRead(0);
-//            m_pxInternalModuleMuvr ->
-//            DataBaseRead(0);
+            CDataContainerDataBase xOperatingDataContainer;
+            xOperatingDataContainer.m_uiFsmCommandState =
+                CInternalModuleMuvr::MUVR_GET_MODULE_TYPE;
             m_pxInternalModuleMuvr ->
-            GetModuleType(0);
+            SetTaskData(&xOperatingDataContainer);
 
-        }
             SetFsmState(MAIN_CYCLE_DISCRETE_SIGNALS_PROCESSING);
+        }
         break;
 
     case MAIN_CYCLE_DISCRETE_SIGNALS_PROCESSING:

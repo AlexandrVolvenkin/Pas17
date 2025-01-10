@@ -131,6 +131,7 @@ public:
     {
         MUVR_IDDLE = NEXT_STEP,
         MUVR_CHANGE_PROTOCOL,
+        MUVR_GET_MODULE_TYPE,
         MUVR_WRITE_DATA_BASE,
         MUVR_WRITE_DATA_BASE_CHECK,
         MUVR_DATA_EXCHANGE,
@@ -157,13 +158,13 @@ public:
 
     bool IsReadyToStartWork(void);
     bool IsAbleToReplace(uint8_t uiType);
-    uint8_t GetModuleType(uint8_t uiAddress);
+//    uint8_t GetModuleType(uint8_t uiAddress);
     uint8_t DataBaseRead(uint8_t uiAddress);
 
 private:
-    uint8_t m_uiAddress;
-    CCommunicationDeviceInterface* m_pxCommunicationDevice;
-//    CResources* m_pxResources;
+//    uint8_t m_uiAddress;
+//    CCommunicationDeviceInterface* m_pxCommunicationDevice;
+//    CDataContainerDataBase* m_pxOperatingDataContainer;
 };
 
 #endif // CINTERNALMODULEMUVR_H

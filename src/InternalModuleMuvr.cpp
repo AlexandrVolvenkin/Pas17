@@ -121,79 +121,79 @@ bool CInternalModuleMuvr::IsReadyToStartWork(void)
     return false;
 }
 
-//-------------------------------------------------------------------------------
-uint8_t CInternalModuleMuvr::GetModuleType(uint8_t uiAddress)
-{
-    std::cout << "CInternalModuleMuvr::GetModuleType 1"  << std::endl;
-    uint8_t auiSpiTxBuffer[TX_RX_BUFF_SIZE];
-    uint8_t auiSpiRxBuffer[TX_RX_BUFF_SIZE];
-
-    usleep(10000);
-    auiSpiTxBuffer[0] = GET_MODULE_TYPE_COMMAND;
-    m_pxCommunicationDevice -> Exchange(uiAddress,
-                                        auiSpiTxBuffer,
-                                        auiSpiRxBuffer,
-                                        SPI_PREAMBLE_LENGTH +
-                                        GET_MODULE_TYPE_COMMAND_ANSWER_LENGTH +
-                                        ONE_BYTE_CRC_LENGTH,
-                                        LOW_SPEED_IN_HZ);
-    std::cout << "CInternalModuleMuvr::GetModuleType 2"  << std::endl;
-
-    {
-        cout << "GET_MODULE_TYPE_COMMAND auiSpiRxBuffer" << endl;
-        unsigned char *pucSourceTemp;
-        pucSourceTemp = (unsigned char*)auiSpiRxBuffer;
-        for(int i=0; i<16; )
-        {
-            for(int j=0; j<8; j++)
-            {
-                cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
-            }
-            cout << endl;
-            i += 8;
-        }
-    }
-
-    // модуль отвечает?
-    if (auiSpiRxBuffer[GET_MODULE_TYPE_COMMAND_OFFSET] ==
-            GET_MODULE_TYPE_COMMAND) // if echo answer is ok.
-    {
-        std::cout << "CInternalModuleMuvr::GetModuleType 3"  << std::endl;
-//                std::cout << "CInternalModuleMuvr::GetModuleType ucSlaveAddress 1 "  << (int)ucSlaveAddress << std::endl;
-        // обмен данными прошёл без ошибок?
-        if ((iCrcSummOneByteCompare(&auiSpiRxBuffer[GET_MODULE_TYPE_COMMAND_OFFSET],
-                                    GET_MODULE_TYPE_COMMAND_LENGTH +
-                                    GET_MODULE_TYPE_COMMAND_ANSWER_LENGTH) > 0))
-        {
-            std::cout << "CInternalModuleMuvr::GetModuleType 4"  << std::endl;
-//            // модуль присутствует. увеличим значение переменной -
-//            // фактическое количество модулей в системе.
-//            (xPlcConfigSearchTemp.ui8ModulesQuantity)++;
-//            // сохраним тип модуля в массиве для упорядочивания следования модулей при поиске на SPI.
-//            xPlcConfigSearchTemp.axConfigSearch[ucSlaveAddress].ui8Type =
-//                auiSpiRxBuffer[MODULE_TYPE_OFFSET];
-//            // сохраним адрес модуля в массиве для упорядочивания следования модулей при поиске на SPI.
-//            xPlcConfigSearchTemp.axConfigSearch[ucSlaveAddress].ui8Address =
-//                ucSlaveAddress;
+////-------------------------------------------------------------------------------
+//uint8_t CInternalModuleMuvr::GetModuleType(uint8_t uiAddress)
+//{
+//    std::cout << "CInternalModuleMuvr::GetModuleType 1"  << std::endl;
+//    uint8_t auiSpiTxBuffer[TX_RX_BUFF_SIZE];
+//    uint8_t auiSpiRxBuffer[TX_RX_BUFF_SIZE];
 //
-//            AddSystemComponent(auiSpiRxBuffer[MODULE_TYPE_OFFSET],
-//                               ucSlaveAddress);
-//            std::cout << "CInternalModuleMuvr::GetModuleType ucSlaveAddress "  << (int)xPlcConfigSearchTemp.axConfigSearch[ucSlaveAddress].ui8Address << std::endl;
-//            std::cout << "CInternalModuleMuvr::GetModuleType ui8Type "  << (int)xPlcConfigSearchTemp.axConfigSearch[ucSlaveAddress].ui8Type << std::endl;
-        }
-        else
-        {
-            std::cout << "CInternalModuleMuvr::GetModuleType 5"  << std::endl;
-//            // сохраним адрес модуля в массиве для упорядочивания следования модулей при поиске на SPI.
-//            xPlcConfigSearchTemp.axConfigSearch[ucSlaveAddress].ui8Address =
-//                ucSlaveAddress;
+//    usleep(10000);
+//    auiSpiTxBuffer[0] = GET_MODULE_TYPE_COMMAND;
+//    m_pxCommunicationDevice -> Exchange(uiAddress,
+//                                        auiSpiTxBuffer,
+//                                        auiSpiRxBuffer,
+//                                        SPI_PREAMBLE_LENGTH +
+//                                        GET_MODULE_TYPE_COMMAND_ANSWER_LENGTH +
+//                                        ONE_BYTE_CRC_LENGTH,
+//                                        LOW_SPEED_IN_HZ);
+//    std::cout << "CInternalModuleMuvr::GetModuleType 2"  << std::endl;
 //
-//            AddSystemComponent(0,
-//                               ucSlaveAddress);
-        }
-    }
-    std::cout << "CInternalModuleMuvr::GetModuleType 6"  << std::endl;
-}
+//    {
+//        cout << "GET_MODULE_TYPE_COMMAND auiSpiRxBuffer" << endl;
+//        unsigned char *pucSourceTemp;
+//        pucSourceTemp = (unsigned char*)auiSpiRxBuffer;
+//        for(int i=0; i<16; )
+//        {
+//            for(int j=0; j<8; j++)
+//            {
+//                cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+//            }
+//            cout << endl;
+//            i += 8;
+//        }
+//    }
+//
+//    // модуль отвечает?
+//    if (auiSpiRxBuffer[GET_MODULE_TYPE_COMMAND_OFFSET] ==
+//            GET_MODULE_TYPE_COMMAND) // if echo answer is ok.
+//    {
+//        std::cout << "CInternalModuleMuvr::GetModuleType 3"  << std::endl;
+////                std::cout << "CInternalModuleMuvr::GetModuleType ucSlaveAddress 1 "  << (int)ucSlaveAddress << std::endl;
+//        // обмен данными прошёл без ошибок?
+//        if ((iCrcSummOneByteCompare(&auiSpiRxBuffer[GET_MODULE_TYPE_COMMAND_OFFSET],
+//                                    GET_MODULE_TYPE_COMMAND_LENGTH +
+//                                    GET_MODULE_TYPE_COMMAND_ANSWER_LENGTH) > 0))
+//        {
+//            std::cout << "CInternalModuleMuvr::GetModuleType 4"  << std::endl;
+////            // модуль присутствует. увеличим значение переменной -
+////            // фактическое количество модулей в системе.
+////            (xPlcConfigSearchTemp.ui8ModulesQuantity)++;
+////            // сохраним тип модуля в массиве для упорядочивания следования модулей при поиске на SPI.
+////            xPlcConfigSearchTemp.axConfigSearch[ucSlaveAddress].ui8Type =
+////                auiSpiRxBuffer[MODULE_TYPE_OFFSET];
+////            // сохраним адрес модуля в массиве для упорядочивания следования модулей при поиске на SPI.
+////            xPlcConfigSearchTemp.axConfigSearch[ucSlaveAddress].ui8Address =
+////                ucSlaveAddress;
+////
+////            AddSystemComponent(auiSpiRxBuffer[MODULE_TYPE_OFFSET],
+////                               ucSlaveAddress);
+////            std::cout << "CInternalModuleMuvr::GetModuleType ucSlaveAddress "  << (int)xPlcConfigSearchTemp.axConfigSearch[ucSlaveAddress].ui8Address << std::endl;
+////            std::cout << "CInternalModuleMuvr::GetModuleType ui8Type "  << (int)xPlcConfigSearchTemp.axConfigSearch[ucSlaveAddress].ui8Type << std::endl;
+//        }
+//        else
+//        {
+//            std::cout << "CInternalModuleMuvr::GetModuleType 5"  << std::endl;
+////            // сохраним адрес модуля в массиве для упорядочивания следования модулей при поиске на SPI.
+////            xPlcConfigSearchTemp.axConfigSearch[ucSlaveAddress].ui8Address =
+////                ucSlaveAddress;
+////
+////            AddSystemComponent(0,
+////                               ucSlaveAddress);
+//        }
+//    }
+//    std::cout << "CInternalModuleMuvr::GetModuleType 6"  << std::endl;
+//}
 
 //-------------------------------------------------------------------------------
 uint8_t CInternalModuleMuvr::DataBaseRead(uint8_t uiAddress)
@@ -406,9 +406,20 @@ uint8_t CInternalModuleMuvr::Fsm(void)
 //        SetFsmState(READY);
         break;
 
-default:
-    break;
-}
+    case MUVR_GET_MODULE_TYPE:
+//        std::cout << "CInternalModuleMuvr::Fsm MUVR_GET_MODULE_TYPE"  << std::endl;
+        GetModuleType(GetAddress());
+        SetFsmState(READY);
+        break;
+
+    case MUVR_DATA_EXCHANGE:
+//        std::cout << "CInternalModuleMuvr::Fsm MUVR_DATA_EXCHANGE"  << std::endl;
+
+        break;
+
+    default:
+        break;
+    }
 }
 
 //-------------------------------------------------------------------------------
