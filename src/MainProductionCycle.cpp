@@ -239,7 +239,7 @@ uint8_t CMainProductionCycle::CreateTasks(void)
     CModbusSmSlaveLinkLayer* pxModbusSmSlaveLinkLayerEveDisplay = 0;
     pxModbusSmSlaveLinkLayerEveDisplay =
         static_cast<CModbusSmSlaveLinkLayer*>(m_xResources.AddCommonTaskToMap("ModbusSmSlaveLinkLayerEveDisplay",
-                                   std::make_shared<CModbusSmSlaveLinkLayer>()));
+                std::make_shared<CModbusSmSlaveLinkLayer>()));
     pxModbusSmSlaveLinkLayerEveDisplay ->
     SetResources(&m_xResources);
     pxModbusSmSlaveLinkLayerEveDisplay ->
@@ -265,6 +265,41 @@ uint8_t CMainProductionCycle::CreateTasks(void)
     ModbusWorkingArraysInit();
     m_xResources.AddCurrentlyRunningTasksList(pxModbusSmSlaveEveDisplay);
 
+
+
+//-------------------------------------------------------------------------------
+    CSpiCommunicationDevice* pxSpiCommunicationDeviceSpi0 = 0;
+    pxSpiCommunicationDeviceSpi0 =
+        static_cast<CSpiCommunicationDevice*>(m_xResources.AddCommonTaskToMap("SpiCommunicationDeviceSpi0",
+                std::make_shared<CSpiCommunicationDevice>()));
+    pxSpiCommunicationDeviceSpi0 ->
+    SetResources(&m_xResources);
+
+//-------------------------------------------------------------------------------
+    CInternalModule* pxInternalModuleCommon = 0;
+    pxInternalModuleCommon =
+        static_cast<CInternalModule*>(m_xResources.AddCommonTaskToMap("InternalModuleCommon",
+                                      std::make_shared<CInternalModule>()));
+    pxInternalModuleCommon ->
+    SetResources(&m_xResources);
+    pxInternalModuleCommon ->
+    SetCommunicationDeviceName("SpiCommunicationDeviceSpi0");
+    m_xResources.AddCurrentlyRunningTasksList(pxInternalModuleCommon);
+    m_pxInternalModule = pxInternalModuleCommon;
+
+//-------------------------------------------------------------------------------
+    CInternalModuleMuvr* pxInternalModuleMuvr = 0;
+    pxInternalModuleMuvr =
+        static_cast<CInternalModuleMuvr*>(m_xResources.AddCommonTaskToMap("InternalModuleMuvr",
+                                          std::make_shared<CInternalModuleMuvr>()));
+    pxInternalModuleMuvr ->
+    SetResources(&m_xResources);
+    pxInternalModuleMuvr ->
+    SetCommunicationDeviceName("SpiCommunicationDeviceSpi0");
+    m_xResources.AddCurrentlyRunningTasksList(pxInternalModuleMuvr);
+    m_pxInternalModuleMuvr = pxInternalModuleMuvr;
+
+
 }
 
 //-------------------------------------------------------------------------------
@@ -274,10 +309,6 @@ uint8_t CMainProductionCycle::InitTasks(void)
 
     CGpio::Init();
     cout << "CGpio::Init" << endl;
-//	CPlatform::LedInitialization();
-//	cout << "CPlatform::LedInitialization" << endl;
-//    m_pxSpiCommunicationDevice -> Init();
-//    cout << "m_pxSpiCommunicationDevice -> Open" << endl;
 
 
 //-------------------------------------------------------------------------------
@@ -333,10 +364,23 @@ uint8_t CMainProductionCycle::InitTasks(void)
 //                          GetTaskPointerByNameFromMap("ModbusSmSlaveEveDisplay"));
     CModbusSlave* pxModbusSmSlaveEveDisplay =
         (CModbusSlave*)(GetResources() ->
-                          GetTaskPointerByNameFromMap("ModbusSmSlaveEveDisplay"));
+                        GetTaskPointerByNameFromMap("ModbusSmSlaveEveDisplay"));
 
     pxModbusSmSlaveEveDisplay ->
     SetOwnAddress(1);
+
+
+//-------------------------------------------------------------------------------
+    CSpiCommunicationDevice* pxSpiCommunicationDeviceSpi0 =
+        (CSpiCommunicationDevice*)(GetResources() ->
+                                   GetTaskPointerByNameFromMap("SpiCommunicationDeviceSpi0"));
+
+    pxSpiCommunicationDeviceSpi0 -> Init();
+
+//-------------------------------------------------------------------------------
+//    InternalModule* pxInternalModuleCommon =
+//        (InternalModule*)(GetResources() ->
+//                          GetTaskPointerByNameFromMap("InternalModuleCommon"));
 
 
 
@@ -389,26 +433,6 @@ uint8_t CMainProductionCycle::Fsm(void)
         std::cout << "CMainProductionCycle::Fsm START"  << std::endl;
         std::cout << "m_acTaskName " << m_acTaskName << std::endl;
         CreateTasks();
-
-//        m_pxInternalModule ->
-//        GetModuleType(0);
-//        {
-//
-////            CInternalModuleMuvr xInternalModuleMuvr;
-//////            CInternalModule xInternalModuleMuvr;
-////            xInternalModuleMuvr.
-////            GetModuleType(0);
-//
-////            CInternalModuleMuvr xInternalModuleMuvr;
-//////            CInternalModule xInternalModuleMuvr;
-////            xInternalModuleMuvr.
-////            DataBaseRead(0);
-//            m_pxInternalModuleMuvr ->
-//            DataBaseRead(0);
-//
-//        }
-
-//        EVE_HAL::InitializeNEW(true);
 
 //        GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
         SetFsmState(INIT);
@@ -584,18 +608,63 @@ uint8_t CMainProductionCycle::Fsm(void)
 //        m_pxModbusRtuSlaveUpperLevel -> Fsm();
         CurrentlyRunningTasksExecution();
 
+        GetTimerPointer() -> Set(100);
+
         usleep(1000);
+        SetFsmState(MAIN_CYCLE_START_WAITING);
         break;
 
-    case LED_BLINK_ON:
-//        //std::cout << "CMainProductionCycle::Fsm LED_BLINK_ON"  << std::endl;
-//        m_pxLedBlinker -> Fsm();
-        usleep(1000);
+    case MAIN_CYCLE_START_WAITING:
+//        std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_START_WAITING 1"  << std::endl;
+        CurrentlyRunningTasksExecution();
+
+        if (GetTimerPointer() -> IsOverflow())
+        {
+        std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_START_WAITING 2"  << std::endl;
+            GetTimerPointer() -> Set(100);
+            SetFsmState(MAIN_CYCLE_MODULES_INTERACTION);
+        }
+
         break;
 
-    case LED_BLINK_OFF:
-//        //std::cout << "CMainProductionCycle::Fsm LED_BLINK_ON"  << std::endl;
-        SetFsmState(START);
+    case MAIN_CYCLE_MODULES_INTERACTION:
+        std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_MODULES_INTERACTION"  << std::endl;
+        CurrentlyRunningTasksExecution();
+
+        m_pxInternalModule ->
+        GetModuleType(0);
+        {
+
+//            CInternalModuleMuvr xInternalModuleMuvr;
+////            CInternalModule xInternalModuleMuvr;
+//            xInternalModuleMuvr.
+//            GetModuleType(0);
+
+//            CInternalModuleMuvr xInternalModuleMuvr;
+////            CInternalModule xInternalModuleMuvr;
+//            xInternalModuleMuvr.
+//            DataBaseRead(0);
+//            m_pxInternalModuleMuvr ->
+//            DataBaseRead(0);
+            m_pxInternalModuleMuvr ->
+            GetModuleType(0);
+
+        }
+            SetFsmState(MAIN_CYCLE_DISCRETE_SIGNALS_PROCESSING);
+        break;
+
+    case MAIN_CYCLE_DISCRETE_SIGNALS_PROCESSING:
+//        std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_DISCRETE_SIGNALS_PROCESSING"  << std::endl;
+        CurrentlyRunningTasksExecution();
+
+        SetFsmState(MAIN_CYCLE_END);
+        break;
+
+    case MAIN_CYCLE_END:
+//        std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_END"  << std::endl;
+        CurrentlyRunningTasksExecution();
+
+        SetFsmState(MAIN_CYCLE_START_WAITING);
         break;
 
     default:
@@ -607,86 +676,5 @@ uint8_t CMainProductionCycle::Fsm(void)
 
 //-------------------------------------------------------------------------------
 
-
-
-
-//-------------------------------------------------------------------------------
-CLedBlinker::CLedBlinker()
-{
-    std::cout << "CLedBlinker constructor"  << std::endl;
-    SetFsmState(START);
-}
-
-//-------------------------------------------------------------------------------
-CLedBlinker::~CLedBlinker()
-{
-    std::cout << "CLedBlinker destructor"  << std::endl;
-}
-
-//-------------------------------------------------------------------------------
-uint8_t CLedBlinker::Init(void)
-{
-    std::cout << "CLedBlinker Init"  << std::endl;
-}
-
-//-------------------------------------------------------------------------------
-uint8_t CLedBlinker::Fsm(void)
-{
-//        std::cout << "CLedBlinker::Fsm 1"  << std::endl;
-
-    switch (GetFsmState())
-    {
-    case START:
-        //std::cout << "CLedBlinker::Fsm START"  << std::endl;
-        SetFsmState(LED_ON);
-        break;
-
-    case READY:
-        //std::cout << "CLedBlinker::Fsm READY"  << std::endl;
-        break;
-
-    case IDDLE:
-        //std::cout << "CLedBlinker::Fsm IDDLE"  << std::endl;
-        break;
-
-    case STOP:
-//        //std::cout << "CLedBlinker::Fsm STOP"  << std::endl;
-        SetFsmState(START);
-        break;
-
-    case LED_ON:
-        std::cout << "CLedBlinker::Fsm LED_ON"  << std::endl;
-        GetTimerPointer() -> Set(500);
-        SetFsmState(LED_ON_PERIOD_END_WAITING);
-        break;
-
-    case LED_ON_PERIOD_END_WAITING:
-//        //std::cout << "CLedBlinker::Fsm LED_ON_PERIOD_END_WAITING"  << std::endl;
-        if (GetTimerPointer() -> IsOverflow())
-        {
-            SetFsmState(LED_OFF);
-        }
-        break;
-
-    case LED_OFF:
-        std::cout << "CLedBlinker::Fsm LED_OFF"  << std::endl;
-        GetTimerPointer() -> Set(500);
-        SetFsmState(LED_OFF_PERIOD_END_WAITING);
-        break;
-
-    case LED_OFF_PERIOD_END_WAITING:
-//        //std::cout << "CLedBlinker::Fsm LED_OFF_PERIOD_END_WAITING"  << std::endl;
-        if (GetTimerPointer() -> IsOverflow())
-        {
-            SetFsmState(LED_ON);
-        }
-        break;
-
-    default:
-        break;
-    }
-
-    return GetFsmState();
-}
 
 //-------------------------------------------------------------------------------

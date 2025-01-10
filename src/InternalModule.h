@@ -53,6 +53,8 @@ class CResources;
 class CCommunicationDevice;
 class CCommunicationDeviceInterface;
 class CSpiCommunicationDevice;
+class CDataContainerInterface;
+class CDataContainerDataBase;
 
 enum
 {
@@ -95,8 +97,13 @@ public:
     CInternalModuleInterface(uint8_t muiAddress);
     virtual ~CInternalModuleInterface();
 
-//    virtual void SetResources(CResources* pxResources) {};
-//    virtual CResources* GetResources(void) {};
+    virtual void SetCommunicationDeviceName(std::string sName) {};
+    virtual void SetCommunicationDevice(CCommunicationDeviceInterface* pxCommunicationDevice) {};
+    void CommunicationDeviceInit(const char* pccIpAddress,
+                                 uint16_t uiPort) {};
+    virtual uint8_t Init(void) {};
+    virtual bool SetTaskData(CDataContainerDataBase* pxDataContainer) {};
+    virtual bool GetTaskData(CDataContainerDataBase* pxDataContainer) {};
 
     enum
     {
@@ -109,7 +116,6 @@ public:
     virtual uint8_t GetAddress(void) {};
     virtual bool IsReadyToStartWork(void) {};
     virtual bool IsAbleToReplace(uint8_t uiType) {};
-    virtual void SetCommunicationDevice(CCommunicationDeviceInterface* pxCommunicationDevice) {};
     virtual uint8_t GetModuleType(uint8_t uiAddress) {};
     virtual uint8_t DataBaseRead(uint8_t uiAddress) {};
 };
@@ -130,8 +136,13 @@ public:
     CInternalModule(uint8_t muiAddress);
     virtual ~CInternalModule();
 
-//    void SetResources(CResources* pxResources);
-//    CResources* GetResources(void);
+    void SetCommunicationDeviceName(std::string sName);
+    void SetCommunicationDevice(CCommunicationDeviceInterface* pxCommunicationDevice);
+    uint8_t Init(void);
+    bool SetTaskData(CDataContainerDataBase* pxDataContainer);
+    bool GetTaskData(CDataContainerDataBase* pxDataContainer);
+
+    uint8_t Fsm(void);
 
     uint8_t GetType(void);
 
@@ -142,14 +153,14 @@ public:
 
     bool IsReadyToStartWork(void);
     bool IsAbleToReplace(uint8_t uiType);
-    void SetCommunicationDevice(CCommunicationDeviceInterface* pxCommunicationDevice);
     uint8_t GetModuleType(uint8_t uiAddress);
 //    uint8_t DataBaseRead(uint8_t uiAddress);
 
-private:
+protected:
     uint8_t m_uiAddress;
+    std::string m_sCommunicationDeviceName;
     CCommunicationDeviceInterface* m_pxCommunicationDevice;
-//    CResources* m_pxResources;
+    CDataContainerDataBase* m_pxOperatingDataContainer;
 };
 
 #endif // CINTERNALMODULE_H

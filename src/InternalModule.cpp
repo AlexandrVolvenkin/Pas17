@@ -13,6 +13,7 @@
 #include "Crc.h"
 #include "CommunicationDevice.h"
 #include "SpiCommunicationDevice.h"
+#include "DataContainer.h"
 #include "InternalModule.h"
 
 using namespace std;
@@ -20,7 +21,7 @@ using namespace std;
 //-------------------------------------------------------------------------------
 CInternalModuleInterface::CInternalModuleInterface()
 {
-    //ctor
+    SetFsmState(START);
 }
 
 //-------------------------------------------------------------------------------
@@ -42,6 +43,7 @@ CInternalModuleInterface::~CInternalModuleInterface()
 CInternalModule::CInternalModule()
 {
     std::cout << "CInternalModule constructor"  << std::endl;
+    SetFsmState(START);
 }
 
 //-------------------------------------------------------------------------------
@@ -50,17 +52,58 @@ CInternalModule::~CInternalModule()
     //dtor
 }
 
-////-------------------------------------------------------------------------------
-//void CInternalModule::SetResources(CResources* pxResources)
-//{
-//    m_pxResources = pxResources;
-//}
-//
-////-------------------------------------------------------------------------------
-//CResources* CInternalModule::GetResources(void)
-//{
-//    return m_pxResources;
-//}
+//-------------------------------------------------------------------------------
+void CInternalModule::SetCommunicationDeviceName(std::string sName)
+{
+    m_sCommunicationDeviceName = sName;
+}
+
+//-------------------------------------------------------------------------------
+void CInternalModule::SetCommunicationDevice(CCommunicationDeviceInterface* pxCommunicationDevice)
+{
+    m_pxCommunicationDevice = pxCommunicationDevice;
+}
+
+//-------------------------------------------------------------------------------
+uint8_t CInternalModule::Init(void)
+{
+    std::cout << "CInternalModule Init"  << std::endl;
+//    m_pxCommandDataContainer = static_cast<CDataContainerDataBase*>(GetResources() ->
+//                               AddDataContainer(std::make_shared<CDataContainerDataBase>()));
+    m_pxOperatingDataContainer = static_cast<CDataContainerDataBase*>(GetResources() ->
+                                 AddDataContainer(std::make_shared<CDataContainerDataBase>()));
+}
+
+//-------------------------------------------------------------------------------
+bool CInternalModule::SetTaskData(CDataContainerDataBase* pxDataContainer)
+{
+    std::cout << "CInternalModule::SetTaskData 1" << std::endl;
+    uint8_t uiFsmState = GetFsmState();
+
+    if (IsTaskReady())
+    {
+        std::cout << "CInternalModule::SetTaskData 2" << std::endl;
+        *m_pxOperatingDataContainer = *pxDataContainer;
+        SetFsmState(m_pxOperatingDataContainer -> m_uiFsmCommandState);
+        return true;
+    }
+    else
+    {
+        std::cout << "CInternalModule::SetTaskData 3" << std::endl;
+        return false;
+    }
+}
+
+//-------------------------------------------------------------------------------
+bool CInternalModule::GetTaskData(CDataContainerDataBase* pxDataContainer)
+{
+    std::cout << "CInternalModule::SetTaskData 1" << std::endl;
+
+    m_pxOperatingDataContainer -> m_uiFsmCommandState = GetFsmState();
+    *pxDataContainer = *m_pxOperatingDataContainer;
+
+    return true;
+}
 
 //-------------------------------------------------------------------------------
 uint8_t CInternalModule::GetType(void)
@@ -96,12 +139,6 @@ bool CInternalModule::IsAbleToReplace(uint8_t uiType)
 bool CInternalModule::IsReadyToStartWork(void)
 {
     return false;
-}
-
-//-------------------------------------------------------------------------------
-void CInternalModule::SetCommunicationDevice(CCommunicationDeviceInterface* pxCommunicationDevice)
-{
-    m_pxCommunicationDevice = pxCommunicationDevice;
 }
 
 //-------------------------------------------------------------------------------
@@ -176,6 +213,100 @@ uint8_t CInternalModule::GetModuleType(uint8_t uiAddress)
         }
     }
     std::cout << "CInternalModule::GetModuleType 6"  << std::endl;
+}
+
+//-------------------------------------------------------------------------------
+uint8_t CInternalModule::Fsm(void)
+{
+//    std::cout << "CInternalModule::Fsm 1" << endl;
+    uint8_t uiReadyTaskCounter = 0;
+    switch (GetFsmState())
+    {
+    case IDDLE:
+//        std::cout << "CInternalModule::Fsm IDDLE"  << std::endl;
+        break;
+
+    case STOP:
+//        //std::cout << "CInternalModule::Fsm STOP"  << std::endl;
+        break;
+
+    case START:
+        std::cout << "CInternalModule::Fsm START"  << std::endl;
+        Init();
+        GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
+        SetFsmState(INIT);
+        break;
+
+    case INIT:
+//        std::cout << "CInternalModule::Fsm INIT 1"  << std::endl;
+        {
+            CTaskInterface* pxTask =
+                GetResources() ->
+                GetTaskPointerByNameFromMap(m_sCommunicationDeviceName);
+
+            if (pxTask != 0)
+            {
+//                std::cout << "CInternalModule::Fsm INIT 2"  << std::endl;
+                if (pxTask -> GetFsmState() >= READY)
+                {
+//                    std::cout << "CInternalModule::Fsm INIT 3"  << std::endl;
+                    SetCommunicationDevice((CSpiCommunicationDevice*)pxTask);
+                    uiReadyTaskCounter += 1;
+//                    SetFsmState(READY);
+                }
+            }
+            else
+            {
+//                std::cout << "CInternalModule::Fsm INIT 4"  << std::endl;
+                if (GetTimerPointer() -> IsOverflow())
+                {
+                std::cout << "CInternalModule::Fsm INIT 5"  << std::endl;
+                    SetFsmState(STOP);
+                }
+            }
+        }
+
+        if (uiReadyTaskCounter > 0)
+        {
+            SetFsmState(READY);
+        }
+
+        break;
+
+    case READY:
+//        std::cout << "CInternalModule::Fsm READY"  << std::endl;
+//    {
+//
+//        if (GetCommandDataLink() != 0)
+//        {
+//            std::cout << "CInternalModule::Fsm READY 2"  << std::endl;
+//            SetOperatingDataLink(GetCommandDataLink());
+//            SetFsmState(GetCommandDataLink() ->
+//                        GetDataContainerPointer() ->
+//                        GetFsmCommandState());
+//            GetCommandDataLink() ->
+//            GetDataContainerPointer() ->
+//            SetFsmCommandState(0);
+//            SetCommandDataLink(0);
+//        }
+//    }
+        break;
+
+    case DONE_OK:
+//        std::cout << "CInternalModule::Fsm DONE_OK"  << std::endl;
+//        SetFsmOperationStatus(DONE_OK);
+//        SetFsmState(READY);
+        break;
+
+    case DONE_ERROR:
+//        std::cout << "CInternalModule::Fsm DONE_ERROR"  << std::endl;
+//        SetFsmOperationStatus(DONE_ERROR);
+//        SetFsmState(READY);
+        break;
+
+    default:
+        break;
+    }
 }
 
 //-------------------------------------------------------------------------------

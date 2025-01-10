@@ -35,7 +35,9 @@ CSpiCommunicationDevice::~CSpiCommunicationDevice()
 void CSpiCommunicationDevice::Init(void)
 {
     Open();
-//    ChipSelectPinSet();
+    ChipSelectPinSet();
+
+    SetFsmState(READY);
 };
 
 //-------------------------------------------------------------------------------

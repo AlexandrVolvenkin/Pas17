@@ -120,6 +120,8 @@ class CCommunicationDevice;
 class CCommunicationDeviceInterface;
 class CSpiCommunicationDevice;
 class CInternalModule;
+class CDataContainerInterface;
+class CDataContainerDataBase;
 
 //-------------------------------------------------------------------------------
 class CInternalModuleMuvr : public CInternalModule
@@ -138,8 +140,13 @@ public:
     CInternalModuleMuvr(uint8_t muiAddress);
     virtual ~CInternalModuleMuvr();
 
-//    void SetResources(CResources* pxResources);
-//    CResources* GetResources(void);
+    void SetCommunicationDeviceName(std::string sName);
+    void SetCommunicationDevice(CCommunicationDeviceInterface* pxCommunicationDevice);
+    uint8_t Init(void);
+    bool SetTaskData(CDataContainerDataBase* pxDataContainer);
+    bool GetTaskData(CDataContainerDataBase* pxDataContainer);
+
+    uint8_t Fsm(void);
 
     uint8_t GetType(void);
 
@@ -150,7 +157,6 @@ public:
 
     bool IsReadyToStartWork(void);
     bool IsAbleToReplace(uint8_t uiType);
-    void SetCommunicationDevice(CCommunicationDeviceInterface* pxCommunicationDevice);
     uint8_t GetModuleType(uint8_t uiAddress);
     uint8_t DataBaseRead(uint8_t uiAddress);
 
