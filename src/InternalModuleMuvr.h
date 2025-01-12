@@ -112,6 +112,32 @@ enum
 // (sizeof(struct TAnalogueInputDescriptionDataBase) * ANALOG_MODULE_INPUT_QUANTITY)// 28х6=168.
 #define ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_LENGTH 168
 
+#define PERCENT_100 100 // сто процентов.
+#define MEASURE_ERROR_THRESHOLD 3 // порог ошибки измеренного значения.
+
+#define ANALOGUE_INPUT_SET_POINT_VIOLATION_L 0x03 // 3 – нарушение уставки L.
+#define ANALOGUE_INPUT_SET_POINT_VIOLATION_LL_L 0x04 // 4 – нарушение уставок LL+L.
+#define ANALOGUE_INPUT_SET_POINT_VIOLATION_H 0x05 // 5 – нарушение уставки H.
+#define ANALOGUE_INPUT_SET_POINT_VIOLATION_HH_H 0x06 // 6 – нарушение уставок Н+НН.
+#define ANALOGUE_INPUT_SET_POINT_VIOLATION_MASK 0x07
+#define ANALOGUE_INPUT_CHANNEL_CALIBRATION 0x20 // канал находится в режиме калибровки.
+#define ANALOGUE_INPUT_LINE_BREAK 0x40 // обрыв линии канала.
+#define ANALOGUE_INPUT_CALCULATION_OVERFLOW 0x80 // переполнение при расчетах.
+// смещения на флаги нарушения уставок в массиве DI_value для одного аналогового входа.
+#define ANALOGUE_INPUT_SET_POINT_VIOLATION_LL_L_OFFSET 0 // смещение уставок LL+L.
+#define ANALOGUE_INPUT_SET_POINT_VIOLATION_L_OFFSET 1 // смещение уставки L.
+#define ANALOGUE_INPUT_SET_POINT_VIOLATION_H_OFFSET 2 // смещение уставки H.
+#define ANALOGUE_INPUT_SET_POINT_VIOLATION_HH_H_OFFSET 3 // смещение уставок Н+НН.
+
+// коды состояния аналогового измерения для передачи и интерпретации в МИНД.
+#define HMI_ANALOGUE_INPUT_LINE_BREAK 1 // обрыв линии канала.
+#define HMI_ANALOGUE_INPUT_CALCULATION_OVERFLOW 2 // переполнение при расчетах.
+#define HMI_ANALOGUE_INPUT_CHANNEL_CALIBRATION 3 // канал находится в режиме калибровки.
+#define HMI_ANALOGUE_INPUT_SET_POINT_VIOLATION_L 4 // 3 – нарушение уставки L.
+#define HMI_ANALOGUE_INPUT_SET_POINT_VIOLATION_LL_L 5 // 4 – нарушение уставок LL+L.
+#define HMI_ANALOGUE_INPUT_SET_POINT_VIOLATION_H 6 // 5 – нарушение уставки H.
+#define HMI_ANALOGUE_INPUT_SET_POINT_VIOLATION_HH_H 7 // 6 – нарушение уставок Н+НН.
+
 class CTimer;
 class CPlatform;
 class CTask;
@@ -149,16 +175,14 @@ public:
 
     uint8_t Fsm(void);
 
-    uint8_t GetType(void);
-
-    uint8_t GetWorkingStatus(void);
-
-    void SetAddress(uint8_t uiAddress);
-    uint8_t GetAddress(void);
-
-    bool IsReadyToStartWork(void);
-    bool IsAbleToReplace(uint8_t uiType);
+//    uint8_t GetType(void);
+//    uint8_t GetWorkingStatus(void);
+//    void SetAddress(uint8_t uiAddress);
+//    uint8_t GetAddress(void);
+//    bool IsReadyToStartWork(void);
+//    bool IsAbleToReplace(uint8_t uiType);
 //    uint8_t GetModuleType(uint8_t uiAddress);
+    uint8_t DataExchange(void);
     uint8_t DataBaseRead(uint8_t uiAddress);
 
 private:

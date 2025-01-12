@@ -116,6 +116,15 @@ public:
     virtual uint8_t GetAddress(void) {};
     virtual bool IsReadyToStartWork(void) {};
     virtual bool IsAbleToReplace(uint8_t uiType) {};
+    virtual void SetCommonIndex(uint8_t uiCommonIndex) {};
+    virtual uint8_t GetCommonIndex(void) {};
+    virtual void SetCommandControl(uint8_t uiCommandControl) {};
+    virtual uint8_t GetCommandControl(void) {};
+    virtual void SetErrorCode(uint8_t uiErrorCode) {};
+    virtual uint8_t GetErrorCode(void) {};
+    virtual void SetBadAnswerCounter(uint8_t uiBadAnswerCounter) {};
+    virtual uint8_t GetBadAnswerCounter(void) {};
+
     virtual uint8_t GetModuleType(uint8_t uiAddress) {};
     virtual uint8_t DataBaseRead(uint8_t uiAddress) {};
 };
@@ -153,6 +162,19 @@ public:
 
     bool IsReadyToStartWork(void);
     bool IsAbleToReplace(uint8_t uiType);
+
+    void SetCommonIndex(uint8_t uiCommonIndex);
+    uint8_t GetCommonIndex(void);
+
+    void SetCommandControl(uint8_t uiCommandControl);
+    uint8_t GetCommandControl(void);
+
+    void SetErrorCode(uint8_t uiErrorCode);
+    uint8_t GetErrorCode(void);
+
+    void SetBadAnswerCounter(uint8_t uiBadAnswerCounter);
+    uint8_t GetBadAnswerCounter(void);
+
     uint8_t GetModuleType(uint8_t uiAddress);
 //    uint8_t DataBaseRead(uint8_t uiAddress);
 
@@ -161,6 +183,11 @@ protected:
     std::string m_sCommunicationDeviceName;
     CCommunicationDeviceInterface* m_pxCommunicationDevice;
     CDataContainerDataBase* m_pxOperatingDataContainer;
+    uint8_t m_uiCommonIndex;
+    uint8_t m_uiCommandControl;
+    uint8_t m_uiErrorCode;
+    uint8_t m_uiBadAnswerCounter;
+
 };
 
 #endif // CINTERNALMODULE_H

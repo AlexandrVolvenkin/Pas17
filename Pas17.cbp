@@ -47,6 +47,7 @@
 			<Add directory="src/Modbus" />
 		</Compiler>
 		<Unit filename="../Текущие задачиPas17.txt" />
+		<Unit filename="../протокол МВА.txt" />
 		<Unit filename="../структ и протоколы/структ и прот ПАС-17.txt" />
 		<Unit filename="src/CommunicationDevice/CommunicationDevice.cpp" />
 		<Unit filename="src/CommunicationDevice/CommunicationDevice.h" />

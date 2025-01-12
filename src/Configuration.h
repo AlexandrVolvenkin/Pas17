@@ -23,6 +23,20 @@
 //-------------------------------------------------------------------------------
 
 
+// коды ошибок внешних модулей локальной сети.
+#define EXTERNAL_MODULE_ERROR_TIMEOUT 0x01
+#define EXTERNAL_MODULE_ERROR_FE_DOR 0x02
+#define EXTERNAL_MODULE_ERROR_CRC 0x03
+#define EXTERNAL_MODULE_ERROR_ILLEGAL_FUNCTION 0x11
+#define EXTERNAL_MODULE_ERROR_ILLEGAL_DATA_ADDRESS 0x12
+#define EXTERNAL_MODULE_ERROR_ILLEGAL_DATA_VALUE 0x13
+#define EXTERNAL_MODULE_ERROR_SLAVE_OR_SERVER_FAILURE 0x14
+// коды ошибок внутренних модулей.
+#define INTERNAL_MODULE_ERROR_DATA_BASE 0x15
+#define INTERNAL_MODULE_ERROR_REPER_POINTS 0x16
+
+
+//-------------------------------------------------------------------------------
 enum
 {
     COILS_WORK_ARRAY_LENGTH = 128,

@@ -85,41 +85,41 @@ bool CInternalModuleMuvr::GetTaskData(CDataContainerDataBase* pxDataContainer)
     return true;
 }
 
-//-------------------------------------------------------------------------------
-uint8_t CInternalModuleMuvr::GetType(void)
-{
-    return MISSING_COMPONENT;
-}
+////-------------------------------------------------------------------------------
+//uint8_t CInternalModuleMuvr::GetType(void)
+//{
+//    return MISSING_COMPONENT;
+//}
+//
+////-------------------------------------------------------------------------------
+//uint8_t CInternalModuleMuvr::GetWorkingStatus(void)
+//{
+//    return MISSING_COMPONENT;
+//}
 
-//-------------------------------------------------------------------------------
-uint8_t CInternalModuleMuvr::GetWorkingStatus(void)
-{
-    return MISSING_COMPONENT;
-}
-
-//-------------------------------------------------------------------------------
-void CInternalModuleMuvr::SetAddress(uint8_t uiAddress)
-{
-    m_uiAddress = uiAddress;
-}
-
-//-------------------------------------------------------------------------------
-uint8_t CInternalModuleMuvr::GetAddress(void)
-{
-    return m_uiAddress;
-}
-
-//-------------------------------------------------------------------------------
-bool CInternalModuleMuvr::IsAbleToReplace(uint8_t uiType)
-{
-    return false;
-}
-
-//-------------------------------------------------------------------------------
-bool CInternalModuleMuvr::IsReadyToStartWork(void)
-{
-    return false;
-}
+////-------------------------------------------------------------------------------
+//void CInternalModuleMuvr::SetAddress(uint8_t uiAddress)
+//{
+//    m_uiAddress = uiAddress;
+//}
+//
+////-------------------------------------------------------------------------------
+//uint8_t CInternalModuleMuvr::GetAddress(void)
+//{
+//    return m_uiAddress;
+//}
+//
+////-------------------------------------------------------------------------------
+//bool CInternalModuleMuvr::IsAbleToReplace(uint8_t uiType)
+//{
+//    return false;
+//}
+//
+////-------------------------------------------------------------------------------
+//bool CInternalModuleMuvr::IsReadyToStartWork(void)
+//{
+//    return false;
+//}
 
 ////-------------------------------------------------------------------------------
 //uint8_t CInternalModuleMuvr::GetModuleType(uint8_t uiAddress)
@@ -194,6 +194,433 @@ bool CInternalModuleMuvr::IsReadyToStartWork(void)
 //    }
 //    std::cout << "CInternalModuleMuvr::GetModuleType 6"  << std::endl;
 //}
+
+//-----------------------------------------------------------------------------------------------------
+uint8_t CInternalModuleMuvr::DataExchange(void)
+{
+//    int i;
+//    int j;
+    float fData;
+    unsigned char ucCalibrPlus;
+    unsigned char ucCalibrMinus;
+    uint8_t auiSpiTxBuffer[TX_RX_BUFF_SIZE];
+    uint8_t auiSpiRxBuffer[TX_RX_BUFF_SIZE];
+
+    ucCalibrPlus = 0;
+    ucCalibrMinus = 0;
+    uint8_t uiCommonIndex = GetCommonIndex();
+    // калибруем вход?(если ucCommonIndex не равен 0, то содержит номер калибруемого входа)
+    if ((uiCommonIndex > 0) && (uiCommonIndex < (MUVR_TXS_INPUT_NUMBER + 1)))
+    {
+        // получим номер калибруемого входа.
+        ucCalibrPlus = uiCommonIndex;
+        // установим начало шкалы НШК?
+        if (GetCommandControl() == MUVR_COMMAND_CONTROL_SET_BOTTOM_OF_SCALE)
+        {
+            SetCommandControl(0);
+            // добавим команду модулю.
+            ucCalibrPlus |= MUVR_SET_BOTTOM_OF_SCALE;
+        }
+        // установим конец шкалы ВШК?
+        else if (GetCommandControl() == MUVR_COMMAND_CONTROL_SET_TOP_OF_SCALE)
+        {
+            SetCommandControl(0);
+            // добавим команду модулю.
+            ucCalibrPlus |= MUVR_SET_TOP_OF_SCALE;
+        }
+        // данные калибровки передаются дважды, в нормальном виде в байте(ucCalibrPlus) и
+        // в инвертированном(!ucCalibrPlus + 1) в байте(ucCalibrMinus).
+        // при контроле, сумма (ucCalibrPlus + ucCalibrMinus) должна быть 0.
+        ucCalibrMinus = 0x00 - ucCalibrPlus;
+    }
+
+    auiSpiTxBuffer[MUVR_CALIBRATION_DATA_OFFSET] = ucCalibrPlus;
+    auiSpiTxBuffer[MUVR_CALIBRATION_DATA_OFFSET + 1] = ucCalibrMinus;
+    auiSpiTxBuffer[0] = MUVR_GET_MEASURE_DATA_COMMAND;
+
+    //    xSpiCommunicationDevice.Exchange(pxModuleContext ->
+//                                     xModuleContextStatic.
+//                                     ucModuleAddress,
+//                                     auiSpiTxBuffer,
+//                                     auiSpiRxBuffer,
+//                                     SPI_PREAMBLE_LENGTH +
+//                                     MUVR_GET_MEASURE_DATA_COMMAND_ANSWER_LENGTH +
+//                                     TWO_BYTE_CRC_LENGTH +
+//                                     TAIL_ANSWER_LENGTH,
+//                                     SPEED_IN_HZ
+//                                    );
+
+    usleep(10000);
+    m_pxCommunicationDevice -> Exchange(GetAddress(),
+                                        auiSpiTxBuffer,
+                                        auiSpiRxBuffer,
+                                        SPI_PREAMBLE_LENGTH +
+                                        MUVR_GET_MEASURE_DATA_COMMAND_ANSWER_LENGTH +
+                                        TWO_BYTE_CRC_LENGTH +
+                                        TAIL_ANSWER_LENGTH,
+                                        LOW_SPEED_IN_HZ);
+
+    // что ответил модуль?
+    switch(auiSpiRxBuffer[SPI_COMMAND_BYTE_OFFSET])
+    {
+    case MUVR_ANSWER_REPER_POINTS_ADC_DATABASE_ERROR:
+//        // ошибка БД реперных точек, но будет продолжение обмена.
+//        fbAnalogueInputModuleReperPointsAdcDataBaseError = 1;
+        // получим код ошибки;
+        SetErrorCode(INTERNAL_MODULE_ERROR_REPER_POINTS);
+
+//        // активное состояние события ещё не зарегистрировано?
+//        if(xCInternalModuleErrorEvent.EventOnIsNotRegistered(
+//                    pxModuleContext ->
+//                    xModuleContextStatic.
+//                    ucModuleContextIndex,
+//                    MVAI_REPER_POINTS_DATA_BASE_ERROR_OFFSET))
+//        {
+//            // зарегистрируем активное состояние события.
+//            CEvents::EventRegistration(
+//                pxModuleContext ->
+//                xModuleContextStatic.
+//                ucModuleContextIndex,
+//                (CEvents::HANDLED_EVENTS_INTERNAL_MODULES_BAD_TYPE |
+//                 CEvents::HANDLED_EVENTS_IS_POPUP |
+//                 CEvents::HANDLED_EVENTS_IS_SOUND |
+//                 CEvents::HANDLED_EVENTS_IS_ARCHIVE),
+//                MVAI_REPER_POINTS_DATA_BASE_ERROR_OFFSET,
+//                "Реперные т.");
+//        }
+
+
+    case MUVR_GET_MEASURE_DATA_COMMAND:
+        // данные не повреждены?
+        if (iCrcSummTwoByteCompare(&auiSpiRxBuffer[SPI_DATA_BYTE_OFFSET],
+                                   MUVR_GET_MEASURE_DATA_COMMAND_ANSWER_LENGTH) > 0)
+        {
+            // модуль исправен.
+            SetBadAnswerCounter(BAD_MODULE_CYCLE_COUNT_DEFAULT);
+//            // сбросим флаг отказа модуля.
+//            *(pxModuleContext ->
+//              xModuleContextStatic.
+//              pucModuleBadStateBufferPointer) = BAD_MODULE_RESPONDED_OK;
+
+//            // неактивное состояние события ещё не зарегистрировано?
+//            if(xCInternalModuleErrorEvent.EventOffIsNotRegistered(
+//                        pxModuleContext ->
+//                        xModuleContextStatic.
+//                        ucModuleContextIndex,
+//                        MTVI5_BAD_ANSWER_ERROR_OFFSET))
+//            {
+//                // зарегистрируем неактивное состояние события.
+//                // норма обмена данными.
+//                CEvents::EventRegistration(
+//                    pxModuleContext ->
+//                    xModuleContextStatic.
+//                    ucModuleContextIndex,
+//                    (CEvents::HANDLED_EVENTS_INTERNAL_MODULES_BAD_TYPE |
+//                     CEvents::HANDLED_EVENTS_IS_ARCHIVE),
+//                    MTVI5_BAD_ANSWER_ERROR_OFFSET,
+//                    "Норм. обмена");
+//            }
+
+//            //iBadModuleBuffUpdate();
+//            // получим данные состояния каналов аналоговых входов.
+//            memcpy(pxModuleContext ->
+//                   xModuleContextStatic.
+//                   pucStatAiBufferPointer,
+//                   &auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET],
+//                   MUVR_ANALOG_INPUT_QUANTITY);
+
+//            cout << "MUVR_GET_MEASURE_DATA_COMMAND ucCalibrMinus" << (int)ucCalibrMinus << endl;
+//            unsigned char *pucSourceTemp;
+//            pucSourceTemp = (unsigned char*)&auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET];//pxModbusMapping -> buffer_pointer;//
+//            for(int i=0; i<8; )
+//            {
+//                for(int j=0; j<8; j++)
+//                {
+//                    cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+//                }
+//                cout << endl;
+//                i += 8;
+//            }
+
+            // получим измеренные значения всех аналоговых входов модуля.
+            for (uint8_t i = 0; i < MUVR_ANALOG_INPUT_QUANTITY; i++)
+            {
+                // есть обрыв линии или переполнение при расчётах текущего входа?
+                if ((auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_LINE_BREAK) ||
+                        (auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_CALCULATION_OVERFLOW))
+                {
+//                    // данные входа недостоверны, обнулим их.
+//                    memset(&(pxModuleContext ->
+//                             xModuleContextStatic.
+//                             pucAiValueBufferPointer[i * sizeof(float)]),
+//                           0,
+//                           sizeof(float));
+//                    // установим флаг недостоверности - вход недостоверен.
+//                    pxModuleContext ->
+//                    xModuleContextStatic.
+//                    pucBadAiBufferPointer[i] = 1;
+//                    // дискретные данные входа недостоверны, обнулим их.
+//                    memset(&(pxModuleContext ->
+//                             xModuleContextStatic.
+//                             pucDiValueBufferPointer[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
+//                           0,
+//                           MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
+//                    // установим флаги недостоверности уставок LL, L, H, HH - недостоверны.
+//                    memset(&(pxModuleContext ->
+//                             xModuleContextStatic.
+//                             pucBadDiBufferPointer[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
+//                           1,
+//                           MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
+                }
+                // включен режим калибровки текущего входа?
+                else if(
+                    (((auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_LINE_BREAK) == 0) &&
+                     ((auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_CALCULATION_OVERFLOW) == 0)) &&
+                    ((auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_CHANNEL_CALIBRATION)))
+                {
+//                    // получим измеренное значение и преобразуем.
+//                    fData = fStep5ToFloat(&auiSpiRxBuffer[SPI_DATA_BYTE_OFFSET +
+//                                                                               (i * MUVR_ONE_ANALOG_INPUT_DATA_BYTE_QUANTITY)]);
+//                    // поместим его в рабочий массив.
+//                    memcpy(&(pxModuleContext ->
+//                             xModuleContextStatic.
+//                             pucAiValueBufferPointer[i * sizeof(float)]),
+//                           (unsigned char*)&fData,
+//                           sizeof(float));
+//                    // установим флаг недостоверности - вход недостоверен.
+//                    pxModuleContext ->
+//                    xModuleContextStatic.
+//                    pucBadAiBufferPointer[i] = 1;
+//                    // дискретные данные входа недостоверны, обнулим их.
+//                    memset(&(pxModuleContext ->
+//                             xModuleContextStatic.
+//                             pucDiValueBufferPointer[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
+//                           0,
+//                           MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
+//                    // установим флаги недостоверности уставок LL, L, H, HH - недостоверны.
+//                    memset(&(pxModuleContext ->
+//                             xModuleContextStatic.
+//                             pucBadDiBufferPointer[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
+//                           1,
+//                           MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
+                }
+                else
+                {
+//                    // аналоговый вход выведен из обработки?
+//                    if (pxModuleContext ->
+//                            xModuleContextStatic.
+//                            pucAinOffBufferPointer[i])
+//                    {
+//                        // данные входов модуля выведены из обработки, обнулим их.
+//                        memset(&(pxModuleContext ->
+//                                 xModuleContextStatic.
+//                                 pucAiValueBufferPointer[i * sizeof(float)]),
+//                               0,
+//                               sizeof(float));
+//                        // установим флаг недостоверности - вход недостоверен.
+//                        pxModuleContext ->
+//                        xModuleContextStatic.
+//                        pucBadAiBufferPointer[i] = 1;
+//                        // дискретные данные входа недостоверны, обнулим их.
+//                        memset(&(pxModuleContext ->
+//                                 xModuleContextStatic.
+//                                 pucDiValueBufferPointer[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
+//                               0,
+//                               MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
+//                        // установим флаги недостоверности уставок LL, L, H, HH - недостоверны.
+//                        memset(&(pxModuleContext ->
+//                                 xModuleContextStatic.
+//                                 pucBadDiBufferPointer[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
+//                               1,
+//                               MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
+//                    }
+//                    else
+//                    {
+//                        // получим измеренное значение и преобразуем.
+//                        fData = fStep5ToFloat(&auiSpiRxBuffer[SPI_DATA_BYTE_OFFSET +
+//                                                                                   (i * MUVR_ONE_ANALOG_INPUT_DATA_BYTE_QUANTITY)]);
+//                        // поместим его в рабочий массив.
+//                        memcpy(&(pxModuleContext ->
+//                                 xModuleContextStatic.
+//                                 pucAiValueBufferPointer[i * sizeof(float)]),
+//                               (unsigned char*)&fData,
+//                               sizeof(float));
+//                        // сбросим флаг недостоверности - вход достоверен.
+//                        pxModuleContext ->
+//                        xModuleContextStatic.
+//                        pucBadAiBufferPointer[i] = 0;
+//                        // сбросим флаги уставок LL, L, H, HH.
+//                        memset(&(pxModuleContext ->
+//                                 xModuleContextStatic.
+//                                 pucDiValueBufferPointer[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
+//                               0,
+//                               MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
+//                        // сбросим флаги недостоверности уставок LL, L, H, HH - достоверны.
+//                        memset(&(pxModuleContext ->
+//                                 xModuleContextStatic.
+//                                 pucBadDiBufferPointer[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
+//                               0,
+//                               MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
+//                        // нарушена уставка LL + L?
+//                        if ((auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_SET_POINT_VIOLATION_MASK) ==
+//                                ANALOGUE_INPUT_SET_POINT_VIOLATION_LL_L)
+//                        {
+//                            // установим флаг нарушения уставки LL.
+//                            (pxModuleContext ->
+//                             xModuleContextStatic.
+//                             pucDiValueBufferPointer[(i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH) +
+//                                                                                            ANALOGUE_INPUT_SET_POINT_VIOLATION_LL_L_OFFSET]) = 1;
+//
+//                            // установим флаг нарушения уставки L.
+//                            (pxModuleContext ->
+//                             xModuleContextStatic.
+//                             pucDiValueBufferPointer[(i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH) +
+//                                                                                            ANALOGUE_INPUT_SET_POINT_VIOLATION_L_OFFSET]) = 1;
+//                        }
+//                        // нарушена уставка L?
+//                        if ((auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_SET_POINT_VIOLATION_MASK) ==
+//                                ANALOGUE_INPUT_SET_POINT_VIOLATION_L)
+//                        {
+//                            // установим флаг нарушения уставки L.
+//                            (pxModuleContext ->
+//                             xModuleContextStatic.
+//                             pucDiValueBufferPointer[(i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH) +
+//                                                                                            ANALOGUE_INPUT_SET_POINT_VIOLATION_L_OFFSET]) = 1;
+//                        }
+//                        // нарушена уставка H?
+//                        if ((auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_SET_POINT_VIOLATION_MASK) ==
+//                                ANALOGUE_INPUT_SET_POINT_VIOLATION_H)
+//                        {
+//                            // установим флаг нарушения уставки H.
+//                            (pxModuleContext ->
+//                             xModuleContextStatic.
+//                             pucDiValueBufferPointer[(i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH) +
+//                                                                                            ANALOGUE_INPUT_SET_POINT_VIOLATION_H_OFFSET]) = 1;
+//                        }
+//                        // нарушена уставка HH + H?
+//                        if ((auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_SET_POINT_VIOLATION_MASK) ==
+//                                ANALOGUE_INPUT_SET_POINT_VIOLATION_HH_H)
+//                        {
+//                            // установим флаг нарушения уставки HH.
+//                            (pxModuleContext ->
+//                             xModuleContextStatic.
+//                             pucDiValueBufferPointer[(i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH) +
+//                                                                                            ANALOGUE_INPUT_SET_POINT_VIOLATION_HH_H_OFFSET]) = 1;
+//
+//                            // установим флаг нарушения уставки H.
+//                            (pxModuleContext ->
+//                             xModuleContextStatic.
+//                             pucDiValueBufferPointer[(i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH) +
+//                                                                                            ANALOGUE_INPUT_SET_POINT_VIOLATION_H_OFFSET]) = 1;
+//                        }
+//                    }
+                }
+            }
+            return 0;
+        }
+        break;
+
+    case MUVR_ANSWER_DATA_NOT_READY:
+        // данные не готовы.
+        return 0;
+        break;
+
+    case MUVR_ANSWER_DATABASE_ERROR:
+//        // ошибка БД обработки, конец связи.
+//        fbAnalogueInputModuleDataBaseError = 1;
+        // получим код ошибки;
+        SetErrorCode(INTERNAL_MODULE_ERROR_DATA_BASE);
+
+//        // активное состояние события ещё не зарегистрировано?
+//        if(xCInternalModuleErrorEvent.EventOnIsNotRegistered(
+//                    pxModuleContext ->
+//                    xModuleContextStatic.
+//                    ucModuleContextIndex,
+//                    MTVI5_DATA_BASE_ERROR_OFFSET))
+//        {
+//            // зарегистрируем активное состояние события.
+//            CEvents::EventRegistration(
+//                pxModuleContext ->
+//                xModuleContextStatic.
+//                ucModuleContextIndex,
+//                (CEvents::HANDLED_EVENTS_INTERNAL_MODULES_BAD_TYPE |
+//                 CEvents::HANDLED_EVENTS_IS_POPUP |
+//                 CEvents::HANDLED_EVENTS_IS_SOUND |
+//                 CEvents::HANDLED_EVENTS_IS_ARCHIVE),
+//                MTVI5_DATA_BASE_ERROR_OFFSET,
+//                "Ошиб. б. МВА");
+//        }
+
+        return 0;
+        break;
+
+    default:
+        break;
+    };
+
+
+    // модуль признан неисправным?
+    if (GetBadAnswerCounter() == 0)
+    {
+//        // модуль признан неисправным.
+//        *(pxModuleContext ->
+//          xModuleContextStatic.
+//          pucModuleBadStateBufferPointer) = BAD_MODULE_NOT_RESPONDED;
+
+//        // активное состояние события ещё не зарегистрировано?
+//        if(xCInternalModuleErrorEvent.EventOnIsNotRegistered(
+//                    pxModuleContext ->
+//                    xModuleContextStatic.
+//                    ucModuleContextIndex,
+//                    MTVI5_BAD_ANSWER_ERROR_OFFSET))
+//        {
+//            // зарегистрируем активное состояние события.
+//            // ошибка обмена данными.
+//            CEvents::EventRegistration(
+//                pxModuleContext ->
+//                xModuleContextStatic.
+//                ucModuleContextIndex,
+//                (CEvents::HANDLED_EVENTS_INTERNAL_MODULES_BAD_TYPE |
+//                 CEvents::HANDLED_EVENTS_IS_POPUP |
+//                 CEvents::HANDLED_EVENTS_IS_SOUND |
+//                 CEvents::HANDLED_EVENTS_IS_ARCHIVE),
+//                MTVI5_BAD_ANSWER_ERROR_OFFSET,
+//                "Ошиб. обмена");
+//        }
+
+//        // данные входов модуля недостоверны, обнулим их.
+//        memset(pxModuleContext ->
+//               xModuleContextStatic.
+//               pucAiValueBufferPointer,
+//               0,
+//               MUVR_ANALOG_INPUT_QUANTITY * sizeof(float));
+//        // установим флаги недостоверности - входы недостоверны.
+//        memset(pxModuleContext ->
+//               xModuleContextStatic.
+//               pucBadAiBufferPointer,
+//               1,
+//               MUVR_ANALOG_INPUT_QUANTITY);
+//        // дискретные данные входов модуля недостоверны, обнулим их.
+//        memset(pxModuleContext ->
+//               xModuleContextStatic.
+//               pucDiValueBufferPointer,
+//               0,
+//               MUVR_ANALOG_INPUT_QUANTITY * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
+//        // установим флаги недостоверности всех дискретных сигналов модуля.
+//        memset(pxModuleContext ->
+//               xModuleContextStatic.
+//               pucBadDiBufferPointer,
+//               1,
+//               MUVR_ANALOG_INPUT_QUANTITY * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
+//        //iBadModuleBuffUpdate();
+    }
+    else
+    {
+        // уменьшим значение счётчика - "количество сеансов связи с модулем без ответа".
+        SetBadAnswerCounter(GetBadAnswerCounter() - 1);
+    }
+    return 0;
+}
 
 //-------------------------------------------------------------------------------
 uint8_t CInternalModuleMuvr::DataBaseRead(uint8_t uiAddress)
@@ -414,7 +841,7 @@ uint8_t CInternalModuleMuvr::Fsm(void)
 
     case MUVR_DATA_EXCHANGE:
 //        std::cout << "CInternalModuleMuvr::Fsm MUVR_DATA_EXCHANGE"  << std::endl;
-
+        DataExchange();
         break;
 
     default:

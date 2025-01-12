@@ -142,6 +142,54 @@ bool CInternalModule::IsReadyToStartWork(void)
 }
 
 //-------------------------------------------------------------------------------
+void CInternalModule::SetCommonIndex(uint8_t uiCommonIndex)
+{
+    m_uiCommonIndex = uiCommonIndex;
+}
+
+//-------------------------------------------------------------------------------
+uint8_t CInternalModule::GetCommonIndex(void)
+{
+    return m_uiCommonIndex;
+}
+
+//-------------------------------------------------------------------------------
+void CInternalModule::SetCommandControl(uint8_t uiCommandControl)
+{
+    m_uiCommandControl = uiCommandControl;
+}
+
+//-------------------------------------------------------------------------------
+uint8_t CInternalModule::GetCommandControl(void)
+{
+    return m_uiCommandControl;
+}
+
+//-------------------------------------------------------------------------------
+void CInternalModule::SetErrorCode(uint8_t uiErrorCode)
+{
+    m_uiErrorCode = uiErrorCode;
+}
+
+//-------------------------------------------------------------------------------
+uint8_t CInternalModule::GetErrorCode(void)
+{
+    return m_uiErrorCode;
+}
+
+//-------------------------------------------------------------------------------
+void CInternalModule::SetBadAnswerCounter(uint8_t uiBadAnswerCounter)
+{
+    m_uiBadAnswerCounter = uiBadAnswerCounter;
+}
+
+//-------------------------------------------------------------------------------
+uint8_t CInternalModule::GetBadAnswerCounter(void)
+{
+    return m_uiBadAnswerCounter;
+}
+
+//-------------------------------------------------------------------------------
 uint8_t CInternalModule::GetModuleType(uint8_t uiAddress)
 {
     std::cout << "CInternalModule::GetModuleType 1"  << std::endl;
