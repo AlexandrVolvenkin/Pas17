@@ -1,5 +1,5 @@
-#ifndef CMODBUSSMSLAVELINKLAYER_H
-#define CMODBUSSMSLAVELINKLAYER_H
+#ifndef CSERIALMTSPIMASTERLINKLAYER_H
+#define CSERIALMTSPIMASTERLINKLAYER_H
 //-------------------------------------------------------------------------------
 //  Source      : FileName.cpp
 //  Created     : 01.06.2022
@@ -11,7 +11,7 @@
 #include <thread>
 
 #include "Modbus.h"
-#include "ModbusSlaveLinkLayer.h"
+#include "ModbusMasterLinkLayer.h"
 #include "Configuration.h"
 
 /* Modbus_Application_Protocol_V1_1b.pdf Chapter 4 Section 1 Page 5
@@ -34,18 +34,19 @@ class CTask;
 class CResources;
 class CCommunicationDevice;
 class CCommunicationDeviceInterface;
-class CModbusSlaveLinkLayer;
+class CSerialMtMasterLinkLayer;
+class CDataContainerInterface;
+class CDataContainerDataBase;
 
 //-------------------------------------------------------------------------------
-class CModbusSmSlaveLinkLayer : public CModbusSlaveLinkLayer
+class CSerialMtSpiMasterLinkLayer : public CModbusMasterLinkLayer
 {
 public:
     enum
     {
         COMMUNICATION_START = NEXT_STEP,
         COMMUNICATION_RECEIVE_START,
-        COMMUNICATION_RECEIVE_CONTINUE,
-        COMMUNICATION_RECEIVE_END,
+        COMMUNICATION_RECEIVE,
         COMMUNICATION_FRAME_CHECK,
         COMMUNICATION_FRAME_RECEIVED,
         COMMUNICATION_TRANSMIT_START,
@@ -53,12 +54,11 @@ public:
         COMMUNICATION_RECEIVE_ERROR,
     };
 
-    CModbusSmSlaveLinkLayer();
-    virtual ~CModbusSmSlaveLinkLayer();
+    CSerialMtSpiMasterLinkLayer();
+    virtual ~CSerialMtSpiMasterLinkLayer();
 
     uint8_t Init(void);
-    size_t GetObjectLength(void);
-    static void Process(CModbusSmSlaveLinkLayer* pxModbusSlaveLinkLayer);
+    static void Process(CSerialMtSpiMasterLinkLayer* pxSerialMtSpiMasterLinkLayer);
 //    void CommunicationDeviceInit(const char* pccDeviceName,
 //                                 uint32_t uiBaudRate,
 //                                 uint8_t uiDataBits,
@@ -66,6 +66,7 @@ public:
 //                                 uint8_t uiStopBit);
     bool SetTaskData(CDataContainerDataBase* pxDataContainer);
     bool GetTaskData(CDataContainerDataBase* pxDataContainer);
+
     uint8_t Fsm(void);
 
     uint8_t* GetRxBuffer(void);
@@ -150,4 +151,4 @@ private:
 };
 
 //-------------------------------------------------------------------------------
-#endif // CMODBUSSMSLAVELINKLAYER_H
+#endif // CSERIALMTSPIMASTERLINKLAYER_H

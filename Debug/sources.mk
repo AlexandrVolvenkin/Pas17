@@ -32,4 +32,5 @@ obj/Release/Pas17/src \
 src/CommunicationDevice \
 src \
 src/Modbus \
+src/SerialMT \
 

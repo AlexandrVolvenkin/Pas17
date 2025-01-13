@@ -19,6 +19,7 @@
 					<Add directory="Pas17/src" />
 					<Add directory="Pas17/src/CommunicationDevice" />
 					<Add directory="Pas17/src/ModbusSM" />
+					<Add directory="Pas17/src/SerialMT" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
@@ -34,6 +35,7 @@
 					<Add directory="Pas17/src" />
 					<Add directory="Pas17/src/CommunicationDevice" />
 					<Add directory="Pas17/src/ModbusSM" />
+					<Add directory="Pas17/src/SerialMT" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -116,6 +118,18 @@
 		<Unit filename="src/Platform.h" />
 		<Unit filename="src/Resources.cpp" />
 		<Unit filename="src/Resources.h" />
+		<Unit filename="src/SerialMT/SerialMtMaster.cpp" />
+		<Unit filename="src/SerialMT/SerialMtMaster.h" />
+		<Unit filename="src/SerialMT/SerialMtMasterLinkLayer.cpp" />
+		<Unit filename="src/SerialMT/SerialMtMasterLinkLayer.h" />
+		<Unit filename="src/SerialMT/SerialMtSlave.cpp" />
+		<Unit filename="src/SerialMT/SerialMtSlave.h" />
+		<Unit filename="src/SerialMT/SerialMtSlaveLinkLayer.cpp" />
+		<Unit filename="src/SerialMT/SerialMtSlaveLinkLayer.h" />
+		<Unit filename="src/SerialMT/SerialMtSpiMasterLinkLayer.cpp" />
+		<Unit filename="src/SerialMT/SerialMtSpiMasterLinkLayer.h" />
+		<Unit filename="src/SerialMT/SerialMtSpiSlaveLinkLayer.cpp" />
+		<Unit filename="src/SerialMT/SerialMtSpiSlaveLinkLayer.h" />
 		<Unit filename="src/ServiceMarket.cpp" />
 		<Unit filename="src/ServiceMarket.h" />
 		<Unit filename="src/StorageDevice.cpp" />
