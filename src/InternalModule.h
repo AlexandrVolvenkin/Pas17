@@ -125,6 +125,7 @@ public:
     virtual void SetBadAnswerCounter(uint8_t uiBadAnswerCounter) {};
     virtual uint8_t GetBadAnswerCounter(void) {};
 
+    virtual void Allocate(void) {};
     virtual uint8_t GetModuleType(uint8_t uiAddress) {};
     virtual uint8_t DataBaseRead(uint8_t uiAddress) {};
 };
@@ -175,17 +176,22 @@ public:
     void SetBadAnswerCounter(uint8_t uiBadAnswerCounter);
     uint8_t GetBadAnswerCounter(void);
 
+    void Allocate(void);
     uint8_t GetModuleType(uint8_t uiAddress);
 //    uint8_t DataBaseRead(uint8_t uiAddress);
 
 protected:
-    uint8_t m_uiAddress;
     std::string m_sCommunicationDeviceName;
     CCommunicationDeviceInterface* m_pxCommunicationDevice;
     CDataContainerDataBase* m_pxOperatingDataContainer;
+    uint8_t m_uiAddress;
     uint8_t m_uiCommonIndex;
     uint8_t m_uiCommandControl;
     uint8_t m_uiErrorCode;
+    uint8_t* m_puiRxBuffer;
+    uint8_t* m_puiTxBuffer;
+    uint8_t* m_puiDiscreteInputs;
+    uint8_t* m_puiDiscreteInputsBadState;
     uint8_t m_uiBadAnswerCounter;
 
 };

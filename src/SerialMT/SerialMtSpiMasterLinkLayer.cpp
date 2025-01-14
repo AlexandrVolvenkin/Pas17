@@ -486,6 +486,7 @@ uint8_t CSerialMtSpiMasterLinkLayer::Fsm(void)
 //            }
 //        }
         std::cout << "CSerialMtSpiMasterLinkLayer::Fsm COMMUNICATION_TRANSMIT_START m_uiFrameLength "  << (int)m_uiFrameLength << std::endl;
+        m_uiFrameLength += Tail(m_auiTxBuffer, m_uiFrameLength);
         m_pxCommunicationDevice -> Write(m_auiTxBuffer, m_uiFrameLength);
         SetFsmState(COMMUNICATION_FRAME_TRANSMITED);
         break;

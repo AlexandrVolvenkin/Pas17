@@ -190,7 +190,7 @@ uint8_t CMainProductionCycle::CreateTasks(void)
     pxModbusRtuSlaveUpperLevel ->
     SetDeviceControlName("DeviceControlRtuUpperLevel");
     pxModbusRtuSlaveUpperLevel ->
-    ModbusWorkingArraysInit();
+    WorkingArraysInit();
     m_xResources.AddCurrentlyRunningTasksList(pxModbusRtuSlaveUpperLevel);
 
 //-------------------------------------------------------------------------------
@@ -223,7 +223,7 @@ uint8_t CMainProductionCycle::CreateTasks(void)
     pxModbusTcpSlaveUpperLevel ->
     SetDeviceControlName("DeviceControlRtuUpperLevel");
     pxModbusTcpSlaveUpperLevel ->
-    ModbusWorkingArraysInit();
+    WorkingArraysInit();
     m_xResources.AddCurrentlyRunningTasksList(pxModbusTcpSlaveUpperLevel);
 
 
@@ -262,7 +262,7 @@ uint8_t CMainProductionCycle::CreateTasks(void)
     pxModbusSmSlaveEveDisplay ->
     SetDeviceControlName("DeviceControlRtuUpperLevel");
     pxModbusSmSlaveEveDisplay ->
-    ModbusWorkingArraysInit();
+    WorkingArraysInit();
     m_xResources.AddCurrentlyRunningTasksList(pxModbusSmSlaveEveDisplay);
 
 

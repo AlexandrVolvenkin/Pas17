@@ -121,6 +121,41 @@ bool CInternalModuleMuvr::GetTaskData(CDataContainerDataBase* pxDataContainer)
 //    return false;
 //}
 
+//-----------------------------------------------------------------------------------------------------
+void CInternalModuleMuvr::Allocate(void)
+{
+    std::cout << "CInternalModuleMuvr::Allocate 1"  << std::endl;
+
+//    m_uiAddress = xMemoryAllocationContext.uiAddress;
+//    m_puiRxBuffer = xMemoryAllocationContext.puiRxBuffer;
+//    m_puiTxBuffer = xMemoryAllocationContext.puiTxBuffer;
+//    m_puiErrorCode = xMemoryAllocationContext.puiErrorCode;
+//    // Получим указатель на место в массиве дискретных входов для текущего модуля.
+//    m_puiDiscreteInputs =
+//        &xMemoryAllocationContext.
+//        puiDiscreteInputs[xMemoryAllocationContext.uiUsedDiscreteInputs];
+//    // Увеличим общий объём выделенной памяти.
+//    xMemoryAllocationContext.
+//    uiUsedDiscreteInputs +=
+//        MVSN21_DISCRETE_INPUTS_NUMBER;
+//
+//    // Получим указатель на место в массиве достоверности дискретных входов для текущего модуля.
+//    m_puiDiscreteInputsBadState =
+//        &xMemoryAllocationContext.
+//        puiDiscreteInputsBadState[xMemoryAllocationContext.uiUsedDiscreteInputsBadState];
+//    // Увеличим общий объём выделенной памяти.
+//    xMemoryAllocationContext.
+//    uiUsedDiscreteInputsBadState +=
+//        MVSN21_DISCRETE_INPUTS_NUMBER;
+//
+//    // Получим указатель на место в массиве состояний ошибок для текущего модуля.
+//    m_puiErrorAlarmDataArray =
+//        &xMemoryAllocationContext.
+//        puiErrorAlarmDataArray[DISCRETE_INPUT_MODULE_FAILURE];
+//
+//    m_uiBadAnswerCounter = 0;
+}
+
 ////-------------------------------------------------------------------------------
 //uint8_t CInternalModuleMuvr::GetModuleType(uint8_t uiAddress)
 //{

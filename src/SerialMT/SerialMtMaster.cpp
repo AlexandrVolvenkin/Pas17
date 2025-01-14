@@ -32,7 +32,7 @@ CSerialMtMaster::CSerialMtMaster()
     sprintf(GetTaskNamePointer(),
             "%s",
             typeid(*this).name());
-    m_puiIntermediateBuff = new uint8_t[MAX_MODBUS_MESSAGE_LENGTH];
+    m_puiIntermediateBuff = new uint8_t[MAX_SERIAL_MT_MESSAGE_LENGTH];
     SetFsmState(START);
 }
 
@@ -80,48 +80,48 @@ CDeviceControl* CSerialMtMaster::GetDeviceContro(void)
     return m_pxDeviceControl;
 }
 
-//-------------------------------------------------------------------------------
-const char *CSerialMtMaster::ModbusStringError(int errnum)
-{
-    switch (errnum)
-    {
-    case EMBXILFUN:
-        return "Illegal function";
-    case EMBXILADD:
-        return "Illegal data address";
-    case EMBXILVAL:
-        return "Illegal data value";
-    case EMBXSFAIL:
-        return "Slave device or server failure";
-    case EMBXACK:
-        return "Acknowledge";
-    case EMBXSBUSY:
-        return "Slave device or server is busy";
-    case EMBXNACK:
-        return "Negative acknowledge";
-    case EMBXMEMPAR:
-        return "Memory parity error";
-    case EMBXGPATH:
-        return "Gateway path unavailable";
-    case EMBXGTAR:
-        return "Target device failed to respond";
-    case EMBBADCRC:
-        return "Invalid CRC";
-    case EMBBADDATA:
-        return "Invalid data";
-    case EMBBADEXC:
-        return "Invalid exception code";
-    case EMBMDATA:
-        return "Too many data";
-    default:
-        return strerror(errnum);
-    }
-}
+////-------------------------------------------------------------------------------
+//const char *CSerialMtMaster::ModbusStringError(int errnum)
+//{
+//    switch (errnum)
+//    {
+//    case EMBXILFUN:
+//        return "Illegal function";
+//    case EMBXILADD:
+//        return "Illegal data address";
+//    case EMBXILVAL:
+//        return "Illegal data value";
+//    case EMBXSFAIL:
+//        return "Slave device or server failure";
+//    case EMBXACK:
+//        return "Acknowledge";
+//    case EMBXSBUSY:
+//        return "Slave device or server is busy";
+//    case EMBXNACK:
+//        return "Negative acknowledge";
+//    case EMBXMEMPAR:
+//        return "Memory parity error";
+//    case EMBXGPATH:
+//        return "Gateway path unavailable";
+//    case EMBXGTAR:
+//        return "Target device failed to respond";
+//    case EMBBADCRC:
+//        return "Invalid CRC";
+//    case EMBBADDATA:
+//        return "Invalid data";
+//    case EMBBADEXC:
+//        return "Invalid exception code";
+//    case EMBMDATA:
+//        return "Too many data";
+//    default:
+//        return strerror(errnum);
+//    }
+//}
 
 //-------------------------------------------------------------------------------
-void CSerialMtMaster::ModbusWorkingArraysInit(void)
+void CSerialMtMaster::WorkingArraysInit(void)
 {
-    std::cout << "CSerialMtMaster ModbusWorkingArraysInit 1"  << std::endl;
+    std::cout << "CSerialMtMaster WorkingArraysInit 1"  << std::endl;
     m_puiCoils = m_pxResources -> GetCoils();
     m_uiCoilsNumber = m_pxResources -> GetCoilsNumber();
     m_puiDiscreteInputs = m_pxResources -> GetDiscreteInputs();
@@ -169,17 +169,13 @@ uint16_t CSerialMtMaster::ByteToBitPack(uint16_t uiAddress,
 }
 
 //-----------------------------------------------------------------------------------------------------
-int8_t CSerialMtMaster::ReadDiscreteInputsRequest(uint8_t uiSlaveAddress,
-        uint16_t uiAddress,
-        uint16_t uiNumberB)
+int8_t CSerialMtMaster::SendMessage(uint8_t uiSlaveAddress,
+                                    uint8_t *puiDataBuffer,
+                                    uint16_t uiLength)
 {
-    if (uiNumberB < 1 || MODBUS_MAX_READ_BITS < uiNumberB)
+    if (uiLength > MAX_SERIAL_MT_MESSAGE_LENGTH)
     {
-        return EMBMDATA;
-    }
-    else if ((uiAddress + uiNumberB) > m_uiDiscreteInputsNumber)
-    {
-        return EMBBADEXC;
+        return 0;
     }
     else
     {
@@ -187,18 +183,12 @@ int8_t CSerialMtMaster::ReadDiscreteInputsRequest(uint8_t uiSlaveAddress,
         {
             uint8_t * puiResponse = m_pxSerialMtMasterLinkLayer -> GetTxBuffer();
 
-            m_uiFunctionCode = _FC_READ_DISCRETE_INPUTS;
-            m_uiAddress = uiAddress;
-            m_uiQuantity = uiNumberB;
-            uint16_t  uiLength = m_pxSerialMtMasterLinkLayer ->
-                                 RequestBasis(uiSlaveAddress,
-                                              m_uiFunctionCode,
-                                              uiAddress,
-                                              uiNumberB,
-                                              puiResponse);
+            m_uiSlaveAddress = uiSlaveAddress;
+            m_uiFunctionCode = _FC_SEND_MESSAGE;
 
-            uiLength = m_pxSerialMtMasterLinkLayer ->
-                       Tail(puiResponse, uiLength);
+            memcpy(puiResponse,
+                   puiDataBuffer,
+                   uiLength);
             m_pxSerialMtMasterLinkLayer ->
             SetFrameLength(uiLength);
 
@@ -212,130 +202,6 @@ int8_t CSerialMtMaster::ReadDiscreteInputsRequest(uint8_t uiSlaveAddress,
     }
 }
 
-//-------------------------------------------------------------------------------
-uint16_t CSerialMtMaster::ReadDiscreteInputsAnswer(void)
-{
-    std::cout << "CSerialMtMaster::ReadDiscreteInputsAnswer 1" << std::endl;
-
-    uint16_t uiPduOffset = m_pxSerialMtMasterLinkLayer -> GetPduOffset();
-    uint8_t * puiRequest = m_pxSerialMtMasterLinkLayer -> GetRxBuffer();
-
-
-    {
-        cout << "CSerialMtMaster::ReadDiscreteInputsAnswer puiRequest" << endl;
-        unsigned char *pucSourceTemp;
-        pucSourceTemp = (unsigned char*)puiRequest;
-        for(int i=0; i<32; )
-        {
-            for(int j=0; j<8; j++)
-            {
-                cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
-            }
-            cout << endl;
-            i += 8;
-        }
-    }
-    SetBytesFromBits(m_puiDiscreteInputs,
-                     m_uiAddress,
-                     m_uiQuantity,
-                     &puiRequest[uiPduOffset + 2]);
-
-    {
-        cout << "CSerialMtMaster::ReadDiscreteInputsAnswer m_puiDiscreteInputs" << endl;
-        unsigned char *pucSourceTemp;
-        pucSourceTemp = (unsigned char*)m_puiDiscreteInputs;
-        for(int i=0; i<32; )
-        {
-            for(int j=0; j<8; j++)
-            {
-                cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
-            }
-            cout << endl;
-            i += 8;
-        }
-    }
-
-    return m_uiQuantity;
-}
-
-//-------------------------------------------------------------------------------
-uint16_t CSerialMtMaster::ReadExceptionStatus(void)
-{
-//    errno = ENOPROTOOPT;
-    return -1;
-}
-
-//-------------------------------------------------------------------------------
-uint16_t CSerialMtMaster::ReportSlaveID(void)
-{
-    std::cout << "CSerialMtMaster::ReportSlaveID 1" << std::endl;
-
-    uint16_t uiPduOffset = m_pxSerialMtMasterLinkLayer -> GetPduOffset();
-    uint8_t * puiRequest = m_pxSerialMtMasterLinkLayer -> GetRxBuffer();
-    uint8_t * puiResponse = m_pxSerialMtMasterLinkLayer -> GetTxBuffer();
-    uint16_t  uiLength = m_pxSerialMtMasterLinkLayer -> GetFrameLength();
-
-    int8_t uiSlave = puiRequest[uiPduOffset - 1];
-    int8_t uiFunctionCode = puiRequest[uiPduOffset];
-
-    std::cout << "CSerialMtMaster::ReportSlaveID uiSlave "  << (int)uiSlave << std::endl;
-    std::cout << "CSerialMtMaster::ReportSlaveID uiFunctionCode "  << (int)uiFunctionCode << std::endl;
-
-    std::cout << "CSerialMtMaster::ReportSlaveID 4" << std::endl;
-
-    CDeviceControl* pxDeviceControl =
-        (CDeviceControl*)GetResources() ->
-        GetTaskPointerByNameFromMap("DeviceControlRtuUpperLevel");
-
-    uiLength = pxDeviceControl ->
-               ConfigurationRead(&puiResponse[uiPduOffset + 2]);
-//    uiLength = m_pxResources ->
-//               m_pxDeviceControl ->
-//               ConfigurationRead(&puiResponse[uiPduOffset + 2]);
-
-//    uint8_t auiTempData[] = {1, 15, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 22, 4, 0,};
-//    memcpy(&puiResponse[uiPduOffset + 2], auiTempData, sizeof(auiTempData));
-//    uiLength += sizeof(auiTempData);
-
-    // количество байт в прикладном сообщении массиве конфигурации, не включая остальные.
-    puiResponse[uiPduOffset + 1] = uiLength;//sizeof(auiTempData);// + 1;
-    uiLength ++;
-    uiLength += m_pxSerialMtMasterLinkLayer ->
-                ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
-
-    std::cout << "CSerialMtMaster::ReportSlaveID 7" << std::endl;
-    return uiLength;
-
-
-
-//        {
-//            uint16_t uiPduOffset = m_pxSerialMtMasterLinkLayer -> GetPduOffset();
-//            uint8_t * puiRequest = m_pxSerialMtMasterLinkLayer -> GetRxBuffer();
-//            uint8_t * puiResponse = (m_pxSerialMtMasterLinkLayer -> GetTxBuffer());
-//            uint16_t  uiLength = m_pxSerialMtMasterLinkLayer -> GetFrameLength();
-//
-//            int8_t uiSlave = 1;//puiRequest[uiPduOffset - 1];
-//            int8_t uiFunctionCode = 23;//puiRequest[uiPduOffset];
-//
-//            uint8_t auiTempData[] = {1, 15, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 22, 4, 0,};
-//            memcpy(&puiResponse[uiPduOffset + 2], auiTempData, sizeof(auiTempData));
-//            uiLength += sizeof(auiTempData);
-//
-//            // количество байт в прикладном сообщении массиве конфигурации, не включая остальные.
-//            puiResponse[uiPduOffset + 1] = uiLength;//sizeof(auiTempData);// + 1;
-//            uiLength ++;
-//            uiLength += m_pxSerialMtMasterLinkLayer ->
-//                        ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
-//
-//            uiLength = m_pxSerialMtMasterLinkLayer -> Tail(puiResponse, uiLength);
-//            m_pxSerialMtMasterLinkLayer -> SetFrameLength(uiLength);
-//
-//            GetTimerPointer() -> Set(1000);
-//            SetFsmState(BEFORE_REQUEST_WAITING);
-//        }
-}
-
-
 
 
 
@@ -346,17 +212,12 @@ uint16_t CSerialMtMaster::ReportSlaveID(void)
 //-------------------------------------------------------------------------------
 ////AnswerProcessing
 
-//-------------------------------------------------------------------------------
-uint16_t CSerialMtMaster::ReadExceptionStatusAnswer(void)
-{
-//    errno = ENOPROTOOPT;
-    return -1;
-}
+
 
 //-------------------------------------------------------------------------------
-uint16_t CSerialMtMaster::ReportSlaveIDAnswer(void)
+uint16_t CSerialMtMaster::SendMessageAnswer(void)
 {
-    std::cout << "CSerialMtMaster::ReportSlaveIDAnswer 1" << std::endl;
+    std::cout << "CSerialMtMaster::SendMessageAnswer 1" << std::endl;
 
     uint16_t uiPduOffset = m_pxSerialMtMasterLinkLayer -> GetPduOffset();
     uint8_t * puiRequest = m_pxSerialMtMasterLinkLayer -> GetRxBuffer();
@@ -366,32 +227,12 @@ uint16_t CSerialMtMaster::ReportSlaveIDAnswer(void)
     int8_t uiSlave = puiRequest[uiPduOffset - 1];
     int8_t uiFunctionCode = puiRequest[uiPduOffset];
 
-    std::cout << "CSerialMtMaster::ReportSlaveIDAnswer uiSlave "  << (int)uiSlave << std::endl;
-    std::cout << "CSerialMtMaster::ReportSlaveIDAnswer uiFunctionCode "  << (int)uiFunctionCode << std::endl;
+    std::cout << "CSerialMtMaster::SendMessageAnswer uiSlave "  << (int)uiSlave << std::endl;
+    std::cout << "CSerialMtMaster::SendMessageAnswer uiFunctionCode "  << (int)uiFunctionCode << std::endl;
 
-    std::cout << "CSerialMtMaster::ReportSlaveIDAnswer 4" << std::endl;
+    std::cout << "CSerialMtMaster::SendMessageAnswer 4" << std::endl;
 
-    CDeviceControl* pxDeviceControl =
-        (CDeviceControl*)GetResources() ->
-        GetTaskPointerByNameFromMap("DeviceControlRtuUpperLevel");
-
-    uiLength = pxDeviceControl ->
-               ConfigurationRead(&puiResponse[uiPduOffset + 2]);
-//    uiLength = m_pxResources ->
-//               m_pxDeviceControl ->
-//               ConfigurationRead(&puiResponse[uiPduOffset + 2]);
-
-//    uint8_t auiTempData[] = {1, 15, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 22, 4, 0,};
-//    memcpy(&puiResponse[uiPduOffset + 2], auiTempData, sizeof(auiTempData));
-//    uiLength += sizeof(auiTempData);
-
-    // количество байт в прикладном сообщении массиве конфигурации, не включая остальные.
-    puiResponse[uiPduOffset + 1] = uiLength;//sizeof(auiTempData);// + 1;
-    uiLength ++;
-    uiLength += m_pxSerialMtMasterLinkLayer ->
-                ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
-
-    std::cout << "CSerialMtMaster::ReportSlaveIDAnswer 7" << std::endl;
+    std::cout << "CSerialMtMaster::SendMessageAnswer 7" << std::endl;
     return uiLength;
 }
 
@@ -423,16 +264,8 @@ uint16_t CSerialMtMaster::AnswerProcessing(void)
     {
         std::cout << "CSerialMtMaster::AnswerProcessing 3" << std::endl;
 
-    case _FC_READ_DISCRETE_INPUTS:
-        uiLength = ReadDiscreteInputsAnswer();
-        break;
-
-    case _FC_READ_EXCEPTION_STATUS:
-        uiLength = ReadExceptionStatusAnswer();
-        break;
-
-    case _FC_REPORT_SLAVE_ID:
-        uiLength = ReportSlaveIDAnswer();
+    case _FC_SEND_MESSAGE:
+        uiLength = SendMessageAnswer();
         break;
 
     default:

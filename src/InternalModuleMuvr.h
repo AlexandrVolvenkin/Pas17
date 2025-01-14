@@ -181,6 +181,7 @@ public:
 //    uint8_t GetAddress(void);
 //    bool IsReadyToStartWork(void);
 //    bool IsAbleToReplace(uint8_t uiType);
+    void Allocate(void);
 //    uint8_t GetModuleType(uint8_t uiAddress);
     uint8_t DataExchange(void);
     uint8_t DataBaseRead(uint8_t uiAddress);

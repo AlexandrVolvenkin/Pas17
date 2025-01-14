@@ -1,17 +1,16 @@
 #ifndef CSERIALMTMASTER_H
 #define CSERIALMTMASTER_H
-////-------------------------------------------------------------------------------
-////  Source      : FileName.cpp
-////  Created     : 01.06.2022
-////  Author      : Alexandr Volvenkin
-////  email       : aav-36@mail.ru
-////  GitHub      : https://github.com/AlexandrVolvenkin
-////-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
+//  Source      : FileName.cpp
+//  Created     : 01.06.2022
+//  Author      : Alexandr Volvenkin
+//  email       : aav-36@mail.ru
+//  GitHub      : https://github.com/AlexandrVolvenkin
+//-------------------------------------------------------------------------------
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
-//#include <fcntl.h>
 #include <string.h>
 #include <assert.h>
 #include <time.h>
@@ -25,7 +24,6 @@ class CResources;
 class CDeviceControl;
 class CLinkInterface;
 class CLink;
-class CSerialMtMasterLinkLayer;
 class CSerialMtMasterLinkLayerInterface;
 class CSerialMtMasterLinkLayer;
 
@@ -52,8 +50,8 @@ public:
 
     enum
     {
-        MODBUS_EXCEPTION_CODE_OFFSET = 1,
-        MAX_MODBUS_MESSAGE_LENGTH = 256,
+        SERIAL_MT_EXCEPTION_CODE_OFFSET = 1,
+        MAX_SERIAL_MT_MESSAGE_LENGTH = 256,
     };
 
     CSerialMtMaster();
@@ -70,32 +68,16 @@ public:
     void SetDeviceControl(CDeviceControl* pxDeviceControl);
     CDeviceControl* GetDeviceContro(void);
 
-    void ModbusWorkingArraysInit(void);
-    static const char *ModbusStringError(int errnum);
+    void WorkingArraysInit(void);
+//    static const char *ModbusStringError(int errnum);
 
 //-------------------------------------------------------------------------------
-    int8_t ReadDiscreteInputsRequest(uint8_t uiSlaveAddress,
-                                     uint16_t uiAddress,
-                                     uint16_t uiNumberB);
-//    int8_t ReadCoilsRequest(uint16_t uiAddress,
-//                            uint16_t uiBitNumber);
-//    uint16_t ReadCoilsReply(uint8_t *puiDestination);
-//    uint8_t CheckConfirmation(uint8_t *puiDestination, uint16_t uiLength);
-//    int8_t ReadDiscreteInputsRequest(uint8_t uiSlaveAddress,
-//                                     uint16_t uiAddress,
-//                                     uint16_t uiBitNumber);
-//    uint16_t ReadDiscreteInputsReceive(uint8_t *puiMessage, uint16_t uiLength);
+    int8_t SendMessage(uint8_t uiSlaveAddress,
+                                     uint8_t *puiDataBuffer,
+                                     uint16_t uiLength);
 
 //-------------------------------------------------------------------------------
-    uint16_t ReadDiscreteInputs(void);
-    uint16_t ReadExceptionStatus(void);
-    uint16_t ReportSlaveID(void);
-    uint16_t RequestProcessing(void);
-
-//-------------------------------------------------------------------------------
-    uint16_t ReadDiscreteInputsAnswer(void);
-    uint16_t ReadExceptionStatusAnswer(void);
-    uint16_t ReportSlaveIDAnswer(void);
+    uint16_t SendMessageAnswer(void);
     uint16_t AnswerProcessing(void);
 
 //-------------------------------------------------------------------------------
@@ -103,14 +85,6 @@ public:
 
 //protected:
 //private:
-
-    uint16_t RequestBasis(uint8_t uiSlave,
-                          uint8_t uiFunctionCode,
-                          uint16_t uiAddress,
-                          uint16_t uiBitNumber,
-                          uint8_t *puiRequest);
-    uint16_t ResponseBasis(uint8_t, uint8_t, uint8_t * );
-    uint16_t ResponseException(uint8_t, uint8_t, uint8_t, uint8_t * );
 
     uint16_t ByteToBitPack(uint16_t,
                            uint16_t,
@@ -148,10 +122,6 @@ public:
     void SetMessageLength(uint8_t uiData)
     {
         m_uiMessageLength = uiData;
-    };
-    virtual uint16_t CRC_LENGTH(void)
-    {
-        return 2;
     };
 
 

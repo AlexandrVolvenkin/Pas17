@@ -66,7 +66,7 @@ public:
     void SetDeviceControl(CDeviceControl* pxDeviceControl);
     CDeviceControl* GetDeviceContro(void);
 
-    void ModbusWorkingArraysInit(void);
+    void WorkingArraysInit(void);
     static const char *ModbusStringError(int errnum);
 
 //-------------------------------------------------------------------------------

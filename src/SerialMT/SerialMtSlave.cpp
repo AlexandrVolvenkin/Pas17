@@ -126,9 +126,9 @@ const char *CSerialMtSlave::ModbusStringError(int errnum)
 }
 
 //-------------------------------------------------------------------------------
-void CSerialMtSlave::ModbusWorkingArraysInit(void)
+void CSerialMtSlave::WorkingArraysInit(void)
 {
-    std::cout << "CSerialMtSlave ModbusWorkingArraysInit 1"  << std::endl;
+    std::cout << "CSerialMtSlave WorkingArraysInit 1"  << std::endl;
     m_puiCoils = m_pxResources -> GetCoils();
     m_uiCoilsNumber = m_pxResources -> GetCoilsNumber();
     m_puiDiscreteInputs = m_pxResources -> GetDiscreteInputs();
