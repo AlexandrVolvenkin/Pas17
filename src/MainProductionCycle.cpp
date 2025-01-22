@@ -275,17 +275,17 @@ uint8_t CMainProductionCycle::CreateTasks(void)
     pxSpiCommunicationDeviceSpi0 ->
     SetResources(&m_xResources);
 
-//-------------------------------------------------------------------------------
-    CInternalModule* pxInternalModuleCommon = 0;
-    pxInternalModuleCommon =
-        static_cast<CInternalModule*>(m_xResources.AddCommonTaskToMap("InternalModuleCommon",
-                                      std::make_shared<CInternalModule>()));
-    pxInternalModuleCommon ->
-    SetResources(&m_xResources);
-    pxInternalModuleCommon ->
-    SetCommunicationDeviceName("SpiCommunicationDeviceSpi0");
-    m_xResources.AddCurrentlyRunningTasksList(pxInternalModuleCommon);
-    m_pxInternalModule = pxInternalModuleCommon;
+////-------------------------------------------------------------------------------
+//    CInternalModule* pxInternalModuleCommon = 0;
+//    pxInternalModuleCommon =
+//        static_cast<CInternalModule*>(m_xResources.AddCommonTaskToMap("InternalModuleCommon",
+//                                      std::make_shared<CInternalModule>()));
+//    pxInternalModuleCommon ->
+//    SetResources(&m_xResources);
+//    pxInternalModuleCommon ->
+//    SetCommunicationDeviceName("SpiCommunicationDeviceSpi0");
+//    m_xResources.AddCurrentlyRunningTasksList(pxInternalModuleCommon);
+//    m_pxInternalModule = pxInternalModuleCommon;
 
 //-------------------------------------------------------------------------------
     CInternalModuleMuvr* pxInternalModuleMuvr = 0;
@@ -657,9 +657,15 @@ uint8_t CMainProductionCycle::Fsm(void)
             //
             //        }
 
+//            CDataContainerDataBase xOperatingDataContainer;
+//            xOperatingDataContainer.m_uiFsmCommandState =
+//                CInternalModuleMuvr::MUVR_GET_MODULE_TYPE;
+//            m_pxInternalModuleMuvr ->
+//            SetTaskData(&xOperatingDataContainer);
+
             CDataContainerDataBase xOperatingDataContainer;
             xOperatingDataContainer.m_uiFsmCommandState =
-                CInternalModuleMuvr::MUVR_GET_MODULE_TYPE;
+                CInternalModuleMuvr::MUVR_DATA_EXCHANGE;
             m_pxInternalModuleMuvr ->
             SetTaskData(&xOperatingDataContainer);
 

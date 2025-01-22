@@ -110,20 +110,20 @@ public:
         REPLACEMENT_TYPES_NUMBER = 8,
     };
 
-    virtual uint8_t GetType(void) {};
-    virtual uint8_t GetWorkingStatus(void) {};
-    virtual void SetAddress(uint8_t uiAddress) {};
-    virtual uint8_t GetAddress(void) {};
-    virtual bool IsReadyToStartWork(void) {};
-    virtual bool IsAbleToReplace(uint8_t uiType) {};
-    virtual void SetCommonIndex(uint8_t uiCommonIndex) {};
-    virtual uint8_t GetCommonIndex(void) {};
-    virtual void SetCommandControl(uint8_t uiCommandControl) {};
-    virtual uint8_t GetCommandControl(void) {};
-    virtual void SetErrorCode(uint8_t uiErrorCode) {};
-    virtual uint8_t GetErrorCode(void) {};
-    virtual void SetBadAnswerCounter(uint8_t uiBadAnswerCounter) {};
-    virtual uint8_t GetBadAnswerCounter(void) {};
+//    virtual uint8_t GetType(void) {};
+//    virtual uint8_t GetWorkingStatus(void) {};
+//    virtual void SetAddress(uint8_t uiAddress) {};
+//    virtual uint8_t GetAddress(void) {};
+//    virtual bool IsReadyToStartWork(void) {};
+//    virtual bool IsAbleToReplace(uint8_t uiType) {};
+//    virtual void SetCommonIndex(uint8_t uiCommonIndex) {};
+//    virtual uint8_t GetCommonIndex(void) {};
+//    virtual void SetCommandControl(uint8_t uiCommandControl) {};
+//    virtual uint8_t GetCommandControl(void) {};
+//    virtual void SetErrorCode(uint8_t uiErrorCode) {};
+//    virtual uint8_t GetErrorCode(void) {};
+//    virtual void SetBadAnswerCounter(uint8_t uiBadAnswerCounter) {};
+//    virtual uint8_t GetBadAnswerCounter(void) {};
 
     virtual void Allocate(void) {};
     virtual uint8_t GetModuleType(uint8_t uiAddress) {};
@@ -152,29 +152,110 @@ public:
     bool SetTaskData(CDataContainerDataBase* pxDataContainer);
     bool GetTaskData(CDataContainerDataBase* pxDataContainer);
 
+    uint8_t GetAddress()
+    {
+        return m_uiAddress;
+    };
+    void SetAddress(uint8_t uiAddress)
+    {
+        m_uiAddress = uiAddress;
+    };
+
+    uint8_t GetCommonIndex()
+    {
+        return m_uiCommonIndex;
+    };
+    void SetCommonIndex(uint8_t uiCommonIndex)
+    {
+        m_uiCommonIndex = uiCommonIndex;
+    };
+
+    uint8_t GetCommandControl()
+    {
+        return m_uiCommandControl;
+    };
+    void SetCommandControl(uint8_t uiCommandControl)
+    {
+        m_uiCommandControl = uiCommandControl;
+    };
+
+    uint8_t GetErrorCode()
+    {
+        return m_uiErrorCode;
+    };
+    void SetErrorCode(uint8_t uiErrorCode)
+    {
+        m_uiErrorCode = uiErrorCode;
+    };
+
+    uint8_t* GetRxBuffer()
+    {
+        return m_puiRxBuffer;
+    };
+    void SetRxBuffer(uint8_t* puiRxBuffer)
+    {
+        m_puiRxBuffer = puiRxBuffer;
+    };
+
+    uint8_t* GetTxBuffer()
+    {
+        return m_puiTxBuffer;
+    };
+    void SetTxBuffer(uint8_t* puiTxBuffer)
+    {
+        m_puiTxBuffer = puiTxBuffer;
+    };
+
+    uint8_t* GetDiscreteInputs()
+    {
+        return m_puiDiscreteInputs;
+    };
+    void SetDiscreteInputs(uint8_t* puiDiscreteInputs)
+    {
+        m_puiDiscreteInputs = puiDiscreteInputs;
+    };
+
+    uint8_t* GetDiscreteInputsBadState()
+    {
+        return m_puiDiscreteInputsBadState;
+    };
+    void SetDiscreteInputsBadState(uint8_t* puiDiscreteInputsBadState)
+    {
+        m_puiDiscreteInputsBadState = puiDiscreteInputsBadState;
+    };
+
+    uint8_t GetBadAnswerCounter()
+    {
+        return m_uiBadAnswerCounter;
+    };
+    void SetBadAnswerCounter(uint8_t uiBadAnswerCounter)
+    {
+        m_uiBadAnswerCounter = uiBadAnswerCounter;
+    };
+
     uint8_t Fsm(void);
 
-    uint8_t GetType(void);
+//    uint8_t GetType(void);
+//
+//    uint8_t GetWorkingStatus(void);
 
-    uint8_t GetWorkingStatus(void);
-
-    void SetAddress(uint8_t uiAddress);
-    uint8_t GetAddress(void);
-
-    bool IsReadyToStartWork(void);
-    bool IsAbleToReplace(uint8_t uiType);
-
-    void SetCommonIndex(uint8_t uiCommonIndex);
-    uint8_t GetCommonIndex(void);
-
-    void SetCommandControl(uint8_t uiCommandControl);
-    uint8_t GetCommandControl(void);
-
-    void SetErrorCode(uint8_t uiErrorCode);
-    uint8_t GetErrorCode(void);
-
-    void SetBadAnswerCounter(uint8_t uiBadAnswerCounter);
-    uint8_t GetBadAnswerCounter(void);
+//    void SetAddress(uint8_t uiAddress);
+//    uint8_t GetAddress(void);
+//
+//    bool IsReadyToStartWork(void);
+//    bool IsAbleToReplace(uint8_t uiType);
+//
+//    void SetCommonIndex(uint8_t uiCommonIndex);
+//    uint8_t GetCommonIndex(void);
+//
+//    void SetCommandControl(uint8_t uiCommandControl);
+//    uint8_t GetCommandControl(void);
+//
+//    void SetErrorCode(uint8_t uiErrorCode);
+//    uint8_t GetErrorCode(void);
+//
+//    void SetBadAnswerCounter(uint8_t uiBadAnswerCounter);
+//    uint8_t GetBadAnswerCounter(void);
 
     void Allocate(void);
     uint8_t GetModuleType(uint8_t uiAddress);

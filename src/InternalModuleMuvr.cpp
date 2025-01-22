@@ -233,8 +233,7 @@ void CInternalModuleMuvr::Allocate(void)
 //-----------------------------------------------------------------------------------------------------
 uint8_t CInternalModuleMuvr::DataExchange(void)
 {
-//    int i;
-//    int j;
+//    std::cout << "CInternalModuleMuvr::DataExchange 1"  << std::endl;
     float fData;
     unsigned char ucCalibrPlus;
     unsigned char ucCalibrMinus;
@@ -268,22 +267,11 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
         // при контроле, сумма (ucCalibrPlus + ucCalibrMinus) должна быть 0.
         ucCalibrMinus = 0x00 - ucCalibrPlus;
     }
-
-    auiSpiTxBuffer[MUVR_CALIBRATION_DATA_OFFSET] = ucCalibrPlus;
-    auiSpiTxBuffer[MUVR_CALIBRATION_DATA_OFFSET + 1] = ucCalibrMinus;
+    auiSpiTxBuffer[(SPI_PREAMBLE_LENGTH +
+                    MUVR_GET_MEASURE_DATA_COMMAND_ANSWER_LENGTH)] = ucCalibrPlus;
+    auiSpiTxBuffer[(SPI_PREAMBLE_LENGTH +
+                    MUVR_GET_MEASURE_DATA_COMMAND_ANSWER_LENGTH + 1)] = ucCalibrMinus;
     auiSpiTxBuffer[0] = MUVR_GET_MEASURE_DATA_COMMAND;
-
-    //    xSpiCommunicationDevice.Exchange(pxModuleContext ->
-//                                     xModuleContextStatic.
-//                                     ucModuleAddress,
-//                                     auiSpiTxBuffer,
-//                                     auiSpiRxBuffer,
-//                                     SPI_PREAMBLE_LENGTH +
-//                                     MUVR_GET_MEASURE_DATA_COMMAND_ANSWER_LENGTH +
-//                                     TWO_BYTE_CRC_LENGTH +
-//                                     TAIL_ANSWER_LENGTH,
-//                                     SPEED_IN_HZ
-//                                    );
 
     usleep(10000);
     m_pxCommunicationDevice -> Exchange(GetAddress(),
@@ -291,40 +279,14 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                                         auiSpiRxBuffer,
                                         SPI_PREAMBLE_LENGTH +
                                         MUVR_GET_MEASURE_DATA_COMMAND_ANSWER_LENGTH +
-                                        TWO_BYTE_CRC_LENGTH +
-                                        TAIL_ANSWER_LENGTH,
+                                        TWO_BYTE_CRC_LENGTH,
                                         LOW_SPEED_IN_HZ);
 
     // что ответил модуль?
     switch(auiSpiRxBuffer[SPI_COMMAND_BYTE_OFFSET])
     {
     case MUVR_ANSWER_REPER_POINTS_ADC_DATABASE_ERROR:
-//        // ошибка БД реперных точек, но будет продолжение обмена.
-//        fbAnalogueInputModuleReperPointsAdcDataBaseError = 1;
-        // получим код ошибки;
-        SetErrorCode(INTERNAL_MODULE_ERROR_REPER_POINTS);
-
-//        // активное состояние события ещё не зарегистрировано?
-//        if(xCInternalModuleErrorEvent.EventOnIsNotRegistered(
-//                    pxModuleContext ->
-//                    xModuleContextStatic.
-//                    ucModuleContextIndex,
-//                    MVAI_REPER_POINTS_DATA_BASE_ERROR_OFFSET))
-//        {
-//            // зарегистрируем активное состояние события.
-//            CEvents::EventRegistration(
-//                pxModuleContext ->
-//                xModuleContextStatic.
-//                ucModuleContextIndex,
-//                (CEvents::HANDLED_EVENTS_INTERNAL_MODULES_BAD_TYPE |
-//                 CEvents::HANDLED_EVENTS_IS_POPUP |
-//                 CEvents::HANDLED_EVENTS_IS_SOUND |
-//                 CEvents::HANDLED_EVENTS_IS_ARCHIVE),
-//                MVAI_REPER_POINTS_DATA_BASE_ERROR_OFFSET,
-//                "Реперные т.");
-//        }
-
-
+        // ошибка БД реперных точек, но будет продолжение обмена.
     case MUVR_GET_MEASURE_DATA_COMMAND:
         // данные не повреждены?
         if (iCrcSummTwoByteCompare(&auiSpiRxBuffer[SPI_DATA_BYTE_OFFSET],
@@ -337,25 +299,6 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
 //              xModuleContextStatic.
 //              pucModuleBadStateBufferPointer) = BAD_MODULE_RESPONDED_OK;
 
-//            // неактивное состояние события ещё не зарегистрировано?
-//            if(xCInternalModuleErrorEvent.EventOffIsNotRegistered(
-//                        pxModuleContext ->
-//                        xModuleContextStatic.
-//                        ucModuleContextIndex,
-//                        MTVI5_BAD_ANSWER_ERROR_OFFSET))
-//            {
-//                // зарегистрируем неактивное состояние события.
-//                // норма обмена данными.
-//                CEvents::EventRegistration(
-//                    pxModuleContext ->
-//                    xModuleContextStatic.
-//                    ucModuleContextIndex,
-//                    (CEvents::HANDLED_EVENTS_INTERNAL_MODULES_BAD_TYPE |
-//                     CEvents::HANDLED_EVENTS_IS_ARCHIVE),
-//                    MTVI5_BAD_ANSWER_ERROR_OFFSET,
-//                    "Норм. обмена");
-//            }
-
 //            //iBadModuleBuffUpdate();
 //            // получим данные состояния каналов аналоговых входов.
 //            memcpy(pxModuleContext ->
@@ -364,18 +307,19 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
 //                   &auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET],
 //                   MUVR_ANALOG_INPUT_QUANTITY);
 
-//            cout << "MUVR_GET_MEASURE_DATA_COMMAND ucCalibrMinus" << (int)ucCalibrMinus << endl;
-//            unsigned char *pucSourceTemp;
-//            pucSourceTemp = (unsigned char*)&auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET];//pxModbusMapping -> buffer_pointer;//
-//            for(int i=0; i<8; )
-//            {
-//                for(int j=0; j<8; j++)
-//                {
-//                    cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
-//                }
-//                cout << endl;
-//                i += 8;
-//            }
+            cout << "MUVR_GET_MEASURE_DATA_COMMAND ucCalibrMinus" << (int)ucCalibrMinus << endl;
+            std::cout << "CInternalModuleMuvr::DataExchange auiSpiRxBuffer"  << std::endl;
+            unsigned char *pucSourceTemp;
+            pucSourceTemp = (unsigned char*)&auiSpiRxBuffer[0];
+            for(int i=0; i<32 ; )
+            {
+                for(int j=0; j<8; j++)
+                {
+                    cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+                }
+                cout << endl;
+                i += 8;
+            }
 
             // получим измеренные значения всех аналоговых входов модуля.
             for (uint8_t i = 0; i < MUVR_ANALOG_INPUT_QUANTITY; i++)
@@ -561,31 +505,9 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
         break;
 
     case MUVR_ANSWER_DATABASE_ERROR:
-//        // ошибка БД обработки, конец связи.
-//        fbAnalogueInputModuleDataBaseError = 1;
+        // ошибка БД обработки, конец связи.
         // получим код ошибки;
         SetErrorCode(INTERNAL_MODULE_ERROR_DATA_BASE);
-
-//        // активное состояние события ещё не зарегистрировано?
-//        if(xCInternalModuleErrorEvent.EventOnIsNotRegistered(
-//                    pxModuleContext ->
-//                    xModuleContextStatic.
-//                    ucModuleContextIndex,
-//                    MTVI5_DATA_BASE_ERROR_OFFSET))
-//        {
-//            // зарегистрируем активное состояние события.
-//            CEvents::EventRegistration(
-//                pxModuleContext ->
-//                xModuleContextStatic.
-//                ucModuleContextIndex,
-//                (CEvents::HANDLED_EVENTS_INTERNAL_MODULES_BAD_TYPE |
-//                 CEvents::HANDLED_EVENTS_IS_POPUP |
-//                 CEvents::HANDLED_EVENTS_IS_SOUND |
-//                 CEvents::HANDLED_EVENTS_IS_ARCHIVE),
-//                MTVI5_DATA_BASE_ERROR_OFFSET,
-//                "Ошиб. б. МВА");
-//        }
-
         return 0;
         break;
 
@@ -601,27 +523,6 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
 //        *(pxModuleContext ->
 //          xModuleContextStatic.
 //          pucModuleBadStateBufferPointer) = BAD_MODULE_NOT_RESPONDED;
-
-//        // активное состояние события ещё не зарегистрировано?
-//        if(xCInternalModuleErrorEvent.EventOnIsNotRegistered(
-//                    pxModuleContext ->
-//                    xModuleContextStatic.
-//                    ucModuleContextIndex,
-//                    MTVI5_BAD_ANSWER_ERROR_OFFSET))
-//        {
-//            // зарегистрируем активное состояние события.
-//            // ошибка обмена данными.
-//            CEvents::EventRegistration(
-//                pxModuleContext ->
-//                xModuleContextStatic.
-//                ucModuleContextIndex,
-//                (CEvents::HANDLED_EVENTS_INTERNAL_MODULES_BAD_TYPE |
-//                 CEvents::HANDLED_EVENTS_IS_POPUP |
-//                 CEvents::HANDLED_EVENTS_IS_SOUND |
-//                 CEvents::HANDLED_EVENTS_IS_ARCHIVE),
-//                MTVI5_BAD_ANSWER_ERROR_OFFSET,
-//                "Ошиб. обмена");
-//        }
 
 //        // данные входов модуля недостоверны, обнулим их.
 //        memset(pxModuleContext ->
@@ -877,6 +778,7 @@ uint8_t CInternalModuleMuvr::Fsm(void)
     case MUVR_DATA_EXCHANGE:
 //        std::cout << "CInternalModuleMuvr::Fsm MUVR_DATA_EXCHANGE"  << std::endl;
         DataExchange();
+        SetFsmState(READY);
         break;
 
     default:

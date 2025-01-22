@@ -31,7 +31,7 @@ enum
 };
 
 #define MAX_MUVR_MODULES_QUANTITY 8
-#define MUVR_ANALOG_INPUT_QUANTITY 6
+#define MUVR_ANALOG_INPUT_QUANTITY 4
 // количество дискретных сигналов порождаемое одним аналоговым входом.
 #define MUVR_DI_VALUE_ONE_CHANNEL_LENGTH 4
 // количество дискретных сигналов одного модуля.
@@ -81,6 +81,8 @@ enum
 // код ошибки - ошибка обмена данными. при запросе о результате программированния функцией Modbus 14 от программатора.
 #define MUVR_GET_REPER_POINTS_ADC_DATA_COMMUNICATION_ERROR 0x02
 #define MUVR_REPER_POINTS_ADC_CHANNEL_QUANTITY 7
+// согласно протокола обмена описанного в файле: структ и прот ПАС-17.txt
+// 3. Обмен данными между МЦП и МУВР в цикле.
 #define MUVR_GET_MEASURE_DATA_COMMAND_ANSWER_LENGTH 24
 // $84 - запрос на прием БД  (от МВА к МЦП)
 #define MUVR_GET_DATA_BASE_COMMAND 0x84
@@ -100,11 +102,13 @@ enum
 #define MUVR_MEASURE_DATA_OFFSET (MUVR_COMMAND_BYTE_OFFSET + 1)
 #define MUVR_DATA_OFFSET (MUVR_COMMAND_BYTE_OFFSET + 1)
 // количество байт данных состояния аналоговых входов.
-#define MUVR_ANALOG_INPUT_STATE_BYTE_QUANTITY 6
+#define MUVR_ANALOG_INPUT_STATE_BYTE_QUANTITY MUVR_ANALOG_INPUT_QUANTITY
 // количество байт данных одного измеренного значения аналогового сигнала(формат float STEP5).
 #define MUVR_ONE_ANALOG_INPUT_DATA_BYTE_QUANTITY 3
 // смещение на данные состояния каналов аналоговых входов.
-#define MUVR_STATE_DATA_OFFSET (MUVR_MEASURE_DATA_OFFSET + (MUVR_ANALOG_INPUT_QUANTITY * MUVR_ONE_ANALOG_INPUT_DATA_BYTE_QUANTITY))
+// согласно протокола обмена описанного в файле: структ и прот ПАС-17.txt
+// 3. Обмен данными между МЦП и МУВР в цикле.
+#define MUVR_STATE_DATA_OFFSET (MUVR_MEASURE_DATA_OFFSET + (MUVR_ANALOG_INPUT_QUANTITY * MUVR_ONE_ANALOG_INPUT_DATA_BYTE_QUANTITY) + 6)
 // смещение на данные требования калибровки. передаются в модуль двумя байтами,
 // на месте приёма от модуля двух байт контрольной суммы.
 #define MUVR_CALIBRATION_DATA_OFFSET (MUVR_STATE_DATA_OFFSET + MUVR_ANALOG_INPUT_STATE_BYTE_QUANTITY)

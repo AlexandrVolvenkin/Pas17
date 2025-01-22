@@ -105,89 +105,170 @@ bool CInternalModule::GetTaskData(CDataContainerDataBase* pxDataContainer)
     return true;
 }
 
-//-------------------------------------------------------------------------------
-uint8_t CInternalModule::GetType(void)
-{
-    return MISSING_COMPONENT;
-}
+////-------------------------------------------------------------------------------
+//uint8_t CInternalModule::GetType(void)
+//{
+//    return MISSING_COMPONENT;
+//}
+//
+////-------------------------------------------------------------------------------
+//uint8_t CInternalModule::GetWorkingStatus(void)
+//{
+//    return MISSING_COMPONENT;
+//}
 
-//-------------------------------------------------------------------------------
-uint8_t CInternalModule::GetWorkingStatus(void)
-{
-    return MISSING_COMPONENT;
-}
+////-------------------------------------------------------------------------------
+//void CInternalModule::SetAddress(uint8_t uiAddress)
+//{
+//    m_uiAddress = uiAddress;
+//}
+//
+////-------------------------------------------------------------------------------
+//uint8_t CInternalModule::GetAddress(void)
+//{
+//    return m_uiAddress;
+//}
 
-//-------------------------------------------------------------------------------
-void CInternalModule::SetAddress(uint8_t uiAddress)
-{
-    m_uiAddress = uiAddress;
-}
+////-------------------------------------------------------------------------------
+//bool CInternalModule::IsAbleToReplace(uint8_t uiType)
+//{
+//    return false;
+//}
+//
+////-------------------------------------------------------------------------------
+//bool CInternalModule::IsReadyToStartWork(void)
+//{
+//    return false;
+//}
 
-//-------------------------------------------------------------------------------
-uint8_t CInternalModule::GetAddress(void)
-{
-    return m_uiAddress;
-}
-
-//-------------------------------------------------------------------------------
-bool CInternalModule::IsAbleToReplace(uint8_t uiType)
-{
-    return false;
-}
-
-//-------------------------------------------------------------------------------
-bool CInternalModule::IsReadyToStartWork(void)
-{
-    return false;
-}
-
-//-------------------------------------------------------------------------------
-void CInternalModule::SetCommonIndex(uint8_t uiCommonIndex)
-{
-    m_uiCommonIndex = uiCommonIndex;
-}
-
-//-------------------------------------------------------------------------------
-uint8_t CInternalModule::GetCommonIndex(void)
-{
-    return m_uiCommonIndex;
-}
-
-//-------------------------------------------------------------------------------
-void CInternalModule::SetCommandControl(uint8_t uiCommandControl)
-{
-    m_uiCommandControl = uiCommandControl;
-}
-
-//-------------------------------------------------------------------------------
-uint8_t CInternalModule::GetCommandControl(void)
-{
-    return m_uiCommandControl;
-}
-
-//-------------------------------------------------------------------------------
-void CInternalModule::SetErrorCode(uint8_t uiErrorCode)
-{
-    m_uiErrorCode = uiErrorCode;
-}
-
-//-------------------------------------------------------------------------------
-uint8_t CInternalModule::GetErrorCode(void)
-{
-    return m_uiErrorCode;
-}
-
-//-------------------------------------------------------------------------------
-void CInternalModule::SetBadAnswerCounter(uint8_t uiBadAnswerCounter)
-{
-    m_uiBadAnswerCounter = uiBadAnswerCounter;
-}
-
-//-------------------------------------------------------------------------------
-uint8_t CInternalModule::GetBadAnswerCounter(void)
-{
-    return m_uiBadAnswerCounter;
-}
+////-------------------------------------------------------------------------------
+//void CInternalModule::SetCommonIndex(uint8_t uiCommonIndex)
+//{
+//    m_uiCommonIndex = uiCommonIndex;
+//}
+//
+////-------------------------------------------------------------------------------
+//uint8_t CInternalModule::GetCommonIndex(void)
+//{
+//    return m_uiCommonIndex;
+//}
+//
+////-------------------------------------------------------------------------------
+//void CInternalModule::SetCommandControl(uint8_t uiCommandControl)
+//{
+//    m_uiCommandControl = uiCommandControl;
+//}
+//
+////-------------------------------------------------------------------------------
+//uint8_t CInternalModule::GetCommandControl(void)
+//{
+//    return m_uiCommandControl;
+//}
+//
+////-------------------------------------------------------------------------------
+//void CInternalModule::SetErrorCode(uint8_t uiErrorCode)
+//{
+//    m_uiErrorCode = uiErrorCode;
+//}
+//
+////-------------------------------------------------------------------------------
+//uint8_t CInternalModule::GetErrorCode(void)
+//{
+//    return m_uiErrorCode;
+//}
+//
+////-------------------------------------------------------------------------------
+//void CInternalModule::SetBadAnswerCounter(uint8_t uiBadAnswerCounter)
+//{
+//    m_uiBadAnswerCounter = uiBadAnswerCounter;
+//}
+//
+////-------------------------------------------------------------------------------
+//uint8_t CInternalModule::GetBadAnswerCounter(void)
+//{
+//    return m_uiBadAnswerCounter;
+//}
+//
+//public uint8_t GetAddress()
+//{
+//    return m_uiAddress;
+//}
+//public void SetAddress(uint8_t uiAddress)
+//{
+//    m_uiAddress = uiAddress;
+//}
+//
+//public uint8_t GetCommonIndex()
+//{
+//    return m_uiCommonIndex;
+//}
+//public void SetCommonIndex(uint8_t uiCommonIndex)
+//{
+//    m_uiCommonIndex = uiCommonIndex;
+//}
+//
+//public uint8_t GetCommandControl()
+//{
+//    return m_uiCommandControl;
+//}
+//public void SetCommandControl(uint8_t uiCommandControl)
+//{
+//    m_uiCommandControl = uiCommandControl;
+//}
+//
+//public uint8_t GetErrorCode()
+//{
+//    return m_uiErrorCode;
+//}
+//public void SetErrorCode(uint8_t uiErrorCode)
+//{
+//    m_uiErrorCode = uiErrorCode;
+//}
+//
+//public uint8_t* GetRxBuffer()
+//{
+//    return m_puiRxBuffer;
+//}
+//public void SetRxBuffer(uint8_t* puiRxBuffer)
+//{
+//    m_puiRxBuffer = puiRxBuffer;
+//}
+//
+//public uint8_t* GetTxBuffer()
+//{
+//    return m_puiTxBuffer;
+//}
+//public void SetTxBuffer(uint8_t* puiTxBuffer)
+//{
+//    m_puiTxBuffer = puiTxBuffer;
+//}
+//
+//public uint8_t* GetDiscreteInputs()
+//{
+//    return m_puiDiscreteInputs;
+//}
+//public void SetDiscreteInputs(uint8_t* puiDiscreteInputs)
+//{
+//    m_puiDiscreteInputs = puiDiscreteInputs;
+//}
+//
+//public uint8_t* GetDiscreteInputsBadState()
+//{
+//    return m_puiDiscreteInputsBadState;
+//}
+//public void SetDiscreteInputsBadState(uint8_t* puiDiscreteInputsBadState)
+//{
+//    m_puiDiscreteInputsBadState = puiDiscreteInputsBadState;
+//}
+//
+//public uint8_t GetBadAnswerCounter()
+//{
+//    return m_uiBadAnswerCounter;
+//}
+//public void SetBadAnswerCounter(uint8_t uiBadAnswerCounter)
+//{
+//    m_uiBadAnswerCounter = uiBadAnswerCounter;
+//}
 
 //-----------------------------------------------------------------------------------------------------
 void CInternalModule::Allocate(void)
