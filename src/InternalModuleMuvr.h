@@ -194,6 +194,13 @@ private:
 //    uint8_t m_uiAddress;
 //    CCommunicationDeviceInterface* m_pxCommunicationDevice;
 //    CDataContainerDataBase* m_pxOperatingDataContainer;
+    uint8_t* m_puiModuleBadStateBuffer;
+    uint8_t* m_puiStatAiBuffer;
+    uint8_t* m_puiAiValueBuffer;
+    uint8_t* m_puiAinOffBuffer;
+    uint8_t* m_puiBadAiBuffer;
+    uint8_t* m_puiDiValueBuffer;
+    uint8_t* m_puiBadDiBuffer;
 };
 
 #endif // CINTERNALMODULEMUVR_H

@@ -118,6 +118,8 @@
 		<Unit filename="src/Platform.h" />
 		<Unit filename="src/Resources.cpp" />
 		<Unit filename="src/Resources.h" />
+		<Unit filename="src/STEP5_floating_point.cpp" />
+		<Unit filename="src/STEP5_floating_point.h" />
 		<Unit filename="src/SerialMT/SerialMtMaster.cpp" />
 		<Unit filename="src/SerialMT/SerialMtMaster.h" />
 		<Unit filename="src/SerialMT/SerialMtMasterLinkLayer.cpp" />

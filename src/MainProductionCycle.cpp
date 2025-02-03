@@ -106,7 +106,7 @@ uint8_t CMainProductionCycle::CreateTasks(void)
 {
     std::cout << "CMainProductionCycle CreateTasks"  << std::endl;
 
-    m_pxSpiCommunicationDevice = new CSpiCommunicationDevice();
+//    m_pxSpiCommunicationDevice = new CSpiCommunicationDevice();
 
 //-------------------------------------------------------------------------------
     CDeviceControl* pxDeviceControl = 0;

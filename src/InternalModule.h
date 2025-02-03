@@ -78,6 +78,16 @@ enum
 // если равно нулю - модуль считается неисправным. его данные признаются недостоверными.
 // устанавливается флаг сигнализации в рабочем массиве aucCoilsArray[BAD_MODULES_BIT_ARRAY_OFFSET + индекс модуля].
     BAD_MODULE_CYCLE_COUNT_DEFAULT = 10,
+// начальное значение счётчика запросов модуля без ответа в течении 60 секунд.
+    BAD_MODULE_60_SECOND_CYCLE_COUNT_DEFAULT = 600,
+    BAD_MODULE_RESPONDED_OK = 0,
+// код ошибки когда модуль не отвечает.
+// модуль не отвечает.
+    BAD_MODULE_NOT_RESPONDED = 1,
+// модуль не отвечает при старте.
+    BAD_MODULE_NOT_RESPONDED_ON_START = 2,
+// сигнатура ошибки. устанавливается если измеренное значение недостоверно.
+    ANALOGUE_INPUT_ERROR = 0xFF00,
 };
 
 
