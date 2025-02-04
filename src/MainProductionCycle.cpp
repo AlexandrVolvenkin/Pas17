@@ -389,23 +389,13 @@ uint8_t CMainProductionCycle::InitTasks(void)
     pxInternalModuleMuvr ->
     SetAddress(0);
 
+    GetResources() -> Allocate();
 }
 
 //-------------------------------------------------------------------------------
 void CMainProductionCycle::CurrentlyRunningTasksExecution(void)
 {
 //    std::cout << "CMainProductionCycle CurrentlyRunningTasksExecution"  << std::endl;
-
-//        std::list<CTaskInterface*>::iterator xListIterator;
-//
-//        for(xListIterator =
-//                    GetResources() -> m_lpxCurrentlyRunningTasksList.begin();
-//                xListIterator !=
-//                GetResources() -> m_lpxCurrentlyRunningTasksList.end();
-//                xListIterator++)
-//        {
-//            (*xListIterator) -> Fsm();
-//        }
 
     for(GetResources() -> m_xCurrentlyRunningTasksListIterator =
                 GetResources() -> m_lpxCurrentlyRunningTasksList.begin();
@@ -626,7 +616,7 @@ uint8_t CMainProductionCycle::Fsm(void)
         if (GetTimerPointer() -> IsOverflow())
         {
             std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_START_WAITING 2"  << std::endl;
-            GetTimerPointer() -> Set(100);
+            GetTimerPointer() -> Set(500);
             SetFsmState(MAIN_CYCLE_MODULES_INTERACTION);
         }
 

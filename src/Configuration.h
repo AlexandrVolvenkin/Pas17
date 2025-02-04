@@ -39,8 +39,8 @@
 //-------------------------------------------------------------------------------
 enum
 {
-    COILS_WORK_ARRAY_LENGTH = 128,
-    DISCRETE_INPUTS_ARRAY_LENGTH = 128,
+    COILS_WORK_ARRAY_LENGTH = 2000,
+    DISCRETE_INPUTS_ARRAY_LENGTH = 2000,
     HOLDING_REGISTERS_ARRAY_LENGTH = 128,
     INPUT_REGISTERS_ARRAY_LENGTH = 128,
 };
@@ -79,6 +79,27 @@ enum
 //// если равно нулю - модуль считается неисправным. его данные признаются недостоверными.
 //// устанавливается флаг сигнализации в рабочем массиве aucCoilsArray[BAD_MODULES_BIT_ARRAY_OFFSET + индекс модуля].
 //    BAD_MODULE_CYCLE_COUNT_DEFAULT = 10,
+};
+
+enum EModbusFunctionCoilsDataMap
+{
+    ANALOGUE_INPUTS_BAD_STATE_OFFSET = 544,
+    DISCRETE_INPUTS_BAD_STATE_OFFSET = 1056,
+};
+
+enum EModbusFunctionDiscreteInputsDataMap
+{
+    DISCRETE_INPUTS_STATE_OFFSET = 0,
+};
+
+enum EModbusFunctionHoldingRegistersDataMap
+{
+    ANALOGUE_INPUTS_VALUE_OFFSET = 0,
+};
+
+enum EModbusFunctionInputRegistersDataMap
+{
+//    DISCRETE_INPUTS_STATE_OFFSET = 0,
 };
 
 //-------------------------------------------------------------------------------

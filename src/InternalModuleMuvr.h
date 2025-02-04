@@ -195,12 +195,15 @@ private:
 //    CCommunicationDeviceInterface* m_pxCommunicationDevice;
 //    CDataContainerDataBase* m_pxOperatingDataContainer;
     uint8_t* m_puiModuleBadStateBuffer;
-    uint8_t* m_puiStatAiBuffer;
-    uint8_t* m_puiAiValueBuffer;
-    uint8_t* m_puiAinOffBuffer;
-    uint8_t* m_puiBadAiBuffer;
-    uint8_t* m_puiDiValueBuffer;
-    uint8_t* m_puiBadDiBuffer;
+
+    uint8_t* m_puiDiscreteInputsState;
+    uint8_t* m_puiDiscreteInputsBadState;
+    uint8_t* m_puiDiscreteOutputState;
+    float* m_pfAnalogueInputsValue;
+    uint8_t* m_puiAnalogueInputsState;
+    uint8_t* m_puiAnalogueInputsOff;
+    uint8_t* m_puiAnalogueInputsBadState;
+    uint8_t m_uiBadAnswerCounter;
 };
 
 #endif // CINTERNALMODULEMUVR_H

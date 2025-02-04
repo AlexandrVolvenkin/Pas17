@@ -2,44 +2,29 @@
 <CodeBlocks_layout_file>
 	<FileVersion major="1" minor="0" />
 	<ActiveTarget name="Debug" />
-	<File name="src\Modbus\ModbusMaster.cpp" open="0" top="0" tabpos="13" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="src\Resources.cpp" open="0" top="0" tabpos="11" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="14481" topLine="574" />
+			<Cursor1 position="10056" topLine="188" />
 		</Cursor>
 	</File>
-	<File name="src\main.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="src\CommunicationDevice\SpiCommunicationDevice.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="13950" topLine="386" />
+			<Cursor1 position="1665" topLine="246" />
 		</Cursor>
 	</File>
-	<File name="src\Modbus\ModbusTcpSlaveLinkLayer.h" open="0" top="0" tabpos="27" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="src\SerialMT\SerialMtSlaveLinkLayer.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1280" topLine="131" />
+			<Cursor1 position="1223" topLine="21" />
 		</Cursor>
 	</File>
-	<File name="src\DataContainer.h" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="src\Modbus\ModbusSmSlaveLinkLayer.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1813" topLine="27" />
+			<Cursor1 position="4102" topLine="122" />
 		</Cursor>
 	</File>
-	<File name="src\InternalModule.cpp" open="1" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="src\CommunicationDevice\SharedMemoryCommunicationDevice.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="4309" topLine="105" />
-		</Cursor>
-	</File>
-	<File name="src\Timer.cpp" open="0" top="0" tabpos="12" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="689" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="src\Modbus\ModbusRtuSlaveLinkLayer.h" open="0" top="0" tabpos="11" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="4243" topLine="130" />
-		</Cursor>
-	</File>
-	<File name="src\CommunicationDevice\TcpCommunicationDevice.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="978" topLine="28" />
+			<Cursor1 position="1002" topLine="40" />
 		</Cursor>
 	</File>
 	<File name="src\Task.cpp" open="0" top="0" tabpos="13" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -47,9 +32,154 @@
 			<Cursor1 position="3099" topLine="85" />
 		</Cursor>
 	</File>
+	<File name="src\Modbus\ModbusSmMaster.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3990" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="src\Dfa.cpp" open="0" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1737" topLine="53" />
+		</Cursor>
+	</File>
+	<File name="src\Configuration.h" open="0" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1713" topLine="22" />
+		</Cursor>
+	</File>
+	<File name="src\SerialMT\SerialMtMasterLinkLayer.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1227" topLine="18" />
+		</Cursor>
+	</File>
+	<File name="src\InternalModule.cpp" open="1" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="4309" topLine="105" />
+		</Cursor>
+	</File>
+	<File name="src\DeviceControl.cpp" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="11230" topLine="297" />
+		</Cursor>
+	</File>
+	<File name="src\SerialMT\SerialMtMaster.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3972" topLine="44" />
+		</Cursor>
+	</File>
+	<File name="src\MessageBox.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1031" topLine="3" />
+		</Cursor>
+	</File>
+	<File name="src\DataStore.h" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="6112" topLine="36" />
+		</Cursor>
+	</File>
+	<File name="src\SerialMT\SerialMtMasterLinkLayer.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="542" topLine="13" />
+		</Cursor>
+	</File>
 	<File name="src\Modbus\ModbusTcpSlaveLinkLayer.cpp" open="0" top="0" tabpos="13" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="13235" topLine="458" />
+		</Cursor>
+	</File>
+	<File name="src\Link.cpp" open="0" top="0" tabpos="26" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1107" topLine="15" />
+		</Cursor>
+	</File>
+	<File name="src\DataContainer.h" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1813" topLine="27" />
+		</Cursor>
+	</File>
+	<File name="src\SerialMT\SerialMtSpiMasterLinkLayer.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1129" topLine="18" />
+		</Cursor>
+	</File>
+	<File name="src\Modbus\ModbusSlaveLinkLayer.h" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3625" topLine="18" />
+		</Cursor>
+	</File>
+	<File name="src\DeviceControl.h" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3290" topLine="96" />
+		</Cursor>
+	</File>
+	<File name="src\ConfigurationCreate.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="804" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="src\SerialMT\SerialMtMaster.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="5973" topLine="171" />
+		</Cursor>
+	</File>
+	<File name="src\Link.h" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2071" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="..\протокол МВА.txt" open="0" top="0" tabpos="11" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2853" topLine="39" />
+		</Cursor>
+	</File>
+	<File name="src\Modbus\ModbusTcpMasterLinkLayer.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="689" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="src\Modbus\ModbusRtuSlaveLinkLayer.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="19230" topLine="516" />
+		</Cursor>
+	</File>
+	<File name="src\CommunicationDevice\SerialPortCommunicationDevice.cpp" open="0" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="10309" topLine="219" />
+		</Cursor>
+	</File>
+	<File name="src\Modbus\ModbusTcpSlaveLinkLayer.h" open="0" top="0" tabpos="27" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1280" topLine="131" />
+		</Cursor>
+	</File>
+	<File name="src\SerialMT\SerialMtSlave.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="4247" topLine="126" />
+		</Cursor>
+	</File>
+	<File name="src\Modbus\ModbusRtuMasterLinkLayer.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="630" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="src\Modbus\ModbusSmMasterLinkLayer.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="4026" topLine="123" />
+		</Cursor>
+	</File>
+	<File name="src\TaskManager.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="0" topLine="4" />
+		</Cursor>
+	</File>
+	<File name="src\Modbus\ModbusMasterLinkLayer.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="425" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="src\Modbus\ModbusSmSlave.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1826" topLine="0" />
 		</Cursor>
 	</File>
 	<File name="src\DataContainer.cpp" open="0" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -57,19 +187,149 @@
 			<Cursor1 position="1272" topLine="15" />
 		</Cursor>
 	</File>
-	<File name="src\Modbus\ModbusMaster.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="src\Modbus\ModbusMaster.cpp" open="0" top="0" tabpos="13" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="136" topLine="1" />
+			<Cursor1 position="14481" topLine="574" />
 		</Cursor>
 	</File>
-	<File name="src\ServiceMarket.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="src\STEP5_floating_point.cpp" open="1" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="0" topLine="13" />
+			<Cursor1 position="0" topLine="70" />
 		</Cursor>
 	</File>
-	<File name="src\Modbus\ModbusSmMasterLinkLayer.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="src\Crc.cpp" open="0" top="0" tabpos="11" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="4026" topLine="123" />
+			<Cursor1 position="2787" topLine="40" />
+		</Cursor>
+	</File>
+	<File name="src\Timer.h" open="0" top="0" tabpos="26" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="809" topLine="7" />
+		</Cursor>
+	</File>
+	<File name="src\MessageBox.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1242" topLine="18" />
+		</Cursor>
+	</File>
+	<File name="src\STEP5_floating_point.h" open="1" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1021" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="..\Текущие задачиPas17.txt" open="1" top="1" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="420678" topLine="5188" />
+		</Cursor>
+	</File>
+	<File name="src\CommunicationDevice\SpiCommunicationDevice.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1225" topLine="52" />
+		</Cursor>
+	</File>
+	<File name="src\StorageDevice.h" open="0" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3975" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="src\MainProductionCycle.cpp" open="1" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="12244" topLine="582" />
+		</Cursor>
+	</File>
+	<File name="src\Modbus\ModbusSmSlave.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3932" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="..\структ и протоколы\структ и прот ПАС-17.txt" open="1" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="365" topLine="75" />
+		</Cursor>
+	</File>
+	<File name="src\main.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="13950" topLine="386" />
+		</Cursor>
+	</File>
+	<File name="src\Platform.cpp" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="947" topLine="22" />
+		</Cursor>
+	</File>
+	<File name="src\DataStoreCheck.cpp" open="0" top="0" tabpos="16" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1145" topLine="136" />
+		</Cursor>
+	</File>
+	<File name="src\Task.h" open="0" top="0" tabpos="12" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1607" topLine="3" />
+		</Cursor>
+	</File>
+	<File name="src\DataStoreCheck.h" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1613" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="src\StorageDevice.cpp" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="6422" topLine="197" />
+		</Cursor>
+	</File>
+	<File name="src\Modbus\Modbus.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="4100" topLine="96" />
+		</Cursor>
+	</File>
+	<File name="src\CommunicationDevice\CommunicationDevice.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="501" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="src\ServiceMarket.cpp" open="0" top="0" tabpos="31" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="0" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="src\Modbus\ModbusMasterLinkLayer.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3723" topLine="102" />
+		</Cursor>
+	</File>
+	<File name="src\CommunicationDevice\SerialPortCommunicationDevice.h" open="0" top="0" tabpos="13" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1894" topLine="45" />
+		</Cursor>
+	</File>
+	<File name="src\SerialMT\SerialMtSpiMasterLinkLayer.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3544" topLine="68" />
+		</Cursor>
+	</File>
+	<File name="src\InternalModuleMuvr.cpp" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="10428" topLine="117" />
+		</Cursor>
+	</File>
+	<File name="src\DataStore.cpp" open="0" top="0" tabpos="10" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="25521" topLine="562" />
+		</Cursor>
+	</File>
+	<File name="src\Modbus\ModbusTcpMasterLinkLayer.cpp" open="0" top="0" tabpos="13" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="226" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="src\InternalModule.h" open="1" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3389" topLine="61" />
+		</Cursor>
+	</File>
+	<File name="src\ConfigurationCreate.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="891" topLine="6" />
 		</Cursor>
 	</File>
 	<File name="src\SerialMT\SerialMtSpiSlaveLinkLayer.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -82,339 +342,9 @@
 			<Cursor1 position="1996" topLine="43" />
 		</Cursor>
 	</File>
-	<File name="src\MessageBox.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="src\Modbus\ModbusRtuMasterLinkLayer.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1242" topLine="18" />
-		</Cursor>
-	</File>
-	<File name="src\StorageDevice.cpp" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="6422" topLine="197" />
-		</Cursor>
-	</File>
-	<File name="src\Modbus\ModbusSlaveLinkLayer.h" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="3625" topLine="18" />
-		</Cursor>
-	</File>
-	<File name="src\CommunicationDevice\SpiCommunicationDevice.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1225" topLine="52" />
-		</Cursor>
-	</File>
-	<File name="src\MainProductionCycle.cpp" open="1" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="12244" topLine="582" />
-		</Cursor>
-	</File>
-	<File name="src\SerialMT\SerialMtSpiMasterLinkLayer.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1129" topLine="18" />
-		</Cursor>
-	</File>
-	<File name="src\Modbus\ModbusTcpMasterLinkLayer.cpp" open="0" top="0" tabpos="13" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="226" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="src\CommunicationDevice\SharedMemoryCommunicationDevice.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1002" topLine="40" />
-		</Cursor>
-	</File>
-	<File name="src\InternalModuleMuvr.cpp" open="1" top="1" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="24987" topLine="231" />
-		</Cursor>
-	</File>
-	<File name="src\SerialMT\SerialMtSlave.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="4247" topLine="126" />
-		</Cursor>
-	</File>
-	<File name="src\Resources.cpp" open="0" top="0" tabpos="11" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="10056" topLine="188" />
-		</Cursor>
-	</File>
-	<File name="src\CommunicationDevice\SerialPortCommunicationDevice.h" open="0" top="0" tabpos="13" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1894" topLine="45" />
-		</Cursor>
-	</File>
-	<File name="src\Dfa.cpp" open="0" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1737" topLine="53" />
-		</Cursor>
-	</File>
-	<File name="src\Task.h" open="0" top="0" tabpos="12" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1607" topLine="3" />
-		</Cursor>
-	</File>
-	<File name="src\Modbus\ModbusTcpMasterLinkLayer.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="689" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="..\протокол МВА.txt" open="0" top="0" tabpos="11" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2853" topLine="39" />
-		</Cursor>
-	</File>
-	<File name="src\Resources.h" open="0" top="0" tabpos="19" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1304" topLine="27" />
-		</Cursor>
-	</File>
-	<File name="src\DataStore.h" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="6112" topLine="36" />
-		</Cursor>
-	</File>
-	<File name="src\Modbus\ModbusRtuSlaveLinkLayer.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="19230" topLine="516" />
-		</Cursor>
-	</File>
-	<File name="src\Platform.h" open="0" top="0" tabpos="11" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="668" topLine="18" />
-		</Cursor>
-	</File>
-	<File name="src\SerialMT\SerialMtSpiMasterLinkLayer.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="3544" topLine="68" />
-		</Cursor>
-	</File>
-	<File name="..\структ и протоколы\структ и прот ПАС-17.txt" open="1" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="365" topLine="75" />
-		</Cursor>
-	</File>
-	<File name="src\Link.h" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2071" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="src\SerialMT\SerialMtMasterLinkLayer.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="542" topLine="13" />
-		</Cursor>
-	</File>
-	<File name="src\CommunicationDevice\SerialPortCommunicationDevice.cpp" open="0" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="10309" topLine="219" />
-		</Cursor>
-	</File>
-	<File name="src\Dfa.h" open="0" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1052" topLine="15" />
-		</Cursor>
-	</File>
-	<File name="src\Crc.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="817" topLine="8" />
-		</Cursor>
-	</File>
-	<File name="src\Modbus\ModbusMasterLinkLayer.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="425" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="src\STEP5_floating_point.cpp" open="1" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="0" topLine="70" />
-		</Cursor>
-	</File>
-	<File name="src\Modbus\ModbusSlave.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2503" topLine="65" />
-		</Cursor>
-	</File>
-	<File name="src\CommunicationDevice\TcpCommunicationDevice.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="688" topLine="435" />
-		</Cursor>
-	</File>
-	<File name="src\MainProductionCycle.h" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1120" topLine="18" />
-		</Cursor>
-	</File>
-	<File name="src\STEP5_floating_point.h" open="1" top="0" tabpos="10" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1021" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="src\Modbus\ModbusSmMasterLinkLayer.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="421" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="src\Crc.cpp" open="0" top="0" tabpos="11" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2787" topLine="40" />
-		</Cursor>
-	</File>
-	<File name="src\Modbus\Modbus.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="4100" topLine="96" />
-		</Cursor>
-	</File>
-	<File name="src\TaskManager.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="0" topLine="4" />
-		</Cursor>
-	</File>
-	<File name="src\Modbus\ModbusSlave.cpp" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="78565" topLine="1916" />
-		</Cursor>
-	</File>
-	<File name="src\DataStore.cpp" open="0" top="0" tabpos="10" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="25521" topLine="562" />
-		</Cursor>
-	</File>
-	<File name="src\Link.cpp" open="0" top="0" tabpos="26" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1107" topLine="15" />
-		</Cursor>
-	</File>
-	<File name="src\StorageDevice.h" open="0" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="3975" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="src\Modbus\ModbusSmSlave.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1826" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="src\ConfigurationCreate.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="804" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="src\ServiceMarket.cpp" open="0" top="0" tabpos="31" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="0" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="src\Modbus\ModbusSmSlave.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="3932" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="src\SerialMT\SerialMtSlave.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1884" topLine="26" />
-		</Cursor>
-	</File>
-	<File name="src\Modbus\ModbusSmMaster.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="3990" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="src\Configuration.h" open="0" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1713" topLine="22" />
-		</Cursor>
-	</File>
-	<File name="src\DeviceControl.cpp" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="11230" topLine="297" />
-		</Cursor>
-	</File>
-	<File name="src\SerialMT\SerialMtSpiSlaveLinkLayer.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="11684" topLine="331" />
-		</Cursor>
-	</File>
-	<File name="src\Modbus\ModbusSlaveLinkLayer.cpp" open="0" top="0" tabpos="11" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="469" topLine="11" />
-		</Cursor>
-	</File>
-	<File name="src\CommunicationDevice\SpiCommunicationDevice.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1665" topLine="246" />
-		</Cursor>
-	</File>
-	<File name="src\InternalModuleMuvr.h" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="11014" topLine="175" />
-		</Cursor>
-	</File>
-	<File name="src\SerialMT\SerialMtMasterLinkLayer.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1227" topLine="18" />
-		</Cursor>
-	</File>
-	<File name="src\SerialMT\SerialMtMaster.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="3972" topLine="44" />
-		</Cursor>
-	</File>
-	<File name="src\CommunicationDevice\SharedMemoryCommunicationDevice.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1490" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="src\InternalModule.h" open="1" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="3389" topLine="61" />
-		</Cursor>
-	</File>
-	<File name="src\SerialMT\SerialMtSlaveLinkLayer.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1223" topLine="21" />
-		</Cursor>
-	</File>
-	<File name="src\Modbus\ModbusSmSlaveLinkLayer.cpp" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="10511" topLine="303" />
-		</Cursor>
-	</File>
-	<File name="src\CommunicationDevice\CommunicationDevice.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="501" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="src\DeviceControl.h" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="3290" topLine="96" />
-		</Cursor>
-	</File>
-	<File name="src\SerialMT\SerialMtMaster.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="5973" topLine="171" />
-		</Cursor>
-	</File>
-	<File name="src\DataStoreCheck.h" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1613" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="src\MessageBox.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1031" topLine="3" />
-		</Cursor>
-	</File>
-	<File name="src\DataStoreCheck.cpp" open="0" top="0" tabpos="16" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1145" topLine="136" />
-		</Cursor>
-	</File>
-	<File name="src\Modbus\ModbusRtuMasterLinkLayer.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="630" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="src\Platform.cpp" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="947" topLine="22" />
+			<Cursor1 position="226" topLine="3" />
 		</Cursor>
 	</File>
 	<File name="src\CommunicationDevice\CommunicationDevice.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -422,34 +352,104 @@
 			<Cursor1 position="628" topLine="18" />
 		</Cursor>
 	</File>
-	<File name="src\Modbus\ModbusRtuMasterLinkLayer.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="src\Resources.h" open="0" top="0" tabpos="19" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="226" topLine="3" />
+			<Cursor1 position="1304" topLine="27" />
 		</Cursor>
 	</File>
-	<File name="..\Текущие задачиPas17.txt" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="src\Modbus\ModbusRtuSlaveLinkLayer.h" open="0" top="0" tabpos="11" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="419932" topLine="5172" />
+			<Cursor1 position="4243" topLine="130" />
 		</Cursor>
 	</File>
-	<File name="src\Modbus\ModbusMasterLinkLayer.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="src\CommunicationDevice\TcpCommunicationDevice.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="3723" topLine="102" />
+			<Cursor1 position="688" topLine="435" />
 		</Cursor>
 	</File>
-	<File name="src\Timer.h" open="0" top="0" tabpos="26" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="src\Modbus\ModbusSmMasterLinkLayer.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="809" topLine="7" />
+			<Cursor1 position="421" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="src\Modbus\ModbusSmSlaveLinkLayer.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="src\SerialMT\SerialMtSlave.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="4102" topLine="122" />
+			<Cursor1 position="1884" topLine="26" />
 		</Cursor>
 	</File>
-	<File name="src\ConfigurationCreate.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="src\Dfa.h" open="0" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="891" topLine="6" />
+			<Cursor1 position="1052" topLine="15" />
+		</Cursor>
+	</File>
+	<File name="src\Modbus\ModbusSlaveLinkLayer.cpp" open="0" top="0" tabpos="11" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="469" topLine="11" />
+		</Cursor>
+	</File>
+	<File name="src\SerialMT\SerialMtSpiSlaveLinkLayer.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="11684" topLine="331" />
+		</Cursor>
+	</File>
+	<File name="src\Modbus\ModbusSmSlaveLinkLayer.cpp" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="10511" topLine="303" />
+		</Cursor>
+	</File>
+	<File name="src\Modbus\ModbusMaster.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="136" topLine="1" />
+		</Cursor>
+	</File>
+	<File name="src\Modbus\ModbusSlave.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2503" topLine="65" />
+		</Cursor>
+	</File>
+	<File name="src\Crc.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="817" topLine="8" />
+		</Cursor>
+	</File>
+	<File name="src\Timer.cpp" open="0" top="0" tabpos="12" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="689" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="src\InternalModuleMuvr.h" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="11014" topLine="182" />
+		</Cursor>
+	</File>
+	<File name="src\Modbus\ModbusSlave.cpp" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="78565" topLine="1916" />
+		</Cursor>
+	</File>
+	<File name="src\CommunicationDevice\TcpCommunicationDevice.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="978" topLine="28" />
+		</Cursor>
+	</File>
+	<File name="src\ServiceMarket.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="0" topLine="13" />
+		</Cursor>
+	</File>
+	<File name="src\MainProductionCycle.h" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1120" topLine="18" />
+		</Cursor>
+	</File>
+	<File name="src\Platform.h" open="0" top="0" tabpos="11" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="668" topLine="18" />
+		</Cursor>
+	</File>
+	<File name="src\CommunicationDevice\SharedMemoryCommunicationDevice.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1490" topLine="0" />
 		</Cursor>
 	</File>
 </CodeBlocks_layout_file>

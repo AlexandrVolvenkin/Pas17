@@ -53,24 +53,26 @@ uint8_t CInternalModuleMuvr::Init(void)
 //                               AddDataContainer(std::make_shared<CDataContainerDataBase>()));
     m_pxOperatingDataContainer = static_cast<CDataContainerDataBase*>(GetResources() ->
                                  AddDataContainer(std::make_shared<CDataContainerDataBase>()));
+
+    Allocate();
 }
 
 //-------------------------------------------------------------------------------
 bool CInternalModuleMuvr::SetTaskData(CDataContainerDataBase* pxDataContainer)
 {
-    std::cout << "CInternalModuleMuvr::SetTaskData 1" << std::endl;
+//    std::cout << "CInternalModuleMuvr::SetTaskData 1" << std::endl;
     uint8_t uiFsmState = GetFsmState();
 
     if (IsTaskReady())
     {
-        std::cout << "CInternalModuleMuvr::SetTaskData 2" << std::endl;
+//        std::cout << "CInternalModuleMuvr::SetTaskData 2" << std::endl;
         *m_pxOperatingDataContainer = *pxDataContainer;
         SetFsmState(m_pxOperatingDataContainer -> m_uiFsmCommandState);
         return true;
     }
     else
     {
-        std::cout << "CInternalModuleMuvr::SetTaskData 3" << std::endl;
+//        std::cout << "CInternalModuleMuvr::SetTaskData 3" << std::endl;
         return false;
     }
 }
@@ -131,30 +133,63 @@ void CInternalModuleMuvr::Allocate(void)
 //    m_puiRxBuffer = xMemoryAllocationContext.puiRxBuffer;
 //    m_puiTxBuffer = xMemoryAllocationContext.puiTxBuffer;
 //    m_puiErrorCode = xMemoryAllocationContext.puiErrorCode;
-//    // Получим указатель на место в массиве дискретных входов для текущего модуля.
-//    m_puiDiscreteInputs =
-//        &xMemoryAllocationContext.
-//        puiDiscreteInputs[xMemoryAllocationContext.uiUsedDiscreteInputs];
-//    // Увеличим общий объём выделенной памяти.
-//    xMemoryAllocationContext.
-//    uiUsedDiscreteInputs +=
-//        MVSN21_DISCRETE_INPUTS_NUMBER;
-//
-//    // Получим указатель на место в массиве достоверности дискретных входов для текущего модуля.
-//    m_puiDiscreteInputsBadState =
-//        &xMemoryAllocationContext.
-//        puiDiscreteInputsBadState[xMemoryAllocationContext.uiUsedDiscreteInputsBadState];
-//    // Увеличим общий объём выделенной памяти.
-//    xMemoryAllocationContext.
-//    uiUsedDiscreteInputsBadState +=
-//        MVSN21_DISCRETE_INPUTS_NUMBER;
-//
-//    // Получим указатель на место в массиве состояний ошибок для текущего модуля.
-//    m_puiErrorAlarmDataArray =
-//        &xMemoryAllocationContext.
-//        puiErrorAlarmDataArray[DISCRETE_INPUT_MODULE_FAILURE];
-//
-//    m_uiBadAnswerCounter = 0;
+
+    // Получим указатель на место в массиве дискретных входов для текущего модуля.
+    m_puiDiscreteInputsState =
+        &(GetResources() ->
+          m_puiDiscreteInputsState[GetResources() ->
+                                                  m_uiUsedDiscreteInputsState]);
+    // Увеличим общий объём выделенной памяти.
+    GetResources() ->
+    m_uiUsedDiscreteInputsState +=
+        MUVR_DISCRETE_INPUT_QUANTITY;
+
+
+    // Получим указатель на место в массиве достоверности дискретных входов для текущего модуля.
+    m_puiDiscreteInputsBadState =
+        &(GetResources() ->
+          m_puiDiscreteInputsBadState[GetResources() ->
+                                                     m_uiUsedDiscreteInputsBadState]);
+    // Увеличим общий объём выделенной памяти.
+    GetResources() ->
+    m_uiUsedDiscreteInputsBadState +=
+        MUVR_DISCRETE_INPUT_QUANTITY;
+
+
+    // Получим указатель на место в массиве аналоговых входов для текущего модуля.
+    m_pfAnalogueInputsValue =
+        &(GetResources() ->
+          m_pfAnalogueInputsValue[GetResources() ->
+                                                 m_uiUsedAnalogueInputsValue]);
+    // Увеличим общий объём выделенной памяти.
+    GetResources() ->
+    m_uiUsedAnalogueInputsValue +=
+        MUVR_ANALOG_INPUT_QUANTITY;
+
+
+    // Получим указатель на место в массиве достоверности аналоговых входов для текущего модуля.
+    m_puiAnalogueInputsBadState =
+        &(GetResources() ->
+          m_puiAnalogueInputsBadState[GetResources() ->
+                                                     m_uiUsedAnalogueInputsBadState]);
+    // Увеличим общий объём выделенной памяти.
+    GetResources() ->
+    m_uiUsedAnalogueInputsBadState +=
+        MUVR_ANALOG_INPUT_QUANTITY;
+
+
+    // Получим указатель на место в массиве отключения аналоговых входов для текущего модуля.
+    m_puiAnalogueInputsOff =
+        &(GetResources() ->
+          m_puiAnalogueInputsOff[GetResources() ->
+                                                m_uiUsedAnalogueInputsOff]);
+    // Увеличим общий объём выделенной памяти.
+    GetResources() ->
+    m_uiUsedAnalogueInputsOff +=
+        MUVR_ANALOG_INPUT_QUANTITY;
+
+
+    m_uiBadAnswerCounter = 0;
 }
 
 ////-------------------------------------------------------------------------------
@@ -295,16 +330,16 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
         {
             // модуль исправен.
             SetBadAnswerCounter(BAD_MODULE_CYCLE_COUNT_DEFAULT);
-            // сбросим флаг отказа модуля.
-            *(m_puiModuleBadStateBuffer) = BAD_MODULE_RESPONDED_OK;
+//            // сбросим флаг отказа модуля.
+//            *(m_puiModuleBadStateBuffer) = BAD_MODULE_RESPONDED_OK;
 
-            //iBadModuleBuffUpdate();
-            // получим данные состояния каналов аналоговых входов.
-            memcpy(m_puiStatAiBuffer,
-                   &auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET],
-                   MUVR_ANALOG_INPUT_QUANTITY);
+//            //iBadModuleBuffUpdate();
+//            // получим данные состояния каналов аналоговых входов.
+//            memcpy(m_puiAnalogueInputsState,
+//                   &auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET],
+//                   MUVR_ANALOG_INPUT_QUANTITY);
 
-            cout << "MUVR_GET_MEASURE_DATA_COMMAND ucCalibrMinus" << (int)ucCalibrMinus << endl;
+//            cout << "MUVR_GET_MEASURE_DATA_COMMAND ucCalibrMinus" << (int)ucCalibrMinus << endl;
             std::cout << "CInternalModuleMuvr::DataExchange auiSpiRxBuffer"  << std::endl;
             unsigned char *pucSourceTemp;
             pucSourceTemp = (unsigned char*)&auiSpiRxBuffer[0];
@@ -321,22 +356,24 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
             // получим измеренные значения всех аналоговых входов модуля.
             for (uint8_t i = 0; i < MUVR_ANALOG_INPUT_QUANTITY; i++)
             {
+//                std::cout << "CInternalModuleMuvr::DataExchange 2"  << std::endl;
                 // есть обрыв линии или переполнение при расчётах текущего входа?
                 if ((auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_LINE_BREAK) ||
                         (auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_CALCULATION_OVERFLOW))
                 {
+//                    std::cout << "CInternalModuleMuvr::DataExchange 3"  << std::endl;
                     // данные входа недостоверны, обнулим их.
-                    memset(&(m_puiAiValueBuffer[i * sizeof(float)]),
+                    memset(&(m_pfAnalogueInputsValue[i * sizeof(float)]),
                            0,
                            sizeof(float));
                     // установим флаг недостоверности - вход недостоверен.
-                    m_puiBadAiBuffer[i] = 1;
+                    m_puiAnalogueInputsBadState[i] = 1;
                     // дискретные данные входа недостоверны, обнулим их.
-                    memset(&(m_puiDiValueBuffer[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
+                    memset(&(m_puiDiscreteInputsState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
                            0,
                            MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
                     // установим флаги недостоверности уставок LL, L, H, HH - недостоверны.
-                    memset(&(m_puiBadDiBuffer[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
+                    memset(&(m_puiDiscreteInputsBadState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
                            1,
                            MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
                 }
@@ -346,61 +383,64 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                      ((auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_CALCULATION_OVERFLOW) == 0)) &&
                     ((auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_CHANNEL_CALIBRATION)))
                 {
+//                    std::cout << "CInternalModuleMuvr::DataExchange 4"  << std::endl;
                     // получим измеренное значение и преобразуем.
                     fData = fStep5ToFloat(&auiSpiRxBuffer[SPI_DATA_BYTE_OFFSET +
                                                                                (i * MUVR_ONE_ANALOG_INPUT_DATA_BYTE_QUANTITY)]);
                     // поместим его в рабочий массив.
-                    memcpy(&(m_puiAiValueBuffer[i * sizeof(float)]),
+                    memcpy(&(m_pfAnalogueInputsValue[i * sizeof(float)]),
                            (unsigned char*)&fData,
                            sizeof(float));
                     // установим флаг недостоверности - вход недостоверен.
-                    m_puiBadAiBuffer[i] = 1;
+                    m_puiAnalogueInputsBadState[i] = 1;
                     // дискретные данные входа недостоверны, обнулим их.
-                    memset(&(m_puiDiValueBuffer[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
+                    memset(&(m_puiDiscreteInputsState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
                            0,
                            MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
                     // установим флаги недостоверности уставок LL, L, H, HH - недостоверны.
-                    memset(&(m_puiBadDiBuffer[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
+                    memset(&(m_puiDiscreteInputsBadState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
                            1,
                            MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
                 }
                 else
                 {
+//                    std::cout << "CInternalModuleMuvr::DataExchange 5"  << std::endl;
                     // аналоговый вход выведен из обработки?
-                    if (m_puiAinOffBuffer[i])
+                    if (m_puiAnalogueInputsOff[i])
                     {
                         // данные входов модуля выведены из обработки, обнулим их.
-                        memset(&(m_puiAiValueBuffer[i * sizeof(float)]),
+                        memset(&(m_pfAnalogueInputsValue[i * sizeof(float)]),
                                0,
                                sizeof(float));
                         // установим флаг недостоверности - вход недостоверен.
-                        m_puiBadAiBuffer[i] = 1;
+                        m_puiAnalogueInputsBadState[i] = 1;
                         // дискретные данные входа недостоверны, обнулим их.
-                        memset(&(m_puiDiValueBuffer[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
+                        memset(&(m_puiDiscreteInputsState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
                                0,
                                MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
                         // установим флаги недостоверности уставок LL, L, H, HH - недостоверны.
-                        memset(&(m_puiBadDiBuffer[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
+                        memset(&(m_puiDiscreteInputsBadState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
                                1,
                                MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
                     }
                     else
                     {
+//                        std::cout << "CInternalModuleMuvr::DataExchange 6"  << std::endl;
                         // получим измеренное значение и преобразуем.
                         fData = fStep5ToFloat(&auiSpiRxBuffer[SPI_DATA_BYTE_OFFSET +
                                                                                    (i * MUVR_ONE_ANALOG_INPUT_DATA_BYTE_QUANTITY)]);
                         // поместим его в рабочий массив.
-                        memcpy(&(m_puiAiValueBuffer[i * sizeof(float)]),
+                        memcpy(&(m_pfAnalogueInputsValue[i * sizeof(float)]),
                                (unsigned char*)&fData,
                                sizeof(float));
                         // сбросим флаг недостоверности - вход достоверен.
-                        m_puiBadAiBuffer[i] = 0;
+                        m_puiAnalogueInputsBadState[i] = 0;
                         // сбросим флаги уставок LL, L, H, HH.
-                        memset(&(m_puiDiValueBuffer[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
+                        memset(&(m_puiDiscreteInputsState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
                                0,
                                MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
                         // сбросим флаги недостоверности уставок LL, L, H, HH - достоверны.
-                        memset(&(m_puiBadDiBuffer[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
+                        memset(&(m_puiDiscreteInputsBadState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
                                0,
                                MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
                         // нарушена уставка LL + L?
@@ -408,40 +448,40 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                                 ANALOGUE_INPUT_SET_POINT_VIOLATION_LL_L)
                         {
                             // установим флаг нарушения уставки LL.
-                            (m_puiDiValueBuffer[(i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH) +
-                                                                                       ANALOGUE_INPUT_SET_POINT_VIOLATION_LL_L_OFFSET]) = 1;
+                            (m_puiDiscreteInputsState[(i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH) +
+                                                                                             ANALOGUE_INPUT_SET_POINT_VIOLATION_LL_L_OFFSET]) = 1;
 
                             // установим флаг нарушения уставки L.
-                            (m_puiDiValueBuffer[(i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH) +
-                                                                                       ANALOGUE_INPUT_SET_POINT_VIOLATION_L_OFFSET]) = 1;
+                            (m_puiDiscreteInputsState[(i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH) +
+                                                                                             ANALOGUE_INPUT_SET_POINT_VIOLATION_L_OFFSET]) = 1;
                         }
                         // нарушена уставка L?
                         if ((auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_SET_POINT_VIOLATION_MASK) ==
                                 ANALOGUE_INPUT_SET_POINT_VIOLATION_L)
                         {
                             // установим флаг нарушения уставки L.
-                            (m_puiDiValueBuffer[(i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH) +
-                                                                                       ANALOGUE_INPUT_SET_POINT_VIOLATION_L_OFFSET]) = 1;
+                            (m_puiDiscreteInputsState[(i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH) +
+                                                                                             ANALOGUE_INPUT_SET_POINT_VIOLATION_L_OFFSET]) = 1;
                         }
                         // нарушена уставка H?
                         if ((auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_SET_POINT_VIOLATION_MASK) ==
                                 ANALOGUE_INPUT_SET_POINT_VIOLATION_H)
                         {
                             // установим флаг нарушения уставки H.
-                            (m_puiDiValueBuffer[(i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH) +
-                                                                                       ANALOGUE_INPUT_SET_POINT_VIOLATION_H_OFFSET]) = 1;
+                            (m_puiDiscreteInputsState[(i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH) +
+                                                                                             ANALOGUE_INPUT_SET_POINT_VIOLATION_H_OFFSET]) = 1;
                         }
                         // нарушена уставка HH + H?
                         if ((auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_SET_POINT_VIOLATION_MASK) ==
                                 ANALOGUE_INPUT_SET_POINT_VIOLATION_HH_H)
                         {
                             // установим флаг нарушения уставки HH.
-                            (m_puiDiValueBuffer[(i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH) +
-                                                                                       ANALOGUE_INPUT_SET_POINT_VIOLATION_HH_H_OFFSET]) = 1;
+                            (m_puiDiscreteInputsState[(i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH) +
+                                                                                             ANALOGUE_INPUT_SET_POINT_VIOLATION_HH_H_OFFSET]) = 1;
 
                             // установим флаг нарушения уставки H.
-                            (m_puiDiValueBuffer[(i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH) +
-                                                                                       ANALOGUE_INPUT_SET_POINT_VIOLATION_H_OFFSET]) = 1;
+                            (m_puiDiscreteInputsState[(i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH) +
+                                                                                             ANALOGUE_INPUT_SET_POINT_VIOLATION_H_OFFSET]) = 1;
                         }
                     }
                 }
@@ -470,23 +510,23 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
     // модуль признан неисправным?
     if (GetBadAnswerCounter() == 0)
     {
-        // модуль признан неисправным.
-        *(m_puiModuleBadStateBuffer) = BAD_MODULE_NOT_RESPONDED;
+//        // модуль признан неисправным.
+//        *(m_puiModuleBadStateBuffer) = BAD_MODULE_NOT_RESPONDED;
 
         // данные входов модуля недостоверны, обнулим их.
-        memset(m_puiAiValueBuffer,
+        memset(m_pfAnalogueInputsValue,
                0,
                MUVR_ANALOG_INPUT_QUANTITY * sizeof(float));
         // установим флаги недостоверности - входы недостоверны.
-        memset(m_puiBadAiBuffer,
+        memset(m_puiAnalogueInputsBadState,
                1,
                MUVR_ANALOG_INPUT_QUANTITY);
         // дискретные данные входов модуля недостоверны, обнулим их.
-        memset(m_puiDiValueBuffer,
+        memset(m_puiDiscreteInputsState,
                0,
                MUVR_ANALOG_INPUT_QUANTITY * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
         // установим флаги недостоверности всех дискретных сигналов модуля.
-        memset(m_puiBadDiBuffer,
+        memset(m_puiDiscreteInputsBadState,
                1,
                MUVR_ANALOG_INPUT_QUANTITY * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
         //iBadModuleBuffUpdate();
