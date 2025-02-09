@@ -164,6 +164,7 @@ public:
         MUVR_GET_MODULE_TYPE,
         MUVR_WRITE_DATA_BASE,
         MUVR_WRITE_DATA_BASE_CHECK,
+        MUVR_DATA_BASE_READ,
         MUVR_DATA_EXCHANGE,
     };
 
@@ -187,8 +188,8 @@ public:
 //    bool IsAbleToReplace(uint8_t uiType);
     void Allocate(void);
 //    uint8_t GetModuleType(uint8_t uiAddress);
+    uint8_t DataBaseRead(void);
     uint8_t DataExchange(void);
-    uint8_t DataBaseRead(uint8_t uiAddress);
 
 private:
 //    uint8_t m_uiAddress;

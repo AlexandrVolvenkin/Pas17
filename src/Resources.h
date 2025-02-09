@@ -25,6 +25,8 @@ class CDataStore;
 class CConfigurationCreate;
 class CServiceMarket;
 class CLinkInterface;
+class CAnalogueSignals;
+struct TAnalogueInputDescriptionWork;
 
 //-------------------------------------------------------------------------------
 class CResourcesInterface : public CTask
@@ -104,6 +106,7 @@ public:
     std::list<CTaskInterface*> m_lpxCurrentlyRunningTasksList;
     std::list<CTaskInterface*>::iterator m_xCurrentlyRunningTasksListIterator;
     std::list<std::shared_ptr<CDataContainerInterface>> m_lpxDataContainerList;
+    std::vector<TAnalogueInputDescriptionWork> m_vxAnalogueInputDescriptionWork;
 
     // Создаем std::map, где ключ - строка, значение - указатель на объект
     std::map<std::string, std::shared_ptr<CTaskInterface>> m_mpxCommonTaskMap;

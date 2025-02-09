@@ -14,6 +14,7 @@
 #include "DeviceControl.h"
 #include "Link.h"
 #include "DataContainer.h"
+#include "AnalogueSignals.h"
 #include "Resources.h"
 
 //-------------------------------------------------------------------------------

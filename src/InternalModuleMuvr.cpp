@@ -60,19 +60,19 @@ uint8_t CInternalModuleMuvr::Init(void)
 //-------------------------------------------------------------------------------
 bool CInternalModuleMuvr::SetTaskData(CDataContainerDataBase* pxDataContainer)
 {
-//    std::cout << "CInternalModuleMuvr::SetTaskData 1" << std::endl;
+    std::cout << "CInternalModuleMuvr::SetTaskData 1" << std::endl;
     uint8_t uiFsmState = GetFsmState();
 
     if (IsTaskReady())
     {
-//        std::cout << "CInternalModuleMuvr::SetTaskData 2" << std::endl;
+        std::cout << "CInternalModuleMuvr::SetTaskData 2" << std::endl;
         *m_pxOperatingDataContainer = *pxDataContainer;
         SetFsmState(m_pxOperatingDataContainer -> m_uiFsmCommandState);
         return true;
     }
     else
     {
-//        std::cout << "CInternalModuleMuvr::SetTaskData 3" << std::endl;
+        std::cout << "CInternalModuleMuvr::SetTaskData 3" << std::endl;
         return false;
     }
 }
@@ -269,7 +269,7 @@ void CInternalModuleMuvr::Allocate(void)
 //-----------------------------------------------------------------------------------------------------
 uint8_t CInternalModuleMuvr::DataExchange(void)
 {
-//    std::cout << "CInternalModuleMuvr::DataExchange 1"  << std::endl;
+    std::cout << "CInternalModuleMuvr::DataExchange 1"  << std::endl;
     float fData;
     unsigned char ucCalibrPlus;
     unsigned char ucCalibrMinus;
@@ -322,8 +322,10 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
     switch(auiSpiRxBuffer[SPI_COMMAND_BYTE_OFFSET])
     {
     case MUVR_ANSWER_REPER_POINTS_ADC_DATABASE_ERROR:
+        std::cout << "CInternalModuleMuvr::DataExchange 2"  << std::endl;
     // ошибка БД реперных точек, но будет продолжение обмена.
     case MUVR_GET_MEASURE_DATA_COMMAND:
+        std::cout << "CInternalModuleMuvr::DataExchange 3"  << std::endl;
         // данные не повреждены?
         if (iCrcSummTwoByteCompare(&auiSpiRxBuffer[SPI_DATA_BYTE_OFFSET],
                                    MUVR_GET_MEASURE_DATA_COMMAND_ANSWER_LENGTH) > 0)
@@ -491,18 +493,21 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
         break;
 
     case MUVR_ANSWER_DATA_NOT_READY:
+        std::cout << "CInternalModuleMuvr::DataExchange 4"  << std::endl;
         // данные не готовы.
         return 0;
         break;
 
     case MUVR_ANSWER_DATABASE_ERROR:
-        // ошибка БД обработки, конец связи.
-        // получим код ошибки;
-        SetErrorCode(INTERNAL_MODULE_ERROR_DATA_BASE);
+        std::cout << "CInternalModuleMuvr::DataExchange 5"  << std::endl;
+//        // ошибка БД обработки, конец связи.
+//        // получим код ошибки;
+//        SetErrorCode(INTERNAL_MODULE_ERROR_DATA_BASE);
         return 0;
         break;
 
     default:
+        std::cout << "CInternalModuleMuvr::DataExchange 6"  << std::endl;
         break;
     };
 
@@ -540,14 +545,12 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
 }
 
 //-------------------------------------------------------------------------------
-uint8_t CInternalModuleMuvr::DataBaseRead(uint8_t uiAddress)
+uint8_t CInternalModuleMuvr::DataBaseRead(void)
 {
     std::cout << "CInternalModuleMuvr::DataBaseRead 1"  << std::endl;
     uint8_t auiSpiTxBuffer[TX_RX_BUFF_SIZE];
     uint8_t auiSpiRxBuffer[TX_RX_BUFF_SIZE];
 
-    unsigned short usData;
-    int i;
     unsigned char *pucSource;
     unsigned char *pucDestination;
     unsigned char aucTempArray[256];
@@ -558,7 +561,7 @@ uint8_t CInternalModuleMuvr::DataBaseRead(uint8_t uiAddress)
 //
     usleep(10000);
     auiSpiTxBuffer[0] = MUVR_GET_DATA_BASE_COMMAND;
-    m_pxCommunicationDevice -> Exchange(uiAddress,
+    m_pxCommunicationDevice -> Exchange(GetAddress(),
                                         auiSpiTxBuffer,
                                         auiSpiRxBuffer,
                                         SPI_PREAMBLE_LENGTH +
@@ -567,7 +570,7 @@ uint8_t CInternalModuleMuvr::DataBaseRead(uint8_t uiAddress)
                                         LOW_SPEED_IN_HZ);
 
     {
-        cout << "MUVR_GET_DATA_BASE_COMMAND auiSpiRxBuffer" << endl;
+        std::cout << "CInternalModuleMuvr::DataBaseRead auiSpiRxBuffer"  << std::endl;
         unsigned char *pucSourceTemp;
         pucSourceTemp = (unsigned char*)auiSpiRxBuffer;
         for(int i=0; i<64; )
@@ -597,7 +600,7 @@ uint8_t CInternalModuleMuvr::DataBaseRead(uint8_t uiAddress)
             // получим указатель на данные программирования первого входа, принятые из модуля.
             pucSource = &auiSpiRxBuffer[SPI_DATA_BYTE_OFFSET];
             pucDestination = &aucTempArray[0];
-            for (i = 0; i < MUVR_ANALOG_INPUT_QUANTITY; i++)
+            for (uint8_t i = 0; i < MUVR_ANALOG_INPUT_QUANTITY; i++)
             {
                 // скопируем во временный буфер часть блока - данные программирования одного входа(20 байт).
                 memcpy(pucDestination, pucSource, 20);
@@ -609,7 +612,7 @@ uint8_t CInternalModuleMuvr::DataBaseRead(uint8_t uiAddress)
             // получим указатель на данные текстового реквизита первого входа, принятые из модуля.
             pucSource = &auiSpiRxBuffer[SPI_DATA_BYTE_OFFSET + (20 * 6)];
             pucDestination = &aucTempArray[20];
-            for (i = 0; i < MUVR_ANALOG_INPUT_QUANTITY; i++)
+            for (uint8_t i = 0; i < MUVR_ANALOG_INPUT_QUANTITY; i++)
             {
                 // скопируем во временный буфер часть блока - текстовые реквизиты одного входа(8 байт).
                 memcpy(pucDestination, pucSource, 8);
@@ -620,43 +623,19 @@ uint8_t CInternalModuleMuvr::DataBaseRead(uint8_t uiAddress)
             }
 
             pucSource = &aucTempArray[0];
-//            // получим указатель на блок в базе данных прибора.
-//            pucDestination = (unsigned char*)(pxModuleContext ->
-//                                              xModuleContextStatic.
-//                                              pucDataBasePointer);
-//            // база данных не совпадает?
-//            if (memcmp((const void*)pucDestination,
-//                       (const void*)pucSource,
-//                       ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_LENGTH) != 0)
-//            {
-//
-//                // скопируем базу данных из модуля в прибор.
-//                memcpy(pucDestination,
-//                       pucSource,
-//                       ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_LENGTH);
-//                cout << "CInternalModuleMuvr::DataBaseRead DataBaseCheck NO" << endl;
-//                return 0;
-//            }
-//            else
-//            {
-//                // база данных совпадает.
-//                cout << "CInternalModuleMuvr::DataBaseRead DataBaseCheck OK" << endl;
-//                return 1;
-//            }
 
-            cout << "CInternalModuleMuvr::DataBaseRead DataBaseCheck CRC OK" << endl;
+            cout << "CInternalModuleMuvr::DataBaseRead 2" << endl;
         }
         else
         {
             // ошибка обмена данными.
-            cout << "CInternalModuleMuvr::DataBaseRead DataBaseCheck CRC error" << endl;
-            //cout << "MUVR_GET_DATA_BASE_CRC error" << endl;
+            cout << "CInternalModuleMuvr::DataBaseRead 3" << endl;
         }
     }
     else
     {
         // модуль не отвечает.
-        cout << "iCInternalModuleMuvr::DataBaseRead DataBaseCheck COMMAND error" << endl;
+        cout << "iCInternalModuleMuvr::DataBaseRead 4" << endl;
     }
     return 0;
 }
@@ -753,6 +732,12 @@ uint8_t CInternalModuleMuvr::Fsm(void)
     case MUVR_GET_MODULE_TYPE:
 //        std::cout << "CInternalModuleMuvr::Fsm MUVR_GET_MODULE_TYPE"  << std::endl;
         GetModuleType(GetAddress());
+        SetFsmState(READY);
+        break;
+
+    case MUVR_DATA_BASE_READ:
+//        std::cout << "CInternalModuleMuvr::Fsm MUVR_DATA_BASE_READ"  << std::endl;
+        DataBaseRead();
         SetFsmState(READY);
         break;
 
