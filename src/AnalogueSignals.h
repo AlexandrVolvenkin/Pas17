@@ -17,6 +17,8 @@ class CLink;
 class CLinkInterface;
 class CDataContainerInterface;
 class CDataContainerDataBase;
+class CInternalModule;
+class CInternalModuleMuvr;
 
 
 //-------------------------------------------------------------------------------

@@ -97,7 +97,7 @@ bool CInternalModule::SetTaskData(CDataContainerDataBase* pxDataContainer)
 //-------------------------------------------------------------------------------
 bool CInternalModule::GetTaskData(CDataContainerDataBase* pxDataContainer)
 {
-    std::cout << "CInternalModule::SetTaskData 1" << std::endl;
+    std::cout << "CInternalModule::GetTaskData 1" << std::endl;
 
     m_pxOperatingDataContainer -> m_uiFsmCommandState = GetFsmState();
     *pxDataContainer = *m_pxOperatingDataContainer;

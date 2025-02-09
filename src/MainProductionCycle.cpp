@@ -133,7 +133,7 @@ bool CMainProductionCycle::SetTaskData(CDataContainerDataBase* pxDataContainer)
 //-------------------------------------------------------------------------------
 bool CMainProductionCycle::GetTaskData(CDataContainerDataBase* pxDataContainer)
 {
-    std::cout << "CMainProductionCycle::SetTaskData 1" << std::endl;
+    std::cout << "CMainProductionCycle::GetTaskData 1" << std::endl;
 
     m_pxOperatingDataContainer -> m_uiFsmCommandState = GetFsmState();
     *pxDataContainer = *m_pxOperatingDataContainer;
@@ -708,7 +708,7 @@ uint8_t CMainProductionCycle::Fsm(void)
         GetTimerPointer() -> Set(100);
 
         usleep(1000);
-        SetFsmState(MAIN_CYCLE_START_WAITING);
+//        SetFsmState(MAIN_CYCLE_START_WAITING);
         break;
 
     case MAIN_CYCLE_START_WAITING:

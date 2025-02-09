@@ -14,9 +14,9 @@
 #include "DataContainer.h"
 #include "CommunicationDevice.h"
 #include "SpiCommunicationDevice.h"
+#include "STEP5_floating_point.h"
 #include "InternalModule.h"
 #include "InternalModuleMuvr.h"
-#include "STEP5_floating_point.h"
 
 using namespace std;
 
@@ -80,7 +80,7 @@ bool CInternalModuleMuvr::SetTaskData(CDataContainerDataBase* pxDataContainer)
 //-------------------------------------------------------------------------------
 bool CInternalModuleMuvr::GetTaskData(CDataContainerDataBase* pxDataContainer)
 {
-    std::cout << "CInternalModuleMuvr::SetTaskData 1" << std::endl;
+//    std::cout << "CInternalModuleMuvr::GetTaskData 1" << std::endl;
 
     m_pxOperatingDataContainer -> m_uiFsmCommandState = GetFsmState();
     *pxDataContainer = *m_pxOperatingDataContainer;
@@ -622,7 +622,11 @@ uint8_t CInternalModuleMuvr::DataBaseRead(void)
                 pucDestination += 28;
             }
 
-            pucSource = &aucTempArray[0];
+//            pucSource = &aucTempArray[0];
+            pucSource = auiSpiRxBuffer;
+            memcpy(m_pxOperatingDataContainer -> m_puiDataPointer,
+                   pucSource,
+                   ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_LENGTH);
 
             cout << "CInternalModuleMuvr::DataBaseRead 2" << endl;
         }
@@ -732,19 +736,19 @@ uint8_t CInternalModuleMuvr::Fsm(void)
     case MUVR_GET_MODULE_TYPE:
 //        std::cout << "CInternalModuleMuvr::Fsm MUVR_GET_MODULE_TYPE"  << std::endl;
         GetModuleType(GetAddress());
-        SetFsmState(READY);
+        SetFsmState(DONE_OK);
         break;
 
     case MUVR_DATA_BASE_READ:
-//        std::cout << "CInternalModuleMuvr::Fsm MUVR_DATA_BASE_READ"  << std::endl;
+        std::cout << "CInternalModuleMuvr::Fsm MUVR_DATA_BASE_READ"  << std::endl;
         DataBaseRead();
-        SetFsmState(READY);
+        SetFsmState(DONE_OK);
         break;
 
     case MUVR_DATA_EXCHANGE:
 //        std::cout << "CInternalModuleMuvr::Fsm MUVR_DATA_EXCHANGE"  << std::endl;
         DataExchange();
-        SetFsmState(READY);
+        SetFsmState(DONE_OK);
         break;
 
     default:

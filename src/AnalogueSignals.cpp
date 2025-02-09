@@ -14,6 +14,8 @@
 #include "DataContainer.h"
 #include "Configuration.h"
 #include "STEP5_floating_point.h"
+#include "InternalModule.h"
+#include "InternalModuleMuvr.h"
 #include "AnalogueSignals.h"
 
 
@@ -202,29 +204,58 @@ uint8_t CAnalogueSignals::Fsm(void)
 
     case DATA_BASE_BLOCK_START_READ:
         std::cout << "CAnalogueSignals::Fsm DATA_BASE_BLOCK_START_READ"  << std::endl;
-//        m_pxOperatingDataContainer -> m_uiFsmCommandState =
-//            CModbusSmMasterLinkLayer::COMMUNICATION_START;
-//        m_pxModbusMasterLinkLayer ->
-//        SetTaskData(m_pxOperatingDataContainer);
-        SetFsmState(DONE_OK);
+
+        {
+            CInternalModuleMuvr* pxInternalModuleMuvr =
+                (CInternalModuleMuvr*)(GetResources() ->
+                                       GetTaskPointerByNameFromMap("InternalModuleMuvr"));
+
+            m_pxOperatingDataContainer -> m_uiFsmCommandState =
+                CInternalModuleMuvr::MUVR_DATA_BASE_READ;
+            m_pxOperatingDataContainer -> m_uiDataIndex = 0;
+            m_pxOperatingDataContainer -> m_puiDataPointer =
+                m_puiIntermediateBuff;
+            pxInternalModuleMuvr ->
+            SetTaskData(m_pxOperatingDataContainer);
+            SetFsmState(DATA_BASE_BLOCK_READ_END_WAITING);
+        }
         break;
 
     case DATA_BASE_BLOCK_READ_END_WAITING:
 //        std::cout << "CAnalogueSignals::Fsm DATA_BASE_BLOCK_READ_END_WAITING"  << std::endl;
     {
-//        m_pxModbusMasterLinkLayer ->
-//        GetTaskData(m_pxOperatingDataContainer);
+        CInternalModuleMuvr* pxInternalModuleMuvr =
+            (CInternalModuleMuvr*)(GetResources() ->
+                                   GetTaskPointerByNameFromMap("InternalModuleMuvr"));
+
+        pxInternalModuleMuvr ->
+        GetTaskData(m_pxOperatingDataContainer);
 
         uint8_t uiFsmState = m_pxOperatingDataContainer -> m_uiFsmCommandState;
 
         if (uiFsmState == DONE_OK)
         {
-//            std::cout << "CAnalogueSignals::Fsm AFTER_REQUEST_WAITING 2"  << std::endl;
-//            SetFsmState(COMMUNICATION_RECEIVE_START);
+            std::cout << "CAnalogueSignals::Fsm DATA_BASE_BLOCK_READ_END_WAITING 2"  << std::endl;
+
+            {
+                std::cout << "CAnalogueSignals::Fsm m_puiIntermediateBuff"  << std::endl;
+                unsigned char *pucSourceTemp;
+                pucSourceTemp = (unsigned char*)m_puiIntermediateBuff;
+                for(int i=0; i<64; )
+                {
+                    for(int j=0; j<8; j++)
+                    {
+                        cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+                    }
+                    cout << endl;
+                    i += 8;
+                }
+            }
+            SetFsmState(DONE_OK);
         }
         else if (uiFsmState == DONE_ERROR)
         {
-            std::cout << "CAnalogueSignals::Fsm AFTER_REQUEST_WAITING 3"  << std::endl;
+            std::cout << "CAnalogueSignals::Fsm DATA_BASE_BLOCK_READ_END_WAITING 3"  << std::endl;
             SetFsmState(DONE_ERROR);
         }
         else
@@ -232,7 +263,7 @@ uint8_t CAnalogueSignals::Fsm(void)
             // Время ожидания выполнения запроса закончилось?
             if (GetTimerPointer() -> IsOverflow())
             {
-                std::cout << "CAnalogueSignals::Fsm AFTER_REQUEST_WAITING 4"  << std::endl;
+                std::cout << "CAnalogueSignals::Fsm DATA_BASE_BLOCK_READ_END_WAITING 4"  << std::endl;
                 SetFsmState(DONE_ERROR);
             }
         }
