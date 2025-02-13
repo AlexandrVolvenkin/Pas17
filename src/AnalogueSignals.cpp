@@ -27,7 +27,7 @@ using namespace std;
 CAnalogueSignals::CAnalogueSignals()
 {
     std::cout << "CAnalogueSignals constructor"  << std::endl;
-    m_puiIntermediateBuff = new uint8_t[256];
+    m_puiIntermediateBuff = new uint8_t[1024];
     SetFsmState(START);
 }
 
@@ -192,6 +192,7 @@ void CAnalogueSignals::Exstract(void)
 uint8_t CAnalogueSignals::Fsm(void)
 {
 //    std::cout << "CAnalogueSignals::Fsm 1" << endl;
+//    uint8_t auiIntermediateBuff[256];
 
     switch (GetFsmState())
     {
@@ -296,6 +297,75 @@ uint8_t CAnalogueSignals::Fsm(void)
     }
     break;
 
+    case DATA_BASE_BLOCK_STORAGE_START_WRITE:
+        std::cout << "CAnalogueSignals::Fsm DATA_BASE_BLOCK_STORAGE_START_WRITE"  << std::endl;
+
+        {
+            CDeviceControl* pxDeviceControl =
+                (CDeviceControl*)(GetResources() ->
+                                  GetTaskPointerByNameFromMap("DeviceControlRtuUpperLevel"));
+
+            m_pxOperatingDataContainer -> m_uiFsmCommandState =
+                CDeviceControl::DATA_BASE_BLOCK_START_WRITE;
+            m_pxOperatingDataContainer -> m_uiDataIndex = 1;
+            m_pxOperatingDataContainer -> m_puiDataPointer =
+                m_puiIntermediateBuff;
+            pxDeviceControl ->
+            SetTaskData(m_pxOperatingDataContainer);
+            SetFsmState(DATA_BASE_BLOCK_STORAGE_WRITE_END_WAITING);
+        }
+        break;
+
+    case DATA_BASE_BLOCK_STORAGE_WRITE_END_WAITING:
+//        std::cout << "CAnalogueSignals::Fsm DATA_BASE_BLOCK_STORAGE_WRITE_END_WAITING"  << std::endl;
+    {
+        CDeviceControl* pxDeviceControl =
+            (CDeviceControl*)(GetResources() ->
+                              GetTaskPointerByNameFromMap("DeviceControlRtuUpperLevel"));
+
+        pxDeviceControl ->
+        GetTaskData(m_pxOperatingDataContainer);
+
+        uint8_t uiFsmState = m_pxOperatingDataContainer -> m_uiFsmCommandState;
+
+        if (uiFsmState == DONE_OK)
+        {
+            std::cout << "CAnalogueSignals::Fsm DATA_BASE_BLOCK_STORAGE_WRITE_END_WAITING 2"  << std::endl;
+            std::cout << "CAnalogueSignals::Fsm m_uiDataLength "  << (int)(m_pxOperatingDataContainer -> m_uiDataLength) << std::endl;
+            {
+                std::cout << "CAnalogueSignals::Fsm m_puiIntermediateBuff"  << std::endl;
+                unsigned char *pucSourceTemp;
+                pucSourceTemp = (unsigned char*)m_puiIntermediateBuff;
+                for(int i=0; i<64; )
+                {
+                    for(int j=0; j<8; j++)
+                    {
+                        cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+                    }
+                    cout << endl;
+                    i += 8;
+                }
+            }
+
+            SetFsmState(DONE_OK);
+        }
+        else if (uiFsmState == DONE_ERROR)
+        {
+            std::cout << "CAnalogueSignals::Fsm DATA_BASE_BLOCK_STORAGE_WRITE_END_WAITING 3"  << std::endl;
+            SetFsmState(DONE_ERROR);
+        }
+        else
+        {
+            // Время ожидания выполнения запроса закончилось?
+            if (GetTimerPointer() -> IsOverflow())
+            {
+                std::cout << "CAnalogueSignals::Fsm DATA_BASE_BLOCK_STORAGE_WRITE_END_WAITING 4"  << std::endl;
+                SetFsmState(DONE_ERROR);
+            }
+        }
+    }
+    break;
+
     case DATA_BASE_BLOCK_CHECK_START:
         std::cout << "CAnalogueSignals::Fsm DATA_BASE_BLOCK_CHECK_START"  << std::endl;
         SetFsmState(DATA_BASE_BLOCK_CHECK_MODULE_BLOCK_READ);
@@ -351,6 +421,9 @@ uint8_t CAnalogueSignals::Fsm(void)
             }
 
             Exstract();
+            memcpy(&m_puiIntermediateBuff[256],
+                   &m_puiIntermediateBuff[0],
+                   256);
             SetFsmState(DATA_BASE_BLOCK_CHECK_STORAGE_BLOCK_READ);
         }
         else if (uiFsmState == DONE_ERROR)
@@ -420,7 +493,7 @@ uint8_t CAnalogueSignals::Fsm(void)
                 }
             }
 
-            SetFsmState(DONE_OK);
+            SetFsmState(DATA_BASE_BLOCK_CHECK_MODULE_AND_STORAGE_BLOCK_COMPARE);
         }
         else if (uiFsmState == DONE_ERROR)
         {
@@ -433,6 +506,92 @@ uint8_t CAnalogueSignals::Fsm(void)
             if (GetTimerPointer() -> IsOverflow())
             {
                 std::cout << "CAnalogueSignals::Fsm DATA_BASE_BLOCK_CHECK_STORAGE_BLOCK_READ_END_WAITING 4"  << std::endl;
+                SetFsmState(DONE_ERROR);
+            }
+        }
+    }
+    break;
+
+    case DATA_BASE_BLOCK_CHECK_MODULE_AND_STORAGE_BLOCK_COMPARE:
+        std::cout << "CAnalogueSignals::Fsm DATA_BASE_BLOCK_CHECK_MODULE_AND_STORAGE_BLOCK_COMPARE 1"  << std::endl;
+        // база данных совпадает?
+        if (memcmp((const void*)&m_puiIntermediateBuff[256],
+                   (const void*)&m_puiIntermediateBuff[0],
+                   28) == 0)
+        {
+            std::cout << "CAnalogueSignals::Fsm DATA_BASE_BLOCK_CHECK_MODULE_AND_STORAGE_BLOCK_COMPARE 2"  << std::endl;
+            SetFsmState(DONE_OK);
+        }
+        else
+        {
+            std::cout << "CAnalogueSignals::Fsm DATA_BASE_BLOCK_CHECK_MODULE_AND_STORAGE_BLOCK_COMPARE 3"  << std::endl;
+            SetFsmState(DATA_BASE_BLOCK_CHECK_STORAGE_BLOCK_START_WRITE);
+        }
+        break;
+
+    case DATA_BASE_BLOCK_CHECK_STORAGE_BLOCK_START_WRITE:
+        std::cout << "CAnalogueSignals::Fsm DATA_BASE_BLOCK_CHECK_STORAGE_BLOCK_START_WRITE"  << std::endl;
+
+        {
+            CDeviceControl* pxDeviceControl =
+                (CDeviceControl*)(GetResources() ->
+                                  GetTaskPointerByNameFromMap("DeviceControlRtuUpperLevel"));
+
+            m_pxOperatingDataContainer -> m_uiFsmCommandState =
+                CDeviceControl::DATA_BASE_BLOCK_START_WRITE;
+            m_pxOperatingDataContainer -> m_uiDataIndex = 1;
+            m_pxOperatingDataContainer -> m_puiDataPointer =
+                &m_puiIntermediateBuff[256];
+            pxDeviceControl ->
+            SetTaskData(m_pxOperatingDataContainer);
+            SetFsmState(DATA_BASE_BLOCK_CHECK_STORAGE_BLOCK_WRITE_END_WAITING);
+        }
+        break;
+
+    case DATA_BASE_BLOCK_CHECK_STORAGE_BLOCK_WRITE_END_WAITING:
+//        std::cout << "CAnalogueSignals::Fsm DATA_BASE_BLOCK_CHECK_STORAGE_BLOCK_WRITE_END_WAITING"  << std::endl;
+    {
+        CDeviceControl* pxDeviceControl =
+            (CDeviceControl*)(GetResources() ->
+                              GetTaskPointerByNameFromMap("DeviceControlRtuUpperLevel"));
+
+        pxDeviceControl ->
+        GetTaskData(m_pxOperatingDataContainer);
+
+        uint8_t uiFsmState = m_pxOperatingDataContainer -> m_uiFsmCommandState;
+
+        if (uiFsmState == DONE_OK)
+        {
+            std::cout << "CAnalogueSignals::Fsm DATA_BASE_BLOCK_CHECK_STORAGE_BLOCK_WRITE_END_WAITING 2"  << std::endl;
+//            std::cout << "CAnalogueSignals::Fsm m_uiDataLength "  << (int)(m_pxOperatingDataContainer -> m_uiDataLength) << std::endl;
+//            {
+//                std::cout << "CAnalogueSignals::Fsm m_puiIntermediateBuff"  << std::endl;
+//                unsigned char *pucSourceTemp;
+//                pucSourceTemp = (unsigned char*)m_puiIntermediateBuff;
+//                for(int i=0; i<64; )
+//                {
+//                    for(int j=0; j<8; j++)
+//                    {
+//                        cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+//                    }
+//                    cout << endl;
+//                    i += 8;
+//                }
+//            }
+
+            SetFsmState(DONE_OK);
+        }
+        else if (uiFsmState == DONE_ERROR)
+        {
+            std::cout << "CAnalogueSignals::Fsm DATA_BASE_BLOCK_CHECK_STORAGE_BLOCK_WRITE_END_WAITING 3"  << std::endl;
+            SetFsmState(DONE_ERROR);
+        }
+        else
+        {
+            // Время ожидания выполнения запроса закончилось?
+            if (GetTimerPointer() -> IsOverflow())
+            {
+                std::cout << "CAnalogueSignals::Fsm DATA_BASE_BLOCK_CHECK_STORAGE_BLOCK_WRITE_END_WAITING 4"  << std::endl;
                 SetFsmState(DONE_ERROR);
             }
         }
