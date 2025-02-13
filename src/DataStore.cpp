@@ -888,7 +888,7 @@ uint16_t CDataStore::ReadBlock(uint8_t *puiDestination, uint8_t uiBlock)
     {
         std::cout << "CDataStore::ReadBlock 6"  << std::endl;
         memcpy(puiDestination, m_puiIntermediateBuff, uiLength);
-        return 1;
+        return uiLength;
     }
     else
     {
