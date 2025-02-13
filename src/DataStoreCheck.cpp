@@ -151,14 +151,45 @@ uint8_t CDataStoreCheck::Fsm(void)
         break;
 
     case TEMPORARY_SERVICE_SECTION_LINKED_BLOCKS_CHECK:
+        std::cout << "CDataStoreCheck::Fsm TEMPORARY_SERVICE_SECTION_LINKED_BLOCKS_CHECK"  << std::endl;
         // Проверим связанность блоков хранилища с временным служебным блоком, а следовательно их целостность.
+        std::cout << "CDataStoreCheck::Fsm GetStoredBlocksNumber() "  << (int)(GetStoredBlocksNumber()) << std::endl;
         for (uint16_t i = 0;
                 i < GetStoredBlocksNumber();
                 i++)
         {
-            // Блок не связан с временным служебным буфером(или повреждён)?
-            if (!(ReadBlock(auiTempArray, i)))
+            switch (ReadBlock(auiTempArray, i))
             {
+            case 0:
+                break;
+
+            case 1:
+            {
+        std::cout << "CDataStoreCheck::Fsm TEMPORARY_SERVICE_SECTION_LINKED_BLOCKS_CHECK 5"  << std::endl;
+                // Блок восстановлен алгоритмом Хемминга после обнаружения ошибки?
+                if (CHammingCodes::GetErrorCode() != CHammingCodes::NONE_ERROR)
+                {
+        std::cout << "CDataStoreCheck::Fsm TEMPORARY_SERVICE_SECTION_LINKED_BLOCKS_CHECK 6"  << std::endl;
+                    // Сбросим ошибки декодирования алгоритмом Хемминга.
+                    CHammingCodes::SetErrorCode(CHammingCodes::NONE_ERROR);
+                    cout << "CHammingCodes::GetErrorCode 1 uiBlock" << (int)i << endl;
+
+                    // Требуется повторная запись данных в хранилище.
+                    WriteBlock(auiTempArray,
+                               GetBlockLength(i),
+                               i);
+
+                    // Установим время ожидания окончания записи.
+                    GetTimerPointer() -> Set(WRITE_END_WAITING_TIMEOUT);
+                    SetFsmState(CORRUPTED_BLOCK_RECOVERY_WRITE_END_WAITING);
+                    break;
+                }
+            }
+                break;
+
+            case 2:
+            {
+        std::cout << "CDataStoreCheck::Fsm TEMPORARY_SERVICE_SECTION_LINKED_BLOCKS_CHECK 2"  << std::endl;
                 // Установим индекс блока, с сохранённым Crc которого,
                 // будем сравнивать Crc блока сохранённое во временном буфере.
                 SetBlockIndex(i);
@@ -166,6 +197,7 @@ uint8_t CDataStoreCheck::Fsm(void)
                 // сохранённого во временном служебном буфере по текущему индексу?
                 if (CheckTemporaryBlock())
                 {
+        std::cout << "CDataStoreCheck::Fsm TEMPORARY_SERVICE_SECTION_LINKED_BLOCKS_CHECK 3"  << std::endl;
                     // Скопируем данные блока считанные при проверке во вспомогательный буфер.
                     memcpy(auiTempArray,
                            GetIntermediateBuff(),
@@ -200,6 +232,7 @@ uint8_t CDataStoreCheck::Fsm(void)
                 }
                 else
                 {
+        std::cout << "CDataStoreCheck::Fsm TEMPORARY_SERVICE_SECTION_LINKED_BLOCKS_CHECK 4"  << std::endl;
                     // Блок не связан с временным служебным буфером.
                     // Возможно произошла ошибка во время записи временного служебного блока.
                     // Продолжим проверку.
@@ -207,33 +240,101 @@ uint8_t CDataStoreCheck::Fsm(void)
                     break;
                 }
             }
-            else
-            {
-                // Блок восстановлен алгоритмом Хемминга после обнаружения ошибки?
-                if (CHammingCodes::GetErrorCode() != CHammingCodes::NONE_ERROR)
-                {
-                    // Сбросим ошибки декодирования алгоритмом Хемминга.
-                    CHammingCodes::SetErrorCode(CHammingCodes::NONE_ERROR);
-                    cout << "CHammingCodes::GetErrorCode 1 uiBlock" << (int)i << endl;
+                break;
 
-                    // Требуется повторная запись данных в хранилище.
-                    WriteBlock(auiTempArray,
-                               GetBlockLength(i),
-                               i);
-
-                    // Установим время ожидания окончания записи.
-                    GetTimerPointer() -> Set(WRITE_END_WAITING_TIMEOUT);
-                    SetFsmState(CORRUPTED_BLOCK_RECOVERY_WRITE_END_WAITING);
-                    break;
-                }
+            default:
+        std::cout << "CDataStoreCheck::Fsm TEMPORARY_SERVICE_SECTION_LINKED_BLOCKS_CHECK 6"  << std::endl;
+                break;
             }
 
+//            // Блок не связан с временным служебным буфером(или повреждён)?
+//            if (!(ReadBlock(auiTempArray, i)))
+//            {
+//        std::cout << "CDataStoreCheck::Fsm TEMPORARY_SERVICE_SECTION_LINKED_BLOCKS_CHECK 2"  << std::endl;
+//                // Установим индекс блока, с сохранённым Crc которого,
+//                // будем сравнивать Crc блока сохранённое во временном буфере.
+//                SetBlockIndex(i);
+//                // Crc блока из временного буфера совпадает с Crc блока
+//                // сохранённого во временном служебном буфере по текущему индексу?
+//                if (CheckTemporaryBlock())
+//                {
+//        std::cout << "CDataStoreCheck::Fsm TEMPORARY_SERVICE_SECTION_LINKED_BLOCKS_CHECK 3"  << std::endl;
+//                    // Скопируем данные блока считанные при проверке во вспомогательный буфер.
+//                    memcpy(auiTempArray,
+//                           GetIntermediateBuff(),
+//                           GetBlockLength(i));
+//                    // Данные блока успешно записаны во временные буферы,
+//                    // но при записи в хранилище произошёл сбой.
+//                    // Требуется повторная запись данных блока из временных буферов в хранилище.
+//                    WriteBlock(auiTempArray,
+//                               GetBlockLength(i),
+//                               i);
+//
+//
+////                    CDataContainerDataBase* pxCommandDataContainer =
+////                        static_cast<CDataContainerDataBase*>(GetCommandDataContainerPointer());
+//
+////    pxDataContainer ->
+////    SetDataIndex(uiBlock);
+////    pxDataContainer ->
+////    SetDataPointer(puiSource);
+////    pxDataContainer ->
+////    SetDataOffset(0);
+////    pxDataContainer ->
+////    SetDataLength(uiLength);
+//
+////    SetFsmCommandState(START_WRITE_TEMPORARY_BLOCK_DATA);
+//
+//
+//                    // Установим время ожидания окончания записи.
+//                    GetTimerPointer() -> Set(WRITE_END_WAITING_TIMEOUT);
+//                    SetFsmState(CORRUPTED_BLOCK_RECOVERY_WRITE_END_WAITING);
+//                    break;
+//                }
+//                else
+//                {
+//        std::cout << "CDataStoreCheck::Fsm TEMPORARY_SERVICE_SECTION_LINKED_BLOCKS_CHECK 4"  << std::endl;
+//                    // Блок не связан с временным служебным буфером.
+//                    // Возможно произошла ошибка во время записи временного служебного блока.
+//                    // Продолжим проверку.
+//                    SetFsmState(SERVICE_SECTION_DATA_CHECK);
+//                    break;
+//                }
+//            }
+//            else
+//            {
+//        std::cout << "CDataStoreCheck::Fsm TEMPORARY_SERVICE_SECTION_LINKED_BLOCKS_CHECK 5"  << std::endl;
+//                // Блок восстановлен алгоритмом Хемминга после обнаружения ошибки?
+//                if (CHammingCodes::GetErrorCode() != CHammingCodes::NONE_ERROR)
+//                {
+//        std::cout << "CDataStoreCheck::Fsm TEMPORARY_SERVICE_SECTION_LINKED_BLOCKS_CHECK 6"  << std::endl;
+//                    // Сбросим ошибки декодирования алгоритмом Хемминга.
+//                    CHammingCodes::SetErrorCode(CHammingCodes::NONE_ERROR);
+//                    cout << "CHammingCodes::GetErrorCode 1 uiBlock" << (int)i << endl;
+//
+//                    // Требуется повторная запись данных в хранилище.
+//                    WriteBlock(auiTempArray,
+//                               GetBlockLength(i),
+//                               i);
+//
+//                    // Установим время ожидания окончания записи.
+//                    GetTimerPointer() -> Set(WRITE_END_WAITING_TIMEOUT);
+//                    SetFsmState(CORRUPTED_BLOCK_RECOVERY_WRITE_END_WAITING);
+//                    break;
+//                }
+//            }
+
+//            // Авансом.
+//            SetFsmState(SERVICE_SECTION_DATA_WRITE_START);
+        }
+
+        std::cout << "CDataStoreCheck::Fsm TEMPORARY_SERVICE_SECTION_LINKED_BLOCKS_CHECK 7"  << std::endl;
             // Авансом.
             SetFsmState(SERVICE_SECTION_DATA_WRITE_START);
-        }
         break;
 
     case CORRUPTED_BLOCK_RECOVERY_WRITE_END_WAITING:
+        std::cout << "CDataStoreCheck::Fsm CORRUPTED_BLOCK_RECOVERY_WRITE_END_WAITING"  << std::endl;
         // Ожидаем окончания записи автоматом устройства хранения.
         // Устройство хранения закончило запись успешно?
         if (m_pxStorageDevice -> IsDoneOk())
@@ -256,6 +357,7 @@ uint8_t CDataStoreCheck::Fsm(void)
         break;
 
     case SERVICE_SECTION_DATA_WRITE_START:
+        std::cout << "CDataStoreCheck::Fsm SERVICE_SECTION_DATA_WRITE_START"  << std::endl;
         // Блоки привязаны к временному служебному блоку, следовательно целы.
         // Как минимум, последний сеанс записи во временные буферы прощёл успешо.
         // Не будем проверять целостность и совпадение служебного блока, обновим сразу.
@@ -268,6 +370,7 @@ uint8_t CDataStoreCheck::Fsm(void)
         break;
 
     case SERVICE_SECTION_DATA_WRITE_END_WAITING:
+        std::cout << "CDataStoreCheck::Fsm SERVICE_SECTION_DATA_WRITE_END_WAITING"  << std::endl;
         // Ожидаем окончания записи автоматом устройства хранения.
         // Устройство хранения закончило запись успешно?
         if (m_pxStorageDevice -> IsDoneOk())
@@ -299,6 +402,7 @@ uint8_t CDataStoreCheck::Fsm(void)
         break;
 
     case SERVICE_SECTION_DATA_CHECK:
+        std::cout << "CDataStoreCheck::Fsm SERVICE_SECTION_DATA_CHECK"  << std::endl;
         // Мы здесь если временный служебный блок не связан с данными хранимых блоков(или повреждён).
         // Произошёл сбой во время записи. Попытаемся вернуть предыдущее состояние хранилища.
         // Служебный блок не повреждён?
@@ -314,6 +418,7 @@ uint8_t CDataStoreCheck::Fsm(void)
         break;
 
     case SERVICE_SECTION_LINKED_BLOCKS_CHECK:
+        std::cout << "CDataStoreCheck::Fsm SERVICE_SECTION_LINKED_BLOCKS_CHECK"  << std::endl;
         // Проверим связанность блоков хранилища со служебным блоком, а следовательно их целостность.
         for (uint16_t i = 0;
                 i < GetStoredBlocksNumber();
@@ -382,6 +487,7 @@ uint8_t CDataStoreCheck::Fsm(void)
         break;
 
     case DATA_STORE_CHECK_REPEAT:
+        std::cout << "CDataStoreCheck::Fsm DATA_STORE_CHECK_REPEAT"  << std::endl;
         // Продолжим проверку и попытки восстановления.
         // Ещё есть возможность для восстановления?
         if (m_uiRecoveryAttemptCounter < RECOVERY_ATTEMPTS_NUMBER)

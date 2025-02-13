@@ -223,6 +223,9 @@ void CResources::Allocate(void)
     m_puiAnalogueInputsOff =
         &m_puiCoils[ANALOGUE_INPUTS_BAD_STATE_OFFSET];
 
+    // Обнулим общий объём выделенной памяти.
+    m_uiUsedAnalogueInputDescriptionWork = 0;
+
 }
 
 //-------------------------------------------------------------------------------

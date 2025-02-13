@@ -115,6 +115,7 @@ enum
 
 // (sizeof(struct TAnalogueInputDescriptionDataBase) * ANALOG_MODULE_INPUT_QUANTITY)// 28х6=168.
 #define ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_LENGTH 168
+#define ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_TEXT_DESCRIPTOR_OFFSET 120
 
 #define PERCENT_100 100 // сто процентов.
 #define MEASURE_ERROR_THRESHOLD 3 // порог ошибки измеренного значения.
@@ -152,6 +153,7 @@ class CSpiCommunicationDevice;
 class CInternalModule;
 class CDataContainerInterface;
 class CDataContainerDataBase;
+class CAnalogueSignals;
 
 //-------------------------------------------------------------------------------
 class CInternalModuleMuvr : public CInternalModule
@@ -205,6 +207,7 @@ private:
     uint8_t* m_puiAnalogueInputsOff;
     uint8_t* m_puiAnalogueInputsBadState;
     uint8_t m_uiBadAnswerCounter;
+    TAnalogueInputDescriptionWork* m_pxAnalogueInputDescriptionWork;
 };
 
 #endif // CINTERNALMODULEMUVR_H

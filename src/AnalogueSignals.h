@@ -8,6 +8,8 @@
 //  GitHub      : https://github.com/AlexandrVolvenkin
 //-------------------------------------------------------------------------------
 
+#include "Configuration.h"
+
 class Timer;
 class Platform;
 class CTask;
@@ -15,6 +17,7 @@ class CResources;
 class CDataStore;
 class CLink;
 class CLinkInterface;
+class CDeviceControl;
 class CDataContainerInterface;
 class CDataContainerDataBase;
 class CInternalModule;
@@ -231,6 +234,11 @@ public:
         DATA_BASE_BLOCK_READ_END_WAITING,
         DATA_BASE_BLOCK_START_WRITE,
         DATA_BASE_BLOCK_WRITE_END_WAITING,
+        DATA_BASE_BLOCK_CHECK_START,
+        DATA_BASE_BLOCK_CHECK_MODULE_BLOCK_READ,
+        DATA_BASE_BLOCK_CHECK_MODULE_BLOCK_READ_END_WAITING,
+        DATA_BASE_BLOCK_CHECK_STORAGE_BLOCK_READ,
+        DATA_BASE_BLOCK_CHECK_STORAGE_BLOCK_READ_END_WAITING,
     };
 
     CAnalogueSignals();

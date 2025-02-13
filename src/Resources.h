@@ -106,7 +106,11 @@ public:
     std::list<CTaskInterface*> m_lpxCurrentlyRunningTasksList;
     std::list<CTaskInterface*>::iterator m_xCurrentlyRunningTasksListIterator;
     std::list<std::shared_ptr<CDataContainerInterface>> m_lpxDataContainerList;
-    std::vector<TAnalogueInputDescriptionWork> m_vxAnalogueInputDescriptionWork;
+
+    TAnalogueInputDescriptionWork* m_pxAnalogueInputDescriptionWork;
+//    uint8_t* m_puiAnalogueInputDescriptionWork;
+    uint32_t m_uiUsedAnalogueInputDescriptionWork;
+
 
     // Создаем std::map, где ключ - строка, значение - указатель на объект
     std::map<std::string, std::shared_ptr<CTaskInterface>> m_mpxCommonTaskMap;

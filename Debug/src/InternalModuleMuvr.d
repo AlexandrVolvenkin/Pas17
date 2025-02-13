@@ -4,8 +4,8 @@ src/InternalModuleMuvr.o: ../src/InternalModuleMuvr.cpp ../src/Timer.h \
  ../src/DataContainer.h \
  D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\CommunicationDevice/CommunicationDevice.h \
  D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\CommunicationDevice/SpiCommunicationDevice.h \
- ../src/STEP5_floating_point.h ../src/InternalModule.h \
- ../src/InternalModuleMuvr.h
+ ../src/STEP5_floating_point.h ../src/AnalogueSignals.h \
+ ../src/InternalModule.h ../src/InternalModuleMuvr.h
 
 ../src/Timer.h:
 
@@ -30,6 +30,8 @@ D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\Commun
 D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\CommunicationDevice/SpiCommunicationDevice.h:
 
 ../src/STEP5_floating_point.h:
+
+../src/AnalogueSignals.h:
 
 ../src/InternalModule.h:
 

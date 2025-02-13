@@ -646,6 +646,7 @@ uint8_t CMainProductionCycle::Fsm(void)
     case DATABASE_CHECK_END_OK:
 //        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_END_OK"  << std::endl;
         CurrentlyRunningTasksExecution();
+        m_pxDataStoreFileSystem -> ReadServiceSection();
         SetFsmState(MAIN_CYCLE_MODULES_INIT);
         break;
 
@@ -658,8 +659,10 @@ uint8_t CMainProductionCycle::Fsm(void)
 //        std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_MODULES_INIT"  << std::endl;
         CurrentlyRunningTasksExecution();
 
+//        m_pxOperatingDataContainer -> m_uiFsmCommandState =
+//            CAnalogueSignals::DATA_BASE_BLOCK_START_READ;
         m_pxOperatingDataContainer -> m_uiFsmCommandState =
-            CAnalogueSignals::DATA_BASE_BLOCK_START_READ;
+            CAnalogueSignals::DATA_BASE_BLOCK_CHECK_START;
         m_pxAnalogueSignals ->
         SetTaskData(m_pxOperatingDataContainer);
 

@@ -894,7 +894,7 @@ uint16_t CDataStore::ReadBlock(uint8_t *puiDestination, uint8_t uiBlock)
     {
         std::cout << "CDataStore::ReadBlock 7"  << std::endl;
         // Нет данных.
-        return 0;
+        return 2;
     }
 }
 

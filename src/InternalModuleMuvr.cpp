@@ -15,6 +15,7 @@
 #include "CommunicationDevice.h"
 #include "SpiCommunicationDevice.h"
 #include "STEP5_floating_point.h"
+#include "AnalogueSignals.h"
 #include "InternalModule.h"
 #include "InternalModuleMuvr.h"
 
@@ -186,6 +187,18 @@ void CInternalModuleMuvr::Allocate(void)
     // Увеличим общий объём выделенной памяти.
     GetResources() ->
     m_uiUsedAnalogueInputsOff +=
+        MUVR_ANALOG_INPUT_QUANTITY;
+
+
+    // Получим указатель на место в массиве распакованной во внутренний формат базы данных
+    // аналоговых сигналов.
+    m_pxAnalogueInputDescriptionWork =
+        &(GetResources() ->
+          m_pxAnalogueInputDescriptionWork[GetResources() ->
+                                                          m_uiUsedAnalogueInputDescriptionWork]);
+    // Увеличим общий объём выделенной памяти.
+    GetResources() ->
+    m_uiUsedAnalogueInputDescriptionWork +=
         MUVR_ANALOG_INPUT_QUANTITY;
 
 
@@ -587,10 +600,12 @@ uint8_t CInternalModuleMuvr::DataBaseRead(void)
     // модуль отвечает?
     if (auiSpiRxBuffer[SPI_COMMAND_BYTE_OFFSET] == MUVR_GET_DATA_BASE_COMMAND) // if echo answer is ok.
     {
+        std::cout << "CInternalModuleMuvr::DataBaseRead 2"  << std::endl;
         // данные не повреждены?
         if (iCrcSummTwoByteCompare(&auiSpiRxBuffer[SPI_DATA_BYTE_OFFSET],
                                    ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_LENGTH) > 0)
         {
+            std::cout << "CInternalModuleMuvr::DataBaseRead 3"  << std::endl;
 // в модулях аналогового ввода и в памяти прибора, базы данных хранятся в разных форматах.
 //  в модулях аналогового ввода сначала идут данные программирования входов(6 входов, по 20 байт) 120 байт, потом
 // текстовые реквизиты входов(6 входов, по 8 байт) 48 байт. 6 входов(120 + 48 = 168) байт.
@@ -610,7 +625,8 @@ uint8_t CInternalModuleMuvr::DataBaseRead(void)
                 pucDestination += 28;
             }
             // получим указатель на данные текстового реквизита первого входа, принятые из модуля.
-            pucSource = &auiSpiRxBuffer[SPI_DATA_BYTE_OFFSET + (20 * 6)];
+            pucSource = &auiSpiRxBuffer[SPI_DATA_BYTE_OFFSET +
+                                                             ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_TEXT_DESCRIPTOR_OFFSET];
             pucDestination = &aucTempArray[20];
             for (uint8_t i = 0; i < MUVR_ANALOG_INPUT_QUANTITY; i++)
             {
@@ -622,24 +638,24 @@ uint8_t CInternalModuleMuvr::DataBaseRead(void)
                 pucDestination += 28;
             }
 
-//            pucSource = &aucTempArray[0];
-            pucSource = auiSpiRxBuffer;
+            pucSource = &aucTempArray[0];
             memcpy(m_pxOperatingDataContainer -> m_puiDataPointer,
                    pucSource,
                    ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_LENGTH);
+            m_pxOperatingDataContainer -> m_uiDataLength = MUVR_ANALOG_INPUT_QUANTITY;
 
-            cout << "CInternalModuleMuvr::DataBaseRead 2" << endl;
+            cout << "CInternalModuleMuvr::DataBaseRead 4" << endl;
         }
         else
         {
             // ошибка обмена данными.
-            cout << "CInternalModuleMuvr::DataBaseRead 3" << endl;
+            cout << "CInternalModuleMuvr::DataBaseRead 5" << endl;
         }
     }
     else
     {
         // модуль не отвечает.
-        cout << "iCInternalModuleMuvr::DataBaseRead 4" << endl;
+        cout << "iCInternalModuleMuvr::DataBaseRead 6" << endl;
     }
     return 0;
 }
