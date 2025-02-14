@@ -400,7 +400,8 @@ int CSpiCommunicationDevice::Exchange(uint8_t uiAddress,
                                       int iLength,
                                       int iSpeed)
 {
-    m_pxSpi0Semaphore -> Acquire();
+    while (m_pxSpi0Semaphore -> Acquire() == false);
+//    m_pxSpi0Semaphore -> Acquire();
 
     ModeSet();
     ChipSelectAddressSet(uiAddress);
