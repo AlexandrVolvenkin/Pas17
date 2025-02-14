@@ -66,7 +66,7 @@ bool CDeviceControl::SetTaskData(CDataContainerDataBase* pxDataContainer)
 //-------------------------------------------------------------------------------
 bool CDeviceControl::GetTaskData(CDataContainerDataBase* pxDataContainer)
 {
-    std::cout << "CDeviceControl::SetTaskData 1" << std::endl;
+    std::cout << "CDeviceControl::GetTaskData 1" << std::endl;
 
     m_pxOperatingDataContainer -> m_uiFsmCommandState = GetFsmState();
     *pxDataContainer = *m_pxOperatingDataContainer;

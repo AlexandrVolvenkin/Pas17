@@ -1,12 +1,13 @@
-#ifndef CMODBUSSMMASTER_H
-#define CMODBUSSMMASTER_H
+#ifndef CSERIALMTSLAVE_H
+#define CSERIALMTSLAVE_H
 //-------------------------------------------------------------------------------
-//  Source      : FileName.cpp
+//  Sourse      : FileName.cpp
 //  Created     : 01.06.2022
 //  Author      : Alexandr Volvenkin
 //  email       : aav-36@mail.ru
 //  GitHub      : https://github.com/AlexandrVolvenkin
 //-------------------------------------------------------------------------------
+
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,6 +18,7 @@
 #include <time.h>
 
 #include "Modbus.h"
+#include "SerialMtSlaveLinkLayer.h"
 
 class CTimer;
 class CPlatform;
@@ -25,29 +27,23 @@ class CResources;
 class CDeviceControl;
 class CLinkInterface;
 class CLink;
-class CModbusMasterLinkLayer;
-class CModbusMasterLinkLayerInterface;
-class CModbusSmMasterLinkLayer;
+class CSerialMtSlaveLinkLayer;
 
 //-------------------------------------------------------------------------------
-class CModbusSmMaster : public CTask
+class CSerialMtSlave : public CTask
 {
 public:
     enum
     {
         COMMUNICATION_START = NEXT_STEP,
         COMMUNICATION_RECEIVE_START,
+        COMMUNICATION_RECEIVE_CONTINUE,
         MESSAGE_RECEIVE_WAITING,
         REQUEST_PROCESSING,
         ANSWER_PROCESSING_WAITING,
         ANSWER_PROCESSING,
         BEFORE_ANSWERING_WAITING,
-        MESSAGE_SEND,
         AFTER_ANSWERING_WAITING,
-
-        REQUEST_START,
-        BEFORE_REQUEST_WAITING,
-        AFTER_REQUEST_WAITING,
     };
 
     enum
@@ -56,15 +52,15 @@ public:
         MAX_MODBUS_MESSAGE_LENGTH = 256,
     };
 
-    CModbusSmMaster();
-    CModbusSmMaster(CResources* pxResources);
-    virtual ~CModbusSmMaster();
+    CSerialMtSlave();
+    CSerialMtSlave(CResources* pxResources);
+    virtual ~CSerialMtSlave();
 
     uint8_t Init(void);
-//    size_t GetObjectLength(void);
+    size_t GetObjectLength(void);
 
-    void SetModbusMasterLinkLayerName(std::string sName);
-    void SetModbusMasterLinkLayer(CModbusSmMasterLinkLayer* pxModbusMasterLinkLayer);
+    void SetSerialMtSlaveLinkLayerName(std::string sName);
+    void SetSerialMtSlaveLinkLayer(CSerialMtSlaveLinkLayer* pxSerialMtSlaveLinkLayer);
 
     void SetDeviceControlName(std::string sName);
     void SetDeviceControl(CDeviceControl* pxDeviceControl);
@@ -74,28 +70,39 @@ public:
     static const char *ModbusStringError(int errnum);
 
 //-------------------------------------------------------------------------------
-    int8_t ReadDiscreteInputsRequest(uint8_t uiSlaveAddress,
-                                     uint16_t uiAddress,
-                                     uint16_t uiNumberB);
-//    int8_t ReadCoilsRequest(uint16_t uiAddress,
-//                            uint16_t uiBitNumber);
-//    uint16_t ReadCoilsReply(uint8_t *puiDestination);
-//    uint8_t CheckConfirmation(uint8_t *puiDestination, uint16_t uiLength);
-//    int8_t ReadDiscreteInputsRequest(uint8_t uiSlaveAddress,
-//                                     uint16_t uiAddress,
-//                                     uint16_t uiBitNumber);
-//    uint16_t ReadDiscreteInputsReceive(uint8_t *puiMessage, uint16_t uiLength);
-
-//-------------------------------------------------------------------------------
+    uint16_t ReadCoils(void);
     uint16_t ReadDiscreteInputs(void);
+    uint16_t ReadHoldingRegisters(void);
+    uint16_t ReadInputRegisters(void);
+    uint16_t WriteSingleCoil(void);
+    uint16_t WriteSingleRegister(void);
+    uint16_t WriteMultipleCoils(void);
+    uint16_t WriteMultipleRegisters(void);
     uint16_t ReadExceptionStatus(void);
     uint16_t ReportSlaveID(void);
+    uint16_t WriteAndReadRegisters(void);
+    uint16_t Programming(void);
+    uint16_t PollProgramming(void);
+    uint16_t DataBaseRead(void);
+    uint16_t DataBaseWrite(void);
     uint16_t RequestProcessing(void);
 
 //-------------------------------------------------------------------------------
+    uint16_t ReadCoilsAnswer(void);
     uint16_t ReadDiscreteInputsAnswer(void);
+    uint16_t ReadHoldingRegistersAnswer(void);
+    uint16_t ReadInputRegistersAnswer(void);
+    uint16_t WriteSingleCoilAnswer(void);
+    uint16_t WriteSingleRegisterAnswer(void);
+    uint16_t WriteMultipleCoilsAnswer(void);
+    uint16_t WriteMultipleRegistersAnswer(void);
     uint16_t ReadExceptionStatusAnswer(void);
     uint16_t ReportSlaveIDAnswer(void);
+    uint16_t WriteAndReadRegistersAnswer(void);
+    uint16_t ProgrammingAnswer(void);
+    uint16_t PollProgrammingAnswer(void);
+    uint16_t DataBaseReadAnswer(void);
+    uint16_t DataBaseWriteAnswer(void);
     uint16_t AnswerProcessing(void);
 
 //-------------------------------------------------------------------------------
@@ -103,14 +110,6 @@ public:
 
 //protected:
 //private:
-
-    uint16_t RequestBasis(uint8_t uiSlave,
-                          uint8_t uiFunctionCode,
-                          uint16_t uiAddress,
-                          uint16_t uiBitNumber,
-                          uint8_t *puiRequest);
-    uint16_t ResponseBasis(uint8_t, uint8_t, uint8_t * );
-    uint16_t ResponseException(uint8_t, uint8_t, uint8_t, uint8_t * );
 
     uint16_t ByteToBitPack(uint16_t,
                            uint16_t,
@@ -131,7 +130,6 @@ public:
 //private:
 //protected:
 
-
     uint8_t GetOwnAddress(void)
     {
         return m_uiOwnAddress;
@@ -149,6 +147,11 @@ public:
     {
         m_uiMessageLength = uiData;
     };
+
+    virtual uint16_t HEADER_LENGTH(void)
+    {
+        return 1;
+    };
     virtual uint16_t CRC_LENGTH(void)
     {
         return 2;
@@ -156,8 +159,8 @@ public:
 
 
 //-------------------------------------------------------------------------------
-    std::string m_sModbusMasterLinkLayerName;
-    CModbusMasterLinkLayerInterface* m_pxModbusMasterLinkLayer;
+    std::string m_sSerialMtSlaveLinkLayerName;
+    CSerialMtSlaveLinkLayerInterface* m_pxSerialMtSlaveLinkLayer;
 
     std::string m_sDeviceControlName;
     CDeviceControl* m_pxDeviceControl;
@@ -187,10 +190,12 @@ public:
     uint16_t m_uiHoldingRegistersNumber;
     uint16_t m_uiInputRegistersNumber;
 
+    friend class CModbusRtu;
+    friend class CModbusTcp;
+
     CDataContainerDataBase* m_pxOperatingDataContainer;
 };
 
 //-------------------------------------------------------------------------------
 
-
-#endif // CMODBUSSMMASTER_H
+#endif // CSERIALMTSLAVE_H

@@ -7,12 +7,22 @@
 //  GitHub      : https://github.com/AlexandrVolvenkin
 //-------------------------------------------------------------------------------
 #include <typeinfo>
+#include <stdint.h>
+#include <iostream>
+#include <fstream>
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/ipc.h>
+#include <sys/sem.h>
+#include <stdio.h>
+#include <errno.h>
 
 #include "Task.h"
 #include "Platform.h"
 #include "Resources.h"
 #include "CommunicationDevice.h"
 #include "SpiCommunicationDevice.h"
+#include "Semaphore.h"
 
 using namespace std;
 
@@ -27,6 +37,7 @@ CSpiCommunicationDevice::CSpiCommunicationDevice()
 //-------------------------------------------------------------------------------
 CSpiCommunicationDevice::~CSpiCommunicationDevice()
 {
+    delete m_pxSpi0Semaphore;
     ChipSelectPinDelete();
     Close();
 }
@@ -35,7 +46,9 @@ CSpiCommunicationDevice::~CSpiCommunicationDevice()
 void CSpiCommunicationDevice::Init(void)
 {
     Open();
-//    ChipSelectPinSet();
+    ChipSelectPinSet();
+
+    SetFsmState(READY);
 };
 
 //-------------------------------------------------------------------------------
@@ -116,6 +129,146 @@ int8_t CSpiCommunicationDevice::Open(void)
     printf("SPI Mode is: %d\n", iMode);
     printf("SPI Bits is: %d\n", iBits);
     printf("SPI Speed is: %d\n", (int)ulSpeed);
+
+
+
+//    std::cout << "CSpiCommunicationDevice::Open 1"  << std::endl;
+//    ofstream outdata;
+//    // Чтобы добавить и не стереть старые данные откроем файл на чтение и запись.
+//    outdata.open("Spi0Semaphore.sem", (ios::binary | ios::in | ios::out));
+//    // Файл не существует?
+//    if (!outdata)
+//    {
+//        std::cout << "CSpiCommunicationDevice::Open 2"  << std::endl;
+//        cerr << "CSpiCommunicationDevice::Open Error: file could not be opened" << endl;
+//        // чтобы создать файл откроем только на запись.
+//        outdata.open("Spi0Semaphore.sem", (ios::binary | ios::out));
+//        // Файл не создан?
+//        if (!outdata)
+//        {
+//            std::cout << "CSpiCommunicationDevice::Open 3"  << std::endl;
+//            cerr << "CSpiCommunicationDevice::Open Error: file could not be created" << endl;
+//            return 0;
+//        }
+//    }
+//
+//    std::cout << "CSpiCommunicationDevice::Open 5"  << std::endl;
+//    // закроем файл.
+//    outdata.close();
+
+
+////    key_t key = ftok("keyfile", 'A'); // Используем ключ файлового устройства
+//    key_t key = 12345;
+////    key_t key = ftok("Spi0Semaphore.sem", 1);
+//    if (key == -1)
+//    {
+//        perror("ftok");
+//        std::cout << "CSpiCommunicationDevice::Open 6"  << std::endl;
+//    }
+//    else
+//    {
+//        std::cout << "CSpiCommunicationDevice::Open 7"  << std::endl;
+//    }
+//
+////    int semid;
+//    // Создание семафора с заданным ключом и разрешениями
+//    m_iSpi0SemaphoreId = semget(key, 1, IPC_CREAT | IPC_EXCL | S_IRUSR | S_IWUSR);
+//    if (m_iSpi0SemaphoreId == -1)
+//    {
+//        std::cout << "CSpiCommunicationDevice::Open 8"  << std::endl;
+//        if (errno == EEXIST)
+//            printf("Semaphore already exists.\n");
+//        else
+//            perror("Error creating semaphore");
+//    }
+//    else
+//    {
+//        std::cout << "CSpiCommunicationDevice::Open 9"  << std::endl;
+//    }
+//
+//    semctl(m_iSpi0SemaphoreId, 0, SETVAL, 1); // Установка начального значения семафора в 1
+//    std::cout << "Semaphore created with ID: " << m_iSpi0SemaphoreId << "\n";
+//
+//    // Теперь m_iSpi0SemaphoreId содержит идентификатор созданного семафора
+//
+//    // Пример использования семафора
+//
+////    // Закрываем семафор (если это необходимо)
+////    semctl(m_iSpi0SemaphoreId, 0, IPC_RMID);
+//    int result = semctl(m_iSpi0SemaphoreId, 0, IPC_RMID); // Удаление семафора
+//    if (result == -1)
+//    {
+//        perror("semctl");
+//    }
+//    else
+//    {
+//        std::cout << "Semaphore destroyed with ID: " << m_iSpi0SemaphoreId << "\n";
+//    }
+
+    m_pxSpi0Semaphore = new CSemaphore(12345, 1);
+//    m_pxSpi0Semaphore -> Acquire();
+//    sleep(5); // Пример работы с ресурсом
+//    m_pxSpi0Semaphore -> Release();
+//    CSemaphore xSpi0Semaphore(12345, 1);
+//    xSpi0Semaphore.Acquire();
+//    sleep(5); // Пример работы с ресурсом
+//    xSpi0Semaphore.Release();
+
+    return 0;
+}
+
+//-------------------------------------------------------------------------------
+int8_t CSpiCommunicationDevice::ModeSet(void)
+{
+    int iBits = BITS_PER_WORD;
+    int  iMode = SPI_MODE;             //8-bits per word, SPI mode 3
+//    ULONG  ulMode32 = SPI_MODE32;
+    unsigned long ulSpeed;
+    unsigned int nuiBusyTimeCounter;
+
+    ulSpeed = SPEED_IN_HZ;               //Speed is 1 MHz
+
+    if (ioctl(m_iDeviceDescriptorServer, SPI_IOC_WR_MODE, &iMode) == -1)
+    {
+        perror("SPI: Can't set SPI mode.");
+        return -1;
+    }
+    if (ioctl(m_iDeviceDescriptorServer, SPI_IOC_RD_MODE, &iMode) == -1)
+    {
+        perror("SPI: Can't get SPI mode.");
+        return -1;
+    }
+//    if (ioctl(m_iDeviceDescriptorServer, SPI_IOC_WR_MODE32, &ulMode32) == -1)
+//    {
+//        perror("SPI: Can't set SPI mode32.");
+//        return -1;
+//    }
+//    if (ioctl(m_iDeviceDescriptorServer, SPI_IOC_RD_MODE32, &ulMode32) == -1)
+//    {
+//        perror("SPI: Can't get SPI mode32.");
+//        return -1;
+//    }
+    if (ioctl(m_iDeviceDescriptorServer, SPI_IOC_WR_BITS_PER_WORD, &iBits) == -1)
+    {
+        perror("SPI: Can't set bits per word.");
+        return -1;
+    }
+    if (ioctl(m_iDeviceDescriptorServer, SPI_IOC_RD_BITS_PER_WORD, &iBits) == -1)
+    {
+        perror("SPI: Can't get bits per word.");
+        return -1;
+    }
+    if (ioctl(m_iDeviceDescriptorServer, SPI_IOC_WR_MAX_SPEED_HZ, &ulSpeed) == -1)
+    {
+        perror("SPI: Can't set max speed HZ");
+        return -1;
+    }
+    if (ioctl(m_iDeviceDescriptorServer, SPI_IOC_RD_MAX_SPEED_HZ, &ulSpeed) == -1)
+    {
+        perror("SPI: Can't get max speed HZ.");
+        return -1;
+    }
+
     return 0;
 }
 
@@ -242,11 +395,14 @@ void CSpiCommunicationDevice::ChipSelectAddressSet(unsigned char ucAddress)
 //-------------------------------------------------------------------------------
 // производит обмен данными по SPI.
 int CSpiCommunicationDevice::Exchange(uint8_t uiAddress,
-                   unsigned char *pucTxBuff,
-                   unsigned char *pucRxBuff,
-                   int iLength,
-                   int iSpeed)
+                                      unsigned char *pucTxBuff,
+                                      unsigned char *pucRxBuff,
+                                      int iLength,
+                                      int iSpeed)
 {
+    m_pxSpi0Semaphore -> Acquire();
+
+    ModeSet();
     ChipSelectAddressSet(uiAddress);
 
 //    memset(aucSpiTxBuffer, 0, iLength);
@@ -273,11 +429,14 @@ int CSpiCommunicationDevice::Exchange(uint8_t uiAddress,
 
 //    CGpio::ClearPin(SPI_CHIP_ENABLE_PIN_PORT, SPI_CHIP_ENABLE_PIN);
 
+    m_pxSpi0Semaphore -> Release();
+
     if (iStatus < 0)
     {
         perror("SPI: SPI_IOC_MESSAGE Failed");
         return -1;
     }
+
     return iStatus;
 }
 

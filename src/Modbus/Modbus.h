@@ -110,6 +110,7 @@ class CPlatform;
 #define _FC_WRITE_DATA  0x41
 #define _FC_READ_DATA  0x42
 #define _FC_DATA_EXCHANGE  0x41
+#define _FC_SEND_MESSAGE  0x41
 
 #define _MODBUS_TCP_PI_NODE_LENGTH    1025
 #define _MODBUS_TCP_PI_SERVICE_LENGTH   32

@@ -25,11 +25,14 @@ class CDataStore;
 class CConfigurationCreate;
 class CServiceMarket;
 class CLinkInterface;
+class CAnalogueSignals;
+struct TAnalogueInputDescriptionWork;
 
 //-------------------------------------------------------------------------------
 class CResourcesInterface : public CTask
 {
 public:
+    virtual void Allocate(void) {};
     virtual void AddCommonListTask(CTaskInterface* pxTask) {};
     virtual CTaskInterface* GetCommonListTaskPointer(char* pcTaskName) {};
     virtual CTaskInterface* AddCommonTaskToMap(std::string sTaskName, std::shared_ptr<CTaskInterface>) {};
@@ -93,6 +96,8 @@ public:
     void SetInputRegistersNumber(uint16_t uiData);
     uint16_t GetInputRegistersNumber(void);
 
+    void Allocate(void);
+
 //protected:
 //
 //private:
@@ -102,26 +107,47 @@ public:
     std::list<CTaskInterface*>::iterator m_xCurrentlyRunningTasksListIterator;
     std::list<std::shared_ptr<CDataContainerInterface>> m_lpxDataContainerList;
 
+    TAnalogueInputDescriptionWork* m_pxAnalogueInputDescriptionWork;
+//    uint8_t* m_puiAnalogueInputDescriptionWork;
+    uint32_t m_uiUsedAnalogueInputDescriptionWork;
+
+
     // Создаем std::map, где ключ - строка, значение - указатель на объект
     std::map<std::string, std::shared_ptr<CTaskInterface>> m_mpxCommonTaskMap;
     std::string m_sTaskName;
 
-    uint8_t m_uiAddress;
-    uint8_t *m_puiRxBuffer;
-    uint8_t *m_puiTxBuffer;
-    uint8_t *m_puiErrorCode;
-
-    uint8_t *m_puiCoils;
-
-    uint8_t *m_puiDiscreteInputs;
-    uint8_t m_uiUsedDiscreteInputs;
-
-    uint16_t *m_puiHoldingRegisters;
-    uint16_t *m_puiInputRegisters;
+    uint8_t* m_puiCoils;
+    uint8_t* m_puiDiscreteInputs;
+    uint16_t* m_puiHoldingRegisters;
+    uint16_t* m_puiInputRegisters;
     uint16_t m_uiCoilsNumber;
     uint16_t m_uiDiscreteInputsNumber;
     uint16_t m_uiHoldingRegistersNumber;
     uint16_t m_uiInputRegistersNumber;
+
+
+    uint8_t m_uiAddress;
+    uint8_t* m_puiRxBuffer;
+    uint8_t* m_puiTxBuffer;
+    uint8_t* m_puiErrorCode;
+
+    uint8_t* m_puiDiscreteInputsState;
+    uint32_t m_uiUsedDiscreteInputsState;
+    uint8_t* m_puiDiscreteInputsBadState;
+    uint8_t m_uiUsedDiscreteInputsBadState;
+    uint8_t* m_puiDiscreteOutputState;
+    uint8_t m_uiUsedDiscreteOutputState;
+    uint8_t* m_puiDiscreteOutputControl;
+    uint8_t m_uiUsedDiscreteOutputControl;
+
+    float* m_pfAnalogueInputsValue;
+    uint32_t m_uiUsedAnalogueInputsValue;
+    uint8_t* m_puiAnalogueInputsState;
+    uint32_t m_uiUsedAnalogueInputsState;
+    uint8_t* m_puiAnalogueInputsOff;
+    uint32_t m_uiUsedAnalogueInputsOff;
+    uint8_t* m_puiAnalogueInputsBadState;
+    uint32_t m_uiUsedAnalogueInputsBadState;
 
     CDeviceControl* m_pxDeviceControl;
     CDataStore* m_pxDataStore;

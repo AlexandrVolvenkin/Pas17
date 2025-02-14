@@ -31,7 +31,7 @@ enum
 };
 
 #define MAX_MUVR_MODULES_QUANTITY 8
-#define MUVR_ANALOG_INPUT_QUANTITY 6
+#define MUVR_ANALOG_INPUT_QUANTITY 4
 // количество дискретных сигналов порождаемое одним аналоговым входом.
 #define MUVR_DI_VALUE_ONE_CHANNEL_LENGTH 4
 // количество дискретных сигналов одного модуля.
@@ -81,6 +81,8 @@ enum
 // код ошибки - ошибка обмена данными. при запросе о результате программированния функцией Modbus 14 от программатора.
 #define MUVR_GET_REPER_POINTS_ADC_DATA_COMMUNICATION_ERROR 0x02
 #define MUVR_REPER_POINTS_ADC_CHANNEL_QUANTITY 7
+// согласно протокола обмена описанного в файле: структ и прот ПАС-17.txt
+// 3. Обмен данными между МЦП и МУВР в цикле.
 #define MUVR_GET_MEASURE_DATA_COMMAND_ANSWER_LENGTH 24
 // $84 - запрос на прием БД  (от МВА к МЦП)
 #define MUVR_GET_DATA_BASE_COMMAND 0x84
@@ -100,17 +102,46 @@ enum
 #define MUVR_MEASURE_DATA_OFFSET (MUVR_COMMAND_BYTE_OFFSET + 1)
 #define MUVR_DATA_OFFSET (MUVR_COMMAND_BYTE_OFFSET + 1)
 // количество байт данных состояния аналоговых входов.
-#define MUVR_ANALOG_INPUT_STATE_BYTE_QUANTITY 6
+#define MUVR_ANALOG_INPUT_STATE_BYTE_QUANTITY MUVR_ANALOG_INPUT_QUANTITY
 // количество байт данных одного измеренного значения аналогового сигнала(формат float STEP5).
 #define MUVR_ONE_ANALOG_INPUT_DATA_BYTE_QUANTITY 3
 // смещение на данные состояния каналов аналоговых входов.
-#define MUVR_STATE_DATA_OFFSET (MUVR_MEASURE_DATA_OFFSET + (MUVR_ANALOG_INPUT_QUANTITY * MUVR_ONE_ANALOG_INPUT_DATA_BYTE_QUANTITY))
+// согласно протокола обмена описанного в файле: структ и прот ПАС-17.txt
+// 3. Обмен данными между МЦП и МУВР в цикле.
+#define MUVR_STATE_DATA_OFFSET (MUVR_MEASURE_DATA_OFFSET + (MUVR_ANALOG_INPUT_QUANTITY * MUVR_ONE_ANALOG_INPUT_DATA_BYTE_QUANTITY) + 6)
 // смещение на данные требования калибровки. передаются в модуль двумя байтами,
 // на месте приёма от модуля двух байт контрольной суммы.
 #define MUVR_CALIBRATION_DATA_OFFSET (MUVR_STATE_DATA_OFFSET + MUVR_ANALOG_INPUT_STATE_BYTE_QUANTITY)
 
 // (sizeof(struct TAnalogueInputDescriptionDataBase) * ANALOG_MODULE_INPUT_QUANTITY)// 28х6=168.
 #define ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_LENGTH 168
+#define ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_TEXT_DESCRIPTOR_OFFSET 120
+
+#define PERCENT_100 100 // сто процентов.
+#define MEASURE_ERROR_THRESHOLD 3 // порог ошибки измеренного значения.
+
+#define ANALOGUE_INPUT_SET_POINT_VIOLATION_L 0x03 // 3 – нарушение уставки L.
+#define ANALOGUE_INPUT_SET_POINT_VIOLATION_LL_L 0x04 // 4 – нарушение уставок LL+L.
+#define ANALOGUE_INPUT_SET_POINT_VIOLATION_H 0x05 // 5 – нарушение уставки H.
+#define ANALOGUE_INPUT_SET_POINT_VIOLATION_HH_H 0x06 // 6 – нарушение уставок Н+НН.
+#define ANALOGUE_INPUT_SET_POINT_VIOLATION_MASK 0x07
+#define ANALOGUE_INPUT_CHANNEL_CALIBRATION 0x20 // канал находится в режиме калибровки.
+#define ANALOGUE_INPUT_LINE_BREAK 0x40 // обрыв линии канала.
+#define ANALOGUE_INPUT_CALCULATION_OVERFLOW 0x80 // переполнение при расчетах.
+// смещения на флаги нарушения уставок в массиве DI_value для одного аналогового входа.
+#define ANALOGUE_INPUT_SET_POINT_VIOLATION_LL_L_OFFSET 0 // смещение уставок LL+L.
+#define ANALOGUE_INPUT_SET_POINT_VIOLATION_L_OFFSET 1 // смещение уставки L.
+#define ANALOGUE_INPUT_SET_POINT_VIOLATION_H_OFFSET 2 // смещение уставки H.
+#define ANALOGUE_INPUT_SET_POINT_VIOLATION_HH_H_OFFSET 3 // смещение уставок Н+НН.
+
+// коды состояния аналогового измерения для передачи и интерпретации в МИНД.
+#define HMI_ANALOGUE_INPUT_LINE_BREAK 1 // обрыв линии канала.
+#define HMI_ANALOGUE_INPUT_CALCULATION_OVERFLOW 2 // переполнение при расчетах.
+#define HMI_ANALOGUE_INPUT_CHANNEL_CALIBRATION 3 // канал находится в режиме калибровки.
+#define HMI_ANALOGUE_INPUT_SET_POINT_VIOLATION_L 4 // 3 – нарушение уставки L.
+#define HMI_ANALOGUE_INPUT_SET_POINT_VIOLATION_LL_L 5 // 4 – нарушение уставок LL+L.
+#define HMI_ANALOGUE_INPUT_SET_POINT_VIOLATION_H 6 // 5 – нарушение уставки H.
+#define HMI_ANALOGUE_INPUT_SET_POINT_VIOLATION_HH_H 7 // 6 – нарушение уставок Н+НН.
 
 class CTimer;
 class CPlatform;
@@ -120,6 +151,9 @@ class CCommunicationDevice;
 class CCommunicationDeviceInterface;
 class CSpiCommunicationDevice;
 class CInternalModule;
+class CDataContainerInterface;
+class CDataContainerDataBase;
+class CAnalogueSignals;
 
 //-------------------------------------------------------------------------------
 class CInternalModuleMuvr : public CInternalModule
@@ -129,8 +163,10 @@ public:
     {
         MUVR_IDDLE = NEXT_STEP,
         MUVR_CHANGE_PROTOCOL,
+        MUVR_GET_MODULE_TYPE,
         MUVR_WRITE_DATA_BASE,
         MUVR_WRITE_DATA_BASE_CHECK,
+        MUVR_DATA_BASE_READ,
         MUVR_DATA_EXCHANGE,
     };
 
@@ -138,26 +174,42 @@ public:
     CInternalModuleMuvr(uint8_t muiAddress);
     virtual ~CInternalModuleMuvr();
 
-//    void SetResources(CResources* pxResources);
-//    CResources* GetResources(void);
-
-    uint8_t GetType(void);
-
-    uint8_t GetWorkingStatus(void);
-
-    void SetAddress(uint8_t uiAddress);
-    uint8_t GetAddress(void);
-
-    bool IsReadyToStartWork(void);
-    bool IsAbleToReplace(uint8_t uiType);
+    void SetCommunicationDeviceName(std::string sName);
     void SetCommunicationDevice(CCommunicationDeviceInterface* pxCommunicationDevice);
-    uint8_t GetModuleType(uint8_t uiAddress);
-    uint8_t DataBaseRead(uint8_t uiAddress);
+    uint8_t Init(void);
+    bool SetTaskData(CDataContainerDataBase* pxDataContainer);
+    bool GetTaskData(CDataContainerDataBase* pxDataContainer);
+
+    uint8_t Fsm(void);
+
+//    uint8_t GetType(void);
+//    uint8_t GetWorkingStatus(void);
+//    void SetAddress(uint8_t uiAddress);
+//    uint8_t GetAddress(void);
+//    bool IsReadyToStartWork(void);
+//    bool IsAbleToReplace(uint8_t uiType);
+    void Allocate(void);
+//    uint8_t GetModuleType(uint8_t uiAddress);
+    uint8_t DataBaseRead(void);
+    uint8_t DataBaseBlockWrite(void);
+    uint8_t DataBaseBlockWriteCheck(void);
+    uint8_t DataExchange(void);
 
 private:
-    uint8_t m_uiAddress;
-    CCommunicationDeviceInterface* m_pxCommunicationDevice;
-//    CResources* m_pxResources;
+//    uint8_t m_uiAddress;
+//    CCommunicationDeviceInterface* m_pxCommunicationDevice;
+//    CDataContainerDataBase* m_pxOperatingDataContainer;
+    uint8_t* m_puiModuleBadStateBuffer;
+
+    uint8_t* m_puiDiscreteInputsState;
+    uint8_t* m_puiDiscreteInputsBadState;
+    uint8_t* m_puiDiscreteOutputState;
+    float* m_pfAnalogueInputsValue;
+    uint8_t* m_puiAnalogueInputsState;
+    uint8_t* m_puiAnalogueInputsOff;
+    uint8_t* m_puiAnalogueInputsBadState;
+    uint8_t m_uiBadAnswerCounter;
+    TAnalogueInputDescriptionWork* m_pxAnalogueInputDescriptionWork;
 };
 
 #endif // CINTERNALMODULEMUVR_H

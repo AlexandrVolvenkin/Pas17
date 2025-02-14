@@ -20,32 +20,6 @@
 #include "MessageBox.h"
 #include "DataStore.h"
 
-
-// (sizeof(struct TAnalogueInputDescriptionDataBase) * ANALOG_MODULE_INPUT_QUANTITY)// 28х6=168.
-#define ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_LENGTH 168
-// (sizeof(struct TMrXXOneChannelDataBase) * DISCRETE_OUTPUT_MODULE_RELAY_OUTPUT_QUANTITY)// 3х64=192.
-#define DISCRETE_OUTPUT_MODULE_DATA_BASE_BLOCK_LENGTH 192
-// (sizeof(struct TMbmFunction1234PackOne) * EXTERNAL_MODULE_FUNCTION_1234_QUANTITY) + 1// 13х16=208.
-#define MBM_FUNCTION_1234_BLOCK_DATA_BASE_BLOCK_LENGTH (208 + 1)
-// (sizeof(struct TMbmFunction15Sourse) * EXTERNAL_MODULE_FUNCTION_15_QUANTITY)// 72х3=216.
-#define MBM_FUNCTION_15_BLOCK_DATA_BASE_BLOCK_LENGTH 216
-// (sizeof(struct TDiscreteInputDescriptionWork) * DISCRETE_INPUT_SYGNALS_DATA_BASE_BLOCKS_IN_BLOCK_QUANTITY)// 11х18=198.
-#define DISCRETE_INPUT_SYGNALS_DATA_BASE_BLOCK_LENGTH 192
-// (sizeof(struct TAnalogueOutputRegulatorDescriptionDataBase) * ANALOG_OUTPUT_MODULE_REGULATORS_QUANTITY)// 28х6=168.
-#define CURRENT_OUTPUT_MODULE_REGULATOR_DATA_BASE_BLOCK_LENGTH 56
-#define CURRENT_OUTPUT_MODULE_PSP_DATA_BASE_BLOCK_LENGTH 56
-// DIMENSIONS_PARAMETERS_DATA_BLOCKS_IN_BLOCK_QUANTITY * 6// 6х16=96.
-#define DIMENSIONS_PARAMETERS_DATA_BASE_BLOCK_LENGTH 96
-// TEXT_TITLES_DATA_BASE_BLOCKS_IN_BLOCK_QUANTITY * TEXT_TITLES_DATA_LENGTH// (384 ТР, 24 блока).
-#define TEXT_TITLES_DATA_BASE_BLOCK_LENGTH 224
-// (sizeof(struct TFunctionBlockDescriptionWork) * FUNCTION_BLOCK_DATA_BASE_BLOCKS_IN_BLOCK_QUANTITY)// 19х10=190.
-#define FUNCTION_BLOCK_DATA_BASE_BLOCK_LENGTH 160// 19х10=190 (120 ФБЛ, 12 блоков)
-#define MATHEMATICAL_BLOCK_DATA_BASE_BLOCK_LENGTH 208// 82 – 84 (48 ФБМ, 3 блока 13*16=208 )
-#define DISCRETE_INPUT_MODULE_DATA_BASE_BLOCK_LENGTH 32// 2х16=32.
-#define NETWORK_ADDRESS_DATA_BASE_BLOCK_LENGTH 1
-#define RESERVED_DATA_BASE_BLOCK_LENGTH 1
-#define REFERENCE_POINTS_ADC_CODES_DATA_BASE_BLOCK_LENGTH 42
-
 // массив содержит размеры блоков базы данных.
 // массив базы данных состоит из 100 блоков по 256 байт.
 // когда программатор запрашивает нужный ему блок, (в функции - modbus_reply() - case _FC_DATA_BASE_READ:),
@@ -914,13 +888,13 @@ uint16_t CDataStore::ReadBlock(uint8_t *puiDestination, uint8_t uiBlock)
     {
         std::cout << "CDataStore::ReadBlock 6"  << std::endl;
         memcpy(puiDestination, m_puiIntermediateBuff, uiLength);
-        return 1;
+        return uiLength;
     }
     else
     {
         std::cout << "CDataStore::ReadBlock 7"  << std::endl;
         // Нет данных.
-        return 0;
+        return 2;
     }
 }
 

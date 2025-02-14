@@ -1,12 +1,12 @@
 #ifndef MODBUSSMSLAVE_H
 #define MODBUSSMSLAVE_H
-////-------------------------------------------------------------------------------
-////  Source      : FileName.cpp
-////  Created     : 01.06.2022
-////  Author      : Alexandr Volvenkin
-////  email       : aav-36@mail.ru
-////  GitHub      : https://github.com/AlexandrVolvenkin
-////-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
+//  Source      : FileName.cpp
+//  Created     : 01.06.2022
+//  Author      : Alexandr Volvenkin
+//  email       : aav-36@mail.ru
+//  GitHub      : https://github.com/AlexandrVolvenkin
+//-------------------------------------------------------------------------------
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -64,7 +64,7 @@ public:
     void SetDeviceControl(CDeviceControl* pxDeviceControl);
     CDeviceControl* GetDeviceContro(void);
 
-    void ModbusWorkingArraysInit(void);
+    void WorkingArraysInit(void);
 
     void WorkingArraysInit(uint8_t *puiCoils,
                            uint8_t *puiDiscreteInputs,

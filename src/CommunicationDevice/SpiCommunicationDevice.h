@@ -25,6 +25,7 @@
 
 class CTask;
 class CResources;
+class CSemaphore;
 class CCommunicationDevice;
 class CCommunicationDeviceInterface;
 //class CGpio;
@@ -61,6 +62,7 @@ public:
 
     void Init(void);
     int8_t Open(void);
+    int8_t ModeSet(void);
     int8_t Close(void);
     int Exchange(uint8_t uiAddress,
                  unsigned char *pucTxBuff,
@@ -77,6 +79,10 @@ private:
     /* Socket or file descriptor */
     int32_t m_iDeviceDescriptorServer;
     static const uint8_t aui8ModuleSlotNumberToSpiAddressMatching[SPI_MAX_BUS_ADDRESS];
+    const char *m_pccSemaphoreKeyFileName = "Spi0Semaphore.sem";
+    int m_iSpi0SemaphoreId;
+//    CSemaphore xSpi0Semaphore(12345, 1);
+    CSemaphore* m_pxSpi0Semaphore;
 
 };
 //-------------------------------------------------------------------------------

@@ -35,6 +35,8 @@ class CConfigurationCreate;
 class CDataStoreCheck;
 //class CDataStore;
 //class CDeviceControl;
+class CDataContainerInterface;
+class CDataContainerDataBase;
 
 //-------------------------------------------------------------------------------
 class CMainProductionCycle : public CTask//, public CDfa
@@ -55,14 +57,25 @@ public:
         DATABASE_CHECK_RECAVERY_END_WAITING,
         DATABASE_CHECK_END_OK,
         DATABASE_CHECK_END_ERROR,
-
+        MAIN_CYCLE_MODULES_INIT,
+        MAIN_CYCLE_MODULES_INIT_END_WAITING,
         MAIN_CYCLE_MODBUS_SLAVE,
+        MAIN_CYCLE_START_WAITING,
+        MAIN_CYCLE_MODULES_INTERACTION,
+        MAIN_CYCLE_DISCRETE_SIGNALS_PROCESSING,
+        MAIN_CYCLE_END,
+
         LED_BLINK_ON,
         LED_BLINK_OFF,
     };
 
     CMainProductionCycle();
     virtual ~CMainProductionCycle();
+
+    uint8_t Init(void);
+    bool SetTaskData(CDataContainerDataBase* pxDataContainer);
+    bool GetTaskData(CDataContainerDataBase* pxDataContainer);
+    void Allocate(void);
 
 //    std::list<CTaskInterface*>* GetCommonTasksListPointer(void)
 //    {
@@ -89,6 +102,7 @@ private:
 //    CDeviceControl m_xDeviceControl;
     CDataStore* m_pxDataStoreFileSystem;
     CDataStoreCheck* m_pxDataStoreCheck;
+    CAnalogueSignals* m_pxAnalogueSignals;
 
     CSpiCommunicationDevice* m_pxSpiCommunicationDevice;
     CInternalModuleInterface* m_pxInternalModule;
@@ -109,6 +123,8 @@ private:
 //    CModbusRtuSlaveTopLevelProduction* m_pxModusRtuSlaveTopLevelProduction;
     CModbusRtuSlaveLinkLayer* m_pxModbusRtuSlaveLinkLayerUpperLevel;
     CModbusSlave* m_pxModbusRtuSlaveUpperLevel;
+
+    CDataContainerDataBase* m_pxOperatingDataContainer;
 
     uint8_t *m_puiCoils;
     uint8_t *m_puiDiscreteInputs;

@@ -19,6 +19,7 @@
 					<Add directory="Pas17/src" />
 					<Add directory="Pas17/src/CommunicationDevice" />
 					<Add directory="Pas17/src/ModbusSM" />
+					<Add directory="Pas17/src/SerialMT" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
@@ -34,6 +35,7 @@
 					<Add directory="Pas17/src" />
 					<Add directory="Pas17/src/CommunicationDevice" />
 					<Add directory="Pas17/src/ModbusSM" />
+					<Add directory="Pas17/src/SerialMT" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -47,7 +49,10 @@
 			<Add directory="src/Modbus" />
 		</Compiler>
 		<Unit filename="../Текущие задачиPas17.txt" />
+		<Unit filename="../протокол МВА.txt" />
 		<Unit filename="../структ и протоколы/структ и прот ПАС-17.txt" />
+		<Unit filename="src/AnalogueSignals.cpp" />
+		<Unit filename="src/AnalogueSignals.h" />
 		<Unit filename="src/CommunicationDevice/CommunicationDevice.cpp" />
 		<Unit filename="src/CommunicationDevice/CommunicationDevice.h" />
 		<Unit filename="src/CommunicationDevice/SerialPortCommunicationDevice.cpp" />
@@ -115,6 +120,22 @@
 		<Unit filename="src/Platform.h" />
 		<Unit filename="src/Resources.cpp" />
 		<Unit filename="src/Resources.h" />
+		<Unit filename="src/STEP5_floating_point.cpp" />
+		<Unit filename="src/STEP5_floating_point.h" />
+		<Unit filename="src/Semaphore.cpp" />
+		<Unit filename="src/Semaphore.h" />
+		<Unit filename="src/SerialMT/SerialMtMaster.cpp" />
+		<Unit filename="src/SerialMT/SerialMtMaster.h" />
+		<Unit filename="src/SerialMT/SerialMtMasterLinkLayer.cpp" />
+		<Unit filename="src/SerialMT/SerialMtMasterLinkLayer.h" />
+		<Unit filename="src/SerialMT/SerialMtSlave.cpp" />
+		<Unit filename="src/SerialMT/SerialMtSlave.h" />
+		<Unit filename="src/SerialMT/SerialMtSlaveLinkLayer.cpp" />
+		<Unit filename="src/SerialMT/SerialMtSlaveLinkLayer.h" />
+		<Unit filename="src/SerialMT/SerialMtSpiMasterLinkLayer.cpp" />
+		<Unit filename="src/SerialMT/SerialMtSpiMasterLinkLayer.h" />
+		<Unit filename="src/SerialMT/SerialMtSpiSlaveLinkLayer.cpp" />
+		<Unit filename="src/SerialMT/SerialMtSpiSlaveLinkLayer.h" />
 		<Unit filename="src/ServiceMarket.cpp" />
 		<Unit filename="src/ServiceMarket.h" />
 		<Unit filename="src/StorageDevice.cpp" />

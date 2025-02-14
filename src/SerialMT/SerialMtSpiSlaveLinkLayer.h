@@ -1,5 +1,5 @@
-#ifndef CMODBUSSMSLAVELINKLAYER_H
-#define CMODBUSSMSLAVELINKLAYER_H
+#ifndef CSERIALMTSPISLAVELINKLAYER_H
+#define CSERIALMTSPISLAVELINKLAYER_H
 //-------------------------------------------------------------------------------
 //  Source      : FileName.cpp
 //  Created     : 01.06.2022
@@ -7,26 +7,29 @@
 //  email       : aav-36@mail.ru
 //  GitHub      : https://github.com/AlexandrVolvenkin
 //-------------------------------------------------------------------------------
+
 #include <stdint.h>
 #include <thread>
 
 #include "Modbus.h"
-#include "ModbusSlaveLinkLayer.h"
+#include "SerialMtSlaveLinkLayer.h"
 #include "Configuration.h"
 
 /* Modbus_Application_Protocol_V1_1b.pdf Chapter 4 Section 1 Page 5
  * RS232 / RS485 ADU = 253 bytes + slave (1 byte) + CRC (2 bytes) = 256 bytes
  */
-#define MODBUS_SM_MAX_ADU_LENGTH  256
+#define MODBUS_RTU_MAX_ADU_LENGTH  256
 
-#define _MODBUS_SM_HEADER_LENGTH      1
-#define _MODBUS_SM_PRESET_REQ_LENGTH  6
-#define _MODBUS_SM_PRESET_RSP_LENGTH  2
+#define _MODBUS_RTU_35_TIMEOUT        (((1000000UL / MODBUS_RTU_BAUD_RATE) * 8UL * 4UL) / 1000) + 1
 
-#define _MODBUS_SM_CHECKSUM_LENGTH    2
+#define _MODBUS_RTU_HEADER_LENGTH      1
+#define _MODBUS_RTU_PRESET_REQ_LENGTH  6
+#define _MODBUS_RTU_PRESET_RSP_LENGTH  2
 
-#define MODBUS_SM_RS232 0
-#define MODBUS_SM_RS485 1
+#define _MODBUS_RTU_CHECKSUM_LENGTH    2
+
+#define MODBUS_RTU_RS232 0
+#define MODBUS_RTU_RS485 1
 
 class CTimer;
 class CPlatform;
@@ -34,10 +37,12 @@ class CTask;
 class CResources;
 class CCommunicationDevice;
 class CCommunicationDeviceInterface;
-class CModbusSlaveLinkLayer;
+class CDataContainerInterface;
+class CDataContainerDataBase;
+class CSerialMtSlaveLinkLayer;
 
 //-------------------------------------------------------------------------------
-class CModbusSmSlaveLinkLayer : public CModbusSlaveLinkLayer
+class CSerialMtSpiSlaveLinkLayer : public CSerialMtSlaveLinkLayer
 {
 public:
     enum
@@ -53,17 +58,18 @@ public:
         COMMUNICATION_RECEIVE_ERROR,
     };
 
-    CModbusSmSlaveLinkLayer();
-    virtual ~CModbusSmSlaveLinkLayer();
+    CSerialMtSpiSlaveLinkLayer();
+    virtual ~CSerialMtSpiSlaveLinkLayer();
 
     uint8_t Init(void);
     size_t GetObjectLength(void);
-    static void Process(CModbusSmSlaveLinkLayer* pxModbusSlaveLinkLayer);
-//    void CommunicationDeviceInit(const char* pccDeviceName,
-//                                 uint32_t uiBaudRate,
-//                                 uint8_t uiDataBits,
-//                                 char cParity,
-//                                 uint8_t uiStopBit);
+
+    static void Process(CSerialMtSpiSlaveLinkLayer* pxSerialMtSlaveLinkLayer);
+    void CommunicationDeviceInit(const char* pccDeviceName,
+                                 uint32_t uiBaudRate,
+                                 uint8_t uiDataBits,
+                                 char cParity,
+                                 uint8_t uiStopBit);
     bool SetTaskData(CDataContainerDataBase* pxDataContainer);
     bool GetTaskData(CDataContainerDataBase* pxDataContainer);
     uint8_t Fsm(void);
@@ -126,6 +132,10 @@ private:
         m_uiGuardTimeout = uiData;
     };
 
+    uint16_t HEADER_LENGTH(void)
+    {
+        return 7;
+    };
     uint16_t CRC_LENGTH(void)
     {
         return 0;
@@ -141,13 +151,12 @@ private:
     const static uint16_t m_uiConfirmationTimeout = 500;
     const static uint16_t m_uiTransmitDelayTimeout = 5;
 
-    uint8_t m_auiRxBuffer[MODBUS_SM_MAX_ADU_LENGTH];
-    uint8_t m_auiTxBuffer[MODBUS_SM_MAX_ADU_LENGTH];
-//    uint16_t m_uiRxBytesNumber;
+    uint8_t m_auiRxBuffer[MODBUS_RTU_MAX_ADU_LENGTH];
+    uint8_t m_auiTxBuffer[MODBUS_RTU_MAX_ADU_LENGTH];
     uint16_t m_uiFrameLength;
     std::thread* m_pxThread;
     CDataContainerDataBase* m_pxOperatingDataContainer;
 };
 
 //-------------------------------------------------------------------------------
-#endif // CMODBUSSMSLAVELINKLAYER_H
+#endif // CSERIALMTSPISLAVELINKLAYER_H

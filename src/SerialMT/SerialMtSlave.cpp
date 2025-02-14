@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 //  Sourse      : FileName.cpp
 //  Created     : 01.06.2022
 //  Author      : Alexandr Volvenkin
@@ -16,17 +16,17 @@
 #include "DeviceControl.h"
 #include "Link.h"
 #include "DataContainer.h"
-#include "ModbusRtuSlaveLinkLayer.h"
-#include "ModbusSlaveLinkLayer.h"
-#include "ModbusSlave.h"
+#include "SerialMtSlaveLinkLayer.h"
+#include "SerialMtSpiSlaveLinkLayer.h"
+#include "SerialMtSlave.h"
 
 using namespace std;
 
 //-------------------------------------------------------------------------------
-CModbusSlave::CModbusSlave()
+CSerialMtSlave::CSerialMtSlave()
 {
-    std::cout << "CModbusSlave constructor"  << std::endl;
-    m_pxModbusSlaveLinkLayer = 0;
+    std::cout << "CSerialMtSlave constructor"  << std::endl;
+    m_pxSerialMtSlaveLinkLayer = 0;
     m_pxDeviceControl = 0;
     // получим имя класса.
     sprintf(GetTaskNamePointer(),
@@ -37,58 +37,58 @@ CModbusSlave::CModbusSlave()
 }
 
 //-------------------------------------------------------------------------------
-CModbusSlave::~CModbusSlave()
+CSerialMtSlave::~CSerialMtSlave()
 {
     delete[] m_puiIntermediateBuff;
 }
 
 //-------------------------------------------------------------------------------
-uint8_t CModbusSlave::Init(void)
+uint8_t CSerialMtSlave::Init(void)
 {
-    std::cout << "CModbusSlave Init"  << std::endl;
+    std::cout << "CSerialMtSlave Init"  << std::endl;
     m_pxOperatingDataContainer = static_cast<CDataContainerDataBase*>(GetResources() ->
                                  AddDataContainer(std::make_shared<CDataContainerDataBase>()));
 }
 
 //-------------------------------------------------------------------------------
-size_t CModbusSlave::GetObjectLength(void)
+size_t CSerialMtSlave::GetObjectLength(void)
 {
-    std::cout << "CModbusSlave GetObjectLength"  << std::endl;
+    std::cout << "CSerialMtSlave GetObjectLength"  << std::endl;
     return sizeof(*this);
 }
 
 //-------------------------------------------------------------------------------
-void CModbusSlave::SetModbusSlaveLinkLayerName(std::string sName)
+void CSerialMtSlave::SetSerialMtSlaveLinkLayerName(std::string sName)
 {
-    m_sModbusSlaveLinkLayerName = sName;
+    m_sSerialMtSlaveLinkLayerName = sName;
 }
 
 //-------------------------------------------------------------------------------
-void CModbusSlave::SetModbusSlaveLinkLayer(CModbusSlaveLinkLayer* pxModbusSlaveLinkLayer)
+void CSerialMtSlave::SetSerialMtSlaveLinkLayer(CSerialMtSlaveLinkLayer* pxSerialMtSlaveLinkLayer)
 {
-    m_pxModbusSlaveLinkLayer = pxModbusSlaveLinkLayer;
+    m_pxSerialMtSlaveLinkLayer = pxSerialMtSlaveLinkLayer;
 }
 
 //-------------------------------------------------------------------------------
-void CModbusSlave::SetDeviceControlName(std::string sName)
+void CSerialMtSlave::SetDeviceControlName(std::string sName)
 {
     m_sDeviceControlName = sName;
 }
 
 //-------------------------------------------------------------------------------
-void CModbusSlave::SetDeviceControl(CDeviceControl* pxDeviceControl)
+void CSerialMtSlave::SetDeviceControl(CDeviceControl* pxDeviceControl)
 {
     m_pxDeviceControl = pxDeviceControl;
 }
 
 //-------------------------------------------------------------------------------
-CDeviceControl* CModbusSlave::GetDeviceContro(void)
+CDeviceControl* CSerialMtSlave::GetDeviceContro(void)
 {
     return m_pxDeviceControl;
 }
 
 //-------------------------------------------------------------------------------
-const char *CModbusSlave::ModbusStringError(int errnum)
+const char *CSerialMtSlave::ModbusStringError(int errnum)
 {
     switch (errnum)
     {
@@ -126,9 +126,9 @@ const char *CModbusSlave::ModbusStringError(int errnum)
 }
 
 //-------------------------------------------------------------------------------
-void CModbusSlave::WorkingArraysInit(void)
+void CSerialMtSlave::WorkingArraysInit(void)
 {
-    std::cout << "CModbusSlave WorkingArraysInit 1"  << std::endl;
+    std::cout << "CSerialMtSlave WorkingArraysInit 1"  << std::endl;
     m_puiCoils = m_pxResources -> GetCoils();
     m_uiCoilsNumber = m_pxResources -> GetCoilsNumber();
     m_puiDiscreteInputs = m_pxResources -> GetDiscreteInputs();
@@ -140,7 +140,7 @@ void CModbusSlave::WorkingArraysInit(void)
 }
 
 //-------------------------------------------------------------------------------
-uint16_t CModbusSlave::ByteToBitPack(uint16_t uiAddress,
+uint16_t CSerialMtSlave::ByteToBitPack(uint16_t uiAddress,
                                      uint16_t uiNumberB,
                                      uint8_t *m_puiCoils,
                                      uint8_t *puiResponse,
@@ -176,14 +176,14 @@ uint16_t CModbusSlave::ByteToBitPack(uint16_t uiAddress,
 }
 
 //-------------------------------------------------------------------------------
-uint16_t CModbusSlave::ReadCoils(void)
+uint16_t CSerialMtSlave::ReadCoils(void)
 {
-    std::cout << "CModbusSlave::ReadCoils 1" << std::endl;
+    std::cout << "CSerialMtSlave::ReadCoils 1" << std::endl;
 
-    uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
-    uint8_t * puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
-    uint8_t * puiResponse = m_pxModbusSlaveLinkLayer -> GetTxBuffer();
-    uint16_t  uiLength = m_pxModbusSlaveLinkLayer -> GetFrameLength();
+    uint16_t uiPduOffset = m_pxSerialMtSlaveLinkLayer -> GetPduOffset();
+    uint8_t * puiRequest = m_pxSerialMtSlaveLinkLayer -> GetRxBuffer();
+    uint8_t * puiResponse = m_pxSerialMtSlaveLinkLayer -> GetTxBuffer();
+    uint16_t  uiLength = m_pxSerialMtSlaveLinkLayer -> GetFrameLength();
 
     int8_t uiSlave = puiRequest[uiPduOffset - 1];
     int8_t uiFunctionCode = puiRequest[uiPduOffset];
@@ -193,15 +193,15 @@ uint16_t CModbusSlave::ReadCoils(void)
     uint16_t uiNumberB = ((static_cast<uint16_t>(puiRequest[uiPduOffset + 3]) << 8) |
                           (static_cast<uint16_t>(puiRequest[uiPduOffset + 4])));
 
-    std::cout << "CModbusSlave::ReadCoils uiSlave "  << (int)uiSlave << std::endl;
-    std::cout << "CModbusSlave::ReadCoils uiFunctionCode "  << (int)uiFunctionCode << std::endl;
-    std::cout << "CModbusSlave::ReadCoils uiAddress "  << (int)uiAddress << std::endl;
-    std::cout << "CModbusSlave::ReadCoils uiNumberB "  << (int)uiNumberB << std::endl;
+    std::cout << "CSerialMtSlave::ReadCoils uiSlave "  << (int)uiSlave << std::endl;
+    std::cout << "CSerialMtSlave::ReadCoils uiFunctionCode "  << (int)uiFunctionCode << std::endl;
+    std::cout << "CSerialMtSlave::ReadCoils uiAddress "  << (int)uiAddress << std::endl;
+    std::cout << "CSerialMtSlave::ReadCoils uiNumberB "  << (int)uiNumberB << std::endl;
 
     if (uiNumberB < 1 || MODBUS_MAX_READ_BITS < uiNumberB)
     {
-        std::cout << "CModbusSlave::ReadCoils 2" << std::endl;
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        std::cout << "CSerialMtSlave::ReadCoils 2" << std::endl;
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_DATA_VALUE,
@@ -209,9 +209,9 @@ uint16_t CModbusSlave::ReadCoils(void)
     }
     else if ((uiAddress + uiNumberB) > m_uiCoilsNumber)
     {
-        std::cout << "CModbusSlave::ReadCoils 3" << std::endl;
-        std::cout << "CModbusSlave::ReadCoils m_uiCoilsNumber "  << (int)m_uiCoilsNumber << std::endl;
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        std::cout << "CSerialMtSlave::ReadCoils 3" << std::endl;
+        std::cout << "CSerialMtSlave::ReadCoils m_uiCoilsNumber "  << (int)m_uiCoilsNumber << std::endl;
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_DATA_ADDRESS,
@@ -219,18 +219,18 @@ uint16_t CModbusSlave::ReadCoils(void)
     }
     else
     {
-        std::cout << "CModbusSlave::ReadCoils 4" << std::endl;
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        std::cout << "CSerialMtSlave::ReadCoils 4" << std::endl;
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
 
         if (uiNumberB % 8)
         {
-            std::cout << "CModbusSlave::ReadCoils 5" << std::endl;
+            std::cout << "CSerialMtSlave::ReadCoils 5" << std::endl;
             puiResponse[uiLength++] = ((uiNumberB / 8) + 1);
         }
         else
         {
-            std::cout << "CModbusSlave::ReadCoils 6" << std::endl;
+            std::cout << "CSerialMtSlave::ReadCoils 6" << std::endl;
             puiResponse[uiLength++] = (uiNumberB / 8);
         }
         uiLength = ByteToBitPack(uiAddress,
@@ -239,19 +239,19 @@ uint16_t CModbusSlave::ReadCoils(void)
                                  puiResponse,
                                  uiLength);
     }
-    std::cout << "CModbusSlave::ReadCoils 7" << std::endl;
+    std::cout << "CSerialMtSlave::ReadCoils 7" << std::endl;
     return uiLength;
 }
 
 ////-------------------------------------------------------------------------------
-//uint16_t CModbusSlave::ReadCoils(void)
+//uint16_t CSerialMtSlave::ReadCoils(void)
 //{
-//    std::cout << "CModbusSlave::ReadCoils 1" << std::endl;
+//    std::cout << "CSerialMtSlave::ReadCoils 1" << std::endl;
 //
-//    uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
-//    uint8_t * puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
-//    uint8_t * puiResponse = m_pxModbusSlaveLinkLayer -> GetTxBuffer();
-//    uint16_t  uiLength = m_pxModbusSlaveLinkLayer -> GetFrameLength();
+//    uint16_t uiPduOffset = m_pxSerialMtSlaveLinkLayer -> GetPduOffset();
+//    uint8_t * puiRequest = m_pxSerialMtSlaveLinkLayer -> GetRxBuffer();
+//    uint8_t * puiResponse = m_pxSerialMtSlaveLinkLayer -> GetTxBuffer();
+//    uint16_t  uiLength = m_pxSerialMtSlaveLinkLayer -> GetFrameLength();
 //
 //    int8_t uiSlave = puiRequest[uiPduOffset - 1];
 //    int8_t uiFunctionCode = puiRequest[uiPduOffset];
@@ -261,15 +261,15 @@ uint16_t CModbusSlave::ReadCoils(void)
 //    uint16_t uiNumberB = ((static_cast<uint16_t>(puiRequest[uiPduOffset + 3]) << 8) |
 //                          (static_cast<uint16_t>(puiRequest[uiPduOffset + 4])));
 //
-//    std::cout << "CModbusSlave::ReadCoils uiSlave "  << (int)uiSlave << std::endl;
-//    std::cout << "CModbusSlave::ReadCoils uiFunctionCode "  << (int)uiFunctionCode << std::endl;
-//    std::cout << "CModbusSlave::ReadCoils uiAddress "  << (int)uiAddress << std::endl;
-//    std::cout << "CModbusSlave::ReadCoils uiNumberB "  << (int)uiNumberB << std::endl;
+//    std::cout << "CSerialMtSlave::ReadCoils uiSlave "  << (int)uiSlave << std::endl;
+//    std::cout << "CSerialMtSlave::ReadCoils uiFunctionCode "  << (int)uiFunctionCode << std::endl;
+//    std::cout << "CSerialMtSlave::ReadCoils uiAddress "  << (int)uiAddress << std::endl;
+//    std::cout << "CSerialMtSlave::ReadCoils uiNumberB "  << (int)uiNumberB << std::endl;
 //
 //    if (uiNumberB < 1 || MODBUS_MAX_READ_BITS < uiNumberB)
 //    {
-//        std::cout << "CModbusSlave::ReadCoils 2" << std::endl;
-//        uiLength = m_pxModbusSlaveLinkLayer ->
+//        std::cout << "CSerialMtSlave::ReadCoils 2" << std::endl;
+//        uiLength = m_pxSerialMtSlaveLinkLayer ->
 //                   ResponseException(uiSlave,
 //                                     uiFunctionCode,
 //                                     MODBUS_EXCEPTION_ILLEGAL_DATA_VALUE,
@@ -277,9 +277,9 @@ uint16_t CModbusSlave::ReadCoils(void)
 //    }
 //    else if ((uiAddress + uiNumberB) > m_uiCoilsNumber)
 //    {
-//        std::cout << "CModbusSlave::ReadCoils 3" << std::endl;
-//        std::cout << "CModbusSlave::ReadCoils m_uiCoilsNumber "  << (int)m_uiCoilsNumber << std::endl;
-//        uiLength = m_pxModbusSlaveLinkLayer ->
+//        std::cout << "CSerialMtSlave::ReadCoils 3" << std::endl;
+//        std::cout << "CSerialMtSlave::ReadCoils m_uiCoilsNumber "  << (int)m_uiCoilsNumber << std::endl;
+//        uiLength = m_pxSerialMtSlaveLinkLayer ->
 //                   ResponseException(uiSlave,
 //                                     uiFunctionCode,
 //                                     MODBUS_EXCEPTION_ILLEGAL_DATA_ADDRESS,
@@ -287,7 +287,7 @@ uint16_t CModbusSlave::ReadCoils(void)
 //    }
 //    else
 //    {
-//        std::cout << "CModbusSlave::ReadCoils 4" << std::endl;
+//        std::cout << "CSerialMtSlave::ReadCoils 4" << std::endl;
 //
 //        m_uiFunctionCode = uiFunctionCode;
 //
@@ -303,17 +303,17 @@ uint16_t CModbusSlave::ReadCoils(void)
 //
 //
 //
-//        uiLength = m_pxModbusSlaveLinkLayer ->
+//        uiLength = m_pxSerialMtSlaveLinkLayer ->
 //                   ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
 //
 ////        if (uiNumberB % 8)
 ////        {
-////            std::cout << "CModbusSlave::ReadCoils 5" << std::endl;
+////            std::cout << "CSerialMtSlave::ReadCoils 5" << std::endl;
 ////            puiResponse[uiLength++] = ((uiNumberB / 8) + 1);
 ////        }
 ////        else
 ////        {
-////            std::cout << "CModbusSlave::ReadCoils 6" << std::endl;
+////            std::cout << "CSerialMtSlave::ReadCoils 6" << std::endl;
 ////            puiResponse[uiLength++] = (uiNumberB / 8);
 ////        }
 ////        uiLength = ByteToBitPack(uiAddress,
@@ -322,19 +322,19 @@ uint16_t CModbusSlave::ReadCoils(void)
 ////                                 puiResponse,
 ////                                 uiLength);
 //    }
-//    std::cout << "CModbusSlave::ReadCoils 7" << std::endl;
+//    std::cout << "CSerialMtSlave::ReadCoils 7" << std::endl;
 //    return uiLength;
 //}
 
 //-------------------------------------------------------------------------------
-uint16_t CModbusSlave::ReadDiscreteInputs(void)
+uint16_t CSerialMtSlave::ReadDiscreteInputs(void)
 {
-    std::cout << "CModbusSlave::ReadDiscreteInputs 1" << std::endl;
+    std::cout << "CSerialMtSlave::ReadDiscreteInputs 1" << std::endl;
 
-    uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
-    uint8_t * puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
-    uint8_t * puiResponse = m_pxModbusSlaveLinkLayer -> GetTxBuffer();
-    uint16_t  uiLength = m_pxModbusSlaveLinkLayer -> GetFrameLength();
+    uint16_t uiPduOffset = m_pxSerialMtSlaveLinkLayer -> GetPduOffset();
+    uint8_t * puiRequest = m_pxSerialMtSlaveLinkLayer -> GetRxBuffer();
+    uint8_t * puiResponse = m_pxSerialMtSlaveLinkLayer -> GetTxBuffer();
+    uint16_t  uiLength = m_pxSerialMtSlaveLinkLayer -> GetFrameLength();
 
     int8_t uiSlave = puiRequest[uiPduOffset - 1];
     int8_t uiFunctionCode = puiRequest[uiPduOffset];
@@ -346,7 +346,7 @@ uint16_t CModbusSlave::ReadDiscreteInputs(void)
 
     if (uiNumberB < 1 || MODBUS_MAX_READ_BITS < uiNumberB)
     {
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_DATA_VALUE,
@@ -354,7 +354,7 @@ uint16_t CModbusSlave::ReadDiscreteInputs(void)
     }
     else if ((uiAddress + uiNumberB) > m_uiDiscreteInputsNumber)
     {
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_DATA_ADDRESS,
@@ -362,8 +362,8 @@ uint16_t CModbusSlave::ReadDiscreteInputs(void)
     }
     else
     {
-        std::cout << "CModbusSlave::ReadDiscreteInputs 4" << std::endl;
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        std::cout << "CSerialMtSlave::ReadDiscreteInputs 4" << std::endl;
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
 
         if (uiNumberB % 8)
@@ -384,14 +384,14 @@ uint16_t CModbusSlave::ReadDiscreteInputs(void)
 }
 
 //-------------------------------------------------------------------------------
-uint16_t CModbusSlave::ReadHoldingRegisters(void)
+uint16_t CSerialMtSlave::ReadHoldingRegisters(void)
 {
-    std::cout << "CModbusSlave::ReadHoldingRegisters 1" << std::endl;
+    std::cout << "CSerialMtSlave::ReadHoldingRegisters 1" << std::endl;
 
-    uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
-    uint8_t * puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
-    uint8_t * puiResponse = m_pxModbusSlaveLinkLayer -> GetTxBuffer();
-    uint16_t  uiLength = m_pxModbusSlaveLinkLayer -> GetFrameLength();
+    uint16_t uiPduOffset = m_pxSerialMtSlaveLinkLayer -> GetPduOffset();
+    uint8_t * puiRequest = m_pxSerialMtSlaveLinkLayer -> GetRxBuffer();
+    uint8_t * puiResponse = m_pxSerialMtSlaveLinkLayer -> GetTxBuffer();
+    uint16_t  uiLength = m_pxSerialMtSlaveLinkLayer -> GetFrameLength();
 
     int8_t uiSlave = puiRequest[uiPduOffset - 1];
     int8_t uiFunctionCode = puiRequest[uiPduOffset];
@@ -401,12 +401,12 @@ uint16_t CModbusSlave::ReadHoldingRegisters(void)
     uint16_t uiNumberB = ((static_cast<uint16_t>(puiRequest[uiPduOffset + 3]) << 8) |
                           (static_cast<uint16_t>(puiRequest[uiPduOffset + 4])));
 
-    std::cout << "CModbusSlave::ReadHoldingRegisters uiAddress "  << (int)uiAddress << std::endl;
-    std::cout << "CModbusSlave::ReadHoldingRegisters uiNumberB "  << (int)uiNumberB << std::endl;
+    std::cout << "CSerialMtSlave::ReadHoldingRegisters uiAddress "  << (int)uiAddress << std::endl;
+    std::cout << "CSerialMtSlave::ReadHoldingRegisters uiNumberB "  << (int)uiNumberB << std::endl;
 
     if (uiNumberB < 1 || MODBUS_MAX_READ_REGISTERS < uiNumberB)
     {
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_DATA_VALUE,
@@ -414,7 +414,7 @@ uint16_t CModbusSlave::ReadHoldingRegisters(void)
     }
     else if ((uiAddress + uiNumberB) > m_uiHoldingRegistersNumber)
     {
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_DATA_ADDRESS,
@@ -422,7 +422,7 @@ uint16_t CModbusSlave::ReadHoldingRegisters(void)
     }
     else
     {
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
         puiResponse[uiLength++] = (uiNumberB << 1);
         for (uint16_t i = 0; i < uiNumberB; i++)
@@ -436,19 +436,19 @@ uint16_t CModbusSlave::ReadHoldingRegisters(void)
         }
     }
 
-    std::cout << "CModbusSlave::ReadHoldingRegisters uiLength "  << (int)uiLength << std::endl;
+    std::cout << "CSerialMtSlave::ReadHoldingRegisters uiLength "  << (int)uiLength << std::endl;
     return uiLength;
 }
 
 //-------------------------------------------------------------------------------
-uint16_t CModbusSlave::ReadInputRegisters(void)
+uint16_t CSerialMtSlave::ReadInputRegisters(void)
 {
-    std::cout << "CModbusSlave::ReadInputRegisters 1" << std::endl;
+    std::cout << "CSerialMtSlave::ReadInputRegisters 1" << std::endl;
 
-    uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
-    uint8_t * puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
-    uint8_t * puiResponse = m_pxModbusSlaveLinkLayer -> GetTxBuffer();
-    uint16_t  uiLength = m_pxModbusSlaveLinkLayer -> GetFrameLength();
+    uint16_t uiPduOffset = m_pxSerialMtSlaveLinkLayer -> GetPduOffset();
+    uint8_t * puiRequest = m_pxSerialMtSlaveLinkLayer -> GetRxBuffer();
+    uint8_t * puiResponse = m_pxSerialMtSlaveLinkLayer -> GetTxBuffer();
+    uint16_t  uiLength = m_pxSerialMtSlaveLinkLayer -> GetFrameLength();
 
     int8_t uiSlave = puiRequest[uiPduOffset - 1];
     int8_t uiFunctionCode = puiRequest[uiPduOffset];
@@ -460,7 +460,7 @@ uint16_t CModbusSlave::ReadInputRegisters(void)
 
     if (uiNumberB < 1 || MODBUS_MAX_READ_REGISTERS < uiNumberB)
     {
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_DATA_VALUE,
@@ -468,7 +468,7 @@ uint16_t CModbusSlave::ReadInputRegisters(void)
     }
     else if ((uiAddress + uiNumberB) > m_uiInputRegistersNumber)
     {
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_DATA_ADDRESS,
@@ -476,7 +476,7 @@ uint16_t CModbusSlave::ReadInputRegisters(void)
     }
     else
     {
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
         puiResponse[uiLength++] = (uiNumberB << 1);
         for (uint16_t i = 0; i < uiNumberB; i++)
@@ -490,14 +490,14 @@ uint16_t CModbusSlave::ReadInputRegisters(void)
 }
 
 //-------------------------------------------------------------------------------
-uint16_t CModbusSlave::WriteSingleCoil(void)
+uint16_t CSerialMtSlave::WriteSingleCoil(void)
 {
-    std::cout << "CModbusSlave::WriteSingleCoil 1" << std::endl;
+    std::cout << "CSerialMtSlave::WriteSingleCoil 1" << std::endl;
 
-    uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
-    uint8_t * puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
-    uint8_t * puiResponse = m_pxModbusSlaveLinkLayer -> GetTxBuffer();
-    uint16_t  uiLength = m_pxModbusSlaveLinkLayer -> GetFrameLength();
+    uint16_t uiPduOffset = m_pxSerialMtSlaveLinkLayer -> GetPduOffset();
+    uint8_t * puiRequest = m_pxSerialMtSlaveLinkLayer -> GetRxBuffer();
+    uint8_t * puiResponse = m_pxSerialMtSlaveLinkLayer -> GetTxBuffer();
+    uint16_t  uiLength = m_pxSerialMtSlaveLinkLayer -> GetFrameLength();
 
     int8_t uiSlave = puiRequest[uiPduOffset - 1];
     int8_t uiFunctionCode = puiRequest[uiPduOffset];
@@ -506,7 +506,7 @@ uint16_t CModbusSlave::WriteSingleCoil(void)
 
     if (uiAddress >= m_uiCoilsNumber)
     {
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_DATA_ADDRESS,
@@ -531,7 +531,7 @@ uint16_t CModbusSlave::WriteSingleCoil(void)
         }
         else
         {
-            uiLength = m_pxModbusSlaveLinkLayer ->
+            uiLength = m_pxSerialMtSlaveLinkLayer ->
                        ResponseException(uiSlave,
                                          uiFunctionCode,
                                          MODBUS_EXCEPTION_ILLEGAL_DATA_VALUE,
@@ -543,14 +543,14 @@ uint16_t CModbusSlave::WriteSingleCoil(void)
 }
 
 //-------------------------------------------------------------------------------
-uint16_t CModbusSlave::WriteSingleRegister(void)
+uint16_t CSerialMtSlave::WriteSingleRegister(void)
 {
-    std::cout << "CModbusSlave::WriteSingleRegister 1" << std::endl;
+    std::cout << "CSerialMtSlave::WriteSingleRegister 1" << std::endl;
 
-    uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
-    uint8_t * puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
-    uint8_t * puiResponse = m_pxModbusSlaveLinkLayer -> GetTxBuffer();
-    uint16_t  uiLength = m_pxModbusSlaveLinkLayer -> GetFrameLength();
+    uint16_t uiPduOffset = m_pxSerialMtSlaveLinkLayer -> GetPduOffset();
+    uint8_t * puiRequest = m_pxSerialMtSlaveLinkLayer -> GetRxBuffer();
+    uint8_t * puiResponse = m_pxSerialMtSlaveLinkLayer -> GetTxBuffer();
+    uint16_t  uiLength = m_pxSerialMtSlaveLinkLayer -> GetFrameLength();
 
     int8_t uiSlave = puiRequest[uiPduOffset - 1];
     int8_t uiFunctionCode = puiRequest[uiPduOffset];
@@ -559,7 +559,7 @@ uint16_t CModbusSlave::WriteSingleRegister(void)
 
     if (uiAddress >= m_uiHoldingRegistersNumber)
     {
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_DATA_ADDRESS,
@@ -576,14 +576,14 @@ uint16_t CModbusSlave::WriteSingleRegister(void)
 }
 
 //-------------------------------------------------------------------------------
-uint16_t CModbusSlave::WriteMultipleCoils(void)
+uint16_t CSerialMtSlave::WriteMultipleCoils(void)
 {
-    std::cout << "CModbusSlave::WriteMultipleCoils 1" << std::endl;
+    std::cout << "CSerialMtSlave::WriteMultipleCoils 1" << std::endl;
 
-    uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
-    uint8_t * puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
-    uint8_t * puiResponse = m_pxModbusSlaveLinkLayer -> GetTxBuffer();
-    uint16_t  uiLength = m_pxModbusSlaveLinkLayer -> GetFrameLength();
+    uint16_t uiPduOffset = m_pxSerialMtSlaveLinkLayer -> GetPduOffset();
+    uint8_t * puiRequest = m_pxSerialMtSlaveLinkLayer -> GetRxBuffer();
+    uint8_t * puiResponse = m_pxSerialMtSlaveLinkLayer -> GetTxBuffer();
+    uint16_t  uiLength = m_pxSerialMtSlaveLinkLayer -> GetFrameLength();
 
     int8_t uiSlave = puiRequest[uiPduOffset - 1];
     int8_t uiFunctionCode = puiRequest[uiPduOffset];
@@ -595,7 +595,7 @@ uint16_t CModbusSlave::WriteMultipleCoils(void)
 
     if (uiNumberB < 1 || MODBUS_MAX_WRITE_BITS < uiNumberB)
     {
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_DATA_VALUE,
@@ -603,7 +603,7 @@ uint16_t CModbusSlave::WriteMultipleCoils(void)
     }
     else if ((uiAddress + uiNumberB) > m_uiCoilsNumber)
     {
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_DATA_ADDRESS,
@@ -613,7 +613,7 @@ uint16_t CModbusSlave::WriteMultipleCoils(void)
     {
         SetBytesFromBits(m_puiCoils, uiAddress, uiNumberB, &puiRequest[uiPduOffset + 6]);
 
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
         /* 4 to copy the bit address (2) and the quantity of bits */
         memcpy(puiResponse + uiLength, puiRequest + uiLength, 4);
@@ -623,14 +623,14 @@ uint16_t CModbusSlave::WriteMultipleCoils(void)
 }
 
 //-------------------------------------------------------------------------------
-uint16_t CModbusSlave::WriteMultipleRegisters(void)
+uint16_t CSerialMtSlave::WriteMultipleRegisters(void)
 {
-    std::cout << "CModbusSlave::WriteMultipleRegisters 1" << std::endl;
+    std::cout << "CSerialMtSlave::WriteMultipleRegisters 1" << std::endl;
 
-    uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
-    uint8_t * puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
-    uint8_t * puiResponse = m_pxModbusSlaveLinkLayer -> GetTxBuffer();
-    uint16_t  uiLength = m_pxModbusSlaveLinkLayer -> GetFrameLength();
+    uint16_t uiPduOffset = m_pxSerialMtSlaveLinkLayer -> GetPduOffset();
+    uint8_t * puiRequest = m_pxSerialMtSlaveLinkLayer -> GetRxBuffer();
+    uint8_t * puiResponse = m_pxSerialMtSlaveLinkLayer -> GetTxBuffer();
+    uint16_t  uiLength = m_pxSerialMtSlaveLinkLayer -> GetFrameLength();
 
     int8_t uiSlave = puiRequest[uiPduOffset - 1];
     int8_t uiFunctionCode = puiRequest[uiPduOffset];
@@ -642,7 +642,7 @@ uint16_t CModbusSlave::WriteMultipleRegisters(void)
 
     if (uiNumberB < 1 || MODBUS_MAX_WRITE_REGISTERS < uiNumberB)
     {
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_DATA_VALUE,
@@ -650,7 +650,7 @@ uint16_t CModbusSlave::WriteMultipleRegisters(void)
     }
     else if ((uiAddress + uiNumberB) > m_uiHoldingRegistersNumber)
     {
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_DATA_ADDRESS,
@@ -665,7 +665,7 @@ uint16_t CModbusSlave::WriteMultipleRegisters(void)
             uiPduOffset += 2;
         }
 
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
         /* 4 to copy the bit address (2) and the quantity of bits */
         memcpy(puiResponse + uiLength, puiRequest + uiLength, 4);
@@ -676,36 +676,36 @@ uint16_t CModbusSlave::WriteMultipleRegisters(void)
 }
 
 //-------------------------------------------------------------------------------
-uint16_t CModbusSlave::ReadExceptionStatus(void)
+uint16_t CSerialMtSlave::ReadExceptionStatus(void)
 {
 //    errno = ENOPROTOOPT;
     return -1;
 }
 
 //-------------------------------------------------------------------------------
-uint16_t CModbusSlave::WriteAndReadRegisters(void)
+uint16_t CSerialMtSlave::WriteAndReadRegisters(void)
 {
 
     return 0;
 }
 
 //-------------------------------------------------------------------------------
-uint16_t CModbusSlave::ReportSlaveID(void)
+uint16_t CSerialMtSlave::ReportSlaveID(void)
 {
-    std::cout << "CModbusSlave::ReportSlaveID 1" << std::endl;
+    std::cout << "CSerialMtSlave::ReportSlaveID 1" << std::endl;
 
-    uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
-    uint8_t * puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
-    uint8_t * puiResponse = m_pxModbusSlaveLinkLayer -> GetTxBuffer();
-    uint16_t  uiLength = m_pxModbusSlaveLinkLayer -> GetFrameLength();
+    uint16_t uiPduOffset = m_pxSerialMtSlaveLinkLayer -> GetPduOffset();
+    uint8_t * puiRequest = m_pxSerialMtSlaveLinkLayer -> GetRxBuffer();
+    uint8_t * puiResponse = m_pxSerialMtSlaveLinkLayer -> GetTxBuffer();
+    uint16_t  uiLength = m_pxSerialMtSlaveLinkLayer -> GetFrameLength();
 
     int8_t uiSlave = puiRequest[uiPduOffset - 1];
     int8_t uiFunctionCode = puiRequest[uiPduOffset];
 
-    std::cout << "CModbusSlave::ReportSlaveID uiSlave "  << (int)uiSlave << std::endl;
-    std::cout << "CModbusSlave::ReportSlaveID uiFunctionCode "  << (int)uiFunctionCode << std::endl;
+    std::cout << "CSerialMtSlave::ReportSlaveID uiSlave "  << (int)uiSlave << std::endl;
+    std::cout << "CSerialMtSlave::ReportSlaveID uiFunctionCode "  << (int)uiFunctionCode << std::endl;
 
-    std::cout << "CModbusSlave::ReportSlaveID 4" << std::endl;
+    std::cout << "CSerialMtSlave::ReportSlaveID 4" << std::endl;
 
     CDeviceControl* pxDeviceControl =
         (CDeviceControl*)GetResources() ->
@@ -724,23 +724,23 @@ uint16_t CModbusSlave::ReportSlaveID(void)
     // количество байт в прикладном сообщении массиве конфигурации, не включая остальные.
     puiResponse[uiPduOffset + 1] = uiLength;//sizeof(auiTempData);// + 1;
     uiLength ++;
-    uiLength += m_pxModbusSlaveLinkLayer ->
+    uiLength += m_pxSerialMtSlaveLinkLayer ->
                 ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
 
-    std::cout << "CModbusSlave::ReportSlaveID 7" << std::endl;
+    std::cout << "CSerialMtSlave::ReportSlaveID 7" << std::endl;
     return uiLength;
 }
 
 //-------------------------------------------------------------------------------
-uint16_t CModbusSlave::PollProgramming(void)
+uint16_t CSerialMtSlave::PollProgramming(void)
 
 {
-    std::cout << "CModbusSlave::PollProgramming 1" << std::endl;
+    std::cout << "CSerialMtSlave::PollProgramming 1" << std::endl;
 
-    uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
-    uint8_t * puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
-    uint8_t * puiResponse = m_pxModbusSlaveLinkLayer -> GetTxBuffer();
-    uint16_t  uiLength = m_pxModbusSlaveLinkLayer -> GetFrameLength();
+    uint16_t uiPduOffset = m_pxSerialMtSlaveLinkLayer -> GetPduOffset();
+    uint8_t * puiRequest = m_pxSerialMtSlaveLinkLayer -> GetRxBuffer();
+    uint8_t * puiResponse = m_pxSerialMtSlaveLinkLayer -> GetTxBuffer();
+    uint16_t  uiLength = m_pxSerialMtSlaveLinkLayer -> GetFrameLength();
 
     int8_t uiSlave = puiRequest[uiPduOffset - 1];
     int8_t uiFunctionCode = puiRequest[uiPduOffset];
@@ -753,16 +753,16 @@ uint16_t CModbusSlave::PollProgramming(void)
     // Устройство хранения закончило запись успешно?
     if (pxDeviceControl -> IsDoneOk())
     {
-        std::cout << "CModbusSlave::PollProgramming 2" << std::endl;
+        std::cout << "CSerialMtSlave::PollProgramming 2" << std::endl;
 
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
 
 //        // номер блока базы данных
 //        puiResponse[uiPduOffset + 2] = puiRequest[uiPduOffset + 1];
 //        uiLength ++;
 
-//        uiLength = m_pxModbusSlaveLinkLayer ->
+//        uiLength = m_pxSerialMtSlaveLinkLayer ->
 //        ResponseException(uiSlave,
 //                                     uiFunctionCode,
 //                                     MODBUS_EXCEPTION_ACKNOWLEDGE,
@@ -771,7 +771,7 @@ uint16_t CModbusSlave::PollProgramming(void)
 //    // Устройство хранения закончило запись не успешно?
 //    else if (pxDataStoreFileSystem -> IsDoneError())
 //    {
-//        uiLength = m_pxModbusSlaveLinkLayer ->
+//        uiLength = m_pxSerialMtSlaveLinkLayer ->
     //    ResponseException(uiSlave,
 //                                     uiFunctionCode,
 //                                     MODBUS_EXCEPTION_SLAVE_OR_SERVER_BUSY,
@@ -779,9 +779,9 @@ uint16_t CModbusSlave::PollProgramming(void)
 //    }
     else
     {
-        std::cout << "CModbusSlave::PollProgramming 3" << std::endl;;
+        std::cout << "CSerialMtSlave::PollProgramming 3" << std::endl;;
 
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_SLAVE_OR_SERVER_BUSY,
@@ -792,28 +792,28 @@ uint16_t CModbusSlave::PollProgramming(void)
 }
 
 //-------------------------------------------------------------------------------
-uint16_t CModbusSlave::DataBaseRead(void)
+uint16_t CSerialMtSlave::DataBaseRead(void)
 {
-    std::cout << "CModbusSlave::DataBaseRead 1" << std::endl;
+    std::cout << "CSerialMtSlave::DataBaseRead 1" << std::endl;
 
-    uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
-    uint8_t * puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
-    uint8_t * puiResponse = m_pxModbusSlaveLinkLayer -> GetTxBuffer();
-    uint16_t  uiLength = m_pxModbusSlaveLinkLayer -> GetFrameLength();
+    uint16_t uiPduOffset = m_pxSerialMtSlaveLinkLayer -> GetPduOffset();
+    uint8_t * puiRequest = m_pxSerialMtSlaveLinkLayer -> GetRxBuffer();
+    uint8_t * puiResponse = m_pxSerialMtSlaveLinkLayer -> GetTxBuffer();
+    uint16_t  uiLength = m_pxSerialMtSlaveLinkLayer -> GetFrameLength();
 
     int8_t uiSlave = puiRequest[uiPduOffset - 1];
     int8_t uiFunctionCode = puiRequest[uiPduOffset];
     uint8_t uiBlockIndex = puiRequest[uiPduOffset + 1];
 
-    std::cout << "CModbusSlave::DataBaseRead uiSlave "  << (int)uiSlave << std::endl;
-    std::cout << "CModbusSlave::DataBaseRead uiFunctionCode "  << (int)uiFunctionCode << std::endl;
-    std::cout << "CModbusSlave::DataBaseRead uiBlockIndex "  << (int)uiBlockIndex << std::endl;
+    std::cout << "CSerialMtSlave::DataBaseRead uiSlave "  << (int)uiSlave << std::endl;
+    std::cout << "CSerialMtSlave::DataBaseRead uiFunctionCode "  << (int)uiFunctionCode << std::endl;
+    std::cout << "CSerialMtSlave::DataBaseRead uiBlockIndex "  << (int)uiBlockIndex << std::endl;
 
     if ((uiBlockIndex < 0) ||
             (uiBlockIndex > (CDataStore::MAX_BLOCKS_NUMBER - 1)))
     {
-        std::cout << "CModbusSlave::DataBaseRead 2" << std::endl;
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        std::cout << "CSerialMtSlave::DataBaseRead 2" << std::endl;
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_DATA_VALUE,
@@ -821,7 +821,7 @@ uint16_t CModbusSlave::DataBaseRead(void)
     }
     else
     {
-        std::cout << "CModbusSlave::DataBaseRead 4" << std::endl;
+        std::cout << "CSerialMtSlave::DataBaseRead 4" << std::endl;
 
         m_uiFunctionCode = uiFunctionCode;
 
@@ -861,12 +861,12 @@ uint16_t CModbusSlave::DataBaseRead(void)
         m_uiLength = uiLength;
     }
 
-    std::cout << "CModbusSlave::DataBaseRead 7" << std::endl;
+    std::cout << "CSerialMtSlave::DataBaseRead 7" << std::endl;
     return uiLength;
 }
 
 //-------------------------------------------------------------------------------
-uint16_t CModbusSlave::DataBaseWrite(void)
+uint16_t CSerialMtSlave::DataBaseWrite(void)
 {
 //    rsp_length == 2. адрес slave + функция
     // (rsp_length - 2) - адрес slave.
@@ -874,27 +874,27 @@ uint16_t CModbusSlave::DataBaseWrite(void)
 //        // (rsp_length) - номер блока.
     // (rsp_length + 1) - начало данных.
 
-    std::cout << "CModbusSlave::DataBaseWrite 1" << std::endl;
+    std::cout << "CSerialMtSlave::DataBaseWrite 1" << std::endl;
 
-    uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
-    uint8_t * puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
-    uint8_t * puiResponse = m_pxModbusSlaveLinkLayer -> GetTxBuffer();
-    uint16_t  uiLength = m_pxModbusSlaveLinkLayer -> GetFrameLength();
+    uint16_t uiPduOffset = m_pxSerialMtSlaveLinkLayer -> GetPduOffset();
+    uint8_t * puiRequest = m_pxSerialMtSlaveLinkLayer -> GetRxBuffer();
+    uint8_t * puiResponse = m_pxSerialMtSlaveLinkLayer -> GetTxBuffer();
+    uint16_t  uiLength = m_pxSerialMtSlaveLinkLayer -> GetFrameLength();
 
     int8_t uiSlave = puiRequest[uiPduOffset - 1];
     int8_t uiFunctionCode = puiRequest[uiPduOffset];
     uint8_t uiBlockIndex = puiRequest[uiPduOffset + 1];
 
-    std::cout << "CModbusSlave::DataBaseWrite uiSlave "  << (int)uiSlave << std::endl;
-    std::cout << "CModbusSlave::DataBaseWrite uiFunctionCode "  << (int)uiFunctionCode << std::endl;
-    std::cout << "CModbusSlave::DataBaseWrite uiBlockIndex "  << (int)uiBlockIndex << std::endl;
+    std::cout << "CSerialMtSlave::DataBaseWrite uiSlave "  << (int)uiSlave << std::endl;
+    std::cout << "CSerialMtSlave::DataBaseWrite uiFunctionCode "  << (int)uiFunctionCode << std::endl;
+    std::cout << "CSerialMtSlave::DataBaseWrite uiBlockIndex "  << (int)uiBlockIndex << std::endl;
 
 
     if ((uiBlockIndex < 0) ||
             (uiBlockIndex > (CDataStore::MAX_BLOCKS_NUMBER - 1)))
     {
-        std::cout << "CModbusSlave::DataBaseWrite 2" << std::endl;
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        std::cout << "CSerialMtSlave::DataBaseWrite 2" << std::endl;
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_DATA_ADDRESS,
@@ -903,7 +903,7 @@ uint16_t CModbusSlave::DataBaseWrite(void)
     else
     {
 
-        std::cout << "CModbusSlave::DataBaseWrite 4" << std::endl;
+        std::cout << "CSerialMtSlave::DataBaseWrite 4" << std::endl;
 
         memcpy(m_puiIntermediateBuff,
                &puiRequest[uiPduOffset + 2],
@@ -928,7 +928,7 @@ uint16_t CModbusSlave::DataBaseWrite(void)
 //                           GetTaskPerformerPointer())) ->
 //        SetCommandDataLink(m_pxDeviceControlLink);
 
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
 
         // номер блока базы данных
@@ -941,31 +941,31 @@ uint16_t CModbusSlave::DataBaseWrite(void)
         m_uiLength = 0;
     }
 
-    std::cout << "CModbusSlave::DataBaseWrite 7" << std::endl;
+    std::cout << "CSerialMtSlave::DataBaseWrite 7" << std::endl;
     return uiLength;
 }
 
 
 //-------------------------------------------------------------------------------
-uint16_t CModbusSlave::RequestProcessing(void)
+uint16_t CSerialMtSlave::RequestProcessing(void)
 {
-    std::cout << "CModbusSlave::RequestProcessing 1" << std::endl;
+    std::cout << "CSerialMtSlave::RequestProcessing 1" << std::endl;
 
-    uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
-    uint8_t * puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
-    uint8_t * puiResponse = m_pxModbusSlaveLinkLayer -> GetTxBuffer();
-    uint16_t  uiLength = m_pxModbusSlaveLinkLayer -> GetFrameLength();
+    uint16_t uiPduOffset = m_pxSerialMtSlaveLinkLayer -> GetPduOffset();
+    uint8_t * puiRequest = m_pxSerialMtSlaveLinkLayer -> GetRxBuffer();
+    uint8_t * puiResponse = m_pxSerialMtSlaveLinkLayer -> GetTxBuffer();
+    uint16_t  uiLength = m_pxSerialMtSlaveLinkLayer -> GetFrameLength();
 
     int8_t uiSlave = puiRequest[uiPduOffset - 1];
     int8_t uiFunctionCode = puiRequest[uiPduOffset];
 
-    std::cout << "CModbusSlave::RequestProcessing uiSlave "  << (int)uiSlave << std::endl;
-    std::cout << "CModbusSlave::RequestProcessing uiFunctionCode "  << (int)uiFunctionCode << std::endl;
+    std::cout << "CSerialMtSlave::RequestProcessing uiSlave "  << (int)uiSlave << std::endl;
+    std::cout << "CSerialMtSlave::RequestProcessing uiFunctionCode "  << (int)uiFunctionCode << std::endl;
 
     /* Filter on the Modbus unit identifier (slave) in RTU mode */
     if (uiSlave != m_uiOwnAddress && uiSlave != MODBUS_BROADCAST_ADDRESS)
     {
-        std::cout << "CModbusSlave::RequestProcessing 2" << std::endl;
+        std::cout << "CSerialMtSlave::RequestProcessing 2" << std::endl;
         return 0;
     }
 
@@ -974,9 +974,9 @@ uint16_t CModbusSlave::RequestProcessing(void)
 
     switch (uiFunctionCode)
     {
-        std::cout << "CModbusSlave::RequestProcessing 3" << std::endl;
+        std::cout << "CSerialMtSlave::RequestProcessing 3" << std::endl;
     case _FC_READ_COILS:
-        std::cout << "CModbusSlave::RequestProcessing _FC_READ_COILS"  << std::endl;
+        std::cout << "CSerialMtSlave::RequestProcessing _FC_READ_COILS"  << std::endl;
         uiLength = ReadCoils();
         break;
 
@@ -1039,8 +1039,8 @@ uint16_t CModbusSlave::RequestProcessing(void)
         break;
 
     default:
-        std::cout << "CModbusSlave::RequestProcessing 4" << std::endl;
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        std::cout << "CSerialMtSlave::RequestProcessing 4" << std::endl;
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_FUNCTION,
@@ -1048,9 +1048,9 @@ uint16_t CModbusSlave::RequestProcessing(void)
         break;
     }
 
-    std::cout << "CModbusSlave::RequestProcessing 5" << std::endl;
-    uiLength = m_pxModbusSlaveLinkLayer -> Tail(puiResponse, uiLength);
-    m_pxModbusSlaveLinkLayer -> SetFrameLength(uiLength);
+    std::cout << "CSerialMtSlave::RequestProcessing 5" << std::endl;
+    uiLength = m_pxSerialMtSlaveLinkLayer -> Tail(puiResponse, uiLength);
+    m_pxSerialMtSlaveLinkLayer -> SetFrameLength(uiLength);
     return uiLength;
 }
 
@@ -1065,14 +1065,14 @@ uint16_t CModbusSlave::RequestProcessing(void)
 //-------------------------------------------------------------------------------
 ////AnswerProcessing
 ////-------------------------------------------------------------------------------
-//uint16_t CModbusSlave::ReadCoilsAnswer(void)
+//uint16_t CSerialMtSlave::ReadCoilsAnswer(void)
 //{
-//    std::cout << "CModbusSlave::ReadCoilsAnswer 1" << std::endl;
+//    std::cout << "CSerialMtSlave::ReadCoilsAnswer 1" << std::endl;
 //
-//    uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
-//    uint8_t * puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
-//    uint8_t * puiResponse = m_pxModbusSlaveLinkLayer -> GetTxBuffer();
-//    uint16_t  uiLength = m_pxModbusSlaveLinkLayer -> GetFrameLength();
+//    uint16_t uiPduOffset = m_pxSerialMtSlaveLinkLayer -> GetPduOffset();
+//    uint8_t * puiRequest = m_pxSerialMtSlaveLinkLayer -> GetRxBuffer();
+//    uint8_t * puiResponse = m_pxSerialMtSlaveLinkLayer -> GetTxBuffer();
+//    uint16_t  uiLength = m_pxSerialMtSlaveLinkLayer -> GetFrameLength();
 //
 //    int8_t uiSlave = puiRequest[uiPduOffset - 1];
 //    int8_t uiFunctionCode = puiRequest[uiPduOffset];
@@ -1082,15 +1082,15 @@ uint16_t CModbusSlave::RequestProcessing(void)
 //    uint16_t uiNumberB = ((static_cast<uint16_t>(puiRequest[uiPduOffset + 3]) << 8) |
 //                          (static_cast<uint16_t>(puiRequest[uiPduOffset + 4])));
 //
-//    std::cout << "CModbusSlave::ReadCoilsAnswer uiSlave "  << (int)uiSlave << std::endl;
-//    std::cout << "CModbusSlave::ReadCoilsAnswer uiFunctionCode "  << (int)uiFunctionCode << std::endl;
-//    std::cout << "CModbusSlave::ReadCoilsAnswer uiAddress "  << (int)uiAddress << std::endl;
-//    std::cout << "CModbusSlave::ReadCoilsAnswer uiNumberB "  << (int)uiNumberB << std::endl;
+//    std::cout << "CSerialMtSlave::ReadCoilsAnswer uiSlave "  << (int)uiSlave << std::endl;
+//    std::cout << "CSerialMtSlave::ReadCoilsAnswer uiFunctionCode "  << (int)uiFunctionCode << std::endl;
+//    std::cout << "CSerialMtSlave::ReadCoilsAnswer uiAddress "  << (int)uiAddress << std::endl;
+//    std::cout << "CSerialMtSlave::ReadCoilsAnswer uiNumberB "  << (int)uiNumberB << std::endl;
 //
 //    if (uiNumberB < 1 || MODBUS_MAX_READ_BITS < uiNumberB)
 //    {
-//        std::cout << "CModbusSlave::ReadCoilsAnswer 2" << std::endl;
-//        uiLength = m_pxModbusSlaveLinkLayer ->
+//        std::cout << "CSerialMtSlave::ReadCoilsAnswer 2" << std::endl;
+//        uiLength = m_pxSerialMtSlaveLinkLayer ->
 //                   ResponseException(uiSlave,
 //                                     uiFunctionCode,
 //                                     MODBUS_EXCEPTION_ILLEGAL_DATA_VALUE,
@@ -1098,9 +1098,9 @@ uint16_t CModbusSlave::RequestProcessing(void)
 //    }
 //    else if ((uiAddress + uiNumberB) > m_uiCoilsNumber)
 //    {
-//        std::cout << "CModbusSlave::ReadCoilsAnswer 3" << std::endl;
-//        std::cout << "CModbusSlave::ReadCoilsAnswer m_uiCoilsNumber "  << (int)m_uiCoilsNumber << std::endl;
-//        uiLength = m_pxModbusSlaveLinkLayer ->
+//        std::cout << "CSerialMtSlave::ReadCoilsAnswer 3" << std::endl;
+//        std::cout << "CSerialMtSlave::ReadCoilsAnswer m_uiCoilsNumber "  << (int)m_uiCoilsNumber << std::endl;
+//        uiLength = m_pxSerialMtSlaveLinkLayer ->
 //                   ResponseException(uiSlave,
 //                                     uiFunctionCode,
 //                                     MODBUS_EXCEPTION_ILLEGAL_DATA_ADDRESS,
@@ -1108,18 +1108,18 @@ uint16_t CModbusSlave::RequestProcessing(void)
 //    }
 //    else
 //    {
-//        std::cout << "CModbusSlave::ReadCoilsAnswer 4" << std::endl;
-//        uiLength = m_pxModbusSlaveLinkLayer ->
+//        std::cout << "CSerialMtSlave::ReadCoilsAnswer 4" << std::endl;
+//        uiLength = m_pxSerialMtSlaveLinkLayer ->
 //                   ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
 //
 //        if (uiNumberB % 8)
 //        {
-//            std::cout << "CModbusSlave::ReadCoilsAnswer 5" << std::endl;
+//            std::cout << "CSerialMtSlave::ReadCoilsAnswer 5" << std::endl;
 //            puiResponse[uiLength++] = ((uiNumberB / 8) + 1);
 //        }
 //        else
 //        {
-//            std::cout << "CModbusSlave::ReadCoilsAnswer 6" << std::endl;
+//            std::cout << "CSerialMtSlave::ReadCoilsAnswer 6" << std::endl;
 //            puiResponse[uiLength++] = (uiNumberB / 8);
 //        }
 //        uiLength = ByteToBitPack(uiAddress,
@@ -1128,19 +1128,19 @@ uint16_t CModbusSlave::RequestProcessing(void)
 //                                 puiResponse,
 //                                 uiLength);
 //    }
-//    std::cout << "CModbusSlave::ReadCoilsAnswer 7" << std::endl;
+//    std::cout << "CSerialMtSlave::ReadCoilsAnswer 7" << std::endl;
 //    return uiLength;
 //
 //}
 //-------------------------------------------------------------------------------
-uint16_t CModbusSlave::ReadCoilsAnswer(void)
+uint16_t CSerialMtSlave::ReadCoilsAnswer(void)
 {
-    std::cout << "CModbusSlave::ReadCoilsAnswer 1" << std::endl;
+    std::cout << "CSerialMtSlave::ReadCoilsAnswer 1" << std::endl;
 
-    uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
-    uint8_t * puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
-    uint8_t * puiResponse = m_pxModbusSlaveLinkLayer -> GetTxBuffer();
-    uint16_t  uiLength = m_pxModbusSlaveLinkLayer -> GetFrameLength();
+    uint16_t uiPduOffset = m_pxSerialMtSlaveLinkLayer -> GetPduOffset();
+    uint8_t * puiRequest = m_pxSerialMtSlaveLinkLayer -> GetRxBuffer();
+    uint8_t * puiResponse = m_pxSerialMtSlaveLinkLayer -> GetTxBuffer();
+    uint16_t  uiLength = m_pxSerialMtSlaveLinkLayer -> GetFrameLength();
 
     int8_t uiSlave = puiRequest[uiPduOffset - 1];
     int8_t uiFunctionCode = puiRequest[uiPduOffset];
@@ -1150,15 +1150,15 @@ uint16_t CModbusSlave::ReadCoilsAnswer(void)
     uint16_t uiNumberB = ((static_cast<uint16_t>(puiRequest[uiPduOffset + 3]) << 8) |
                           (static_cast<uint16_t>(puiRequest[uiPduOffset + 4])));
 
-    std::cout << "CModbusSlave::ReadCoilsAnswer uiSlave "  << (int)uiSlave << std::endl;
-    std::cout << "CModbusSlave::ReadCoilsAnswer uiFunctionCode "  << (int)uiFunctionCode << std::endl;
-    std::cout << "CModbusSlave::ReadCoilsAnswer uiAddress "  << (int)uiAddress << std::endl;
-    std::cout << "CModbusSlave::ReadCoilsAnswer uiNumberB "  << (int)uiNumberB << std::endl;
+    std::cout << "CSerialMtSlave::ReadCoilsAnswer uiSlave "  << (int)uiSlave << std::endl;
+    std::cout << "CSerialMtSlave::ReadCoilsAnswer uiFunctionCode "  << (int)uiFunctionCode << std::endl;
+    std::cout << "CSerialMtSlave::ReadCoilsAnswer uiAddress "  << (int)uiAddress << std::endl;
+    std::cout << "CSerialMtSlave::ReadCoilsAnswer uiNumberB "  << (int)uiNumberB << std::endl;
 
     if (uiNumberB < 1 || MODBUS_MAX_READ_BITS < uiNumberB)
     {
-        std::cout << "CModbusSlave::ReadCoilsAnswer 2" << std::endl;
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        std::cout << "CSerialMtSlave::ReadCoilsAnswer 2" << std::endl;
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_DATA_VALUE,
@@ -1166,9 +1166,9 @@ uint16_t CModbusSlave::ReadCoilsAnswer(void)
     }
     else if ((uiAddress + uiNumberB) > m_uiCoilsNumber)
     {
-        std::cout << "CModbusSlave::ReadCoilsAnswer 3" << std::endl;
-        std::cout << "CModbusSlave::ReadCoilsAnswer m_uiCoilsNumber "  << (int)m_uiCoilsNumber << std::endl;
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        std::cout << "CSerialMtSlave::ReadCoilsAnswer 3" << std::endl;
+        std::cout << "CSerialMtSlave::ReadCoilsAnswer m_uiCoilsNumber "  << (int)m_uiCoilsNumber << std::endl;
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_DATA_ADDRESS,
@@ -1176,18 +1176,18 @@ uint16_t CModbusSlave::ReadCoilsAnswer(void)
     }
     else
     {
-        std::cout << "CModbusSlave::ReadCoilsAnswer 4" << std::endl;
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        std::cout << "CSerialMtSlave::ReadCoilsAnswer 4" << std::endl;
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
 
         if (uiNumberB % 8)
         {
-            std::cout << "CModbusSlave::ReadCoilsAnswer 5" << std::endl;
+            std::cout << "CSerialMtSlave::ReadCoilsAnswer 5" << std::endl;
             puiResponse[uiLength++] = ((uiNumberB / 8) + 1);
         }
         else
         {
-            std::cout << "CModbusSlave::ReadCoilsAnswer 6" << std::endl;
+            std::cout << "CSerialMtSlave::ReadCoilsAnswer 6" << std::endl;
             puiResponse[uiLength++] = (uiNumberB / 8);
         }
         uiLength = ByteToBitPack(uiAddress,
@@ -1196,20 +1196,20 @@ uint16_t CModbusSlave::ReadCoilsAnswer(void)
                                  puiResponse,
                                  uiLength);
     }
-    std::cout << "CModbusSlave::ReadCoilsAnswer 7" << std::endl;
+    std::cout << "CSerialMtSlave::ReadCoilsAnswer 7" << std::endl;
     return uiLength;
 
 }
 
 //-------------------------------------------------------------------------------
-uint16_t CModbusSlave::ReadDiscreteInputsAnswer(void)
+uint16_t CSerialMtSlave::ReadDiscreteInputsAnswer(void)
 {
-    std::cout << "CModbusSlave::ReadDiscreteInputsAnswer 1" << std::endl;
+    std::cout << "CSerialMtSlave::ReadDiscreteInputsAnswer 1" << std::endl;
 
-    uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
-    uint8_t * puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
-    uint8_t * puiResponse = m_pxModbusSlaveLinkLayer -> GetTxBuffer();
-    uint16_t  uiLength = m_pxModbusSlaveLinkLayer -> GetFrameLength();
+    uint16_t uiPduOffset = m_pxSerialMtSlaveLinkLayer -> GetPduOffset();
+    uint8_t * puiRequest = m_pxSerialMtSlaveLinkLayer -> GetRxBuffer();
+    uint8_t * puiResponse = m_pxSerialMtSlaveLinkLayer -> GetTxBuffer();
+    uint16_t  uiLength = m_pxSerialMtSlaveLinkLayer -> GetFrameLength();
 
     int8_t uiSlave = puiRequest[uiPduOffset - 1];
     int8_t uiFunctionCode = puiRequest[uiPduOffset];
@@ -1221,7 +1221,7 @@ uint16_t CModbusSlave::ReadDiscreteInputsAnswer(void)
 
     if (uiNumberB < 1 || MODBUS_MAX_READ_BITS < uiNumberB)
     {
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_DATA_VALUE,
@@ -1229,7 +1229,7 @@ uint16_t CModbusSlave::ReadDiscreteInputsAnswer(void)
     }
     else if ((uiAddress + uiNumberB) > m_uiDiscreteInputsNumber)
     {
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_DATA_ADDRESS,
@@ -1237,8 +1237,8 @@ uint16_t CModbusSlave::ReadDiscreteInputsAnswer(void)
     }
     else
     {
-        std::cout << "CModbusSlave::ReadDiscreteInputsAnswer 4" << std::endl;
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        std::cout << "CSerialMtSlave::ReadDiscreteInputsAnswer 4" << std::endl;
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
 
         if (uiNumberB % 8)
@@ -1260,14 +1260,14 @@ uint16_t CModbusSlave::ReadDiscreteInputsAnswer(void)
 }
 
 //-------------------------------------------------------------------------------
-uint16_t CModbusSlave::ReadHoldingRegistersAnswer(void)
+uint16_t CSerialMtSlave::ReadHoldingRegistersAnswer(void)
 {
-    std::cout << "CModbusSlave::ReadHoldingRegistersAnswer 1" << std::endl;
+    std::cout << "CSerialMtSlave::ReadHoldingRegistersAnswer 1" << std::endl;
 
-    uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
-    uint8_t * puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
-    uint8_t * puiResponse = m_pxModbusSlaveLinkLayer -> GetTxBuffer();
-    uint16_t  uiLength = m_pxModbusSlaveLinkLayer -> GetFrameLength();
+    uint16_t uiPduOffset = m_pxSerialMtSlaveLinkLayer -> GetPduOffset();
+    uint8_t * puiRequest = m_pxSerialMtSlaveLinkLayer -> GetRxBuffer();
+    uint8_t * puiResponse = m_pxSerialMtSlaveLinkLayer -> GetTxBuffer();
+    uint16_t  uiLength = m_pxSerialMtSlaveLinkLayer -> GetFrameLength();
 
     int8_t uiSlave = puiRequest[uiPduOffset - 1];
     int8_t uiFunctionCode = puiRequest[uiPduOffset];
@@ -1277,12 +1277,12 @@ uint16_t CModbusSlave::ReadHoldingRegistersAnswer(void)
     uint16_t uiNumberB = ((static_cast<uint16_t>(puiRequest[uiPduOffset + 3]) << 8) |
                           (static_cast<uint16_t>(puiRequest[uiPduOffset + 4])));
 
-    std::cout << "CModbusSlave::ReadHoldingRegistersAnswer uiAddress "  << (int)uiAddress << std::endl;
-    std::cout << "CModbusSlave::ReadHoldingRegistersAnswer uiNumberB "  << (int)uiNumberB << std::endl;
+    std::cout << "CSerialMtSlave::ReadHoldingRegistersAnswer uiAddress "  << (int)uiAddress << std::endl;
+    std::cout << "CSerialMtSlave::ReadHoldingRegistersAnswer uiNumberB "  << (int)uiNumberB << std::endl;
 
     if (uiNumberB < 1 || MODBUS_MAX_READ_REGISTERS < uiNumberB)
     {
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_DATA_VALUE,
@@ -1290,7 +1290,7 @@ uint16_t CModbusSlave::ReadHoldingRegistersAnswer(void)
     }
     else if ((uiAddress + uiNumberB) > m_uiHoldingRegistersNumber)
     {
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_DATA_ADDRESS,
@@ -1298,8 +1298,8 @@ uint16_t CModbusSlave::ReadHoldingRegistersAnswer(void)
     }
     else
     {
-        std::cout << "CModbusSlave::ReadHoldingRegistersAnswer 4" << std::endl;
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        std::cout << "CSerialMtSlave::ReadHoldingRegistersAnswer 4" << std::endl;
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
 
         puiResponse[uiLength++] = (uiNumberB << 1);
@@ -1314,18 +1314,18 @@ uint16_t CModbusSlave::ReadHoldingRegistersAnswer(void)
         }
     }
 
-    std::cout << "CModbusSlave::ReadHoldingRegistersAnswer uiLength "  << (int)uiLength << std::endl;
+    std::cout << "CSerialMtSlave::ReadHoldingRegistersAnswer uiLength "  << (int)uiLength << std::endl;
     return uiLength;
 
 }//-------------------------------------------------------------------------------
-uint16_t CModbusSlave::ReadInputRegistersAnswer(void)
+uint16_t CSerialMtSlave::ReadInputRegistersAnswer(void)
 {
-    std::cout << "CModbusSlave::ReadInputRegistersAnswer 1" << std::endl;
+    std::cout << "CSerialMtSlave::ReadInputRegistersAnswer 1" << std::endl;
 
-    uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
-    uint8_t * puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
-    uint8_t * puiResponse = m_pxModbusSlaveLinkLayer -> GetTxBuffer();
-    uint16_t  uiLength = m_pxModbusSlaveLinkLayer -> GetFrameLength();
+    uint16_t uiPduOffset = m_pxSerialMtSlaveLinkLayer -> GetPduOffset();
+    uint8_t * puiRequest = m_pxSerialMtSlaveLinkLayer -> GetRxBuffer();
+    uint8_t * puiResponse = m_pxSerialMtSlaveLinkLayer -> GetTxBuffer();
+    uint16_t  uiLength = m_pxSerialMtSlaveLinkLayer -> GetFrameLength();
 
     int8_t uiSlave = puiRequest[uiPduOffset - 1];
     int8_t uiFunctionCode = puiRequest[uiPduOffset];
@@ -1337,7 +1337,7 @@ uint16_t CModbusSlave::ReadInputRegistersAnswer(void)
 
     if (uiNumberB < 1 || MODBUS_MAX_READ_REGISTERS < uiNumberB)
     {
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_DATA_VALUE,
@@ -1345,7 +1345,7 @@ uint16_t CModbusSlave::ReadInputRegistersAnswer(void)
     }
     else if ((uiAddress + uiNumberB) > m_uiInputRegistersNumber)
     {
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_DATA_ADDRESS,
@@ -1353,7 +1353,7 @@ uint16_t CModbusSlave::ReadInputRegistersAnswer(void)
     }
     else
     {
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
         puiResponse[uiLength++] = (uiNumberB << 1);
         for (uint16_t i = 0; i < uiNumberB; i++)
@@ -1367,14 +1367,14 @@ uint16_t CModbusSlave::ReadInputRegistersAnswer(void)
 }
 
 //-------------------------------------------------------------------------------
-uint16_t CModbusSlave::WriteSingleCoilAnswer(void)
+uint16_t CSerialMtSlave::WriteSingleCoilAnswer(void)
 {
-    std::cout << "CModbusSlave::WriteSingleCoilAnswer 1" << std::endl;
+    std::cout << "CSerialMtSlave::WriteSingleCoilAnswer 1" << std::endl;
 
-    uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
-    uint8_t * puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
-    uint8_t * puiResponse = m_pxModbusSlaveLinkLayer -> GetTxBuffer();
-    uint16_t  uiLength = m_pxModbusSlaveLinkLayer -> GetFrameLength();
+    uint16_t uiPduOffset = m_pxSerialMtSlaveLinkLayer -> GetPduOffset();
+    uint8_t * puiRequest = m_pxSerialMtSlaveLinkLayer -> GetRxBuffer();
+    uint8_t * puiResponse = m_pxSerialMtSlaveLinkLayer -> GetTxBuffer();
+    uint16_t  uiLength = m_pxSerialMtSlaveLinkLayer -> GetFrameLength();
 
     int8_t uiSlave = puiRequest[uiPduOffset - 1];
     int8_t uiFunctionCode = puiRequest[uiPduOffset];
@@ -1383,7 +1383,7 @@ uint16_t CModbusSlave::WriteSingleCoilAnswer(void)
 
     if (uiAddress >= m_uiCoilsNumber)
     {
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_DATA_ADDRESS,
@@ -1408,7 +1408,7 @@ uint16_t CModbusSlave::WriteSingleCoilAnswer(void)
         }
         else
         {
-            uiLength = m_pxModbusSlaveLinkLayer ->
+            uiLength = m_pxSerialMtSlaveLinkLayer ->
                        ResponseException(uiSlave,
                                          uiFunctionCode,
                                          MODBUS_EXCEPTION_ILLEGAL_DATA_VALUE,
@@ -1420,14 +1420,14 @@ uint16_t CModbusSlave::WriteSingleCoilAnswer(void)
 }
 
 //-------------------------------------------------------------------------------
-uint16_t CModbusSlave::WriteSingleRegisterAnswer(void)
+uint16_t CSerialMtSlave::WriteSingleRegisterAnswer(void)
 {
-    std::cout << "CModbusSlave::WriteSingleRegisterAnswer 1" << std::endl;
+    std::cout << "CSerialMtSlave::WriteSingleRegisterAnswer 1" << std::endl;
 
-    uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
-    uint8_t * puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
-    uint8_t * puiResponse = m_pxModbusSlaveLinkLayer -> GetTxBuffer();
-    uint16_t  uiLength = m_pxModbusSlaveLinkLayer -> GetFrameLength();
+    uint16_t uiPduOffset = m_pxSerialMtSlaveLinkLayer -> GetPduOffset();
+    uint8_t * puiRequest = m_pxSerialMtSlaveLinkLayer -> GetRxBuffer();
+    uint8_t * puiResponse = m_pxSerialMtSlaveLinkLayer -> GetTxBuffer();
+    uint16_t  uiLength = m_pxSerialMtSlaveLinkLayer -> GetFrameLength();
 
     int8_t uiSlave = puiRequest[uiPduOffset - 1];
     int8_t uiFunctionCode = puiRequest[uiPduOffset];
@@ -1436,7 +1436,7 @@ uint16_t CModbusSlave::WriteSingleRegisterAnswer(void)
 
     if (uiAddress >= m_uiHoldingRegistersNumber)
     {
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_DATA_ADDRESS,
@@ -1453,14 +1453,14 @@ uint16_t CModbusSlave::WriteSingleRegisterAnswer(void)
 }
 
 //-------------------------------------------------------------------------------
-uint16_t CModbusSlave::WriteMultipleCoilsAnswer(void)
+uint16_t CSerialMtSlave::WriteMultipleCoilsAnswer(void)
 {
-    std::cout << "CModbusSlave::WriteMultipleCoilsAnswer 1" << std::endl;
+    std::cout << "CSerialMtSlave::WriteMultipleCoilsAnswer 1" << std::endl;
 
-    uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
-    uint8_t * puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
-    uint8_t * puiResponse = m_pxModbusSlaveLinkLayer -> GetTxBuffer();
-    uint16_t  uiLength = m_pxModbusSlaveLinkLayer -> GetFrameLength();
+    uint16_t uiPduOffset = m_pxSerialMtSlaveLinkLayer -> GetPduOffset();
+    uint8_t * puiRequest = m_pxSerialMtSlaveLinkLayer -> GetRxBuffer();
+    uint8_t * puiResponse = m_pxSerialMtSlaveLinkLayer -> GetTxBuffer();
+    uint16_t  uiLength = m_pxSerialMtSlaveLinkLayer -> GetFrameLength();
 
     int8_t uiSlave = puiRequest[uiPduOffset - 1];
     int8_t uiFunctionCode = puiRequest[uiPduOffset];
@@ -1472,7 +1472,7 @@ uint16_t CModbusSlave::WriteMultipleCoilsAnswer(void)
 
     if (uiNumberB < 1 || MODBUS_MAX_WRITE_BITS < uiNumberB)
     {
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_DATA_VALUE,
@@ -1480,7 +1480,7 @@ uint16_t CModbusSlave::WriteMultipleCoilsAnswer(void)
     }
     else if ((uiAddress + uiNumberB) > m_uiCoilsNumber)
     {
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_DATA_ADDRESS,
@@ -1490,7 +1490,7 @@ uint16_t CModbusSlave::WriteMultipleCoilsAnswer(void)
     {
         SetBytesFromBits(m_puiCoils, uiAddress, uiNumberB, &puiRequest[uiPduOffset + 6]);
 
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
         /* 4 to copy the bit address (2) and the quantity of bits */
         memcpy(puiResponse + uiLength, puiRequest + uiLength, 4);
@@ -1500,14 +1500,14 @@ uint16_t CModbusSlave::WriteMultipleCoilsAnswer(void)
 }
 
 //-------------------------------------------------------------------------------
-uint16_t CModbusSlave::WriteMultipleRegistersAnswer(void)
+uint16_t CSerialMtSlave::WriteMultipleRegistersAnswer(void)
 {
-    std::cout << "CModbusSlave::WriteMultipleRegistersAnswer 1" << std::endl;
+    std::cout << "CSerialMtSlave::WriteMultipleRegistersAnswer 1" << std::endl;
 
-    uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
-    uint8_t * puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
-    uint8_t * puiResponse = m_pxModbusSlaveLinkLayer -> GetTxBuffer();
-    uint16_t  uiLength = m_pxModbusSlaveLinkLayer -> GetFrameLength();
+    uint16_t uiPduOffset = m_pxSerialMtSlaveLinkLayer -> GetPduOffset();
+    uint8_t * puiRequest = m_pxSerialMtSlaveLinkLayer -> GetRxBuffer();
+    uint8_t * puiResponse = m_pxSerialMtSlaveLinkLayer -> GetTxBuffer();
+    uint16_t  uiLength = m_pxSerialMtSlaveLinkLayer -> GetFrameLength();
 
     int8_t uiSlave = puiRequest[uiPduOffset - 1];
     int8_t uiFunctionCode = puiRequest[uiPduOffset];
@@ -1519,7 +1519,7 @@ uint16_t CModbusSlave::WriteMultipleRegistersAnswer(void)
 
     if (uiNumberB < 1 || MODBUS_MAX_WRITE_REGISTERS < uiNumberB)
     {
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_DATA_VALUE,
@@ -1527,7 +1527,7 @@ uint16_t CModbusSlave::WriteMultipleRegistersAnswer(void)
     }
     else if ((uiAddress + uiNumberB) > m_uiHoldingRegistersNumber)
     {
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_DATA_ADDRESS,
@@ -1542,7 +1542,7 @@ uint16_t CModbusSlave::WriteMultipleRegistersAnswer(void)
             uiPduOffset += 2;
         }
 
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
         /* 4 to copy the bit address (2) and the quantity of bits */
         memcpy(puiResponse + uiLength, puiRequest + uiLength, 4);
@@ -1552,36 +1552,36 @@ uint16_t CModbusSlave::WriteMultipleRegistersAnswer(void)
 }
 
 //-------------------------------------------------------------------------------
-uint16_t CModbusSlave::ReadExceptionStatusAnswer(void)
+uint16_t CSerialMtSlave::ReadExceptionStatusAnswer(void)
 {
 //    errno = ENOPROTOOPT;
     return -1;
 }
 
 //-------------------------------------------------------------------------------
-uint16_t CModbusSlave::WriteAndReadRegistersAnswer(void)
+uint16_t CSerialMtSlave::WriteAndReadRegistersAnswer(void)
 {
 
     return 0;
 }
 
 //-------------------------------------------------------------------------------
-uint16_t CModbusSlave::ReportSlaveIDAnswer(void)
+uint16_t CSerialMtSlave::ReportSlaveIDAnswer(void)
 {
-    std::cout << "CModbusSlave::ReportSlaveIDAnswer 1" << std::endl;
+    std::cout << "CSerialMtSlave::ReportSlaveIDAnswer 1" << std::endl;
 
-    uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
-    uint8_t * puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
-    uint8_t * puiResponse = m_pxModbusSlaveLinkLayer -> GetTxBuffer();
-    uint16_t  uiLength = m_pxModbusSlaveLinkLayer -> GetFrameLength();
+    uint16_t uiPduOffset = m_pxSerialMtSlaveLinkLayer -> GetPduOffset();
+    uint8_t * puiRequest = m_pxSerialMtSlaveLinkLayer -> GetRxBuffer();
+    uint8_t * puiResponse = m_pxSerialMtSlaveLinkLayer -> GetTxBuffer();
+    uint16_t  uiLength = m_pxSerialMtSlaveLinkLayer -> GetFrameLength();
 
     int8_t uiSlave = puiRequest[uiPduOffset - 1];
     int8_t uiFunctionCode = puiRequest[uiPduOffset];
 
-    std::cout << "CModbusSlave::ReportSlaveIDAnswer uiSlave "  << (int)uiSlave << std::endl;
-    std::cout << "CModbusSlave::ReportSlaveIDAnswer uiFunctionCode "  << (int)uiFunctionCode << std::endl;
+    std::cout << "CSerialMtSlave::ReportSlaveIDAnswer uiSlave "  << (int)uiSlave << std::endl;
+    std::cout << "CSerialMtSlave::ReportSlaveIDAnswer uiFunctionCode "  << (int)uiFunctionCode << std::endl;
 
-    std::cout << "CModbusSlave::ReportSlaveIDAnswer 4" << std::endl;
+    std::cout << "CSerialMtSlave::ReportSlaveIDAnswer 4" << std::endl;
 
     CDeviceControl* pxDeviceControl =
         (CDeviceControl*)GetResources() ->
@@ -1600,22 +1600,22 @@ uint16_t CModbusSlave::ReportSlaveIDAnswer(void)
     // количество байт в прикладном сообщении массиве конфигурации, не включая остальные.
     puiResponse[uiPduOffset + 1] = uiLength;//sizeof(auiTempData);// + 1;
     uiLength ++;
-    uiLength += m_pxModbusSlaveLinkLayer ->
+    uiLength += m_pxSerialMtSlaveLinkLayer ->
                 ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
 
-    std::cout << "CModbusSlave::ReportSlaveIDAnswer 7" << std::endl;
+    std::cout << "CSerialMtSlave::ReportSlaveIDAnswer 7" << std::endl;
     return uiLength;
 }
 
 //-------------------------------------------------------------------------------
-uint16_t CModbusSlave::PollProgrammingAnswer(void)
+uint16_t CSerialMtSlave::PollProgrammingAnswer(void)
 {
-    std::cout << "CModbusSlave::PollProgrammingAnswer 1" << std::endl;
+    std::cout << "CSerialMtSlave::PollProgrammingAnswer 1" << std::endl;
 
-    uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
-    uint8_t * puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
-    uint8_t * puiResponse = m_pxModbusSlaveLinkLayer -> GetTxBuffer();
-    uint16_t  uiLength = m_pxModbusSlaveLinkLayer -> GetFrameLength();
+    uint16_t uiPduOffset = m_pxSerialMtSlaveLinkLayer -> GetPduOffset();
+    uint8_t * puiRequest = m_pxSerialMtSlaveLinkLayer -> GetRxBuffer();
+    uint8_t * puiResponse = m_pxSerialMtSlaveLinkLayer -> GetTxBuffer();
+    uint16_t  uiLength = m_pxSerialMtSlaveLinkLayer -> GetFrameLength();
 
     int8_t uiSlave = puiRequest[uiPduOffset - 1];
     int8_t uiFunctionCode = puiRequest[uiPduOffset];
@@ -1633,9 +1633,9 @@ uint16_t CModbusSlave::PollProgrammingAnswer(void)
 //    if (m_pxDeviceControl ->
 //            GetFsmOperationStatus() == CDfa::IN_PROGRESS)
 //    {
-//        std::cout << "CModbusSlave::PollProgrammingAnswer 2" << std::endl;
+//        std::cout << "CSerialMtSlave::PollProgrammingAnswer 2" << std::endl;
 //
-//        uiLength = m_pxModbusSlaveLinkLayer ->
+//        uiLength = m_pxSerialMtSlaveLinkLayer ->
 //    ResponseException(uiSlave,
 //                                     uiFunctionCode,
 //                                     MODBUS_EXCEPTION_SLAVE_OR_SERVER_BUSY,
@@ -1645,9 +1645,9 @@ uint16_t CModbusSlave::PollProgrammingAnswer(void)
 //    else if (m_pxDeviceControl ->
 //             GetFsmOperationStatus() == CDfa::DONE_SUCCESSFULLY)
 //    {
-//        std::cout << "CModbusSlave::PollProgrammingAnswer 3" << std::endl;
+//        std::cout << "CSerialMtSlave::PollProgrammingAnswer 3" << std::endl;
 //
-//        uiLength = m_pxModbusSlaveLinkLayer ->
+//        uiLength = m_pxSerialMtSlaveLinkLayer ->
 //                   ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
 //
 //    }
@@ -1655,9 +1655,9 @@ uint16_t CModbusSlave::PollProgrammingAnswer(void)
 //    else if (m_pxDeviceControl ->
 //             GetFsmOperationStatus() == CDfa::ERROR_OCCURED)
 //    {
-//        std::cout << "CModbusSlave::PollProgrammingAnswer 4" << std::endl;
+//        std::cout << "CSerialMtSlave::PollProgrammingAnswer 4" << std::endl;
 //
-//        uiLength = m_pxModbusSlaveLinkLayer ->
+//        uiLength = m_pxSerialMtSlaveLinkLayer ->
 //                      ResponseException(uiSlave,
 //                                     uiFunctionCode,
 //                                     MODBUS_EXCEPTION_ACKNOWLEDGE,
@@ -1668,16 +1668,16 @@ uint16_t CModbusSlave::PollProgrammingAnswer(void)
     // Устройство хранения закончило запись успешно?
     if (pxDataStoreFileSystemAnswer -> IsDoneOk())
     {
-        std::cout << "CModbusSlave::PollProgrammingAnswer 2" << std::endl;
+        std::cout << "CSerialMtSlave::PollProgrammingAnswer 2" << std::endl;
 
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
 
 //        // номер блока базы данных
 //        puiResponse[uiPduOffset + 2] = puiRequest[uiPduOffset + 1];
 //        uiLength ++;
 
-//        uiLength = m_pxModbusSlaveLinkLayer ->
+//        uiLength = m_pxSerialMtSlaveLinkLayer ->
 //        ResponseException(uiSlave,
 //                                     uiFunctionCode,
 //                                     MODBUS_EXCEPTION_ACKNOWLEDGE,
@@ -1686,7 +1686,7 @@ uint16_t CModbusSlave::PollProgrammingAnswer(void)
 //    // Устройство хранения закончило запись не успешно?
 //    else if (pxDataStoreFileSystemAnswer -> IsDoneError())
 //    {
-//        uiLength = m_pxModbusSlaveLinkLayer ->
+//        uiLength = m_pxSerialMtSlaveLinkLayer ->
     //    ResponseException(uiSlave,
 //                                     uiFunctionCode,
 //                                     MODBUS_EXCEPTION_SLAVE_OR_SERVER_BUSY,
@@ -1694,12 +1694,12 @@ uint16_t CModbusSlave::PollProgrammingAnswer(void)
 //    }
     else
     {
-        std::cout << "CModbusSlave::PollProgrammingAnswer 3" << std::endl;
+        std::cout << "CSerialMtSlave::PollProgrammingAnswer 3" << std::endl;
 
-//        uiLength = m_pxModbusSlaveLinkLayer ->
+//        uiLength = m_pxSerialMtSlaveLinkLayer ->
 //                    ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
 
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_SLAVE_OR_SERVER_BUSY,
@@ -1710,28 +1710,28 @@ uint16_t CModbusSlave::PollProgrammingAnswer(void)
 }
 
 //-------------------------------------------------------------------------------
-uint16_t CModbusSlave::DataBaseReadAnswer(void)
+uint16_t CSerialMtSlave::DataBaseReadAnswer(void)
 {
-    std::cout << "CModbusSlave::DataBaseReadAnswer 1" << std::endl;
+    std::cout << "CSerialMtSlave::DataBaseReadAnswer 1" << std::endl;
 
-    uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
-    uint8_t * puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
-    uint8_t * puiResponse = m_pxModbusSlaveLinkLayer -> GetTxBuffer();
-    uint16_t  uiLength = m_pxModbusSlaveLinkLayer -> GetFrameLength();
+    uint16_t uiPduOffset = m_pxSerialMtSlaveLinkLayer -> GetPduOffset();
+    uint8_t * puiRequest = m_pxSerialMtSlaveLinkLayer -> GetRxBuffer();
+    uint8_t * puiResponse = m_pxSerialMtSlaveLinkLayer -> GetTxBuffer();
+    uint16_t  uiLength = m_pxSerialMtSlaveLinkLayer -> GetFrameLength();
 
     int8_t uiSlave = puiRequest[uiPduOffset - 1];
     int8_t uiFunctionCode = puiRequest[uiPduOffset];
     uint8_t uiBlockIndex = puiRequest[uiPduOffset + 1];
 
-    std::cout << "CModbusSlave::DataBaseReadAnswer uiSlave "  << (int)uiSlave << std::endl;
-    std::cout << "CModbusSlave::DataBaseReadAnswer uiFunctionCode "  << (int)uiFunctionCode << std::endl;
-    std::cout << "CModbusSlave::DataBaseReadAnswer uiBlockIndex "  << (int)uiBlockIndex << std::endl;
+    std::cout << "CSerialMtSlave::DataBaseReadAnswer uiSlave "  << (int)uiSlave << std::endl;
+    std::cout << "CSerialMtSlave::DataBaseReadAnswer uiFunctionCode "  << (int)uiFunctionCode << std::endl;
+    std::cout << "CSerialMtSlave::DataBaseReadAnswer uiBlockIndex "  << (int)uiBlockIndex << std::endl;
 
     if ((uiBlockIndex < 0) ||
             (uiBlockIndex > (CDataStore::MAX_BLOCKS_NUMBER - 1)))
     {
-        std::cout << "CModbusSlave::DataBaseReadAnswer 2" << std::endl;
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        std::cout << "CSerialMtSlave::DataBaseReadAnswer 2" << std::endl;
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_DATA_VALUE,
@@ -1752,7 +1752,7 @@ uint16_t CModbusSlave::DataBaseReadAnswer(void)
 //        uiLength = m_pxDeviceControlLink ->
 //                   GetDataContainerPointer() ->
 //                   GetDataLength();
-        std::cout << "CModbusSlave::DataBaseReadAnswer uiLength "  << (int)uiLength << std::endl;
+        std::cout << "CSerialMtSlave::DataBaseReadAnswer uiLength "  << (int)uiLength << std::endl;
 
         memcpy(&puiResponse[uiPduOffset + 3],
                (m_pxOperatingDataContainer -> m_puiDataPointer),
@@ -1761,7 +1761,7 @@ uint16_t CModbusSlave::DataBaseReadAnswer(void)
         puiResponse[uiPduOffset + 1] = uiLength + 1;
         uiLength ++;
 
-        uiLength += m_pxModbusSlaveLinkLayer ->
+        uiLength += m_pxSerialMtSlaveLinkLayer ->
                     ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
 
         // номер блока базы данных
@@ -1769,34 +1769,34 @@ uint16_t CModbusSlave::DataBaseReadAnswer(void)
         uiLength ++;
     }
 
-    std::cout << "CModbusSlave::DataBaseReadAnswer 7" << std::endl;
+    std::cout << "CSerialMtSlave::DataBaseReadAnswer 7" << std::endl;
     return uiLength;
 }
 
 //-------------------------------------------------------------------------------
-uint16_t CModbusSlave::DataBaseWriteAnswer(void)
+uint16_t CSerialMtSlave::DataBaseWriteAnswer(void)
 {
-    std::cout << "CModbusSlave::DataBaseWriteAnswer 1" << std::endl;
+    std::cout << "CSerialMtSlave::DataBaseWriteAnswer 1" << std::endl;
 
-    uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
-    uint8_t * puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
-    uint8_t * puiResponse = m_pxModbusSlaveLinkLayer -> GetTxBuffer();
-    uint16_t  uiLength = m_pxModbusSlaveLinkLayer -> GetFrameLength();
+    uint16_t uiPduOffset = m_pxSerialMtSlaveLinkLayer -> GetPduOffset();
+    uint8_t * puiRequest = m_pxSerialMtSlaveLinkLayer -> GetRxBuffer();
+    uint8_t * puiResponse = m_pxSerialMtSlaveLinkLayer -> GetTxBuffer();
+    uint16_t  uiLength = m_pxSerialMtSlaveLinkLayer -> GetFrameLength();
 
     int8_t uiSlave = puiRequest[uiPduOffset - 1];
     int8_t uiFunctionCode = puiRequest[uiPduOffset];
     uint8_t uiBlockIndex = puiRequest[uiPduOffset + 1];
 
-    std::cout << "CModbusSlave::DataBaseWriteAnswer uiSlave "  << (int)uiSlave << std::endl;
-    std::cout << "CModbusSlave::DataBaseWriteAnswer uiFunctionCode "  << (int)uiFunctionCode << std::endl;
-    std::cout << "CModbusSlave::DataBaseWriteAnswer uiBlockIndex "  << (int)uiBlockIndex << std::endl;
+    std::cout << "CSerialMtSlave::DataBaseWriteAnswer uiSlave "  << (int)uiSlave << std::endl;
+    std::cout << "CSerialMtSlave::DataBaseWriteAnswer uiFunctionCode "  << (int)uiFunctionCode << std::endl;
+    std::cout << "CSerialMtSlave::DataBaseWriteAnswer uiBlockIndex "  << (int)uiBlockIndex << std::endl;
 
 
     if ((uiBlockIndex < 0) ||
             (uiBlockIndex > (CDataStore::MAX_BLOCKS_NUMBER - 1)))
     {
-        std::cout << "CModbusSlave::DataBaseWriteAnswer 2" << std::endl;
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        std::cout << "CSerialMtSlave::DataBaseWriteAnswer 2" << std::endl;
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_DATA_ADDRESS,
@@ -1804,7 +1804,7 @@ uint16_t CModbusSlave::DataBaseWriteAnswer(void)
     }
     else
     {
-        std::cout << "CModbusSlave::DataBaseWriteAnswer 3" << std::endl;
+        std::cout << "CSerialMtSlave::DataBaseWriteAnswer 3" << std::endl;
         //        CDataStore* pxDataStoreFileSystem =
 //            (CDataStore*)GetResources() ->
 //            GetTaskPointerByNameFromMap("DataStoreFileSystemAnswer");
@@ -1817,13 +1817,13 @@ uint16_t CModbusSlave::DataBaseWriteAnswer(void)
 //               uiLength);
 //
 //        // Сохраним блок БД.
-//        std::cout << "CModbusSlave::DataBaseWriteAnswer 3" << std::endl;
+//        std::cout << "CSerialMtSlave::DataBaseWriteAnswer 3" << std::endl;
 //        pxDataStoreFileSystem ->
 //        WriteBlock(m_puiIntermediateBuff,
 //                   uiLength,
 //                   uiBlockIndex);
 
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
 
         // номер блока базы данных
@@ -1833,39 +1833,39 @@ uint16_t CModbusSlave::DataBaseWriteAnswer(void)
         uiLength ++;
     }
 
-    std::cout << "CModbusSlave::DataBaseWriteAnswer 7" << std::endl;
+    std::cout << "CSerialMtSlave::DataBaseWriteAnswer 7" << std::endl;
     return uiLength;
 }
 
 //-------------------------------------------------------------------------------
-uint16_t CModbusSlave::AnswerProcessing(void)
+uint16_t CSerialMtSlave::AnswerProcessing(void)
 {
-    std::cout << "CModbusSlave::AnswerProcessing 1" << std::endl;
+    std::cout << "CSerialMtSlave::AnswerProcessing 1" << std::endl;
 
-    uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
-    uint8_t * puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
-    uint8_t * puiResponse = m_pxModbusSlaveLinkLayer -> GetTxBuffer();
-    uint16_t  uiLength = m_pxModbusSlaveLinkLayer -> GetFrameLength();
+    uint16_t uiPduOffset = m_pxSerialMtSlaveLinkLayer -> GetPduOffset();
+    uint8_t * puiRequest = m_pxSerialMtSlaveLinkLayer -> GetRxBuffer();
+    uint8_t * puiResponse = m_pxSerialMtSlaveLinkLayer -> GetTxBuffer();
+    uint16_t  uiLength = m_pxSerialMtSlaveLinkLayer -> GetFrameLength();
 
     int8_t uiSlave = puiRequest[uiPduOffset - 1];
     int8_t uiFunctionCode = puiRequest[uiPduOffset];
 
-    std::cout << "CModbusSlave::AnswerProcessing uiSlave "  << (int)uiSlave << std::endl;
-    std::cout << "CModbusSlave::AnswerProcessing uiFunctionCode "  << (int)uiFunctionCode << std::endl;
+    std::cout << "CSerialMtSlave::AnswerProcessing uiSlave "  << (int)uiSlave << std::endl;
+    std::cout << "CSerialMtSlave::AnswerProcessing uiFunctionCode "  << (int)uiFunctionCode << std::endl;
 
     /* Filter on the Modbus unit identifier (slave) in RTU mode */
     if (uiSlave != m_uiOwnAddress && uiSlave != MODBUS_BROADCAST_ADDRESS)
     {
-        std::cout << "CModbusSlave::AnswerProcessing 2" << std::endl;
+        std::cout << "CSerialMtSlave::AnswerProcessing 2" << std::endl;
         return 0;
     }
 
     // проверяем сохранённый локально текущий код функции.
     switch (m_uiFunctionCode)
     {
-        std::cout << "CModbusSlave::AnswerProcessing 3" << std::endl;
+        std::cout << "CSerialMtSlave::AnswerProcessing 3" << std::endl;
     case _FC_READ_COILS:
-        std::cout << "CModbusSlave::Answer _FC_READ_COILS"  << std::endl;
+        std::cout << "CSerialMtSlave::Answer _FC_READ_COILS"  << std::endl;
         uiLength = ReadCoilsAnswer();
         break;
 
@@ -1928,8 +1928,8 @@ uint16_t CModbusSlave::AnswerProcessing(void)
         break;
 
     default:
-        std::cout << "CModbusSlave::AnswerProcessing 4" << std::endl;
-        uiLength = m_pxModbusSlaveLinkLayer ->
+        std::cout << "CSerialMtSlave::AnswerProcessing 4" << std::endl;
+        uiLength = m_pxSerialMtSlaveLinkLayer ->
                    ResponseException(uiSlave,
                                      uiFunctionCode,
                                      MODBUS_EXCEPTION_ILLEGAL_FUNCTION,
@@ -1937,14 +1937,14 @@ uint16_t CModbusSlave::AnswerProcessing(void)
         break;
     }
 
-    std::cout << "CModbusSlave::AnswerProcessing 5" << std::endl;
-    uiLength = m_pxModbusSlaveLinkLayer -> Tail(puiResponse, uiLength);
-    m_pxModbusSlaveLinkLayer -> SetFrameLength(uiLength);
+    std::cout << "CSerialMtSlave::AnswerProcessing 5" << std::endl;
+    uiLength = m_pxSerialMtSlaveLinkLayer -> Tail(puiResponse, uiLength);
+    m_pxSerialMtSlaveLinkLayer -> SetFrameLength(uiLength);
     return uiLength;
 }
 
 //-------------------------------------------------------------------------------
-void CModbusSlave::SetByteFromBits(uint8_t *dest, uint16_t index, const uint8_t value)
+void CSerialMtSlave::SetByteFromBits(uint8_t *dest, uint16_t index, const uint8_t value)
 {
     uint16_t i;
 
@@ -1955,7 +1955,7 @@ void CModbusSlave::SetByteFromBits(uint8_t *dest, uint16_t index, const uint8_t 
 }
 
 //-------------------------------------------------------------------------------
-void CModbusSlave::SetBytesFromBits(uint8_t *dest, uint16_t index, uint16_t nb_bits,
+void CSerialMtSlave::SetBytesFromBits(uint8_t *dest, uint16_t index, uint16_t nb_bits,
                                     const uint8_t *tab_byte)
 {
     uint16_t i;
@@ -1971,7 +1971,7 @@ void CModbusSlave::SetBytesFromBits(uint8_t *dest, uint16_t index, uint16_t nb_b
 }
 
 //-------------------------------------------------------------------------------
-uint8_t CModbusSlave::GetByteFromBits(const uint8_t *src, uint16_t index,
+uint8_t CSerialMtSlave::GetByteFromBits(const uint8_t *src, uint16_t index,
                                       uint16_t nb_bits)
 {
     uint16_t i;
@@ -1993,7 +1993,7 @@ uint8_t CModbusSlave::GetByteFromBits(const uint8_t *src, uint16_t index,
 }
 
 //-------------------------------------------------------------------------------
-float CModbusSlave::GetFloat(const uint16_t *src)
+float CSerialMtSlave::GetFloat(const uint16_t *src)
 {
     float f = 0.0f;
     uint32_t i;
@@ -2005,7 +2005,7 @@ float CModbusSlave::GetFloat(const uint16_t *src)
 }
 
 //-------------------------------------------------------------------------------
-void CModbusSlave::SetFloat(float f, uint16_t *dest)
+void CSerialMtSlave::SetFloat(float f, uint16_t *dest)
 {
     uint32_t i = 0;
 
@@ -2015,51 +2015,51 @@ void CModbusSlave::SetFloat(float f, uint16_t *dest)
 }
 
 //-------------------------------------------------------------------------------
-uint8_t CModbusSlave::Fsm(void)
+uint8_t CSerialMtSlave::Fsm(void)
 {
-//    std::cout << "CModbusSlave::Fsm 1" << endl;
+//    std::cout << "CSerialMtSlave::Fsm 1" << endl;
     uint8_t uiReadyTaskCounter = 0;
     switch (GetFsmState())
     {
     case IDDLE:
-//        std::cout << "CModbusSlave::Fsm IDDLE"  << std::endl;
+//        std::cout << "CSerialMtSlave::Fsm IDDLE"  << std::endl;
         break;
 
     case STOP:
-//        //std::cout << "CModbusSlave::Fsm STOP"  << std::endl;
+//        //std::cout << "CSerialMtSlave::Fsm STOP"  << std::endl;
         break;
 
     case START:
-        std::cout << "CModbusSlave::Fsm START"  << std::endl;
-        std::cout << "CModbusSlave::Fsm m_sModbusSlaveLinkLayerName" << " " << (m_sModbusSlaveLinkLayerName) << std::endl;
+        std::cout << "CSerialMtSlave::Fsm START"  << std::endl;
+        std::cout << "CSerialMtSlave::Fsm m_sSerialMtSlaveLinkLayerName" << " " << (m_sSerialMtSlaveLinkLayerName) << std::endl;
         Init();
         GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
         SetFsmState(INIT);
         break;
 
     case INIT:
-//        std::cout << "CModbusSlave::Fsm INIT 1"  << std::endl;
+//        std::cout << "CSerialMtSlave::Fsm INIT 1"  << std::endl;
     {
         CTaskInterface* pxTask =
             GetResources() ->
-            GetTaskPointerByNameFromMap(m_sModbusSlaveLinkLayerName);
+            GetTaskPointerByNameFromMap(m_sSerialMtSlaveLinkLayerName);
 
         if (pxTask != 0)
         {
-//                std::cout << "CModbusSlave::Fsm INIT 2"  << std::endl;
+//                std::cout << "CSerialMtSlave::Fsm INIT 2"  << std::endl;
             if (pxTask -> GetFsmState() >= READY)
             {
-//                    std::cout << "CModbusSlave::Fsm INIT 3"  << std::endl;
-                SetModbusSlaveLinkLayer((CModbusSlaveLinkLayer*)pxTask);
+//                    std::cout << "CSerialMtSlave::Fsm INIT 3"  << std::endl;
+                SetSerialMtSlaveLinkLayer((CSerialMtSlaveLinkLayer*)pxTask);
                 uiReadyTaskCounter += 1;
             }
         }
         else
         {
-//                std::cout << "CModbusSlave::Fsm INIT 4"  << std::endl;
+//                std::cout << "CSerialMtSlave::Fsm INIT 4"  << std::endl;
             if (GetTimerPointer() -> IsOverflow())
             {
-                std::cout << "CModbusSlave::Fsm INIT 5"  << std::endl;
+                std::cout << "CSerialMtSlave::Fsm INIT 5"  << std::endl;
                 SetFsmState(STOP);
             }
         }
@@ -2073,20 +2073,20 @@ uint8_t CModbusSlave::Fsm(void)
 
         if (pxTask != 0)
         {
-//                std::cout << "CModbusSlave::Fsm INIT 2"  << std::endl;
+//                std::cout << "CSerialMtSlave::Fsm INIT 2"  << std::endl;
             if (pxTask -> GetFsmState() >= READY)
             {
-//                    std::cout << "CModbusSlave::Fsm INIT 3"  << std::endl;
+//                    std::cout << "CSerialMtSlave::Fsm INIT 3"  << std::endl;
                 SetDeviceControl((CDeviceControl*)pxTask);
                 uiReadyTaskCounter += 1;
             }
         }
         else
         {
-//                std::cout << "CModbusSlave::Fsm INIT 4"  << std::endl;
+//                std::cout << "CSerialMtSlave::Fsm INIT 4"  << std::endl;
             if (GetTimerPointer() -> IsOverflow())
             {
-                std::cout << "CModbusSlave::Fsm INIT 5"  << std::endl;
+                std::cout << "CSerialMtSlave::Fsm INIT 5"  << std::endl;
                 SetFsmState(STOP);
             }
         }
@@ -2094,82 +2094,82 @@ uint8_t CModbusSlave::Fsm(void)
 
     if (uiReadyTaskCounter > 1)
     {
-        std::cout << "CModbusSlave::Fsm INIT 9"  << std::endl;
+        std::cout << "CSerialMtSlave::Fsm INIT 9"  << std::endl;
         SetFsmState(READY);
     }
     break;
 
     case READY:
-        std::cout << "CModbusSlave::Fsm READY"  << std::endl;
+        std::cout << "CSerialMtSlave::Fsm READY"  << std::endl;
         SetFsmState(COMMUNICATION_START);
         break;
 
     case DONE_OK:
-        std::cout << "CModbusSlave::Fsm DONE_OK"  << std::endl;
+        std::cout << "CSerialMtSlave::Fsm DONE_OK"  << std::endl;
         SetFsmOperationStatus(DONE_OK);
         break;
 
     case DONE_ERROR:
-        std::cout << "CModbusSlave::Fsm DONE_ERROR"  << std::endl;
+        std::cout << "CSerialMtSlave::Fsm DONE_ERROR"  << std::endl;
         SetFsmOperationStatus(DONE_ERROR);
         break;
 
     case COMMUNICATION_START:
-        std::cout << "CModbusSlave::Fsm COMMUNICATION_START"  << std::endl;
+        std::cout << "CSerialMtSlave::Fsm COMMUNICATION_START"  << std::endl;
         m_pxOperatingDataContainer -> m_uiFsmCommandState =
-            CModbusRtuSlaveLinkLayer::COMMUNICATION_START;
-        m_pxModbusSlaveLinkLayer ->
+            CSerialMtSlaveLinkLayer::COMMUNICATION_START;
+        m_pxSerialMtSlaveLinkLayer ->
         SetTaskData(m_pxOperatingDataContainer);
         SetFsmState(MESSAGE_RECEIVE_WAITING);
         break;
 
     case COMMUNICATION_RECEIVE_START:
-        std::cout << "CModbusSlave::Fsm COMMUNICATION_RECEIVE_START"  << std::endl;
+        std::cout << "CSerialMtSlave::Fsm COMMUNICATION_RECEIVE_START"  << std::endl;
         m_pxOperatingDataContainer -> m_uiFsmCommandState =
-            CModbusRtuSlaveLinkLayer::COMMUNICATION_RECEIVE_START;
-        m_pxModbusSlaveLinkLayer ->
+            CSerialMtSlaveLinkLayer::COMMUNICATION_RECEIVE_START;
+        m_pxSerialMtSlaveLinkLayer ->
         SetTaskData(m_pxOperatingDataContainer);
         SetFsmState(MESSAGE_RECEIVE_WAITING);
         break;
 
     case COMMUNICATION_RECEIVE_CONTINUE:
-        std::cout << "CModbusSlave::Fsm COMMUNICATION_RECEIVE_CONTINUE"  << std::endl;
+        std::cout << "CSerialMtSlave::Fsm COMMUNICATION_RECEIVE_CONTINUE"  << std::endl;
         m_pxOperatingDataContainer -> m_uiFsmCommandState =
-            CModbusRtuSlaveLinkLayer::COMMUNICATION_RECEIVE_CONTINUE;
-        m_pxModbusSlaveLinkLayer ->
+            CSerialMtSlaveLinkLayer::COMMUNICATION_RECEIVE_CONTINUE;
+        m_pxSerialMtSlaveLinkLayer ->
         SetTaskData(m_pxOperatingDataContainer);
         SetFsmState(MESSAGE_RECEIVE_WAITING);
         break;
 
     case MESSAGE_RECEIVE_WAITING:
-//        std::cout << "CModbusSlave::Fsm MESSAGE_RECEIVE_WAITING"  << std::endl;
+//        std::cout << "CSerialMtSlave::Fsm MESSAGE_RECEIVE_WAITING"  << std::endl;
     {
-        m_pxModbusSlaveLinkLayer ->
+        m_pxSerialMtSlaveLinkLayer ->
         GetTaskData(m_pxOperatingDataContainer);
 
         uint8_t uiFsmState = m_pxOperatingDataContainer -> m_uiFsmCommandState;
 
         if (uiFsmState == DONE_OK)
         {
-            std::cout << "CModbusSlave::Fsm MESSAGE_RECEIVE_WAITING 2"  << std::endl;
+            std::cout << "CSerialMtSlave::Fsm MESSAGE_RECEIVE_WAITING 2"  << std::endl;
             SetFsmState(REQUEST_PROCESSING);
         }
         else if (uiFsmState == DONE_ERROR)
         {
-            std::cout << "CModbusSlave::Fsm MESSAGE_RECEIVE_WAITING 3"  << std::endl;
+            std::cout << "CSerialMtSlave::Fsm MESSAGE_RECEIVE_WAITING 3"  << std::endl;
             SetFsmState(COMMUNICATION_START);
         }
     }
     break;
 
     case REQUEST_PROCESSING:
-        std::cout << "CModbusSlave::Fsm REQUEST_PROCESSING"  << std::endl;
+        std::cout << "CSerialMtSlave::Fsm REQUEST_PROCESSING"  << std::endl;
         if (RequestProcessing())
         {
             // ожидаем ответ от асинхронной функции модбас?
             if (m_uiLength)
             {
-                std::cout << "CModbusSlave::Fsm REQUEST_PROCESSING 2"  << std::endl;
+                std::cout << "CSerialMtSlave::Fsm REQUEST_PROCESSING 2"  << std::endl;
                 GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
                 SetFsmState(ANSWER_PROCESSING_WAITING);
             }
@@ -2177,7 +2177,7 @@ uint8_t CModbusSlave::Fsm(void)
             {
                 // функция модбас не асинхронная и не требует ожидать результат её работы.
                 // идём сразу на передачу ответа модбас
-                std::cout << "CModbusSlave::Fsm REQUEST_PROCESSING 3"  << std::endl;
+                std::cout << "CSerialMtSlave::Fsm REQUEST_PROCESSING 3"  << std::endl;
                 GetTimerPointer() -> Set(m_uiTransmitDelayTimeout);
                 SetFsmState(BEFORE_ANSWERING_WAITING);
             }
@@ -2190,7 +2190,7 @@ uint8_t CModbusSlave::Fsm(void)
         break;
 
     case ANSWER_PROCESSING_WAITING:
-//        std::cout << "CModbusSlave::Fsm ANSWER_PROCESSING_WAITING"  << std::endl;
+//        std::cout << "CSerialMtSlave::Fsm ANSWER_PROCESSING_WAITING"  << std::endl;
     {
         m_pxDeviceControl ->
         GetTaskData(m_pxOperatingDataContainer);
@@ -2199,13 +2199,13 @@ uint8_t CModbusSlave::Fsm(void)
 
         if (uiFsmState == DONE_OK)
         {
-            std::cout << "CModbusSlave::Fsm ANSWER_PROCESSING_WAITING 2"  << std::endl;
+            std::cout << "CSerialMtSlave::Fsm ANSWER_PROCESSING_WAITING 2"  << std::endl;
             GetTimerPointer() -> Set(m_uiTransmitDelayTimeout);
             SetFsmState(ANSWER_PROCESSING);
         }
         else if (uiFsmState == DONE_ERROR)
         {
-            std::cout << "CModbusSlave::Fsm ANSWER_PROCESSING_WAITING 3"  << std::endl;
+            std::cout << "CSerialMtSlave::Fsm ANSWER_PROCESSING_WAITING 3"  << std::endl;
             GetTimerPointer() -> Set(m_uiTransmitDelayTimeout);
             SetFsmState(MESSAGE_RECEIVE_WAITING);
         }
@@ -2214,7 +2214,7 @@ uint8_t CModbusSlave::Fsm(void)
             // Время ожидания выполнения запроса закончилось?
             if (GetTimerPointer() -> IsOverflow())
             {
-                std::cout << "CModbusSlave::Fsm ANSWER_PROCESSING_WAITING 4"  << std::endl;
+                std::cout << "CSerialMtSlave::Fsm ANSWER_PROCESSING_WAITING 4"  << std::endl;
                 SetFsmState(MESSAGE_RECEIVE_WAITING);
             }
         }
@@ -2222,7 +2222,7 @@ uint8_t CModbusSlave::Fsm(void)
     break;
 
     case ANSWER_PROCESSING:
-        std::cout << "CModbusSlave::Fsm ANSWER_PROCESSING"  << std::endl;
+        std::cout << "CSerialMtSlave::Fsm ANSWER_PROCESSING"  << std::endl;
         if (AnswerProcessing())
         {
             GetTimerPointer() -> Set(m_uiTransmitDelayTimeout);
@@ -2235,35 +2235,35 @@ uint8_t CModbusSlave::Fsm(void)
         break;
 
     case BEFORE_ANSWERING_WAITING:
-//        std::cout << "CModbusSlave::Fsm BEFORE_ANSWERING_WAITING"  << std::endl;
+//        std::cout << "CSerialMtSlave::Fsm BEFORE_ANSWERING_WAITING"  << std::endl;
         // Закончилось время паузы между приёмом и передачей(5 милисекунд)?
         if (GetTimerPointer() -> IsOverflow())
         {
             GetTimerPointer() -> Set(m_uiConfirmationTimeout);
             m_pxOperatingDataContainer -> m_uiFsmCommandState =
-                CModbusRtuSlaveLinkLayer::COMMUNICATION_TRANSMIT_START;
-            m_pxModbusSlaveLinkLayer ->
+                CSerialMtSlaveLinkLayer::COMMUNICATION_TRANSMIT_START;
+            m_pxSerialMtSlaveLinkLayer ->
             SetTaskData(m_pxOperatingDataContainer);
             SetFsmState(AFTER_ANSWERING_WAITING);
         }
         break;
 
     case AFTER_ANSWERING_WAITING:
-//        std::cout << "CModbusSlave::Fsm AFTER_ANSWERING_WAITING"  << std::endl;
+//        std::cout << "CSerialMtSlave::Fsm AFTER_ANSWERING_WAITING"  << std::endl;
     {
-        m_pxModbusSlaveLinkLayer ->
+        m_pxSerialMtSlaveLinkLayer ->
         GetTaskData(m_pxOperatingDataContainer);
 
         uint8_t uiFsmState = m_pxOperatingDataContainer -> m_uiFsmCommandState;
 
         if (uiFsmState == DONE_OK)
         {
-            std::cout << "CModbusSlave::Fsm AFTER_ANSWERING_WAITING 2"  << std::endl;
+            std::cout << "CSerialMtSlave::Fsm AFTER_ANSWERING_WAITING 2"  << std::endl;
             SetFsmState(COMMUNICATION_RECEIVE_CONTINUE);
         }
         else if (uiFsmState == DONE_ERROR)
         {
-            std::cout << "CModbusSlave::Fsm AFTER_ANSWERING_WAITING 3"  << std::endl;
+            std::cout << "CSerialMtSlave::Fsm AFTER_ANSWERING_WAITING 3"  << std::endl;
             SetFsmState(COMMUNICATION_START);
         }
         else
@@ -2271,7 +2271,7 @@ uint8_t CModbusSlave::Fsm(void)
             // Время ожидания выполнения запроса закончилось?
             if (GetTimerPointer() -> IsOverflow())
             {
-                std::cout << "CModbusSlave::Fsm AFTER_ANSWERING_WAITING 4"  << std::endl;
+                std::cout << "CSerialMtSlave::Fsm AFTER_ANSWERING_WAITING 4"  << std::endl;
                 SetFsmState(MESSAGE_RECEIVE_WAITING);
             }
         }

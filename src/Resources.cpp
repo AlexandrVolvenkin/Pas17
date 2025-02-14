@@ -14,6 +14,7 @@
 #include "DeviceControl.h"
 #include "Link.h"
 #include "DataContainer.h"
+#include "AnalogueSignals.h"
 #include "Resources.h"
 
 //-------------------------------------------------------------------------------
@@ -161,6 +162,70 @@ void CResources::SetInputRegistersNumber(uint16_t uiData)
 uint16_t CResources::GetInputRegistersNumber(void)
 {
     return m_uiInputRegistersNumber;
+}
+
+//-----------------------------------------------------------------------------------------------------
+void CResources::Allocate(void)
+{
+    std::cout << "CResources::Allocate 1"  << std::endl;
+
+    // Подготовим к отправке текущие адреса объектов системы используемых драйверами устройств.
+
+//    xMemoryAllocationContext.puiRxBuffer = m_auiSpiRxBuffer;
+//    xMemoryAllocationContext.puiTxBuffer = m_auiSpiTxBuffer;
+//    xMemoryAllocationContext.puiErrorCode = &m_uiErrorCode;
+
+    // Обнулим общий объём выделенной памяти.
+    m_uiUsedDiscreteInputsState = 0;
+    // Подключим буфер для хранения состояний дискретных входов.
+    m_puiDiscreteInputsState =
+        &m_puiDiscreteInputs[DISCRETE_INPUTS_STATE_OFFSET];
+
+    // Обнулим общий объём выделенной памяти.
+    m_uiUsedDiscreteInputsBadState = 0;
+    // Подключим буфер для хранения состояний достоверности дискретных входов.
+    m_puiDiscreteInputsBadState =
+        &m_puiCoils[DISCRETE_INPUTS_BAD_STATE_OFFSET];
+
+//    // Обнулим общий объём выделенной памяти.
+//    m_uiUsedDiscreteOutputState = 0;
+//    // Подключим буфер для хранения состояний дискретных выходов.
+//    m_puiDiscreteOutputState =
+//        &m_puiDiscreteInputs[DISCRETE_OUTPUT_BIT_ARRAY_OFFSET];
+//
+//    // Обнулим общий объём выделенной памяти.
+//    m_uiUsedDiscreteOutputControl = 0;
+//    // Подключим буфер для управления дискретными выходами.
+//    m_puiDiscreteOutputControl =
+//        &m_puiDiscreteInputs[DISCRETE_OUTPUT_BIT_ARRAY_OFFSET];
+
+    // Обнулим общий объём выделенной памяти.
+    m_uiUsedAnalogueInputsValue = 0;
+    // Подключим буфер для хранения измеренных значений аналоговых входов.
+    m_pfAnalogueInputsValue =
+        (float*)&m_puiHoldingRegisters[ANALOGUE_INPUTS_VALUE_OFFSET];
+
+//    // Обнулим общий объём выделенной памяти.
+//    m_uiUsedAnalogueInputsState = 0;
+//    // Подключим буфер для хранения состояний аналоговых входов.
+//    m_puiAnalogueInputsState =
+//        &m_puiCoils[ANALOGUE_INPUTS_BAD_STATE_OFFSET];
+
+    // Обнулим общий объём выделенной памяти.
+    m_uiUsedAnalogueInputsBadState = 0;
+    // Подключим буфер для хранения состояний достоверности аналоговых входов.
+    m_puiAnalogueInputsBadState =
+        &m_puiCoils[ANALOGUE_INPUTS_BAD_STATE_OFFSET];
+
+    // Обнулим общий объём выделенной памяти.
+    m_uiUsedAnalogueInputsOff = 0;
+    // Подключим буфер для хранения отключенных аналоговых входов.
+    m_puiAnalogueInputsOff =
+        &m_puiCoils[ANALOGUE_INPUTS_BAD_STATE_OFFSET];
+
+    // Обнулим общий объём выделенной памяти.
+    m_uiUsedAnalogueInputDescriptionWork = 0;
+
 }
 
 //-------------------------------------------------------------------------------

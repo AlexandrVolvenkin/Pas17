@@ -119,9 +119,9 @@ const char *CModbusSmMaster::ModbusStringError(int errnum)
 }
 
 //-------------------------------------------------------------------------------
-void CModbusSmMaster::ModbusWorkingArraysInit(void)
+void CModbusSmMaster::WorkingArraysInit(void)
 {
-    std::cout << "CModbusSmMaster ModbusWorkingArraysInit 1"  << std::endl;
+    std::cout << "CModbusSmMaster WorkingArraysInit 1"  << std::endl;
     m_puiCoils = m_pxResources -> GetCoils();
     m_uiCoilsNumber = m_pxResources -> GetCoilsNumber();
     m_puiDiscreteInputs = m_pxResources -> GetDiscreteInputs();
