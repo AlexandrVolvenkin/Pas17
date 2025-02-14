@@ -615,6 +615,16 @@ uint8_t CInternalModuleMuvr::DataBaseRead(void)
             // получим указатель на данные программирования первого входа, принятые из модуля.
             pucSource = &auiSpiRxBuffer[SPI_DATA_BYTE_OFFSET];
             pucDestination = &aucTempArray[0];
+// в соответствии с документом: структ и прот ПАС-17.txt
+//Перед переформатированием переносим В87-В89 в массив БД RAM B119 - B121, т.к.
+//переформатированная БД займет В0-В79 + 32 = 112 байтов
+            pucDestination[119] = pucSource[87];
+            pucDestination[120] = pucSource[88];
+            pucDestination[121] = pucSource[89];
+//            std::cout << "CInternalModuleMuvr::DataBaseRead pucSource[87] "  << (int)(pucSource[87]) << std::endl;
+//            std::cout << "CInternalModuleMuvr::DataBaseRead pucSource[88] "  << (int)(pucSource[88]) << std::endl;
+//            std::cout << "CInternalModuleMuvr::DataBaseRead pucSource[89] "  << (int)(pucSource[89]) << std::endl;
+
             for (uint8_t i = 0; i < MUVR_ANALOG_INPUT_QUANTITY; i++)
             {
                 // скопируем во временный буфер часть блока - данные программирования одного входа(20 байт).
@@ -658,6 +668,200 @@ uint8_t CInternalModuleMuvr::DataBaseRead(void)
         cout << "iCInternalModuleMuvr::DataBaseRead 6" << endl;
     }
     return 0;
+}
+
+//-----------------------------------------------------------------------------------------------------
+// записывает базу данных из RAM прибора в EEPROM модуля.
+uint8_t CInternalModuleMuvr::DataBaseBlockWrite(void)
+{
+    unsigned short usData;
+    unsigned char *pucSource;
+    unsigned char *pucDestination;
+    unsigned int nuiBusyTimeCounter;
+    unsigned char aucTempArray[PLC_DATA_BASE_BLOCK_LENGTH];
+    uint8_t auiSpiTxBuffer[TX_RX_BUFF_SIZE];
+    uint8_t auiSpiRxBuffer[TX_RX_BUFF_SIZE];
+
+// в модулях аналогового ввода и в памяти прибора, базы данных хранятся в разных форматах.
+//  в модулях аналогового ввода сначала идут данные программирования входов(6 входов, по 20 байт) 120 байт, потом
+// текстовые реквизиты входов(6 входов, по 8 байт) 48 байт. 6 входов(120 + 48 = 168) байт.
+//  в памяти прибора данные программирования и текстовые реквизиты идут отдельными блоками для каждого входа
+// (один вход: 20 байт - данные программирования и 8 байт - текстовые реквизиты). один блок - 28 байт. 6 входов(6 * 28 = 168) байт.
+// здесь производится преобразование формата базы данных, от прибора к модулю.
+    memset(&aucTempArray[0],
+           0,
+           sizeof(aucTempArray));
+    // получим указатель на блок базы данных, принятый по Modbus во временный буфер.
+
+    pucSource = m_pxOperatingDataContainer -> m_puiDataPointer;
+
+    // получим указатель на данные программирования первого входа, для записи в модуль.
+    pucDestination = &aucTempArray[SPI_DATA_BYTE_OFFSET];
+
+// в соответствии с документом: структ и прот ПАС-17.txt
+//Перед переформатированием переносим В87-В89 в массив БД RAM B119 - B121, т.к.
+//переформатированная БД займет В0-В79 + 32 = 112 байтов
+    pucDestination[87] = pucSource[119];
+    pucDestination[88] = pucSource[120];
+    pucDestination[89] = pucSource[121];
+
+    for (uint8_t i = 0; i < MUVR_ANALOG_INPUT_QUANTITY; i++)
+    {
+        // скопируем во временный буфер часть блока - данные программирования одного входа(20 байт).
+        memcpy(pucDestination, pucSource, 20);
+        // перейдём к данным программирования следующего входа в модуле(+20 байт).
+        pucDestination += 20;
+        // перейдём к следующему блоку данных одного входа в приборе(+28 байт).
+        pucSource += 28;
+    }
+    // получим указатель на блок базы данных, принятый по Modbus во временный буфер.
+
+    pucSource = m_pxOperatingDataContainer -> m_puiDataPointer;
+
+    // перейдём к данным текстового реквизита первого входа(+20 байт).
+    pucSource += 20;
+    // получим указатель на данные текстового реквизита первого входа, для записи в модуль.
+    pucDestination = &aucTempArray[SPI_DATA_BYTE_OFFSET + (120)];
+    for (uint8_t i = 0; i < MUVR_ANALOG_INPUT_QUANTITY; i++)
+    {
+        // скопируем во временный буфер часть блока - текстовые реквизиты одного входа(8 байт).
+        memcpy(pucDestination, pucSource, 8);
+        // перейдём к данным текстового реквизита следующего входа в модуле(+8 байт).
+        pucDestination += 8;
+        // перейдём к следующему блоку данных одного входа в приборе(+28 байт).
+        pucSource += 28;
+    }
+
+    // получим указатель на преобразованную базу данных от прибора к модулю.
+    pucSource = &aucTempArray[SPI_DATA_BYTE_OFFSET];
+    usData = usCrcSummTwoByteCalculation(pucSource,
+                                         ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_LENGTH);
+    // получим указатель на место CRC в пакете.
+    pucDestination = &aucTempArray[SPI_DATA_BYTE_OFFSET +
+                                                        ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_LENGTH];
+    *pucDestination++ = (unsigned char)usData;
+    *pucDestination = (unsigned char)(usData >> 8);
+    // скопируем преобразованную базу данных из временного в буфер TX SPI.
+    memcpy(&auiSpiTxBuffer[SPI_DATA_BYTE_OFFSET],
+           pucSource,
+           ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_LENGTH +
+           TWO_BYTE_CRC_LENGTH);
+    // отправим данные в модуль.
+    usleep(10000);
+    auiSpiTxBuffer[0] = MUVR_SET_DATA_BASE_COMMAND;
+    m_pxCommunicationDevice -> Exchange(GetAddress(),
+                                        auiSpiTxBuffer,
+                                        auiSpiRxBuffer,
+                                        SPI_PREAMBLE_LENGTH +
+                                        ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_LENGTH +
+                                        TWO_BYTE_CRC_LENGTH,
+                                        LOW_SPEED_IN_HZ);
+
+//    pxModuleContext ->
+//    xModuleContextDinamic.
+//    usAuxiliaryCounter = 0;
+
+    return 0;
+}
+
+////-----------------------------------------------------------------------------------------------------
+//int CInternalModuleMuvr::DataBaseBlockWriteError(TModuleContext *pxModuleContext)
+//{
+//    // База данных не записана?
+//    if ((pxModuleContext ->
+//            xModuleContextDinamic.
+//            usAuxiliaryCounter) >= 20)
+//    {
+//        // ошибка БД обработки, конец связи.
+//        fbAnalogueInputModuleDataBaseError = 1;
+//        // получим код ошибки;
+//        (pxModuleContext ->
+//         xModuleContextDinamic.
+//         ucErrorCode) = INTERNAL_MODULE_ERROR_DATA_BASE;
+//
+//        // активное состояние события ещё не зарегистрировано?
+//        if(xCInternalModuleErrorEvent.EventOnIsNotRegistered(
+//                    pxModuleContext ->
+//                    xModuleContextStatic.
+//                    ucModuleContextIndex,
+//                    MTVI5_DATA_BASE_ERROR_OFFSET))
+//        {
+//            // зарегистрируем активное состояние события.
+//            CEvents::EventRegistration(
+//                pxModuleContext ->
+//                xModuleContextStatic.
+//                ucModuleContextIndex,
+//                (CEvents::HANDLED_EVENTS_INTERNAL_MODULES_BAD_TYPE |
+//                 CEvents::HANDLED_EVENTS_IS_POPUP |
+//                 CEvents::HANDLED_EVENTS_IS_SOUND |
+//                 CEvents::HANDLED_EVENTS_IS_ARCHIVE),
+//                MTVI5_DATA_BASE_ERROR_OFFSET,
+//                "Ошиб. б. МВА");
+//        }
+//
+//        return -1;
+//    }
+//    else
+//    {
+//        // Увеличим значение счётчика - "количество сеансов связи с модулем без ответа".
+//        (pxModuleContext ->
+//         xModuleContextDinamic.
+//         usAuxiliaryCounter)++;
+//
+//        return 0;
+//    }
+//}
+
+//-----------------------------------------------------------------------------------------------------
+// записывает базу данных из RAM прибора в EEPROM модуля.
+uint8_t CInternalModuleMuvr::DataBaseBlockWriteCheck(void)
+{
+    unsigned short usData;
+    unsigned char *pucSource;
+    unsigned char *pucDestination;
+    unsigned int nuiBusyTimeCounter;
+    unsigned char aucTempArray[PLC_DATA_BASE_BLOCK_LENGTH];
+    uint8_t auiSpiTxBuffer[TX_RX_BUFF_SIZE];
+    uint8_t auiSpiRxBuffer[TX_RX_BUFF_SIZE];
+
+    // примем данные с результатом программирования.
+    auiSpiTxBuffer[0] = MUVR_CHECK_DATA_BASE_WRITE_COMMAND;
+    m_pxCommunicationDevice -> Exchange(GetAddress(),
+                                        auiSpiTxBuffer,
+                                        auiSpiRxBuffer,
+                                        SPI_PREAMBLE_LENGTH +
+                                        TAIL_ANSWER_LENGTH,
+                                        LOW_SPEED_IN_HZ);
+
+    return 0;
+
+    // есть подтверждение записи базы данных в EEPROM модуля?
+    if((auiSpiRxBuffer[SPI_DATA_BYTE_OFFSET]) == DATA_EXCHANGE_OK)
+    {
+        // есть подтверждение записи базы данных в EEPROM модуля.
+        cout << "CInternalModuleMuvr::DataBaseBlockWriteCheck OK" << endl;
+        return DATA_EXCHANGE_OK;
+    }
+    // модуль занят записью данных в EEPROM?
+    else if ((auiSpiRxBuffer[SPI_DATA_BYTE_OFFSET]) == MUVR_CHECK_DATA_BASE_WRITE_ANSWER_BUSY)
+    {
+        // модуль занят записью данных в EEPROM.
+        cout << "CInternalModuleMuvr::DataBaseBlockWriteCheck BUSY" << endl;
+        return MUVR_CHECK_DATA_BASE_WRITE_ANSWER_BUSY;
+    }
+    // произошла ошибка при записи базы данных в EEPROM модуля?
+    else if ((auiSpiRxBuffer[SPI_DATA_BYTE_OFFSET]) == DATA_EXCHANGE_ERROR)
+    {
+        // произошла ошибка при записи базы данных в EEPROM модуля.
+        cout << "CInternalModuleMuvr::DataBaseBlockWriteCheck ERROR" << endl;
+        return DATA_EXCHANGE_ERROR;
+    }
+    else
+    {
+        // произошла ошибка при записи базы данных в EEPROM модуля.
+        cout << "CInternalModuleMuvr::DataBaseBlockWriteCheck ERROR" << endl;
+        return MUVR_CHECK_DATA_BASE_WRITE_ANSWER_BUSY;
+    }
 }
 
 //-------------------------------------------------------------------------------
@@ -759,6 +963,59 @@ uint8_t CInternalModuleMuvr::Fsm(void)
         std::cout << "CInternalModuleMuvr::Fsm MUVR_DATA_BASE_READ"  << std::endl;
         DataBaseRead();
         SetFsmState(DONE_OK);
+        break;
+
+    case MUVR_WRITE_DATA_BASE:
+        std::cout << "CInternalModuleMuvr::Fsm MUVR_WRITE_DATA_BASE"  << std::endl;
+        DataBaseBlockWrite();
+        GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
+        SetFsmState(MUVR_WRITE_DATA_BASE_CHECK);
+        break;
+
+    case MUVR_WRITE_DATA_BASE_CHECK:
+        std::cout << "CInternalModuleMuvr::Fsm MUVR_WRITE_DATA_BASE_CHECK 1"  << std::endl;
+        {
+            uint8_t uiFsmState = DataBaseBlockWriteCheck();
+
+            if (uiFsmState == DATA_EXCHANGE_OK)
+            {
+                std::cout << "CInternalModuleMuvr::Fsm MUVR_WRITE_DATA_BASE_CHECK 2"  << std::endl;
+                SetFsmState(DONE_OK);
+            }
+            else if (uiFsmState == DATA_EXCHANGE_ERROR)
+            {
+                std::cout << "CInternalModuleMuvr::Fsm MUVR_WRITE_DATA_BASE_CHECK 3"  << std::endl;
+                SetFsmState(DONE_ERROR);
+            }
+            else
+            {
+                // Время ожидания выполнения запроса закончилось?
+                if (GetTimerPointer() -> IsOverflow())
+                {
+                    std::cout << "CInternalModuleMuvr::Fsm MUVR_WRITE_DATA_BASE_CHECK 4"  << std::endl;
+                    SetFsmState(DONE_ERROR);
+                }
+            }
+        }
+
+//        switch (DataBaseBlockWriteCheck())
+//        {
+//        case DATA_EXCHANGE_OK:
+//            SetFsmState(DONE_OK);
+//            break;
+//
+//        case MUVR_CHECK_DATA_BASE_WRITE_ANSWER_BUSY:
+//            break;
+//
+//        case DATA_EXCHANGE_ERROR:
+//            SetFsmState(DONE_ERROR);
+//            break;
+//
+//        default:
+//            SetFsmState(DONE_ERROR);
+//            break;
+//        }
+
         break;
 
     case MUVR_DATA_EXCHANGE:

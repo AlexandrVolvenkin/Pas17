@@ -711,7 +711,7 @@ uint8_t CMainProductionCycle::Fsm(void)
         GetTimerPointer() -> Set(100);
 
         usleep(1000);
-//        SetFsmState(MAIN_CYCLE_START_WAITING);
+        SetFsmState(MAIN_CYCLE_START_WAITING);
         break;
 
     case MAIN_CYCLE_START_WAITING:

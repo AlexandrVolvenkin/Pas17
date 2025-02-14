@@ -171,20 +171,20 @@ void CAnalogueSignals::Exstract(void)
         nucBlocksInBlockCounter++;
     }
 
-    {
-        std::cout << "CAnalogueSignals::Exstract m_pxAnalogueInputDescriptionWork"  << std::endl;
-        unsigned char *pucSourceTemp;
-        pucSourceTemp = (unsigned char*)(GetResources() -> m_pxAnalogueInputDescriptionWork);
-        for(int i=0; i<64; )
-        {
-            for(int j=0; j<8; j++)
-            {
-                cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
-            }
-            cout << endl;
-            i += 8;
-        }
-    }
+//    {
+//        std::cout << "CAnalogueSignals::Exstract m_pxAnalogueInputDescriptionWork"  << std::endl;
+//        unsigned char *pucSourceTemp;
+//        pucSourceTemp = (unsigned char*)(GetResources() -> m_pxAnalogueInputDescriptionWork);
+//        for(int i=0; i<64; )
+//        {
+//            for(int j=0; j<8; j++)
+//            {
+//                cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+//            }
+//            cout << endl;
+//            i += 8;
+//        }
+//    }
 
 }
 
@@ -242,6 +242,7 @@ uint8_t CAnalogueSignals::Fsm(void)
                 m_puiIntermediateBuff;
             pxInternalModuleMuvr ->
             SetTaskData(m_pxOperatingDataContainer);
+            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
             SetFsmState(DATA_BASE_BLOCK_READ_END_WAITING);
         }
         break;
@@ -312,6 +313,7 @@ uint8_t CAnalogueSignals::Fsm(void)
                 m_puiIntermediateBuff;
             pxDeviceControl ->
             SetTaskData(m_pxOperatingDataContainer);
+            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
             SetFsmState(DATA_BASE_BLOCK_STORAGE_WRITE_END_WAITING);
         }
         break;
@@ -385,6 +387,7 @@ uint8_t CAnalogueSignals::Fsm(void)
                 m_puiIntermediateBuff;
             pxInternalModuleMuvr ->
             SetTaskData(m_pxOperatingDataContainer);
+            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
             SetFsmState(DATA_BASE_BLOCK_CHECK_MODULE_BLOCK_READ_END_WAITING);
         }
         break;
@@ -409,7 +412,7 @@ uint8_t CAnalogueSignals::Fsm(void)
                 std::cout << "CAnalogueSignals::Fsm m_puiIntermediateBuff"  << std::endl;
                 unsigned char *pucSourceTemp;
                 pucSourceTemp = (unsigned char*)m_puiIntermediateBuff;
-                for(int i=0; i<64; )
+                for(int i=0; i<192; )
                 {
                     for(int j=0; j<8; j++)
                     {
@@ -458,6 +461,7 @@ uint8_t CAnalogueSignals::Fsm(void)
                 m_puiIntermediateBuff;
             pxDeviceControl ->
             SetTaskData(m_pxOperatingDataContainer);
+            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
             SetFsmState(DATA_BASE_BLOCK_CHECK_STORAGE_BLOCK_READ_END_WAITING);
         }
         break;
@@ -482,7 +486,7 @@ uint8_t CAnalogueSignals::Fsm(void)
                 std::cout << "CAnalogueSignals::Fsm m_puiIntermediateBuff"  << std::endl;
                 unsigned char *pucSourceTemp;
                 pucSourceTemp = (unsigned char*)m_puiIntermediateBuff;
-                for(int i=0; i<64; )
+                for(int i=0; i<192; )
                 {
                     for(int j=0; j<8; j++)
                     {
@@ -517,7 +521,7 @@ uint8_t CAnalogueSignals::Fsm(void)
         // база данных совпадает?
         if (memcmp((const void*)&m_puiIntermediateBuff[256],
                    (const void*)&m_puiIntermediateBuff[0],
-                   28) == 0)
+                   168) == 0)
         {
             std::cout << "CAnalogueSignals::Fsm DATA_BASE_BLOCK_CHECK_MODULE_AND_STORAGE_BLOCK_COMPARE 2"  << std::endl;
             SetFsmState(DONE_OK);
@@ -544,6 +548,7 @@ uint8_t CAnalogueSignals::Fsm(void)
                 &m_puiIntermediateBuff[256];
             pxDeviceControl ->
             SetTaskData(m_pxOperatingDataContainer);
+            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
             SetFsmState(DATA_BASE_BLOCK_CHECK_STORAGE_BLOCK_WRITE_END_WAITING);
         }
         break;

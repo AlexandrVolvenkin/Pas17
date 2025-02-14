@@ -191,6 +191,8 @@ public:
     void Allocate(void);
 //    uint8_t GetModuleType(uint8_t uiAddress);
     uint8_t DataBaseRead(void);
+    uint8_t DataBaseBlockWrite(void);
+    uint8_t DataBaseBlockWriteCheck(void);
     uint8_t DataExchange(void);
 
 private:
