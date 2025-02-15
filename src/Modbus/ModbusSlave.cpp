@@ -825,35 +825,11 @@ uint16_t CModbusSlave::DataBaseRead(void)
 
         m_uiFunctionCode = uiFunctionCode;
 
-//        CDataContainerDataBase xDataContainer;
-//        xDataContainer.m_uiFsmCommandState = CDeviceControl::DATA_BASE_BLOCK_READ;
-//        xDataContainer.m_uiDataIndex = uiBlockIndex;
-//        m_pxDeviceControl ->
-//        SetTaskData(&xDataContainer);
-
         m_pxOperatingDataContainer -> m_uiFsmCommandState = CDeviceControl::DATA_BASE_BLOCK_READ;
         m_pxOperatingDataContainer -> m_uiDataIndex = uiBlockIndex;
         m_pxOperatingDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
         m_pxDeviceControl ->
         SetTaskData(m_pxOperatingDataContainer);
-
-//        uint8_t m_uiFsmCommandState;
-//        uint8_t m_uiFsmOperationStatus;
-//        uint16_t m_uiDataIndex;
-//        uint8_t* m_puiDataPointer;
-//        uint32_t m_uiDataOffset;
-//        uint32_t m_uiDataLength;
-//        m_pxDeviceControlLink ->
-//        GetDataContainerPointer() ->
-//        SetContainerData(CDeviceControl::DATA_BASE_BLOCK_READ,
-//                         uiBlockIndex,
-//                         m_puiIntermediateBuff,
-//                         0,
-//                         0);
-//
-//        ((CDeviceControl*)(m_pxDeviceControlLink ->
-//                           GetTaskPerformerPointer())) ->
-//        SetCommandDataLink(m_pxDeviceControlLink);
 
         uiLength = 5;
 
@@ -914,19 +890,6 @@ uint16_t CModbusSlave::DataBaseWrite(void)
         m_pxOperatingDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
         m_pxDeviceControl ->
         SetTaskData(m_pxOperatingDataContainer);
-
-//        m_pxDeviceControlLink ->
-//        GetDataContainerPointer() ->
-//        SetContainerData(CDeviceControl::DATA_BASE_BLOCK_START_WRITE,
-//                         uiBlockIndex,
-//                         m_puiIntermediateBuff,
-//                         0,
-//                         0);
-//
-//        // отправим сообщение задаче-исполнителю
-//        ((CDeviceControl*)(m_pxDeviceControlLink ->
-//                           GetTaskPerformerPointer())) ->
-//        SetCommandDataLink(m_pxDeviceControlLink);
 
         uiLength = m_pxModbusSlaveLinkLayer ->
                    ResponseBasis(uiSlave, uiFunctionCode, puiResponse);

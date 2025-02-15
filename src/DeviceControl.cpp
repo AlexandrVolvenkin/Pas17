@@ -146,9 +146,60 @@ uint16_t CDeviceControl::DataBaseBlockReadAnswer(void)
 }
 
 //-------------------------------------------------------------------------------
+// обрабатывает входящие сообщения от Modbus интерфейсов по 69 функции - запись блока базы данных.
 uint16_t CDeviceControl::DataBaseBlockWrite(uint8_t *puiSource, uint8_t uiBlockIndex)
 {
     std::cout << "CDeviceControl::DataBaseWrite 1" << std::endl;
+
+	unsigned char nucDataBaseBlockIndex;
+
+//	// получим номер блока базы данных пришедший по modbus.
+//	nucDataBaseBlockIndex = m_pxOperatingDataContainer -> m_uiDataIndex;
+//	// получим указатель на данные пришедшие по modbus.
+//	pucSource = m_pxOperatingDataContainer -> m_puiDataPointer;
+
+	// получим указатель на блок базы данных.
+
+	// номер принятого для записи блока базы данных.
+	switch(nucDataBaseBlockIndex)
+	{
+	case ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_OFFSET:
+		cout << "ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_OFFSET" << endl;
+		break;
+
+	case CURRENT_OUTPUT_MODULE_REGULATOR_DATA_BASE_BLOCK_OFFSET:
+		cout << "CURRENT_OUTPUT_MODULE_REGULATOR_DATA_BASE_BLOCK_OFFSET" << endl;
+		break;
+
+    case CURRENT_OUTPUT_MODULE_PSP_DATA_BASE_BLOCK_OFFSET:
+        cout << "CURRENT_OUTPUT_MODULE_PSP_DATA_BASE_BLOCK_OFFSET" << endl;
+        break;
+
+	case DISCRETE_INPUT_SYGNALS_DATA_BASE_BLOCK_OFFSET:
+		cout << "DISCRETE_INPUT_SYGNALS_DATA_BASE_BLOCK_OFFSET" << endl;
+		break;
+
+	case DIMENSIONS_PARAMETERS_DATA_BASE_BLOCK_OFFSET:
+		cout << "DIMENSIONS_PARAMETERS_DATA_BASE_BLOCK_OFFSET" << endl;
+		break;
+
+	case TEXT_TITLES_DATA_BASE_BLOCK_OFFSET:
+		cout << "TEXT_TITLES_DATA_BASE_BLOCK_OFFSET" << endl;
+		break;
+
+	case FUNCTION_BLOCK_DATA_BASE_BLOCK_OFFSET:
+		cout << "FUNCTION_BLOCK_DATA_BASE_BLOCK_OFFSET" << endl;
+		break;
+
+	case NETWORK_ADDRESS_DATA_BASE_BLOCK_OFFSET:
+		cout << "NETWORK_ADDRESS_DATA_BASE_BLOCK_OFFSET" << endl;
+		break;
+
+	default:
+		cout << "default" << endl;
+		break;
+	};
+
     return 0;
 }
 
