@@ -120,7 +120,7 @@ CSemaphore::~CSemaphore()
 //-------------------------------------------------------------------------------
 bool CSemaphore::Acquire()
 {
-    std::cout << "CSemaphore::Acquire 1"  << std::endl;
+//    std::cout << "CSemaphore::Acquire 1"  << std::endl;
     struct sembuf sops;
     sops.sem_num = 0;
     sops.sem_op = -1; // Уменьшение значения семафора на 1
@@ -135,7 +135,7 @@ bool CSemaphore::Acquire()
     }
     else
     {
-        std::cout << "CSemaphore::Acquire 3"  << std::endl;
+//        std::cout << "CSemaphore::Acquire 3"  << std::endl;
         return true;
     }
 }
@@ -143,7 +143,7 @@ bool CSemaphore::Acquire()
 //-------------------------------------------------------------------------------
 bool CSemaphore::Release()
 {
-    std::cout << "CSemaphore::Release 1"  << std::endl;
+//    std::cout << "CSemaphore::Release 1"  << std::endl;
     struct sembuf sops;
     sops.sem_num = 0;
     sops.sem_op = 1; // Увеличение значения семафора на 1
@@ -158,7 +158,7 @@ bool CSemaphore::Release()
     }
     else
     {
-        std::cout << "CSemaphore::Release 3"  << std::endl;
+//        std::cout << "CSemaphore::Release 3"  << std::endl;
         return true;
     }
 }

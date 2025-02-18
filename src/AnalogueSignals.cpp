@@ -368,6 +368,76 @@ uint8_t CAnalogueSignals::Fsm(void)
     }
     break;
 
+    case DATA_BASE_BLOCK_MODULE_START_WRITE:
+        std::cout << "CAnalogueSignals::Fsm DATA_BASE_BLOCK_MODULE_START_WRITE"  << std::endl;
+
+        {
+            CInternalModuleMuvr* pxInternalModuleMuvr =
+                (CInternalModuleMuvr*)(GetResources() ->
+                                       GetTaskPointerByNameFromMap("InternalModuleMuvr"));
+
+            m_pxOperatingDataContainer -> m_uiFsmCommandState =
+                CInternalModuleMuvr::MUVR_WRITE_DATA_BASE;
+            m_pxOperatingDataContainer -> m_uiDataIndex = 1;
+            m_pxOperatingDataContainer -> m_puiDataPointer =
+                m_puiIntermediateBuff;
+            pxInternalModuleMuvr ->
+            SetTaskData(m_pxOperatingDataContainer);
+            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
+            SetFsmState(DATA_BASE_BLOCK_MODULE_WRITE_END_WAITING);
+        }
+        break;
+
+    case DATA_BASE_BLOCK_MODULE_WRITE_END_WAITING:
+//        std::cout << "CAnalogueSignals::Fsm DATA_BASE_BLOCK_MODULE_WRITE_END_WAITING"  << std::endl;
+    {
+        CInternalModuleMuvr* pxInternalModuleMuvr =
+            (CInternalModuleMuvr*)(GetResources() ->
+                                   GetTaskPointerByNameFromMap("InternalModuleMuvr"));
+
+        pxInternalModuleMuvr ->
+        GetTaskData(m_pxOperatingDataContainer);
+
+        uint8_t uiFsmState = m_pxOperatingDataContainer -> m_uiFsmCommandState;
+
+        if (uiFsmState == DONE_OK)
+        {
+            std::cout << "CAnalogueSignals::Fsm DATA_BASE_BLOCK_MODULE_WRITE_END_WAITING 2"  << std::endl;
+            std::cout << "CAnalogueSignals::Fsm m_uiDataLength "  << (int)(m_pxOperatingDataContainer -> m_uiDataLength) << std::endl;
+            {
+                std::cout << "CAnalogueSignals::Fsm m_puiIntermediateBuff"  << std::endl;
+                unsigned char *pucSourceTemp;
+                pucSourceTemp = (unsigned char*)m_puiIntermediateBuff;
+                for(int i=0; i<64; )
+                {
+                    for(int j=0; j<8; j++)
+                    {
+                        cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+                    }
+                    cout << endl;
+                    i += 8;
+                }
+            }
+
+            SetFsmState(DONE_OK);
+        }
+        else if (uiFsmState == DONE_ERROR)
+        {
+            std::cout << "CAnalogueSignals::Fsm DATA_BASE_BLOCK_MODULE_WRITE_END_WAITING 3"  << std::endl;
+            SetFsmState(DONE_ERROR);
+        }
+        else
+        {
+            // Время ожидания выполнения запроса закончилось?
+            if (GetTimerPointer() -> IsOverflow())
+            {
+                std::cout << "CAnalogueSignals::Fsm DATA_BASE_BLOCK_MODULE_WRITE_END_WAITING 4"  << std::endl;
+                SetFsmState(DONE_ERROR);
+            }
+        }
+    }
+    break;
+
     case DATA_BASE_BLOCK_CHECK_START:
         std::cout << "CAnalogueSignals::Fsm DATA_BASE_BLOCK_CHECK_START"  << std::endl;
         SetFsmState(DATA_BASE_BLOCK_CHECK_MODULE_BLOCK_READ);

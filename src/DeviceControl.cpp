@@ -15,6 +15,7 @@
 #include "DataStore.h"
 #include "DataContainer.h"
 #include "Link.h"
+#include "AnalogueSignals.h"
 #include "DeviceControl.h"
 
 using namespace std;
@@ -147,58 +148,89 @@ uint16_t CDeviceControl::DataBaseBlockReadAnswer(void)
 
 //-------------------------------------------------------------------------------
 // обрабатывает входящие сообщения от Modbus интерфейсов по 69 функции - запись блока базы данных.
-uint16_t CDeviceControl::DataBaseBlockWrite(uint8_t *puiSource, uint8_t uiBlockIndex)
+uint16_t CDeviceControl::DataBaseBlockWrite(void)
 {
     std::cout << "CDeviceControl::DataBaseWrite 1" << std::endl;
 
-	unsigned char nucDataBaseBlockIndex;
+    uint8_t uiBlockIndex = m_pxOperatingDataContainer -> m_uiDataIndex;
+    uint8_t* puiDataPointer = m_pxOperatingDataContainer -> m_puiDataPointer;
+    std::cout << "CDeviceControl::DataBaseBlockWrite  uiBlockIndex "  << (int)uiBlockIndex << std::endl;
 
-//	// получим номер блока базы данных пришедший по modbus.
-//	nucDataBaseBlockIndex = m_pxOperatingDataContainer -> m_uiDataIndex;
-//	// получим указатель на данные пришедшие по modbus.
-//	pucSource = m_pxOperatingDataContainer -> m_puiDataPointer;
+    if (m_pxDataStore ->
+            WriteBlock(puiDataPointer,
+                       (m_pxDataStore ->
+                        GetBlockLength(uiBlockIndex)),
+                       uiBlockIndex))
+    {
+        std::cout << "CDeviceControl::DataBaseBlockWrite  2"  << std::endl;
+    }
+    else
+    {
+        std::cout << "CDeviceControl::DataBaseBlockWrite  3"  << std::endl;
+    }
 
-	// получим указатель на блок базы данных.
+    // получим указатель на блок базы данных.
 
-	// номер принятого для записи блока базы данных.
-	switch(nucDataBaseBlockIndex)
-	{
-	case ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_OFFSET:
-		cout << "ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_OFFSET" << endl;
-		break;
+    // номер принятого для записи блока базы данных.
+    switch(uiBlockIndex)
+    {
+    case ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_OFFSET:
+        cout << "ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_OFFSET" << endl;
+        {
+            CAnalogueSignals* pxAnalogueSignals =
+                (CAnalogueSignals*)(GetResources() ->
+                                    GetTaskPointerByNameFromMap("AnalogueSignals"));
 
-	case CURRENT_OUTPUT_MODULE_REGULATOR_DATA_BASE_BLOCK_OFFSET:
-		cout << "CURRENT_OUTPUT_MODULE_REGULATOR_DATA_BASE_BLOCK_OFFSET" << endl;
-		break;
+//            m_pxOperatingDataContainer -> m_uiFsmCommandState =
+//                CAnalogueSignals::DATA_BASE_BLOCK_MODULE_START_WRITE;
+//            m_pxOperatingDataContainer -> m_uiDataIndex = 1;
+//            m_pxOperatingDataContainer -> m_puiDataPointer =
+//                m_puiIntermediateBuff;
+//            pxAnalogueSignals ->
+//            SetTaskData(m_pxOperatingDataContainer);
+
+            CDataContainerDataBase xOperatingDataContainer;
+            xOperatingDataContainer.m_uiFsmCommandState =
+                CAnalogueSignals::DATA_BASE_BLOCK_MODULE_START_WRITE;
+            xOperatingDataContainer.m_uiDataIndex = 1;
+            xOperatingDataContainer.m_puiDataPointer = m_puiIntermediateBuff;
+            pxAnalogueSignals ->
+            SetTaskData(&xOperatingDataContainer);
+        }
+        break;
+
+    case CURRENT_OUTPUT_MODULE_REGULATOR_DATA_BASE_BLOCK_OFFSET:
+        cout << "CURRENT_OUTPUT_MODULE_REGULATOR_DATA_BASE_BLOCK_OFFSET" << endl;
+        break;
 
     case CURRENT_OUTPUT_MODULE_PSP_DATA_BASE_BLOCK_OFFSET:
         cout << "CURRENT_OUTPUT_MODULE_PSP_DATA_BASE_BLOCK_OFFSET" << endl;
         break;
 
-	case DISCRETE_INPUT_SYGNALS_DATA_BASE_BLOCK_OFFSET:
-		cout << "DISCRETE_INPUT_SYGNALS_DATA_BASE_BLOCK_OFFSET" << endl;
-		break;
+    case DISCRETE_INPUT_SYGNALS_DATA_BASE_BLOCK_OFFSET:
+        cout << "DISCRETE_INPUT_SYGNALS_DATA_BASE_BLOCK_OFFSET" << endl;
+        break;
 
-	case DIMENSIONS_PARAMETERS_DATA_BASE_BLOCK_OFFSET:
-		cout << "DIMENSIONS_PARAMETERS_DATA_BASE_BLOCK_OFFSET" << endl;
-		break;
+    case DIMENSIONS_PARAMETERS_DATA_BASE_BLOCK_OFFSET:
+        cout << "DIMENSIONS_PARAMETERS_DATA_BASE_BLOCK_OFFSET" << endl;
+        break;
 
-	case TEXT_TITLES_DATA_BASE_BLOCK_OFFSET:
-		cout << "TEXT_TITLES_DATA_BASE_BLOCK_OFFSET" << endl;
-		break;
+    case TEXT_TITLES_DATA_BASE_BLOCK_OFFSET:
+        cout << "TEXT_TITLES_DATA_BASE_BLOCK_OFFSET" << endl;
+        break;
 
-	case FUNCTION_BLOCK_DATA_BASE_BLOCK_OFFSET:
-		cout << "FUNCTION_BLOCK_DATA_BASE_BLOCK_OFFSET" << endl;
-		break;
+    case FUNCTION_BLOCK_DATA_BASE_BLOCK_OFFSET:
+        cout << "FUNCTION_BLOCK_DATA_BASE_BLOCK_OFFSET" << endl;
+        break;
 
-	case NETWORK_ADDRESS_DATA_BASE_BLOCK_OFFSET:
-		cout << "NETWORK_ADDRESS_DATA_BASE_BLOCK_OFFSET" << endl;
-		break;
+    case NETWORK_ADDRESS_DATA_BASE_BLOCK_OFFSET:
+        cout << "NETWORK_ADDRESS_DATA_BASE_BLOCK_OFFSET" << endl;
+        break;
 
-	default:
-		cout << "default" << endl;
-		break;
-	};
+    default:
+        cout << "default" << endl;
+        break;
+    };
 
     return 0;
 }
@@ -234,39 +266,39 @@ uint8_t CDeviceControl::Fsm(void)
 
     case INIT:
 //        std::cout << "CDeviceControl::Fsm INIT 1"  << std::endl;
-        {
-            CTaskInterface* pxTask =
-                GetResources() ->
-                GetTaskPointerByNameFromMap(m_sDataStoreName);
+    {
+        CTaskInterface* pxTask =
+            GetResources() ->
+            GetTaskPointerByNameFromMap(m_sDataStoreName);
 
-            if (pxTask != 0)
-            {
+        if (pxTask != 0)
+        {
 //                std::cout << "CDeviceControl::Fsm INIT 2"  << std::endl;
-                if (pxTask -> GetFsmState() >= READY)
-                {
-//                    std::cout << "CDeviceControl::Fsm INIT 3"  << std::endl;
-                    SetDataStore((CDataStore*)pxTask);
-                    uiReadyTaskCounter += 1;
-//                    SetFsmState(READY);
-                }
-            }
-            else
+            if (pxTask -> GetFsmState() >= READY)
             {
-//                std::cout << "CDeviceControl::Fsm INIT 4"  << std::endl;
-                if (GetTimerPointer() -> IsOverflow())
-                {
-                std::cout << "CDeviceControl::Fsm INIT 5"  << std::endl;
-                    SetFsmState(STOP);
-                }
+//                    std::cout << "CDeviceControl::Fsm INIT 3"  << std::endl;
+                SetDataStore((CDataStore*)pxTask);
+                uiReadyTaskCounter += 1;
+//                    SetFsmState(READY);
             }
         }
-
-        if (uiReadyTaskCounter > 0)
+        else
         {
-            SetFsmState(READY);
+//                std::cout << "CDeviceControl::Fsm INIT 4"  << std::endl;
+            if (GetTimerPointer() -> IsOverflow())
+            {
+                std::cout << "CDeviceControl::Fsm INIT 5"  << std::endl;
+                SetFsmState(STOP);
+            }
         }
+    }
 
-        break;
+    if (uiReadyTaskCounter > 0)
+    {
+        SetFsmState(READY);
+    }
+
+    break;
 
     case READY:
 //        std::cout << "CDeviceControl::Fsm READY"  << std::endl;
@@ -328,10 +360,11 @@ uint8_t CDeviceControl::Fsm(void)
         {
             //        m_uiRequestRetryCounter = 0;
             uint8_t uiBlockIndex = m_pxOperatingDataContainer -> m_uiDataIndex;
+            uint8_t* puiDataPointer = m_pxOperatingDataContainer -> m_puiDataPointer;
             std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_START_WRITE uiBlockIndex "  << (int)uiBlockIndex << std::endl;
 
             if (m_pxDataStore ->
-                    WriteBlock(m_pxOperatingDataContainer -> m_puiDataPointer,
+                    WriteBlock(puiDataPointer,
                                (m_pxDataStore ->
                                 GetBlockLength(uiBlockIndex)),
                                uiBlockIndex))
@@ -348,6 +381,8 @@ uint8_t CDeviceControl::Fsm(void)
 //                SetFsmState(READY);
                 SetFsmState(DONE_ERROR);
             }
+
+//            DataBaseBlockWrite();
 
         }
         break;

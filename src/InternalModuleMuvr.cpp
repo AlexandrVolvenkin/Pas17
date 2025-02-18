@@ -61,12 +61,12 @@ uint8_t CInternalModuleMuvr::Init(void)
 //-------------------------------------------------------------------------------
 bool CInternalModuleMuvr::SetTaskData(CDataContainerDataBase* pxDataContainer)
 {
-    std::cout << "CInternalModuleMuvr::SetTaskData 1" << std::endl;
+//    std::cout << "CInternalModuleMuvr::SetTaskData 1" << std::endl;
     uint8_t uiFsmState = GetFsmState();
 
     if (IsTaskReady())
     {
-        std::cout << "CInternalModuleMuvr::SetTaskData 2" << std::endl;
+//        std::cout << "CInternalModuleMuvr::SetTaskData 2" << std::endl;
         *m_pxOperatingDataContainer = *pxDataContainer;
         SetFsmState(m_pxOperatingDataContainer -> m_uiFsmCommandState);
         return true;
@@ -282,7 +282,7 @@ void CInternalModuleMuvr::Allocate(void)
 //-----------------------------------------------------------------------------------------------------
 uint8_t CInternalModuleMuvr::DataExchange(void)
 {
-    std::cout << "CInternalModuleMuvr::DataExchange 1"  << std::endl;
+//    std::cout << "CInternalModuleMuvr::DataExchange 1"  << std::endl;
     float fData;
     unsigned char ucCalibrPlus;
     unsigned char ucCalibrMinus;
@@ -338,7 +338,7 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
         std::cout << "CInternalModuleMuvr::DataExchange 2"  << std::endl;
     // ошибка БД реперных точек, но будет продолжение обмена.
     case MUVR_GET_MEASURE_DATA_COMMAND:
-        std::cout << "CInternalModuleMuvr::DataExchange 3"  << std::endl;
+//        std::cout << "CInternalModuleMuvr::DataExchange 3"  << std::endl;
         // данные не повреждены?
         if (iCrcSummTwoByteCompare(&auiSpiRxBuffer[SPI_DATA_BYTE_OFFSET],
                                    MUVR_GET_MEASURE_DATA_COMMAND_ANSWER_LENGTH) > 0)
@@ -354,19 +354,19 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
 //                   &auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET],
 //                   MUVR_ANALOG_INPUT_QUANTITY);
 
-//            cout << "MUVR_GET_MEASURE_DATA_COMMAND ucCalibrMinus" << (int)ucCalibrMinus << endl;
-            std::cout << "CInternalModuleMuvr::DataExchange auiSpiRxBuffer"  << std::endl;
-            unsigned char *pucSourceTemp;
-            pucSourceTemp = (unsigned char*)&auiSpiRxBuffer[0];
-            for(int i=0; i<32 ; )
-            {
-                for(int j=0; j<8; j++)
-                {
-                    cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
-                }
-                cout << endl;
-                i += 8;
-            }
+////            cout << "MUVR_GET_MEASURE_DATA_COMMAND ucCalibrMinus" << (int)ucCalibrMinus << endl;
+//            std::cout << "CInternalModuleMuvr::DataExchange auiSpiRxBuffer"  << std::endl;
+//            unsigned char *pucSourceTemp;
+//            pucSourceTemp = (unsigned char*)&auiSpiRxBuffer[0];
+//            for(int i=0; i<32 ; )
+//            {
+//                for(int j=0; j<8; j++)
+//                {
+//                    cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+//                }
+//                cout << endl;
+//                i += 8;
+//            }
 
             // получим измеренные значения всех аналоговых входов модуля.
             for (uint8_t i = 0; i < MUVR_ANALOG_INPUT_QUANTITY; i++)
@@ -506,7 +506,7 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
         break;
 
     case MUVR_ANSWER_DATA_NOT_READY:
-        std::cout << "CInternalModuleMuvr::DataExchange 4"  << std::endl;
+//        std::cout << "CInternalModuleMuvr::DataExchange 4"  << std::endl;
         // данные не готовы.
         return 0;
         break;
@@ -520,7 +520,7 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
         break;
 
     default:
-        std::cout << "CInternalModuleMuvr::DataExchange 6"  << std::endl;
+//        std::cout << "CInternalModuleMuvr::DataExchange 6"  << std::endl;
         break;
     };
 
@@ -761,7 +761,7 @@ uint8_t CInternalModuleMuvr::DataBaseBlockWrite(void)
 //    xModuleContextDinamic.
 //    usAuxiliaryCounter = 0;
 
-    return 0;
+    return 1;
 }
 
 ////-----------------------------------------------------------------------------------------------------

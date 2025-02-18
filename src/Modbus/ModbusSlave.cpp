@@ -825,11 +825,19 @@ uint16_t CModbusSlave::DataBaseRead(void)
 
         m_uiFunctionCode = uiFunctionCode;
 
-        m_pxOperatingDataContainer -> m_uiFsmCommandState = CDeviceControl::DATA_BASE_BLOCK_READ;
-        m_pxOperatingDataContainer -> m_uiDataIndex = uiBlockIndex;
-        m_pxOperatingDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+//        m_pxOperatingDataContainer -> m_uiFsmCommandState = CDeviceControl::DATA_BASE_BLOCK_READ;
+//        m_pxOperatingDataContainer -> m_uiDataIndex = uiBlockIndex;
+//        m_pxOperatingDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+//        m_pxDeviceControl ->
+//        SetTaskData(m_pxOperatingDataContainer);
+
+        CDataContainerDataBase xOperatingDataContainer;
+        xOperatingDataContainer.m_uiFsmCommandState =
+            CDeviceControl::DATA_BASE_BLOCK_READ;
+        xOperatingDataContainer.m_uiDataIndex = uiBlockIndex;
+        xOperatingDataContainer.m_puiDataPointer = m_puiIntermediateBuff;
         m_pxDeviceControl ->
-        SetTaskData(m_pxOperatingDataContainer);
+        SetTaskData(&xOperatingDataContainer);
 
         uiLength = 5;
 
@@ -885,11 +893,19 @@ uint16_t CModbusSlave::DataBaseWrite(void)
                &puiRequest[uiPduOffset + 2],
                MAX_MODBUS_MESSAGE_LENGTH);
 
-        m_pxOperatingDataContainer -> m_uiFsmCommandState = CDeviceControl::DATA_BASE_BLOCK_START_WRITE;
-        m_pxOperatingDataContainer -> m_uiDataIndex = uiBlockIndex;
-        m_pxOperatingDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+//        m_pxOperatingDataContainer -> m_uiFsmCommandState = CDeviceControl::DATA_BASE_BLOCK_START_WRITE;
+//        m_pxOperatingDataContainer -> m_uiDataIndex = uiBlockIndex;
+//        m_pxOperatingDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+//        m_pxDeviceControl ->
+//        SetTaskData(m_pxOperatingDataContainer);
+
+        CDataContainerDataBase xOperatingDataContainer;
+        xOperatingDataContainer.m_uiDataIndex = uiBlockIndex;
+        xOperatingDataContainer.m_uiFsmCommandState =
+            CDeviceControl::DATA_BASE_BLOCK_START_WRITE;
+        xOperatingDataContainer.m_puiDataPointer = m_puiIntermediateBuff;
         m_pxDeviceControl ->
-        SetTaskData(m_pxOperatingDataContainer);
+        SetTaskData(&xOperatingDataContainer);
 
         uiLength = m_pxModbusSlaveLinkLayer ->
                    ResponseBasis(uiSlave, uiFunctionCode, puiResponse);

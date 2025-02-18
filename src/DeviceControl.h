@@ -15,6 +15,7 @@ class CResources;
 class CDataStore;
 class CLink;
 class CLinkInterface;
+class CAnalogueSignals;
 class CDataContainerInterface;
 class CDataContainerDataBase;
 
@@ -114,7 +115,7 @@ public:
     uint16_t ConfigurationRead(uint8_t *puiDestination);
     uint16_t DataBaseBlockRead(uint8_t *puiDestination, uint8_t uiBlockIndex);
     uint16_t DataBaseBlockReadAnswer(void);
-    uint16_t DataBaseBlockWrite(uint8_t *puiSource, uint8_t uiBlockIndex);
+    uint16_t DataBaseBlockWrite(void);
     uint8_t GetFsmOperationStatus(void);
 
     uint8_t Fsm(void);

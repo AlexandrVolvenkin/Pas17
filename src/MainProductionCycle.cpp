@@ -720,7 +720,7 @@ uint8_t CMainProductionCycle::Fsm(void)
 
         if (GetTimerPointer() -> IsOverflow())
         {
-            std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_START_WAITING 2"  << std::endl;
+//            std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_START_WAITING 2"  << std::endl;
             GetTimerPointer() -> Set(100);
             SetFsmState(MAIN_CYCLE_MODULES_INTERACTION);
         }
@@ -728,7 +728,7 @@ uint8_t CMainProductionCycle::Fsm(void)
         break;
 
     case MAIN_CYCLE_MODULES_INTERACTION:
-        std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_MODULES_INTERACTION"  << std::endl;
+//        std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_MODULES_INTERACTION"  << std::endl;
         {
             CurrentlyRunningTasksExecution();
 

@@ -475,8 +475,8 @@ uint8_t CModbusRtuSlaveLinkLayer::Fsm(void)
                             m_uiGuardTimeout);
         if (iBytesNumber > 0)
         {
-            std::cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END 2"  << std::endl;
-            cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END errno " << errno << endl;
+//            std::cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END 2"  << std::endl;
+//            cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END errno " << errno << endl;
             m_uiFrameLength = m_uiFrameLength + iBytesNumber;
         }
         else if (iBytesNumber < 0)
