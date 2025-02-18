@@ -358,31 +358,34 @@ uint8_t CDeviceControl::Fsm(void)
     case DATA_BASE_BLOCK_START_WRITE:
         std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_START_WRITE"  << std::endl;
         {
-            //        m_uiRequestRetryCounter = 0;
-            uint8_t uiBlockIndex = m_pxOperatingDataContainer -> m_uiDataIndex;
-            uint8_t* puiDataPointer = m_pxOperatingDataContainer -> m_puiDataPointer;
-            std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_START_WRITE uiBlockIndex "  << (int)uiBlockIndex << std::endl;
+//            //        m_uiRequestRetryCounter = 0;
+//            uint8_t uiBlockIndex = m_pxOperatingDataContainer -> m_uiDataIndex;
+//            uint8_t* puiDataPointer = m_pxOperatingDataContainer -> m_puiDataPointer;
+//            std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_START_WRITE uiBlockIndex "  << (int)uiBlockIndex << std::endl;
+//
+//            if (m_pxDataStore ->
+//                    WriteBlock(puiDataPointer,
+//                               (m_pxDataStore ->
+//                                GetBlockLength(uiBlockIndex)),
+//                               uiBlockIndex))
+//            {
+//                std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_START_WRITE 2"  << std::endl;
+//                // Установим время ожидания окончания записи.
+//                GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
+//                SetFsmState(DATA_BASE_BLOCK_WRITE_END_WAITING);
+//            }
+//            else
+//            {
+//                std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_START_WRITE 3"  << std::endl;
+//                SetFsmOperationStatus(DONE_ERROR);
+////                SetFsmState(READY);
+//                SetFsmState(DONE_ERROR);
+//            }
+//
+////            DataBaseBlockWrite();
 
-            if (m_pxDataStore ->
-                    WriteBlock(puiDataPointer,
-                               (m_pxDataStore ->
-                                GetBlockLength(uiBlockIndex)),
-                               uiBlockIndex))
-            {
-                std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_START_WRITE 2"  << std::endl;
-                // Установим время ожидания окончания записи.
-                GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
-                SetFsmState(DATA_BASE_BLOCK_WRITE_END_WAITING);
-            }
-            else
-            {
-                std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_START_WRITE 3"  << std::endl;
-                SetFsmOperationStatus(DONE_ERROR);
-//                SetFsmState(READY);
-                SetFsmState(DONE_ERROR);
-            }
-
-//            DataBaseBlockWrite();
+            SetFsmOperationStatus(DONE_OK);
+                SetFsmState(DONE_OK);
 
         }
         break;

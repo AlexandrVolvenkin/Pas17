@@ -751,7 +751,8 @@ uint16_t CModbusSlave::PollProgramming(void)
 
     // Ожидаем окончания записи автоматом устройства хранения.
     // Устройство хранения закончило запись успешно?
-    if (pxDeviceControl -> IsDoneOk())
+//    if (pxDeviceControl -> IsDoneOk())
+    if (1)
     {
         std::cout << "CModbusSlave::PollProgramming 2" << std::endl;
 
@@ -899,13 +900,13 @@ uint16_t CModbusSlave::DataBaseWrite(void)
 //        m_pxDeviceControl ->
 //        SetTaskData(m_pxOperatingDataContainer);
 
-        CDataContainerDataBase xOperatingDataContainer;
-        xOperatingDataContainer.m_uiDataIndex = uiBlockIndex;
-        xOperatingDataContainer.m_uiFsmCommandState =
-            CDeviceControl::DATA_BASE_BLOCK_START_WRITE;
-        xOperatingDataContainer.m_puiDataPointer = m_puiIntermediateBuff;
-        m_pxDeviceControl ->
-        SetTaskData(&xOperatingDataContainer);
+//        CDataContainerDataBase xOperatingDataContainer;
+//        xOperatingDataContainer.m_uiDataIndex = uiBlockIndex;
+//        xOperatingDataContainer.m_uiFsmCommandState =
+//            CDeviceControl::DATA_BASE_BLOCK_START_WRITE;
+//        xOperatingDataContainer.m_puiDataPointer = m_puiIntermediateBuff;
+//        m_pxDeviceControl ->
+//        SetTaskData(&xOperatingDataContainer);
 
         uiLength = m_pxModbusSlaveLinkLayer ->
                    ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
