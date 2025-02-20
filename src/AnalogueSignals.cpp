@@ -54,7 +54,6 @@ uint8_t CAnalogueSignals::Init(void)
 bool CAnalogueSignals::SetTaskData(CDataContainerDataBase* pxDataContainer)
 {
     std::cout << "CAnalogueSignals::SetTaskData 1" << std::endl;
-    uint8_t uiFsmState = GetFsmState();
 
     if (IsTaskReady())
     {

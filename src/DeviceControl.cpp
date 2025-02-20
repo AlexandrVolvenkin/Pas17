@@ -42,13 +42,14 @@ uint8_t CDeviceControl::Init(void)
 //                               AddDataContainer(std::make_shared<CDataContainerDataBase>()));
     m_pxOperatingDataContainer = static_cast<CDataContainerDataBase*>(GetResources() ->
                                  AddDataContainer(std::make_shared<CDataContainerDataBase>()));
+    SetExecutorDataContainer(static_cast<CDataContainerDataBase*>(GetResources() ->
+                             AddDataContainer(std::make_shared<CDataContainerDataBase>())));
 }
 
 //-------------------------------------------------------------------------------
 bool CDeviceControl::SetTaskData(CDataContainerDataBase* pxDataContainer)
 {
     std::cout << "CDeviceControl::SetTaskData 1" << std::endl;
-    uint8_t uiFsmState = GetFsmState();
 
     if (IsTaskReady())
     {
@@ -334,21 +335,42 @@ uint8_t CDeviceControl::Fsm(void)
     case DATA_BASE_BLOCK_READ:
         std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_READ 1"  << std::endl;
         {
+//            uint16_t uiLength =
+//                m_pxDataStore ->
+//                ReadBlock(m_pxOperatingDataContainer -> m_puiDataPointer,
+//                          m_pxOperatingDataContainer -> m_uiDataIndex);
+//
+//            if (uiLength)
+//            {
+//                std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_READ 2"  << std::endl;
+//                m_pxOperatingDataContainer -> m_uiDataLength = uiLength;
+//                SetFsmState(DONE_OK);
+//            }
+//            else
+//            {
+//                std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_READ 3"  << std::endl;
+//                m_pxOperatingDataContainer -> m_uiDataLength = uiLength;
+////                SetFsmState(DONE_ERROR);
+//                SetFsmState(DONE_OK);
+//            }
+
             uint16_t uiLength =
                 m_pxDataStore ->
-                ReadBlock(m_pxOperatingDataContainer -> m_puiDataPointer,
-                          m_pxOperatingDataContainer -> m_uiDataIndex);
+                ReadBlock(((CDataContainerDataBase*)GetCustomertDataContainerPointer()) -> m_puiDataPointer,
+                          ((CDataContainerDataBase*)GetCustomertDataContainerPointer()) -> m_uiDataIndex);
 
             if (uiLength)
             {
                 std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_READ 2"  << std::endl;
-                m_pxOperatingDataContainer -> m_uiDataLength = uiLength;
+                ((CDataContainerDataBase*)GetCustomertDataContainerPointer()) -> m_uiDataLength = uiLength;
+                ((CDataContainerDataBase*)GetCustomertDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
                 SetFsmState(DONE_OK);
             }
             else
             {
                 std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_READ 3"  << std::endl;
-                m_pxOperatingDataContainer -> m_uiDataLength = uiLength;
+                ((CDataContainerDataBase*)GetCustomertDataContainerPointer()) -> m_uiDataLength = uiLength;
+                ((CDataContainerDataBase*)GetCustomertDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
 //                SetFsmState(DONE_ERROR);
                 SetFsmState(DONE_OK);
             }

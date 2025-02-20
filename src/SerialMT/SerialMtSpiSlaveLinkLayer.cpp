@@ -61,7 +61,6 @@ uint8_t CSerialMtSpiSlaveLinkLayer::Init(void)
 bool CSerialMtSpiSlaveLinkLayer::SetTaskData(CDataContainerDataBase* pxDataContainer)
 {
 //    std::cout << "CSerialMtSpiSlaveLinkLayer::SetTaskData 1" << std::endl;
-    uint8_t uiFsmState = GetFsmState();
 
     if (IsTaskReady())
     {

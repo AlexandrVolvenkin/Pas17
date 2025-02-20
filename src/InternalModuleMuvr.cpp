@@ -62,7 +62,6 @@ uint8_t CInternalModuleMuvr::Init(void)
 bool CInternalModuleMuvr::SetTaskData(CDataContainerDataBase* pxDataContainer)
 {
 //    std::cout << "CInternalModuleMuvr::SetTaskData 1" << std::endl;
-    uint8_t uiFsmState = GetFsmState();
 
     if (IsTaskReady())
     {
@@ -290,6 +289,7 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
     uint8_t auiSpiTxBuffer[TX_RX_BUFF_SIZE];
     uint8_t auiSpiRxBuffer[TX_RX_BUFF_SIZE];
 
+    memset(auiSpiTxBuffer, 0, 250);
     ucCalibrPlus = 0;
     ucCalibrMinus = 0;
 //    uint8_t uiCommonIndex = GetCommonIndex();
@@ -317,10 +317,14 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
 //        // при контроле, сумма (ucCalibrPlus + ucCalibrMinus) должна быть 0.
 //        ucCalibrMinus = 0x00 - ucCalibrPlus;
 //    }
-    auiSpiTxBuffer[(SPI_PREAMBLE_LENGTH +
+    auiSpiTxBuffer[(1 +
                     MUVR_GET_MEASURE_DATA_COMMAND_ANSWER_LENGTH)] = ucCalibrPlus;
-    auiSpiTxBuffer[(SPI_PREAMBLE_LENGTH +
+    auiSpiTxBuffer[(1 +
                     MUVR_GET_MEASURE_DATA_COMMAND_ANSWER_LENGTH + 1)] = ucCalibrMinus;
+//    auiSpiTxBuffer[(SPI_PREAMBLE_LENGTH +
+//                    MUVR_GET_MEASURE_DATA_COMMAND_ANSWER_LENGTH)] = ucCalibrPlus;
+//    auiSpiTxBuffer[(SPI_PREAMBLE_LENGTH +
+//                    MUVR_GET_MEASURE_DATA_COMMAND_ANSWER_LENGTH + 1)] = ucCalibrMinus;
     auiSpiTxBuffer[0] = MUVR_GET_MEASURE_DATA_COMMAND;
     auiSpiTxBuffer[1] = 0;
 
@@ -328,11 +332,15 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
     auiSpiTxBuffer[3] = 0;
     auiSpiTxBuffer[4] = 0;
     auiSpiTxBuffer[5] = 0;
-    auiSpiTxBuffer[6] = 0;
-    usData = usCrcSummTwoByteCalculation(&auiSpiTxBuffer[2],
+//    auiSpiTxBuffer[6] = 0;
+//    usData = usCrcSummTwoByteCalculation(&auiSpiTxBuffer[2],
+//                                         5);
+//    auiSpiTxBuffer[7] = (unsigned char)usData;
+//    auiSpiTxBuffer[8] = (unsigned char)(usData >> 8);
+    usData = usCrcSummTwoByteCalculation(&auiSpiTxBuffer[1],
                                          5);
-    auiSpiTxBuffer[7] = (unsigned char)usData;
-    auiSpiTxBuffer[8] = (unsigned char)(usData >> 8);
+    auiSpiTxBuffer[6] = (unsigned char)usData;
+    auiSpiTxBuffer[7] = (unsigned char)(usData >> 8);
 
     {
         std::cout << "CInternalModuleMuvr::DataExchange auiSpiTxBuffer"  << std::endl;
@@ -383,6 +391,7 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
         if (iCrcSummTwoByteCompare(&auiSpiRxBuffer[SPI_DATA_BYTE_OFFSET],
                                    MUVR_GET_MEASURE_DATA_COMMAND_ANSWER_LENGTH) > 0)
         {
+        std::cout << "CInternalModuleMuvr::DataExchange 33"  << std::endl;
             // модуль исправен.
             SetBadAnswerCounter(BAD_MODULE_CYCLE_COUNT_DEFAULT);
 //            // сбросим флаг отказа модуля.

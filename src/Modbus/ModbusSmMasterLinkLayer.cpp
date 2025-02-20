@@ -77,7 +77,6 @@ void CModbusSmMasterLinkLayer::Process(CModbusSmMasterLinkLayer* pxModbusSlaveLi
 bool CModbusSmMasterLinkLayer::SetTaskData(CDataContainerDataBase* pxDataContainer)
 {
 //    std::cout << "CModbusSmMasterLinkLayer::SetTaskData 1" << std::endl;
-    uint8_t uiFsmState = GetFsmState();
 
     if (IsTaskReady())
     {

@@ -20,6 +20,7 @@ class CDfa;
 class CResourcesInterface;
 class CResources;
 class CDataContainerInterface;
+class CDataContainerDataBase;
 class CMessageBoxInterface;
 class CMessageBoxGeneral;
 
@@ -51,11 +52,13 @@ public:
 //    virtual ~CTaskInterface();
     virtual char* GetTaskNamePointer(void) {};
 
-//    virtual void SetOperatingDataContainer(CDataContainerInterface* pxDataContainer) {};
-//    virtual CDataContainerInterface* GetOperatingDataContainerPointer(void) {};
-//
-//    virtual void SetCommandDataContainer(CDataContainerInterface* pxDataContainer) {};
-//    virtual CDataContainerInterface* GetCommandDataContainerPointer(void) {};
+    virtual void SetCustomertDataContainer(CDataContainerInterface* pxDataContainer) {};
+    virtual CDataContainerInterface* GetCustomertDataContainerPointer(void) {};
+
+    virtual void SetExecutorDataContainer(CDataContainerInterface* pxDataContainer) {};
+    virtual CDataContainerInterface* GetExecutorDataContainerPointer(void) {};
+
+    virtual bool SetTaskData(uint8_t uiTaskId, CDataContainerInterface* pxDataContainer) {};
 
     virtual size_t GetObjectLength(void) {};
     virtual bool IsTaskReady(void) {};
@@ -88,14 +91,16 @@ public:
     void SetResources(CResources* pxResources);
     CResources* GetResources(void);
 
-//    void SetOperatingDataContainer(CDataContainerInterface* pxDataContainer);
-//    CDataContainerInterface* GetOperatingDataContainerPointer(void);
-//
-//    void SetCommandDataContainer(CDataContainerInterface* pxDataContainer);
-//    CDataContainerInterface* GetCommandDataContainerPointer(void);
+    void SetCustomertDataContainer(CDataContainerInterface* pxDataContainer);
+    CDataContainerInterface* GetCustomertDataContainerPointer(void);
+
+    void SetExecutorDataContainer(CDataContainerInterface* pxDataContainer);
+    CDataContainerInterface* GetExecutorDataContainerPointer(void);
 
 //    bool SetTaskData(CDataContainerInterface* pxDataContainer);
 //    CDataContainerInterface* GetTaskData(void);
+
+    bool SetTaskData(uint8_t uiTaskId, CDataContainerInterface* pxDataContainer);
 
     size_t GetObjectLength(void);
     bool IsTaskReady(void);
@@ -106,6 +111,9 @@ public:
     char m_acTaskName[TASK_NAME_LENGTH] = {0};
 //    std::string m_sTaskName;
     CResources* m_pxResources;
+
+    CDataContainerInterface* m_pxCustomertDataContainer;
+    CDataContainerInterface* m_pxExecutorDataContainer;
 };
 
 //-------------------------------------------------------------------------------

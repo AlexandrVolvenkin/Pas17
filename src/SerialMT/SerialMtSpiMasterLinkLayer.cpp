@@ -77,7 +77,6 @@ void CSerialMtSpiMasterLinkLayer::Process(CSerialMtSpiMasterLinkLayer* pxModbusS
 bool CSerialMtSpiMasterLinkLayer::SetTaskData(CDataContainerDataBase* pxDataContainer)
 {
 //    std::cout << "CSerialMtSpiMasterLinkLayer::SetTaskData 1" << std::endl;
-    uint8_t uiFsmState = GetFsmState();
 
     if (IsTaskReady())
     {

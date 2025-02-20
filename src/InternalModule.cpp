@@ -78,7 +78,6 @@ uint8_t CInternalModule::Init(void)
 bool CInternalModule::SetTaskData(CDataContainerDataBase* pxDataContainer)
 {
     std::cout << "CInternalModule::SetTaskData 1" << std::endl;
-    uint8_t uiFsmState = GetFsmState();
 
     if (IsTaskReady())
     {

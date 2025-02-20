@@ -48,6 +48,9 @@ uint8_t CModbusSlave::Init(void)
     std::cout << "CModbusSlave Init"  << std::endl;
     m_pxOperatingDataContainer = static_cast<CDataContainerDataBase*>(GetResources() ->
                                  AddDataContainer(std::make_shared<CDataContainerDataBase>()));
+    SetExecutorDataContainer(static_cast<CDataContainerDataBase*>(GetResources() ->
+                             AddDataContainer(std::make_shared<CDataContainerDataBase>())));
+
 }
 
 //-------------------------------------------------------------------------------
@@ -829,7 +832,7 @@ uint16_t CModbusSlave::DataBaseRead(void)
     }
     else
     {
-        std::cout << "CModbusSlave::DataBaseRead 4" << std::endl;
+        std::cout << "CModbusSlave::DataBaseRead 3" << std::endl;
 
         m_uiFunctionCode = uiFunctionCode;
 
@@ -839,17 +842,34 @@ uint16_t CModbusSlave::DataBaseRead(void)
 //        m_pxDeviceControl ->
 //        SetTaskData(m_pxOperatingDataContainer);
 
-        CDeviceControl* pxDeviceControl =
-            (CDeviceControl*)GetResources() ->
-            GetTaskPointerById(m_uiDeviceControlId);
-
-        CDataContainerDataBase xOperatingDataContainer;
-        xOperatingDataContainer.m_uiFsmCommandState =
+        CDataContainerDataBase* pxDataContainer =
+            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+        pxDataContainer -> m_uiFsmCommandState =
             CDeviceControl::DATA_BASE_BLOCK_READ;
-        xOperatingDataContainer.m_uiDataIndex = uiBlockIndex;
-        xOperatingDataContainer.m_puiDataPointer = m_puiIntermediateBuff;
-        pxDeviceControl ->
-        SetTaskData(&xOperatingDataContainer);
+        pxDataContainer -> m_uiDataIndex = uiBlockIndex;
+        pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+
+        if (SetTaskData(m_uiDeviceControlId,
+                        pxDataContainer))
+        {
+            std::cout << "CModbusSlave::DataBaseRead 4" << std::endl;
+        }
+        else
+        {
+            std::cout << "CModbusSlave::DataBaseRead 5" << std::endl;
+        }
+
+//        CDeviceControl* pxDeviceControl =
+//            (CDeviceControl*)GetResources() ->
+//            GetTaskPointerById(m_uiDeviceControlId);
+//
+//        CDataContainerDataBase xOperatingDataContainer;
+//        xOperatingDataContainer.m_uiFsmCommandState =
+//            CDeviceControl::DATA_BASE_BLOCK_READ;
+//        xOperatingDataContainer.m_uiDataIndex = uiBlockIndex;
+//        xOperatingDataContainer.m_puiDataPointer = m_puiIntermediateBuff;
+//        pxDeviceControl ->
+//        SetTaskData(&xOperatingDataContainer);
 
         uiLength = 5;
 
@@ -1582,9 +1602,9 @@ uint16_t CModbusSlave::ReportSlaveIDAnswer(void)
 //        (CDeviceControl*)GetResources() ->
 //        GetTaskPointerByNameFromMap("DeviceControlRtuUpperLevel");
 
-        CDeviceControl* pxDeviceControl =
-            (CDeviceControl*)GetResources() ->
-            GetTaskPointerById(m_uiDeviceControlId);
+    CDeviceControl* pxDeviceControl =
+        (CDeviceControl*)GetResources() ->
+        GetTaskPointerById(m_uiDeviceControlId);
 
     uiLength = pxDeviceControl ->
                ConfigurationRead(&puiResponse[uiPduOffset + 2]);
@@ -1738,27 +1758,35 @@ uint16_t CModbusSlave::DataBaseReadAnswer(void)
     }
     else
     {
-//        CDataContainerDataBase* pxDataContainer =
-//            m_pxDeviceControl ->
-//            GetTaskData();
-//        uiLength = pxDataContainer -> m_uiDataLength;
+////        CDataContainerDataBase* pxDataContainer =
+////            m_pxDeviceControl ->
+////            GetTaskData();
+////        uiLength = pxDataContainer -> m_uiDataLength;
+//
+//        CDeviceControl* pxDeviceControl =
+//            (CDeviceControl*)GetResources() ->
+//            GetTaskPointerById(m_uiDeviceControlId);
+//
+//        pxDeviceControl ->
+//        GetTaskData(m_pxOperatingDataContainer);
+//
+//        uiLength = m_pxOperatingDataContainer -> m_uiDataLength;
 
-        CDeviceControl* pxDeviceControl =
-            (CDeviceControl*)GetResources() ->
-            GetTaskPointerById(m_uiDeviceControlId);
 
-        pxDeviceControl ->
-        GetTaskData(m_pxOperatingDataContainer);
 
-        uiLength = m_pxOperatingDataContainer -> m_uiDataLength;
+        CDataContainerDataBase* pxDataContainer =
+            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+        uiLength = pxDataContainer -> m_uiDataLength;
 
-//        uiLength = m_pxDeviceControlLink ->
-//                   GetDataContainerPointer() ->
-//                   GetDataLength();
+
+
         std::cout << "CModbusSlave::DataBaseReadAnswer uiLength "  << (int)uiLength << std::endl;
 
+//        memcpy(&puiResponse[uiPduOffset + 3],
+//               (m_pxOperatingDataContainer -> m_puiDataPointer),
+//               uiLength);
         memcpy(&puiResponse[uiPduOffset + 3],
-               (m_pxOperatingDataContainer -> m_puiDataPointer),
+               (pxDataContainer -> m_puiDataPointer),
                uiLength);
 
         puiResponse[uiPduOffset + 1] = uiLength + 1;
@@ -2214,13 +2242,18 @@ uint8_t CModbusSlave::Fsm(void)
     case ANSWER_PROCESSING_WAITING:
 //        std::cout << "CModbusSlave::Fsm ANSWER_PROCESSING_WAITING"  << std::endl;
     {
-        CDeviceControl* pxDeviceControl =
-            (CDeviceControl*)GetResources() ->
-            GetTaskPointerById(m_uiDeviceControlId);
-        pxDeviceControl ->
-        GetTaskData(m_pxOperatingDataContainer);
+        CDataContainerDataBase* pxDataContainer =
+            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
 
-        uint8_t uiFsmState = m_pxOperatingDataContainer -> m_uiFsmCommandState;
+        uint8_t uiFsmState = pxDataContainer -> m_uiFsmCommandState;
+
+//        CDeviceControl* pxDeviceControl =
+//            (CDeviceControl*)GetResources() ->
+//            GetTaskPointerById(m_uiDeviceControlId);
+//        pxDeviceControl ->
+//        GetTaskData(m_pxOperatingDataContainer);
+
+//        uint8_t uiFsmState = m_pxOperatingDataContainer -> m_uiFsmCommandState;
 
         if (uiFsmState == DONE_OK)
         {

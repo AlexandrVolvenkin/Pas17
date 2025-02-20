@@ -61,7 +61,6 @@ uint8_t CModbusRtuSlaveLinkLayer::Init(void)
 bool CModbusRtuSlaveLinkLayer::SetTaskData(CDataContainerDataBase* pxDataContainer)
 {
 //    std::cout << "CModbusRtuSlaveLinkLayer::SetTaskData 1" << std::endl;
-    uint8_t uiFsmState = GetFsmState();
 
     if (IsTaskReady())
     {

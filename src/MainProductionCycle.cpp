@@ -117,7 +117,6 @@ uint8_t CMainProductionCycle::Init(void)
 bool CMainProductionCycle::SetTaskData(CDataContainerDataBase* pxDataContainer)
 {
     std::cout << "CMainProductionCycle::SetTaskData 1" << std::endl;
-    uint8_t uiFsmState = GetFsmState();
 
     if (IsTaskReady())
     {
@@ -651,7 +650,8 @@ uint8_t CMainProductionCycle::Fsm(void)
 //        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_END_OK"  << std::endl;
         CurrentlyRunningTasksExecution();
         m_pxDataStoreFileSystem -> ReadServiceSection();
-        SetFsmState(MAIN_CYCLE_MODULES_INIT);
+//        SetFsmState(MAIN_CYCLE_MODULES_INIT);
+        SetFsmState(MAIN_CYCLE_MODBUS_SLAVE);
         break;
 
     case DATABASE_CHECK_END_ERROR:
@@ -770,11 +770,11 @@ uint8_t CMainProductionCycle::Fsm(void)
 //            m_pxInternalModuleMuvr ->
 //            SetTaskData(&xOperatingDataContainer);
 
-            CDataContainerDataBase xOperatingDataContainer;
-            xOperatingDataContainer.m_uiFsmCommandState =
-                CInternalModuleMuvr::MUVR_DATA_EXCHANGE;
-            m_pxInternalModuleMuvr ->
-            SetTaskData(&xOperatingDataContainer);
+//            CDataContainerDataBase xOperatingDataContainer;
+//            xOperatingDataContainer.m_uiFsmCommandState =
+//                CInternalModuleMuvr::MUVR_DATA_EXCHANGE;
+//            m_pxInternalModuleMuvr ->
+//            SetTaskData(&xOperatingDataContainer);
 
             SetFsmState(MAIN_CYCLE_DISCRETE_SIGNALS_PROCESSING);
         }
