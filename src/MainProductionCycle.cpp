@@ -770,11 +770,11 @@ uint8_t CMainProductionCycle::Fsm(void)
 //            m_pxInternalModuleMuvr ->
 //            SetTaskData(&xOperatingDataContainer);
 
-//            CDataContainerDataBase xOperatingDataContainer;
-//            xOperatingDataContainer.m_uiFsmCommandState =
-//                CInternalModuleMuvr::MUVR_DATA_EXCHANGE;
-//            m_pxInternalModuleMuvr ->
-//            SetTaskData(&xOperatingDataContainer);
+            CDataContainerDataBase xOperatingDataContainer;
+            xOperatingDataContainer.m_uiFsmCommandState =
+                CInternalModuleMuvr::MUVR_DATA_EXCHANGE;
+            m_pxInternalModuleMuvr ->
+            SetTaskData(&xOperatingDataContainer);
 
             SetFsmState(MAIN_CYCLE_DISCRETE_SIGNALS_PROCESSING);
         }
