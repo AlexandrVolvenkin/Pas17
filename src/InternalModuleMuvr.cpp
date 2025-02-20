@@ -292,46 +292,62 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
 
     ucCalibrPlus = 0;
     ucCalibrMinus = 0;
-    uint8_t uiCommonIndex = GetCommonIndex();
-    // калибруем вход?(если ucCommonIndex не равен 0, то содержит номер калибруемого входа)
-    if ((uiCommonIndex > 0) && (uiCommonIndex < (MUVR_TXS_INPUT_NUMBER + 1)))
-    {
-        // получим номер калибруемого входа.
-        ucCalibrPlus = uiCommonIndex;
-        // установим начало шкалы НШК?
-        if (GetCommandControl() == MUVR_COMMAND_CONTROL_SET_BOTTOM_OF_SCALE)
-        {
-            SetCommandControl(0);
-            // добавим команду модулю.
-            ucCalibrPlus |= MUVR_SET_BOTTOM_OF_SCALE;
-        }
-        // установим конец шкалы ВШК?
-        else if (GetCommandControl() == MUVR_COMMAND_CONTROL_SET_TOP_OF_SCALE)
-        {
-            SetCommandControl(0);
-            // добавим команду модулю.
-            ucCalibrPlus |= MUVR_SET_TOP_OF_SCALE;
-        }
-        // данные калибровки передаются дважды, в нормальном виде в байте(ucCalibrPlus) и
-        // в инвертированном(!ucCalibrPlus + 1) в байте(ucCalibrMinus).
-        // при контроле, сумма (ucCalibrPlus + ucCalibrMinus) должна быть 0.
-        ucCalibrMinus = 0x00 - ucCalibrPlus;
-    }
+//    uint8_t uiCommonIndex = GetCommonIndex();
+//    // калибруем вход?(если ucCommonIndex не равен 0, то содержит номер калибруемого входа)
+//    if ((uiCommonIndex > 0) && (uiCommonIndex < (MUVR_TXS_INPUT_NUMBER + 1)))
+//    {
+//        // получим номер калибруемого входа.
+//        ucCalibrPlus = uiCommonIndex;
+//        // установим начало шкалы НШК?
+//        if (GetCommandControl() == MUVR_COMMAND_CONTROL_SET_BOTTOM_OF_SCALE)
+//        {
+//            SetCommandControl(0);
+//            // добавим команду модулю.
+//            ucCalibrPlus |= MUVR_SET_BOTTOM_OF_SCALE;
+//        }
+//        // установим конец шкалы ВШК?
+//        else if (GetCommandControl() == MUVR_COMMAND_CONTROL_SET_TOP_OF_SCALE)
+//        {
+//            SetCommandControl(0);
+//            // добавим команду модулю.
+//            ucCalibrPlus |= MUVR_SET_TOP_OF_SCALE;
+//        }
+//        // данные калибровки передаются дважды, в нормальном виде в байте(ucCalibrPlus) и
+//        // в инвертированном(!ucCalibrPlus + 1) в байте(ucCalibrMinus).
+//        // при контроле, сумма (ucCalibrPlus + ucCalibrMinus) должна быть 0.
+//        ucCalibrMinus = 0x00 - ucCalibrPlus;
+//    }
     auiSpiTxBuffer[(SPI_PREAMBLE_LENGTH +
                     MUVR_GET_MEASURE_DATA_COMMAND_ANSWER_LENGTH)] = ucCalibrPlus;
     auiSpiTxBuffer[(SPI_PREAMBLE_LENGTH +
                     MUVR_GET_MEASURE_DATA_COMMAND_ANSWER_LENGTH + 1)] = ucCalibrMinus;
     auiSpiTxBuffer[0] = MUVR_GET_MEASURE_DATA_COMMAND;
+    auiSpiTxBuffer[1] = 0;
 
     auiSpiTxBuffer[2] = 0;
-    auiSpiTxBuffer[3] = 1;
-    auiSpiTxBuffer[4] = 2;
-    auiSpiTxBuffer[5] = 3;
+    auiSpiTxBuffer[3] = 0;
+    auiSpiTxBuffer[4] = 0;
+    auiSpiTxBuffer[5] = 0;
     auiSpiTxBuffer[6] = 0;
     usData = usCrcSummTwoByteCalculation(&auiSpiTxBuffer[2],
                                          5);
     auiSpiTxBuffer[7] = (unsigned char)usData;
     auiSpiTxBuffer[8] = (unsigned char)(usData >> 8);
+
+    {
+        std::cout << "CInternalModuleMuvr::DataExchange auiSpiTxBuffer"  << std::endl;
+        unsigned char *pucSourceTemp;
+        pucSourceTemp = (unsigned char*)&auiSpiTxBuffer[0];
+        for(int i=0; i<32 ; )
+        {
+            for(int j=0; j<8; j++)
+            {
+                cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+            }
+            cout << endl;
+            i += 8;
+        }
+    }
 
     usleep(10000);
     m_pxCommunicationDevice -> Exchange(GetAddress(),
@@ -342,19 +358,19 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                                         TWO_BYTE_CRC_LENGTH,
                                         LOW_SPEED_IN_HZ);
 
-            std::cout << "CInternalModuleMuvr::DataExchange auiSpiRxBuffer"  << std::endl;
-            unsigned char *pucSourceTemp;
-            pucSourceTemp = (unsigned char*)&auiSpiRxBuffer[0];
-            for(int i=0; i<32 ; )
-            {
-                for(int j=0; j<8; j++)
-                {
-                    cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
-                }
-                cout << endl;
-                i += 8;
-            }
-        std::cout << "CInternalModuleMuvr::DataExchange auiSpiRxBuffer[SPI_COMMAND_BYTE_OFFSET] "  << (int)(auiSpiRxBuffer[SPI_COMMAND_BYTE_OFFSET]) << std::endl;
+    std::cout << "CInternalModuleMuvr::DataExchange auiSpiRxBuffer"  << std::endl;
+    unsigned char *pucSourceTemp;
+    pucSourceTemp = (unsigned char*)&auiSpiRxBuffer[0];
+    for(int i=0; i<32 ; )
+    {
+        for(int j=0; j<8; j++)
+        {
+            cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+        }
+        cout << endl;
+        i += 8;
+    }
+    std::cout << "CInternalModuleMuvr::DataExchange auiSpiRxBuffer[SPI_COMMAND_BYTE_OFFSET] "  << (int)(auiSpiRxBuffer[SPI_COMMAND_BYTE_OFFSET]) << std::endl;
     // что ответил модуль?
     switch(auiSpiRxBuffer[SPI_COMMAND_BYTE_OFFSET])
     {
