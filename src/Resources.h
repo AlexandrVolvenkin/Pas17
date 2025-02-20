@@ -68,6 +68,8 @@ public:
     CTaskInterface* AddCommonTaskToMap(std::string sTaskName, std::shared_ptr<CTaskInterface> pxTask);
     bool CheckCommonTaskMap(void);
     CTaskInterface* GetTaskPointerByNameFromMap(std::string sTaskName);
+    uint8_t GetTaskIdByNameFromMap(std::string sTaskName);
+    CTaskInterface* GetTaskPointerById(uint8_t uiTaskId);
     uint8_t* CreateObjectBySize(size_t uiLength);
     CDataContainerInterface* AddDataContainer(std::shared_ptr<CDataContainerInterface> pxDataContainer);
 
@@ -115,6 +117,8 @@ public:
     // Создаем std::map, где ключ - строка, значение - указатель на объект
     std::map<std::string, std::shared_ptr<CTaskInterface>> m_mpxCommonTaskMap;
     std::string m_sTaskName;
+    CTaskInterface** m_ppxCommonTaskPointers;
+    uint8_t m_uiUsedCommonTaskPointersCounter;
 
     uint8_t* m_puiCoils;
     uint8_t* m_puiDiscreteInputs;

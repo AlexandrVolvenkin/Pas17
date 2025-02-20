@@ -29,7 +29,9 @@ CResources::CResources()
     m_lpxCommonTasksList.clear();
     m_mpxCommonTaskMap.clear();
     m_lpxDataContainerList.clear();
+    m_uiUsedCommonTaskPointersCounter = 0;
 
+    m_ppxCommonTaskPointers = new CTaskInterface*[256];
     SetResources(this);
 }
 
@@ -322,6 +324,7 @@ bool CResources::CheckCommonTaskMap(void)
     return true;
 }
 
+//-------------------------------------------------------------------------------
 CTaskInterface* CResources::GetTaskPointerByNameFromMap(std::string sTaskName)
 {
 //    std::cout << "CResources::GetTaskPointerByNameFromMap 1"  << std::endl;
@@ -343,6 +346,47 @@ CTaskInterface* CResources::GetTaskPointerByNameFromMap(std::string sTaskName)
 }
 
 //-------------------------------------------------------------------------------
+uint8_t CResources::GetTaskIdByNameFromMap(std::string sTaskName)
+{
+//    std::cout << "CResources::GetTaskIdByNameFromMap 1"  << std::endl;
+    CTaskInterface* pxTask = GetTaskPointerByNameFromMap(sTaskName);
+
+    if (pxTask != nullptr)
+    {
+        std::cout << "CResources::GetTaskIdByNameFromMap 2"  << std::endl;
+        // ключ найден
+        m_ppxCommonTaskPointers[m_uiUsedCommonTaskPointersCounter] = pxTask;
+        m_uiUsedCommonTaskPointersCounter++;
+        // Вернем индекс на указатель в массиве плюс 1. это это будет id задачи в системе.
+        // id задач начинаются с единицы. ноль - задачи не существует.
+        return m_uiUsedCommonTaskPointersCounter;
+    }
+    else
+    {
+        std::cout << "CResources::GetTaskIdByNameFromMap 3"  << std::endl;
+        // ключ не найден
+        return 0; // Вернем 0, если ключ не найден
+    }
+}
+
+//-------------------------------------------------------------------------------
+CTaskInterface* CResources::GetTaskPointerById(uint8_t uiTaskId)
+{
+//    std::cout << "CResources::GetTaskPointerById 1"  << std::endl;
+
+    if (uiTaskId > 0)
+    {
+        std::cout << "CResources::GetTaskPointerById 2"  << std::endl;
+        return m_ppxCommonTaskPointers[(uiTaskId - 1)];
+    }
+    else
+    {
+        std::cout << "CResources::GetTaskPointerById 3"  << std::endl;
+        return nullptr;
+    }
+}
+
+//-------------------------------------------------------------------------------
 uint8_t* CResources::CreateObjectBySize(size_t uiLength)
 {
     std::cout << "CResources::CreateObjectBySize 1"  << std::endl;
@@ -360,3 +404,6 @@ CDataContainerInterface* CResources::AddDataContainer(std::shared_ptr<CDataConta
 }
 
 //-------------------------------------------------------------------------------
+
+CTaskInterface** m_ppxCommonTaskPointers;
+uint8_t m_uiUsedCommonTaskPointersCounter;

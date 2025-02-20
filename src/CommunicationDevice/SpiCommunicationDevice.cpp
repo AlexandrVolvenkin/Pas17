@@ -205,7 +205,7 @@ int8_t CSpiCommunicationDevice::Open(void)
 //        std::cout << "Semaphore destroyed with ID: " << m_iSpi0SemaphoreId << "\n";
 //    }
 
-//    m_pxSpi0Semaphore = new CSemaphore(12345, 1);
+    m_pxSpi0Semaphore = new CSemaphore(12345, 1);
 //    m_pxSpi0Semaphore -> Acquire();
 //    sleep(5); // Пример работы с ресурсом
 //    m_pxSpi0Semaphore -> Release();
@@ -401,9 +401,9 @@ int CSpiCommunicationDevice::Exchange(uint8_t uiAddress,
                                       int iSpeed)
 {
 //    while (m_pxSpi0Semaphore -> Acquire() == false);
-////    m_pxSpi0Semaphore -> Acquire();
+    m_pxSpi0Semaphore -> Acquire();
 
-//    ModeSet();
+    ModeSet();
     ChipSelectAddressSet(uiAddress);
 
 //    memset(aucSpiTxBuffer, 0, iLength);
@@ -430,7 +430,7 @@ int CSpiCommunicationDevice::Exchange(uint8_t uiAddress,
 
 //    CGpio::ClearPin(SPI_CHIP_ENABLE_PIN_PORT, SPI_CHIP_ENABLE_PIN);
 
-//    m_pxSpi0Semaphore -> Release();
+    m_pxSpi0Semaphore -> Release();
 
     if (iStatus < 0)
     {

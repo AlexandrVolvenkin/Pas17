@@ -69,6 +69,7 @@ CMainProductionCycle::CMainProductionCycle()
     sprintf(m_acTaskName,
             "%s",
             typeid(*this).name());
+    m_puiIntermediateBuff = new uint8_t[1024];
     SetResources(&m_xResources);
     SetFsmState(START);
 }
@@ -100,6 +101,8 @@ CMainProductionCycle::~CMainProductionCycle()
 //    delete m_pxModusRtuSlaveTopLevelProduction;
     delete m_pxModbusRtuSlaveLinkLayerUpperLevel;
     delete m_pxModbusRtuSlaveUpperLevel;
+
+    delete[] m_puiIntermediateBuff;
 }
 
 //-------------------------------------------------------------------------------
@@ -711,7 +714,7 @@ uint8_t CMainProductionCycle::Fsm(void)
 
         GetTimerPointer() -> Set(100);
 
-        usleep(1000);
+//        usleep(1000);
         SetFsmState(MAIN_CYCLE_START_WAITING);
         break;
 
@@ -759,11 +762,19 @@ uint8_t CMainProductionCycle::Fsm(void)
 //            m_pxInternalModuleMuvr ->
 //            SetTaskData(&xOperatingDataContainer);
 
-            CDataContainerDataBase xOperatingDataContainer;
-            xOperatingDataContainer.m_uiFsmCommandState =
-                CInternalModuleMuvr::MUVR_DATA_EXCHANGE;
-            m_pxInternalModuleMuvr ->
-            SetTaskData(&xOperatingDataContainer);
+//            CDataContainerDataBase xOperatingDataContainer;
+//            xOperatingDataContainer.m_uiFsmCommandState =
+//                CInternalModuleMuvr::MUVR_DATA_BASE_READ;
+//            xOperatingDataContainer.m_puiDataPointer =
+//                m_puiIntermediateBuff;
+//            m_pxInternalModuleMuvr ->
+//            SetTaskData(&xOperatingDataContainer);
+
+//            CDataContainerDataBase xOperatingDataContainer;
+//            xOperatingDataContainer.m_uiFsmCommandState =
+//                CInternalModuleMuvr::MUVR_DATA_EXCHANGE;
+//            m_pxInternalModuleMuvr ->
+//            SetTaskData(&xOperatingDataContainer);
 
             SetFsmState(MAIN_CYCLE_DISCRETE_SIGNALS_PROCESSING);
         }

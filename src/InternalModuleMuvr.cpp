@@ -282,7 +282,8 @@ void CInternalModuleMuvr::Allocate(void)
 //-----------------------------------------------------------------------------------------------------
 uint8_t CInternalModuleMuvr::DataExchange(void)
 {
-//    std::cout << "CInternalModuleMuvr::DataExchange 1"  << std::endl;
+    std::cout << "CInternalModuleMuvr::DataExchange 1"  << std::endl;
+    unsigned short usData;
     float fData;
     unsigned char ucCalibrPlus;
     unsigned char ucCalibrMinus;
@@ -322,6 +323,16 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                     MUVR_GET_MEASURE_DATA_COMMAND_ANSWER_LENGTH + 1)] = ucCalibrMinus;
     auiSpiTxBuffer[0] = MUVR_GET_MEASURE_DATA_COMMAND;
 
+    auiSpiTxBuffer[2] = 0;
+    auiSpiTxBuffer[3] = 1;
+    auiSpiTxBuffer[4] = 2;
+    auiSpiTxBuffer[5] = 3;
+    auiSpiTxBuffer[6] = 0;
+    usData = usCrcSummTwoByteCalculation(&auiSpiTxBuffer[2],
+                                         5);
+    auiSpiTxBuffer[7] = (unsigned char)usData;
+    auiSpiTxBuffer[8] = (unsigned char)(usData >> 8);
+
     usleep(10000);
     m_pxCommunicationDevice -> Exchange(GetAddress(),
                                         auiSpiTxBuffer,
@@ -331,6 +342,19 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                                         TWO_BYTE_CRC_LENGTH,
                                         LOW_SPEED_IN_HZ);
 
+            std::cout << "CInternalModuleMuvr::DataExchange auiSpiRxBuffer"  << std::endl;
+            unsigned char *pucSourceTemp;
+            pucSourceTemp = (unsigned char*)&auiSpiRxBuffer[0];
+            for(int i=0; i<32 ; )
+            {
+                for(int j=0; j<8; j++)
+                {
+                    cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+                }
+                cout << endl;
+                i += 8;
+            }
+        std::cout << "CInternalModuleMuvr::DataExchange auiSpiRxBuffer[SPI_COMMAND_BYTE_OFFSET] "  << (int)(auiSpiRxBuffer[SPI_COMMAND_BYTE_OFFSET]) << std::endl;
     // что ответил модуль?
     switch(auiSpiRxBuffer[SPI_COMMAND_BYTE_OFFSET])
     {
@@ -338,7 +362,7 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
         std::cout << "CInternalModuleMuvr::DataExchange 2"  << std::endl;
     // ошибка БД реперных точек, но будет продолжение обмена.
     case MUVR_GET_MEASURE_DATA_COMMAND:
-//        std::cout << "CInternalModuleMuvr::DataExchange 3"  << std::endl;
+        std::cout << "CInternalModuleMuvr::DataExchange 3"  << std::endl;
         // данные не повреждены?
         if (iCrcSummTwoByteCompare(&auiSpiRxBuffer[SPI_DATA_BYTE_OFFSET],
                                    MUVR_GET_MEASURE_DATA_COMMAND_ANSWER_LENGTH) > 0)
@@ -506,7 +530,7 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
         break;
 
     case MUVR_ANSWER_DATA_NOT_READY:
-//        std::cout << "CInternalModuleMuvr::DataExchange 4"  << std::endl;
+        std::cout << "CInternalModuleMuvr::DataExchange 4"  << std::endl;
         // данные не готовы.
         return 0;
         break;
@@ -520,7 +544,7 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
         break;
 
     default:
-//        std::cout << "CInternalModuleMuvr::DataExchange 6"  << std::endl;
+        std::cout << "CInternalModuleMuvr::DataExchange 6"  << std::endl;
         break;
     };
 

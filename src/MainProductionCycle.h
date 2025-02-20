@@ -97,6 +97,7 @@ private:
 //    std::list<CTaskInterface*>::iterator m_xCommonTasksListIterator;
 //    std::list<CTaskInterface*> m_lpxCurrentlyRunningTasksList;
 //    std::list<CTaskInterface*>::iterator m_xCurrentlyRunningTasksListIterator;
+    uint8_t* m_puiIntermediateBuff;
 
     CResources m_xResources;
 //    CDeviceControl m_xDeviceControl;

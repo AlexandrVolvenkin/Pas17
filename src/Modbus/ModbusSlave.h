@@ -163,6 +163,7 @@ public:
 
     std::string m_sDeviceControlName;
     CDeviceControl* m_pxDeviceControl;
+    uint8_t m_uiDeviceControlId;
 
     uint8_t m_uiOwnAddress;
     uint8_t m_uiSlaveAddress;
