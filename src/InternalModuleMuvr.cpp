@@ -292,35 +292,37 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
     memset(auiSpiTxBuffer, 0, 250);
     ucCalibrPlus = 0;
     ucCalibrMinus = 0;
-//    uint8_t uiCommonIndex = GetCommonIndex();
-//    // калибруем вход?(если ucCommonIndex не равен 0, то содержит номер калибруемого входа)
-//    if ((uiCommonIndex > 0) && (uiCommonIndex < (MUVR_TXS_INPUT_NUMBER + 1)))
-//    {
-//        // получим номер калибруемого входа.
-//        ucCalibrPlus = uiCommonIndex;
-//        // установим начало шкалы НШК?
-//        if (GetCommandControl() == MUVR_COMMAND_CONTROL_SET_BOTTOM_OF_SCALE)
-//        {
-//            SetCommandControl(0);
-//            // добавим команду модулю.
-//            ucCalibrPlus |= MUVR_SET_BOTTOM_OF_SCALE;
-//        }
-//        // установим конец шкалы ВШК?
-//        else if (GetCommandControl() == MUVR_COMMAND_CONTROL_SET_TOP_OF_SCALE)
-//        {
-//            SetCommandControl(0);
-//            // добавим команду модулю.
-//            ucCalibrPlus |= MUVR_SET_TOP_OF_SCALE;
-//        }
-//        // данные калибровки передаются дважды, в нормальном виде в байте(ucCalibrPlus) и
-//        // в инвертированном(!ucCalibrPlus + 1) в байте(ucCalibrMinus).
-//        // при контроле, сумма (ucCalibrPlus + ucCalibrMinus) должна быть 0.
-//        ucCalibrMinus = 0x00 - ucCalibrPlus;
-//    }
-    auiSpiTxBuffer[(1 +
+    uint8_t uiCommonIndex = GetCommonIndex();
+    // калибруем вход?(если ucCommonIndex не равен 0, то содержит номер калибруемого входа)
+    if ((uiCommonIndex > 0) && (uiCommonIndex < (MUVR_TXS_INPUT_NUMBER + 1)))
+    {
+        // получим номер калибруемого входа.
+        ucCalibrPlus = uiCommonIndex;
+        // установим начало шкалы НШК?
+        if (GetCommandControl() == MUVR_COMMAND_CONTROL_SET_BOTTOM_OF_SCALE)
+        {
+            SetCommandControl(0);
+            // добавим команду модулю.
+            ucCalibrPlus |= MUVR_SET_BOTTOM_OF_SCALE;
+        }
+        // установим конец шкалы ВШК?
+        else if (GetCommandControl() == MUVR_COMMAND_CONTROL_SET_TOP_OF_SCALE)
+        {
+            SetCommandControl(0);
+            // добавим команду модулю.
+            ucCalibrPlus |= MUVR_SET_TOP_OF_SCALE;
+        }
+        // данные калибровки передаются дважды, в нормальном виде в байте(ucCalibrPlus) и
+        // в инвертированном(!ucCalibrPlus + 1) в байте(ucCalibrMinus).
+        // при контроле, сумма (ucCalibrPlus + ucCalibrMinus) должна быть 0.
+        ucCalibrMinus = 0x00 - ucCalibrPlus;
+    }
+    auiSpiTxBuffer[(2 +
                     MUVR_GET_MEASURE_DATA_COMMAND_ANSWER_LENGTH)] = ucCalibrPlus;
-    auiSpiTxBuffer[(1 +
+    auiSpiTxBuffer[(2 +
                     MUVR_GET_MEASURE_DATA_COMMAND_ANSWER_LENGTH + 1)] = ucCalibrMinus;
+    auiSpiTxBuffer[(2 +
+                    MUVR_GET_MEASURE_DATA_COMMAND_ANSWER_LENGTH + 2)] = 0x7e;
 //    auiSpiTxBuffer[(SPI_PREAMBLE_LENGTH +
 //                    MUVR_GET_MEASURE_DATA_COMMAND_ANSWER_LENGTH)] = ucCalibrPlus;
 //    auiSpiTxBuffer[(SPI_PREAMBLE_LENGTH +
@@ -363,7 +365,7 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                                         auiSpiRxBuffer,
                                         SPI_PREAMBLE_LENGTH +
                                         MUVR_GET_MEASURE_DATA_COMMAND_ANSWER_LENGTH +
-                                        TWO_BYTE_CRC_LENGTH,
+                                        TWO_BYTE_CRC_LENGTH + 1,
                                         LOW_SPEED_IN_HZ);
 
     std::cout << "CInternalModuleMuvr::DataExchange auiSpiRxBuffer"  << std::endl;

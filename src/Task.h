@@ -81,7 +81,7 @@ public:
     enum
     {
         TASK_NAME_LENGTH = 32,
-        TASK_READY_WAITING_TIME = 1000,
+        TASK_READY_WAITING_TIME = 500,
     };
 
     CTask();
@@ -97,10 +97,10 @@ public:
     void SetExecutorDataContainer(CDataContainerInterface* pxDataContainer);
     CDataContainerInterface* GetExecutorDataContainerPointer(void);
 
-//    bool SetTaskData(CDataContainerInterface* pxDataContainer);
+    bool SetTaskData(CDataContainerInterface* pxDataContainer);
+    bool SetTaskData(uint8_t uiTaskId, CDataContainerInterface* pxDataContainer);
 //    CDataContainerInterface* GetTaskData(void);
 
-    bool SetTaskData(uint8_t uiTaskId, CDataContainerInterface* pxDataContainer);
 
     size_t GetObjectLength(void);
     bool IsTaskReady(void);
