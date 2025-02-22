@@ -335,25 +335,6 @@ uint8_t CDeviceControl::Fsm(void)
     case DATA_BASE_BLOCK_READ:
         std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_READ 1"  << std::endl;
         {
-//            uint16_t uiLength =
-//                m_pxDataStore ->
-//                ReadBlock(m_pxOperatingDataContainer -> m_puiDataPointer,
-//                          m_pxOperatingDataContainer -> m_uiDataIndex);
-//
-//            if (uiLength)
-//            {
-//                std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_READ 2"  << std::endl;
-//                m_pxOperatingDataContainer -> m_uiDataLength = uiLength;
-//                SetFsmState(DONE_OK);
-//            }
-//            else
-//            {
-//                std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_READ 3"  << std::endl;
-//                m_pxOperatingDataContainer -> m_uiDataLength = uiLength;
-////                SetFsmState(DONE_ERROR);
-//                SetFsmState(DONE_OK);
-//            }
-
             uint16_t uiLength =
                 m_pxDataStore ->
                 ReadBlock(((CDataContainerDataBase*)GetCustomertDataContainerPointer()) -> m_puiDataPointer,
@@ -371,7 +352,6 @@ uint8_t CDeviceControl::Fsm(void)
                 std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_READ 3"  << std::endl;
                 ((CDataContainerDataBase*)GetCustomertDataContainerPointer()) -> m_uiDataLength = uiLength;
                 ((CDataContainerDataBase*)GetCustomertDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
-//                SetFsmState(DONE_ERROR);
                 SetFsmState(DONE_OK);
             }
         }
@@ -380,42 +360,6 @@ uint8_t CDeviceControl::Fsm(void)
     case DATA_BASE_BLOCK_START_WRITE:
         std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_START_WRITE"  << std::endl;
         {
-//            //        m_uiRequestRetryCounter = 0;
-//            uint8_t uiBlockIndex = m_pxOperatingDataContainer -> m_uiDataIndex;
-//            uint8_t* puiDataPointer = m_pxOperatingDataContainer -> m_puiDataPointer;
-//            std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_START_WRITE uiBlockIndex "  << (int)uiBlockIndex << std::endl;
-//
-//            if (m_pxDataStore ->
-//                    WriteBlock(puiDataPointer,
-//                               (m_pxDataStore ->
-//                                GetBlockLength(uiBlockIndex)),
-//                               uiBlockIndex))
-//            {
-//                std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_START_WRITE 2"  << std::endl;
-//                // Установим время ожидания окончания записи.
-//                GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
-//                SetFsmState(DATA_BASE_BLOCK_WRITE_END_WAITING);
-//            }
-//            else
-//            {
-//                std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_START_WRITE 3"  << std::endl;
-//                SetFsmOperationStatus(DONE_ERROR);
-////                SetFsmState(READY);
-//                SetFsmState(DONE_ERROR);
-//            }
-////
-//////            DataBaseBlockWrite();
-//
-////            SetFsmOperationStatus(DONE_OK);
-////                SetFsmState(DONE_OK);
-
-
-//            uint16_t uiLength =
-//                m_pxDataStore ->
-//                WriteBlock(((CDataContainerDataBase*)GetCustomertDataContainerPointer()) -> m_puiDataPointer,
-//                          (((CDataContainerDataBase*)GetCustomertDataContainerPointer()) -> m_uiDataIndex),
-//                          ((CDataContainerDataBase*)GetCustomertDataContainerPointer()) -> m_uiDataIndex);
-
             if (m_pxDataStore ->
                     WriteBlock(((CDataContainerDataBase*)GetCustomertDataContainerPointer()) -> m_puiDataPointer,
                                (m_pxDataStore ->
@@ -426,23 +370,12 @@ uint8_t CDeviceControl::Fsm(void)
                 // Установим время ожидания окончания записи.
                 GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
                 SetFsmState(DATA_BASE_BLOCK_WRITE_END_WAITING);
-
-//                std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_READ 2"  << std::endl;
-//                ((CDataContainerDataBase*)GetCustomertDataContainerPointer()) -> m_uiDataLength = uiLength;
-//                ((CDataContainerDataBase*)GetCustomertDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-//                SetFsmState(DONE_OK);
             }
             else
             {
                 std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_START_WRITE 3"  << std::endl;
                 ((CDataContainerDataBase*)GetCustomertDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
                 SetFsmState(DONE_ERROR);
-
-//                std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_READ 3"  << std::endl;
-//                ((CDataContainerDataBase*)GetCustomertDataContainerPointer()) -> m_uiDataLength = uiLength;
-//                ((CDataContainerDataBase*)GetCustomertDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
-////                SetFsmState(DONE_ERROR);
-//                SetFsmState(DONE_OK);
             }
         }
         break;
@@ -456,8 +389,6 @@ uint8_t CDeviceControl::Fsm(void)
         {
             std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_WRITE_END_WAITING 1"  << std::endl;
             ((CDataContainerDataBase*)GetCustomertDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-//            SetFsmOperationStatus(DONE_OK);
-//                SetFsmState(READY);
             SetFsmState(DONE_OK);
         }
         // Устройство хранения закончило запись не успешно?
@@ -466,8 +397,6 @@ uint8_t CDeviceControl::Fsm(void)
         {
             std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_WRITE_END_WAITING 2"  << std::endl;
             ((CDataContainerDataBase*)GetCustomertDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
-//            SetFsmOperationStatus(DONE_ERROR);
-//                SetFsmState(READY);
             SetFsmState(DONE_ERROR);
         }
         else
@@ -477,8 +406,6 @@ uint8_t CDeviceControl::Fsm(void)
             {
                 std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_WRITE_END_WAITING 3"  << std::endl;
                 ((CDataContainerDataBase*)GetCustomertDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
-//                SetFsmOperationStatus(DONE_ERROR);
-//                SetFsmState(READY);
                 SetFsmState(DONE_ERROR);
             }
         }

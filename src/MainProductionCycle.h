@@ -73,8 +73,8 @@ public:
     virtual ~CMainProductionCycle();
 
     uint8_t Init(void);
-    bool SetTaskData(CDataContainerDataBase* pxDataContainer);
-    bool GetTaskData(CDataContainerDataBase* pxDataContainer);
+//    bool SetTaskData(CDataContainerDataBase* pxDataContainer);
+//    bool GetTaskData(CDataContainerDataBase* pxDataContainer);
     void Allocate(void);
 
 //    std::list<CTaskInterface*>* GetCommonTasksListPointer(void)

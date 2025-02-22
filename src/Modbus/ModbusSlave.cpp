@@ -50,7 +50,6 @@ uint8_t CModbusSlave::Init(void)
                                  AddDataContainer(std::make_shared<CDataContainerDataBase>()));
     SetExecutorDataContainer(static_cast<CDataContainerDataBase*>(GetResources() ->
                              AddDataContainer(std::make_shared<CDataContainerDataBase>())));
-
 }
 
 //-------------------------------------------------------------------------------
@@ -2278,7 +2277,7 @@ uint8_t CModbusSlave::Fsm(void)
                 uiLength = m_pxModbusSlaveLinkLayer ->
                            ResponseException(uiSlave,
                                              uiFunctionCode,
-                                             MODBUS_EXCEPTION_SLAVE_OR_SERVER_BUSY,
+                                             MODBUS_EXCEPTION_SLAVE_OR_SERVER_FAILURE,
                                              puiResponse);
 
                 uiLength = m_pxModbusSlaveLinkLayer -> Tail(puiResponse, uiLength);
