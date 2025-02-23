@@ -59,6 +59,11 @@ public:
 class CResources : public CResourcesInterface
 {
 public:
+    enum
+    {
+        MAX_TASK_NUMBER = 256,
+    };
+
     CResources();
     virtual ~CResources();
 
