@@ -269,7 +269,7 @@ public:
 
     void Allocate(void);
     uint8_t GetModuleType(uint8_t uiAddress);
-//    uint8_t DataBaseRead(uint8_t uiAddress);
+    void SearchModules(void);
 
 protected:
     std::string m_sCommunicationDeviceName;

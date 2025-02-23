@@ -9,18 +9,18 @@
 #include "Resources.h"
 #include "Platform.h"
 #include "DataStore.h"
-#include "ConfigurationCreate.h"
+#include "Configuration.h"
 
 using namespace std;
 
 //-------------------------------------------------------------------------------
-CConfigurationCreate::CConfigurationCreate()
+CConfiguration::CConfiguration()
 {
     //ctor
 }
 
 //-------------------------------------------------------------------------------
-CConfigurationCreate::~CConfigurationCreate()
+CConfiguration::~CConfiguration()
 {
     //dtor
 }

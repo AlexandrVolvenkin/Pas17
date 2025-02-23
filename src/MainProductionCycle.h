@@ -31,7 +31,7 @@
 class CTask;
 //class CResources;
 class CLedBlinker;
-class CConfigurationCreate;
+class CConfiguration;
 class CDataStoreCheck;
 //class CDataStore;
 //class CDeviceControl;
@@ -109,7 +109,7 @@ private:
     CInternalModuleInterface* m_pxInternalModule;
     CInternalModuleInterface* m_pxInternalModuleMuvr;
 
-    CConfigurationCreate* m_pxConfigurationCreate;
+    CConfiguration* m_pxConfigurationCreate;
 
     CServiceMarket* m_pxServiceMarket;
 

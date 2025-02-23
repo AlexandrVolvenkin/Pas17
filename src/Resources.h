@@ -22,7 +22,7 @@ class CDfa;
 //class CTask;
 class CDeviceControl;
 class CDataStore;
-class CConfigurationCreate;
+class CConfiguration;
 class CServiceMarket;
 class CLinkInterface;
 class CAnalogueSignals;
@@ -155,7 +155,7 @@ public:
 
     CDeviceControl* m_pxDeviceControl;
     CDataStore* m_pxDataStore;
-    CConfigurationCreate* m_pxConfigurationCreate;
+    CConfiguration* m_pxConfigurationCreate;
     CServiceMarket* m_pxServiceMarket;
 };
 

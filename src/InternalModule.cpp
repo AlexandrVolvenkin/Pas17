@@ -5,6 +5,7 @@
 //  email       : aav-36@mail.ru
 //  GitHub      : https://github.com/AlexandrVolvenkin
 //-------------------------------------------------------------------------------
+#include "Configuration.h"
 #include "Timer.h"
 #include "Task.h"
 #include "Platform.h"
@@ -342,40 +343,69 @@ uint8_t CInternalModule::GetModuleType(uint8_t uiAddress)
             GET_MODULE_TYPE_COMMAND) // if echo answer is ok.
     {
         std::cout << "CInternalModule::GetModuleType 3"  << std::endl;
-//                std::cout << "CInternalModule::GetModuleType ucSlaveAddress 1 "  << (int)ucSlaveAddress << std::endl;
         // обмен данными прошёл без ошибок?
         if ((iCrcSummOneByteCompare(&auiSpiRxBuffer[GET_MODULE_TYPE_COMMAND_OFFSET],
                                     GET_MODULE_TYPE_COMMAND_LENGTH +
                                     GET_MODULE_TYPE_COMMAND_ANSWER_LENGTH) > 0))
         {
             std::cout << "CInternalModule::GetModuleType 4"  << std::endl;
-//            // модуль присутствует. увеличим значение переменной -
-//            // фактическое количество модулей в системе.
-//            (xPlcConfigSearchTemp.ui8ModulesQuantity)++;
-//            // сохраним тип модуля в массиве для упорядочивания следования модулей при поиске на SPI.
-//            xPlcConfigSearchTemp.axConfigSearch[ucSlaveAddress].ui8Type =
-//                auiSpiRxBuffer[MODULE_TYPE_OFFSET];
-//            // сохраним адрес модуля в массиве для упорядочивания следования модулей при поиске на SPI.
-//            xPlcConfigSearchTemp.axConfigSearch[ucSlaveAddress].ui8Address =
-//                ucSlaveAddress;
-//
-//            AddSystemComponent(auiSpiRxBuffer[MODULE_TYPE_OFFSET],
-//                               ucSlaveAddress);
-//            std::cout << "CInternalModule::GetModuleType ucSlaveAddress "  << (int)xPlcConfigSearchTemp.axConfigSearch[ucSlaveAddress].ui8Address << std::endl;
-//            std::cout << "CInternalModule::GetModuleType ui8Type "  << (int)xPlcConfigSearchTemp.axConfigSearch[ucSlaveAddress].ui8Type << std::endl;
+            // модуль присутствует.
+            return auiSpiRxBuffer[MODULE_TYPE_OFFSET];
         }
         else
         {
             std::cout << "CInternalModule::GetModuleType 5"  << std::endl;
-//            // сохраним адрес модуля в массиве для упорядочивания следования модулей при поиске на SPI.
-//            xPlcConfigSearchTemp.axConfigSearch[ucSlaveAddress].ui8Address =
-//                ucSlaveAddress;
-//
-//            AddSystemComponent(0,
-//                               ucSlaveAddress);
+            return 0;
         }
     }
-    std::cout << "CInternalModule::GetModuleType 6"  << std::endl;
+    else
+    {
+        std::cout << "CInternalModule::GetModuleType 6"  << std::endl;
+        return 0;
+    }
+}
+
+//-----------------------------------------------------------------------------------------------------
+void CInternalModule::SearchModules(void)
+{
+    std::cout << "CInternalModule::SearchModules 1"  << std::endl;
+//    memset(reinterpret_cast<uint8_t*>(&m_xDeviceConfigSearch),
+//           0,
+//           sizeof(struct TConfigDataPackOne));
+
+    // опросим интерфейс SPI. какие модули присутствуют?
+    for (uint8_t i = 0; i < SPI_MAX_BUS_ADDRESS; i++)
+    {
+        // если модуль не ответил MODULE_REQUEST_QUANTITY раз,
+        // то его нет или он неисправен.
+        for (uint8_t j = 0; j < MODULE_REQUEST_QUANTITY; j++)
+        {
+            if (GetModuleType(i) != 0)
+            {
+//                // сохраним тип модуля в массиве для упорядочивания следования модулей при поиске на SPI.
+//                m_xDeviceConfigSearch.axModulesContext[m_xDeviceConfigSearch.uiModulesQuantity].uiType =
+//                    m_auiSpiRxBuffer[MODULE_TYPE_OFFSET];
+//                // сохраним адрес модуля в массиве для упорядочивания следования модулей при поиске на SPI.
+//                m_xDeviceConfigSearch.axModulesContext[m_xDeviceConfigSearch.uiModulesQuantity].uiAddress = i;
+//                // модуль присутствует. увеличим значение переменной -
+//                // фактическое количество модулей в системе.
+//                (m_xDeviceConfigSearch.uiModulesQuantity)++;
+//
+//                if (m_xDeviceConfigSearch.uiModulesQuantity >=
+//                        INTERNAL_MODULE_QUANTITY)
+//                {
+//                    return;
+//                }
+
+                // перейдём к опросу следующего адреса.
+                break;
+            }
+            else
+            {
+
+            }
+        }
+    }
 }
 
 //-------------------------------------------------------------------------------
