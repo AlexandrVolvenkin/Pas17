@@ -1,4 +1,3 @@
-﻿
 ﻿//-------------------------------------------------------------------------------
 //  Source      : FileName.cpp
 //  Created     : 01.06.2022
@@ -9,7 +8,6 @@
 #ifndef CONFIGURATION_H_INCLUDED
 #define CONFIGURATION_H_INCLUDED
 
-//-------------------------------------------------------------------------------
 // преобразование натурального числа в целое.
 #define CONVERT_NATURAL_NUMBER_TO_INTEGER 1
 // преобразование целого числа в натуральное.
@@ -77,7 +75,7 @@
 #define DISPLAY_MODULE_TYPE_HMI_LCD_4x20 0x04
 #define DISPLAY_MODULE_QUANTITY 1
 #define DISPLAY_MODULE_CODE 1
-#define INTERNAL_MODULE_QUANTITY 16
+#define INTERNAL_MODULE_QUANTITY 8
 #define EXTERNAL_MODULE_FUNCTION_1234_QUANTITY 32  // определяется картой памяти программатора.
 #define EXTERNAL_MODULE_FUNCTION_15_QUANTITY 3
 // до 32 модулей modbus function 1,2,3,4  и до 3 модулей modbus function 15.
@@ -532,62 +530,6 @@ enum EModbusFunctionHoldingRegistersDataMap
 enum EModbusFunctionInputRegistersDataMap
 {
 //    DISCRETE_INPUTS_STATE_OFFSET = 0,
-};
-
-
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <errno.h>
-//#include <fcntl.h>
-#include <string.h>
-#include <assert.h>
-#include <time.h>
-
-
-class Timer;
-class Platform;
-class CTask;
-class CResources;
-class CCommunicationDevice;
-class CCommunicationDeviceInterface;
-class CSpiCommunicationDevice;
-class CDataContainerInterface;
-class CDataContainerDataBase;
-
-//-------------------------------------------------------------------------------
-class CConfiguration : public CTask
-{
-
-#pragma pack(push)
-#pragma pack(1)
-    struct TModuleContext
-    {
-        uint8_t uiType;
-        uint8_t uiAddress;
-    };
-#pragma pack(pop)
-
-#pragma pack(push)
-#pragma pack(1)
-    struct TConfigDataPackOne
-    {
-        // фактическое количество модулей.
-        uint8_t uiModulesQuantity;
-        TModuleContext axModulesContext[INTERNAL_MODULE_QUANTITY];
-        uint8_t uiDiscreteOutputQuantity;
-        uint8_t uiDiscreteInputQuantity;
-//    uint8_t uiDisplayType;
-//    uint8_t uiErrorCode;
-    };
-#pragma pack(pop)
-
-public:
-    CConfiguration();
-    virtual ~CConfiguration();
-
-private:
-
 };
 
 //-------------------------------------------------------------------------------

@@ -80,7 +80,7 @@ bool CInternalModuleMuvr::SetTaskData(CDataContainerDataBase* pxDataContainer)
 //-------------------------------------------------------------------------------
 bool CInternalModuleMuvr::GetTaskData(CDataContainerDataBase* pxDataContainer)
 {
-//    std::cout << "CInternalModuleMuvr::GetTaskData 1" << std::endl;
+    std::cout << "CInternalModuleMuvr::GetTaskData 1" << std::endl;
 
     m_pxOperatingDataContainer -> m_uiFsmCommandState = GetFsmState();
     *pxDataContainer = *m_pxOperatingDataContainer;
@@ -281,7 +281,7 @@ void CInternalModuleMuvr::Allocate(void)
 //-----------------------------------------------------------------------------------------------------
 uint8_t CInternalModuleMuvr::DataExchange(void)
 {
-//    std::cout << "CInternalModuleMuvr::DataExchange 1"  << std::endl;
+    //std::cout << "CInternalModuleMuvr::DataExchange 1"  << std::endl;
     unsigned short usData;
     float fData;
     unsigned char ucCalibrPlus;
@@ -293,16 +293,17 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
     ucCalibrPlus = 0;
     ucCalibrMinus = 0;
     uint8_t uiCommonIndex = GetCommonIndex();
+
     // калибруем вход?(если ucCommonIndex не равен 0, то содержит номер калибруемого входа)
     if ((uiCommonIndex > 0) && (uiCommonIndex < (MUVR_TXS_INPUT_NUMBER + 1)))
     {
-        std::cout << "CInternalModuleMuvr::DataExchange 12"  << std::endl;
+        //std::cout << "CInternalModuleMuvr::DataExchange 12"  << std::endl;
         // получим номер калибруемого входа.
         ucCalibrPlus = uiCommonIndex;
         // установим начало шкалы НШК?
         if (GetCommandControl() == MUVR_COMMAND_CONTROL_SET_BOTTOM_OF_SCALE)
         {
-            std::cout << "CInternalModuleMuvr::DataExchange 13"  << std::endl;
+            //std::cout << "CInternalModuleMuvr::DataExchange 13"  << std::endl;
             SetCommandControl(0);
             // добавим команду модулю.
             ucCalibrPlus |= MUVR_SET_BOTTOM_OF_SCALE;
@@ -310,7 +311,7 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
         // установим конец шкалы ВШК?
         else if (GetCommandControl() == MUVR_COMMAND_CONTROL_SET_TOP_OF_SCALE)
         {
-            std::cout << "CInternalModuleMuvr::DataExchange 14"  << std::endl;
+            //std::cout << "CInternalModuleMuvr::DataExchange 14"  << std::endl;
             SetCommandControl(0);
             // добавим команду модулю.
             ucCalibrPlus |= MUVR_SET_TOP_OF_SCALE;
@@ -365,7 +366,7 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                                         TAIL_ANSWER_LENGTH,
                                         LOW_SPEED_IN_HZ);
 
-//    std::cout << "CInternalModuleMuvr::DataExchange auiSpiRxBuffer"  << std::endl;
+    //std::cout << "CInternalModuleMuvr::DataExchange auiSpiRxBuffer"  << std::endl;
 //    unsigned char *pucSourceTemp;
 //    pucSourceTemp = (unsigned char*)&auiSpiRxBuffer[0];
 //    for(int i=0; i<32 ; )
@@ -382,15 +383,15 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
     switch(auiSpiRxBuffer[SPI_COMMAND_BYTE_OFFSET])
     {
     case MUVR_ANSWER_REPER_POINTS_ADC_DATABASE_ERROR:
-        std::cout << "CInternalModuleMuvr::DataExchange 15"  << std::endl;
+        //std::cout << "CInternalModuleMuvr::DataExchange 15"  << std::endl;
     // ошибка БД реперных точек, но будет продолжение обмена.
     case MUVR_GET_MEASURE_DATA_COMMAND:
-//        std::cout << "CInternalModuleMuvr::DataExchange 16"  << std::endl;
+        //std::cout << "CInternalModuleMuvr::DataExchange 16"  << std::endl;
         // данные не повреждены?
         if (iCrcSummTwoByteCompare(&auiSpiRxBuffer[SPI_DATA_BYTE_OFFSET],
                                    MUVR_GET_MEASURE_DATA_COMMAND_ANSWER_LENGTH) > 0)
         {
-//            std::cout << "CInternalModuleMuvr::DataExchange 17"  << std::endl;
+            //std::cout << "CInternalModuleMuvr::DataExchange 17"  << std::endl;
             // модуль исправен.
             SetBadAnswerCounter(BAD_MODULE_CYCLE_COUNT_DEFAULT);
 //            // сбросим флаг отказа модуля.
@@ -404,12 +405,12 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
             // получим измеренные значения всех аналоговых входов модуля.
             for (uint8_t i = 0; i < MUVR_ANALOG_INPUT_QUANTITY; i++)
             {
-//                std::cout << "CInternalModuleMuvr::DataExchange 2"  << std::endl;
+                //std::cout << "CInternalModuleMuvr::DataExchange 2"  << std::endl;
                 // есть обрыв линии или переполнение при расчётах текущего входа?
                 if ((auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_LINE_BREAK) ||
                         (auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_CALCULATION_OVERFLOW))
                 {
-//                    std::cout << "CInternalModuleMuvr::DataExchange 3"  << std::endl;
+                    //std::cout << "CInternalModuleMuvr::DataExchange 3"  << std::endl;
                     // данные входа недостоверны, обнулим их.
                     memset(&(m_pfAnalogueInputsValue[i]),
                            0,
@@ -431,7 +432,7 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                      ((auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_CALCULATION_OVERFLOW) == 0)) &&
                     ((auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_CHANNEL_CALIBRATION)))
                 {
-                    std::cout << "CInternalModuleMuvr::DataExchange 4"  << std::endl;
+                    //std::cout << "CInternalModuleMuvr::DataExchange 4"  << std::endl;
                     // получим измеренное значение и преобразуем.
                     fData = fStep5ToFloat(&auiSpiRxBuffer[SPI_DATA_BYTE_OFFSET +
                                                                                (i * MUVR_ONE_ANALOG_INPUT_DATA_BYTE_QUANTITY)]);
@@ -452,11 +453,11 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                 }
                 else
                 {
-//                    std::cout << "CInternalModuleMuvr::DataExchange 5"  << std::endl;
+                    //std::cout << "CInternalModuleMuvr::DataExchange 5"  << std::endl;
                     // аналоговый вход выведен из обработки?
                     if (m_puiAnalogueInputsOff[i])
                     {
-                        std::cout << "CInternalModuleMuvr::DataExchange 51"  << std::endl;
+                        //std::cout << "CInternalModuleMuvr::DataExchange 51"  << std::endl;
                         // данные входов модуля выведены из обработки, обнулим их.
                         memset(&(m_pfAnalogueInputsValue[i]),
                                0,
@@ -474,7 +475,7 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                     }
                     else
                     {
-//                        std::cout << "CInternalModuleMuvr::DataExchange 6"  << std::endl;
+                        //std::cout << "CInternalModuleMuvr::DataExchange 6"  << std::endl;
                         // получим измеренное значение и преобразуем.
                         fData = fStep5ToFloat(&auiSpiRxBuffer[SPI_DATA_BYTE_OFFSET +
                                                                                    (i * MUVR_ONE_ANALOG_INPUT_DATA_BYTE_QUANTITY)]);
@@ -540,13 +541,13 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
         break;
 
     case MUVR_ANSWER_DATA_NOT_READY:
-        std::cout << "CInternalModuleMuvr::DataExchange 7"  << std::endl;
+        //std::cout << "CInternalModuleMuvr::DataExchange 7"  << std::endl;
         // данные не готовы.
         return 0;
         break;
 
     case MUVR_ANSWER_DATABASE_ERROR:
-        std::cout << "CInternalModuleMuvr::DataExchange 8"  << std::endl;
+        //std::cout << "CInternalModuleMuvr::DataExchange 8"  << std::endl;
 //        // ошибка БД обработки, конец связи.
 //        // получим код ошибки;
 //        SetErrorCode(INTERNAL_MODULE_ERROR_DATA_BASE);
@@ -554,7 +555,7 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
         break;
 
     default:
-        std::cout << "CInternalModuleMuvr::DataExchange 9"  << std::endl;
+        //std::cout << "CInternalModuleMuvr::DataExchange 9"  << std::endl;
         break;
     };
 
@@ -562,7 +563,7 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
     // модуль признан неисправным?
     if (GetBadAnswerCounter() == 0)
     {
-        std::cout << "CInternalModuleMuvr::DataExchange 10"  << std::endl;
+        //std::cout << "CInternalModuleMuvr::DataExchange 10"  << std::endl;
 //        // модуль признан неисправным.
 //        *(m_puiModuleBadStateBuffer) = BAD_MODULE_NOT_RESPONDED;
 
@@ -586,7 +587,7 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
     }
     else
     {
-        std::cout << "CInternalModuleMuvr::DataExchange 11"  << std::endl;
+        //std::cout << "CInternalModuleMuvr::DataExchange 11"  << std::endl;
         // уменьшим значение счётчика - "количество сеансов связи с модулем без ответа".
         SetBadAnswerCounter(GetBadAnswerCounter() - 1);
     }

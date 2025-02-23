@@ -152,6 +152,12 @@ public:
 class CInternalModule : public CInternalModuleInterface
 {
 public:
+    enum
+    {
+        SEARCH_MODULES_START = NEXT_STEP,
+
+    };
+
     CInternalModule();
     CInternalModule(uint8_t muiAddress);
     virtual ~CInternalModule();
@@ -159,8 +165,6 @@ public:
     void SetCommunicationDeviceName(std::string sName);
     void SetCommunicationDevice(CCommunicationDeviceInterface* pxCommunicationDevice);
     uint8_t Init(void);
-    bool SetTaskData(CDataContainerDataBase* pxDataContainer);
-    bool GetTaskData(CDataContainerDataBase* pxDataContainer);
 
     uint8_t GetAddress()
     {

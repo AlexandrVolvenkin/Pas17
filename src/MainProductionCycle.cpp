@@ -325,17 +325,17 @@ uint8_t CMainProductionCycle::CreateTasks(void)
     pxSpiCommunicationDeviceSpi0 ->
     SetResources(&m_xResources);
 
-////-------------------------------------------------------------------------------
-//    CInternalModule* pxInternalModuleCommon = 0;
-//    pxInternalModuleCommon =
-//        static_cast<CInternalModule*>(m_xResources.AddCommonTaskToMap("InternalModuleCommon",
-//                                      std::make_shared<CInternalModule>()));
-//    pxInternalModuleCommon ->
-//    SetResources(&m_xResources);
-//    pxInternalModuleCommon ->
-//    SetCommunicationDeviceName("SpiCommunicationDeviceSpi0");
-//    m_xResources.AddCurrentlyRunningTasksList(pxInternalModuleCommon);
-//    m_pxInternalModule = pxInternalModuleCommon;
+//-------------------------------------------------------------------------------
+    CInternalModule* pxInternalModuleCommon = 0;
+    pxInternalModuleCommon =
+        static_cast<CInternalModule*>(m_xResources.AddCommonTaskToMap("InternalModuleCommon",
+                                      std::make_shared<CInternalModule>()));
+    pxInternalModuleCommon ->
+    SetResources(&m_xResources);
+    pxInternalModuleCommon ->
+    SetCommunicationDeviceName("SpiCommunicationDeviceSpi0");
+    m_xResources.AddCurrentlyRunningTasksList(pxInternalModuleCommon);
+    m_pxInternalModule = pxInternalModuleCommon;
 
 //-------------------------------------------------------------------------------
     CInternalModuleMuvr* pxInternalModuleMuvr = 0;
@@ -359,6 +359,17 @@ uint8_t CMainProductionCycle::CreateTasks(void)
     m_xResources.AddCurrentlyRunningTasksList(pxAnalogueSignals);
     m_pxAnalogueSignals = pxAnalogueSignals;
 
+//-------------------------------------------------------------------------------
+    CConfigurationCreate* pxConfigurationCreate = 0;
+    pxConfigurationCreate =
+        static_cast<CConfigurationCreate*>(m_xResources.AddCommonTaskToMap("ConfigurationCreate",
+                                           std::make_shared<CConfigurationCreate>()));
+    pxConfigurationCreate ->
+    SetResources(&m_xResources);
+    pxConfigurationCreate ->
+    SetInternalModuleName("InternalModuleCommon");
+    m_xResources.AddCurrentlyRunningTasksList(pxConfigurationCreate);
+    m_pxConfigurationCreate = pxConfigurationCreate;
 
 }
 
@@ -474,6 +485,8 @@ uint8_t CMainProductionCycle::Fsm(void)
 //        std::cout << "CMainProductionCycle::Fsm 1"  << std::endl;
 
     usleep(1000);
+//    CurrentlyRunningTasksExecution();
+
     switch (GetFsmState())
     {
     case IDDLE:
@@ -501,6 +514,11 @@ uint8_t CMainProductionCycle::Fsm(void)
         if (GetResources() -> CheckCommonTaskMap())
         {
             InitTasks();
+
+            m_uiConfigurationCreateId =
+                GetResources() ->
+                GetTaskIdByNameFromMap("ConfigurationCreate");
+
             SetFsmState(READY);
         }
         else
@@ -654,13 +672,117 @@ uint8_t CMainProductionCycle::Fsm(void)
         CurrentlyRunningTasksExecution();
         m_pxDataStoreFileSystem -> ReadServiceSection();
 //        SetFsmState(MAIN_CYCLE_MODULES_INIT);
-        SetFsmState(MAIN_CYCLE_MODBUS_SLAVE);
+//        SetFsmState(MAIN_CYCLE_MODBUS_SLAVE);
+        SetFsmState(CONFIGURATION_CREATE_START);
         break;
 
     case DATABASE_CHECK_END_ERROR:
 //        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_END_ERROR"  << std::endl;
         CurrentlyRunningTasksExecution();
         break;
+
+    case CONFIGURATION_CREATE_START:
+        std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CREATE_START"  << std::endl;
+        {
+            CurrentlyRunningTasksExecution();
+
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            pxDataContainer -> m_uiTaskId = m_uiConfigurationCreateId;
+            pxDataContainer -> m_uiFsmCommandState =
+                CConfigurationCreate::CONFIGURATION_CREATE_START;
+            pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+
+            if (SetTaskData(GetExecutorDataContainerPointer()))
+            {
+                SetFsmState(CONFIGURATION_CREATE_EXECUTOR_DONE_CHECK_START);
+            }
+            else
+            {
+                SetFsmState(CONFIGURATION_CREATE_EXECUTOR_READY_CHECK_START);
+            }
+        }
+        break;
+
+    case CONFIGURATION_CREATE_EXECUTOR_READY_CHECK_START:
+        std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CREATE_EXECUTOR_READY_CHECK_START"  << std::endl;
+        {
+            CurrentlyRunningTasksExecution();
+
+            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
+            SetFsmState(CONFIGURATION_CREATE_EXECUTOR_READY_CHECK_WAITING);
+        }
+
+        break;
+
+    case CONFIGURATION_CREATE_EXECUTOR_READY_CHECK_WAITING:
+//        //std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CREATE_EXECUTOR_READY_CHECK_WAITING 1"  << std::endl;
+    {
+        CurrentlyRunningTasksExecution();
+
+        if (SetTaskData(GetExecutorDataContainerPointer()))
+        {
+            std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CREATE_EXECUTOR_READY_CHECK_WAITING 2"  << std::endl;
+            SetFsmState(CONFIGURATION_CREATE_EXECUTOR_DONE_CHECK_START);
+        }
+        else
+        {
+            //std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CREATE_EXECUTOR_READY_CHECK_WAITING 3"  << std::endl;
+            // Время ожидания выполнения запроса закончилось?
+            if (GetTimerPointer() -> IsOverflow())
+            {
+                std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CREATE_EXECUTOR_READY_CHECK_WAITING 4"  << std::endl;
+
+                SetFsmState(DONE_ERROR);
+            }
+        }
+    }
+    break;
+
+    case CONFIGURATION_CREATE_EXECUTOR_DONE_CHECK_START:
+        std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CREATE_EXECUTOR_DONE_CHECK_START"  << std::endl;
+        {
+            CurrentlyRunningTasksExecution();
+
+            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
+            SetFsmState(CONFIGURATION_CREATE_EXECUTOR_DONE_CHECK_WAITING);
+        }
+
+        break;
+
+    case CONFIGURATION_CREATE_EXECUTOR_DONE_CHECK_WAITING:
+//        //std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CREATE_EXECUTOR_DONE_CHECK_WAITING"  << std::endl;
+    {
+        CurrentlyRunningTasksExecution();
+
+        CDataContainerDataBase* pxDataContainer =
+            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+
+        uint8_t uiFsmState = pxDataContainer -> m_uiFsmCommandState;
+
+        if (uiFsmState == DONE_OK)
+        {
+            std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CREATE_EXECUTOR_DONE_CHECK_WAITING 2"  << std::endl;
+            SetFsmState(MAIN_CYCLE_MODBUS_SLAVE);
+        }
+        else if (uiFsmState == DONE_ERROR)
+        {
+            std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CREATE_EXECUTOR_DONE_CHECK_WAITING 3"  << std::endl;
+
+            SetFsmState(DONE_ERROR);
+        }
+        else
+        {
+            // Время ожидания выполнения запроса закончилось?
+            if (GetTimerPointer() -> IsOverflow())
+            {
+                std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CREATE_EXECUTOR_DONE_CHECK_WAITING 4"  << std::endl;
+
+                SetFsmState(DONE_ERROR);
+            }
+        }
+    }
+    break;
 
     case MAIN_CYCLE_MODULES_INIT:
 //        std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_MODULES_INIT 1"  << std::endl;
@@ -729,7 +851,7 @@ uint8_t CMainProductionCycle::Fsm(void)
     break;
 
     case MAIN_CYCLE_MODBUS_SLAVE:
-//        std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_MODBUS_SLAVE"  << std::endl;
+        std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_MODBUS_SLAVE"  << std::endl;
 //        m_pxModbusTcpSlaveUpperLevel -> Fsm();
 //        m_pxModbusRtuSlaveUpperLevel -> Fsm();
         CurrentlyRunningTasksExecution();
@@ -755,28 +877,28 @@ uint8_t CMainProductionCycle::Fsm(void)
 
     case MAIN_CYCLE_MODULES_INTERACTION:
 //        std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_MODULES_INTERACTION"  << std::endl;
-    {
-        CurrentlyRunningTasksExecution();
+        {
+            CurrentlyRunningTasksExecution();
 
-        //        m_pxInternalModule ->
-        //        GetModuleType(0);
-        //        {
-        //
-        ////            CInternalModuleMuvr xInternalModuleMuvr;
-        //////            CInternalModule xInternalModuleMuvr;
-        ////            xInternalModuleMuvr.
-        ////            GetModuleType(0);
-        //
-        ////            CInternalModuleMuvr xInternalModuleMuvr;
-        //////            CInternalModule xInternalModuleMuvr;
-        ////            xInternalModuleMuvr.
-        ////            DataBaseRead(0);
-        ////            m_pxInternalModuleMuvr ->
-        ////            DataBaseRead(0);
-        //            m_pxInternalModuleMuvr ->
-        //            GetModuleType(0);
-        //
-        //        }
+            //        m_pxInternalModule ->
+            //        GetModuleType(0);
+            //        {
+            //
+            ////            CInternalModuleMuvr xInternalModuleMuvr;
+            //////            CInternalModule xInternalModuleMuvr;
+            ////            xInternalModuleMuvr.
+            ////            GetModuleType(0);
+            //
+            ////            CInternalModuleMuvr xInternalModuleMuvr;
+            //////            CInternalModule xInternalModuleMuvr;
+            ////            xInternalModuleMuvr.
+            ////            DataBaseRead(0);
+            ////            m_pxInternalModuleMuvr ->
+            ////            DataBaseRead(0);
+            //            m_pxInternalModuleMuvr ->
+            //            GetModuleType(0);
+            //
+            //        }
 
 //            CDataContainerDataBase xOperatingDataContainer;
 //            xOperatingDataContainer.m_uiFsmCommandState =
@@ -798,9 +920,9 @@ uint8_t CMainProductionCycle::Fsm(void)
             m_pxInternalModuleMuvr ->
             SetTaskData(&xOperatingDataContainer);
 
-        SetFsmState(MAIN_CYCLE_DISCRETE_SIGNALS_PROCESSING);
-    }
-    break;
+            SetFsmState(MAIN_CYCLE_DISCRETE_SIGNALS_PROCESSING);
+        }
+        break;
 
     case MAIN_CYCLE_DISCRETE_SIGNALS_PROCESSING:
 //        std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_DISCRETE_SIGNALS_PROCESSING"  << std::endl;

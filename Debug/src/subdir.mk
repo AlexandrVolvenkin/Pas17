@@ -5,7 +5,7 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
 ../src/AnalogueSignals.cpp \
-../src/Configuration.cpp \
+../src/ConfigurationCreate.cpp \
 ../src/Crc.cpp \
 ../src/DataContainer.cpp \
 ../src/DataStore.cpp \
@@ -31,7 +31,7 @@ CPP_SRCS += \
 
 CPP_DEPS += \
 ./src/AnalogueSignals.d \
-./src/Configuration.d \
+./src/ConfigurationCreate.d \
 ./src/Crc.d \
 ./src/DataContainer.d \
 ./src/DataStore.d \
@@ -57,7 +57,7 @@ CPP_DEPS += \
 
 OBJS += \
 ./src/AnalogueSignals.o \
-./src/Configuration.o \
+./src/ConfigurationCreate.o \
 ./src/Crc.o \
 ./src/DataContainer.o \
 ./src/DataStore.o \
@@ -94,7 +94,7 @@ src/%.o: ../src/%.cpp src/subdir.mk
 clean: clean-src
 
 clean-src:
-	-$(RM) ./src/AnalogueSignals.d ./src/AnalogueSignals.o ./src/Configuration.d ./src/Configuration.o ./src/Crc.d ./src/Crc.o ./src/DataContainer.d ./src/DataContainer.o ./src/DataStore.d ./src/DataStore.o ./src/DataStoreCheck.d ./src/DataStoreCheck.o ./src/DeviceControl.d ./src/DeviceControl.o ./src/Dfa.d ./src/Dfa.o ./src/HammingCodes.d ./src/HammingCodes.o ./src/InternalModule.d ./src/InternalModule.o ./src/InternalModuleMuvr.d ./src/InternalModuleMuvr.o ./src/Link.d ./src/Link.o ./src/MainProductionCycle.d ./src/MainProductionCycle.o ./src/MessageBox.d ./src/MessageBox.o ./src/Platform.d ./src/Platform.o ./src/Resources.d ./src/Resources.o ./src/STEP5_floating_point.d ./src/STEP5_floating_point.o ./src/Semaphore.d ./src/Semaphore.o ./src/ServiceMarket.d ./src/ServiceMarket.o ./src/StorageDevice.d ./src/StorageDevice.o ./src/Task.d ./src/Task.o ./src/TaskManager.d ./src/TaskManager.o ./src/Timer.d ./src/Timer.o ./src/main.d ./src/main.o
+	-$(RM) ./src/AnalogueSignals.d ./src/AnalogueSignals.o ./src/ConfigurationCreate.d ./src/ConfigurationCreate.o ./src/Crc.d ./src/Crc.o ./src/DataContainer.d ./src/DataContainer.o ./src/DataStore.d ./src/DataStore.o ./src/DataStoreCheck.d ./src/DataStoreCheck.o ./src/DeviceControl.d ./src/DeviceControl.o ./src/Dfa.d ./src/Dfa.o ./src/HammingCodes.d ./src/HammingCodes.o ./src/InternalModule.d ./src/InternalModule.o ./src/InternalModuleMuvr.d ./src/InternalModuleMuvr.o ./src/Link.d ./src/Link.o ./src/MainProductionCycle.d ./src/MainProductionCycle.o ./src/MessageBox.d ./src/MessageBox.o ./src/Platform.d ./src/Platform.o ./src/Resources.d ./src/Resources.o ./src/STEP5_floating_point.d ./src/STEP5_floating_point.o ./src/Semaphore.d ./src/Semaphore.o ./src/ServiceMarket.d ./src/ServiceMarket.o ./src/StorageDevice.d ./src/StorageDevice.o ./src/Task.d ./src/Task.o ./src/TaskManager.d ./src/TaskManager.o ./src/Timer.d ./src/Timer.o ./src/main.d ./src/main.o
 
 .PHONY: clean-src
 

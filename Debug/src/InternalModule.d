@@ -3,7 +3,8 @@ src/InternalModule.o: ../src/InternalModule.cpp ../src/Configuration.h \
  ../src/Resources.h ../src/DataStore.h ../src/Crc.h \
  D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\CommunicationDevice/CommunicationDevice.h \
  D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\CommunicationDevice/SpiCommunicationDevice.h \
- ../src/DataContainer.h ../src/InternalModule.h
+ ../src/DataContainer.h ../src/ConfigurationCreate.h \
+ ../src/InternalModule.h
 
 ../src/Configuration.h:
 
@@ -26,5 +27,7 @@ D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\Commun
 D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\CommunicationDevice/SpiCommunicationDevice.h:
 
 ../src/DataContainer.h:
+
+../src/ConfigurationCreate.h:
 
 ../src/InternalModule.h:

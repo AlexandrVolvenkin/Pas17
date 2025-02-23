@@ -37,6 +37,7 @@ class CDataStoreCheck;
 //class CDeviceControl;
 class CDataContainerInterface;
 class CDataContainerDataBase;
+class CConfigurationCreate;
 
 //-------------------------------------------------------------------------------
 class CMainProductionCycle : public CTask//, public CDfa
@@ -57,6 +58,13 @@ public:
         DATABASE_CHECK_RECAVERY_END_WAITING,
         DATABASE_CHECK_END_OK,
         DATABASE_CHECK_END_ERROR,
+
+        CONFIGURATION_CREATE_START,
+        CONFIGURATION_CREATE_EXECUTOR_READY_CHECK_START,
+        CONFIGURATION_CREATE_EXECUTOR_READY_CHECK_WAITING,
+        CONFIGURATION_CREATE_EXECUTOR_DONE_CHECK_START,
+        CONFIGURATION_CREATE_EXECUTOR_DONE_CHECK_WAITING,
+
         MAIN_CYCLE_MODULES_INIT,
         MAIN_CYCLE_MODULES_INIT_END_WAITING,
         MAIN_CYCLE_MODBUS_SLAVE,
@@ -104,12 +112,12 @@ private:
     CDataStore* m_pxDataStoreFileSystem;
     CDataStoreCheck* m_pxDataStoreCheck;
     CAnalogueSignals* m_pxAnalogueSignals;
+    CConfigurationCreate* m_pxConfigurationCreate;
+    uint8_t m_uiConfigurationCreateId;
 
     CSpiCommunicationDevice* m_pxSpiCommunicationDevice;
     CInternalModuleInterface* m_pxInternalModule;
     CInternalModuleInterface* m_pxInternalModuleMuvr;
-
-    CConfiguration* m_pxConfigurationCreate;
 
     CServiceMarket* m_pxServiceMarket;
 

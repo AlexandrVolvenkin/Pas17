@@ -63,8 +63,9 @@
 		<Unit filename="src/CommunicationDevice/SpiCommunicationDevice.h" />
 		<Unit filename="src/CommunicationDevice/TcpCommunicationDevice.cpp" />
 		<Unit filename="src/CommunicationDevice/TcpCommunicationDevice.h" />
-		<Unit filename="src/Configuration.cpp" />
 		<Unit filename="src/Configuration.h" />
+		<Unit filename="src/ConfigurationCreate.cpp" />
+		<Unit filename="src/ConfigurationCreate.h" />
 		<Unit filename="src/Crc.cpp" />
 		<Unit filename="src/Crc.h" />
 		<Unit filename="src/DataContainer.cpp" />

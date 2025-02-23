@@ -15,6 +15,7 @@
 #include "CommunicationDevice.h"
 #include "SpiCommunicationDevice.h"
 #include "DataContainer.h"
+#include "ConfigurationCreate.h"
 #include "InternalModule.h"
 
 using namespace std;
@@ -73,36 +74,6 @@ uint8_t CInternalModule::Init(void)
 //                               AddDataContainer(std::make_shared<CDataContainerDataBase>()));
     m_pxOperatingDataContainer = static_cast<CDataContainerDataBase*>(GetResources() ->
                                  AddDataContainer(std::make_shared<CDataContainerDataBase>()));
-}
-
-//-------------------------------------------------------------------------------
-bool CInternalModule::SetTaskData(CDataContainerDataBase* pxDataContainer)
-{
-    std::cout << "CInternalModule::SetTaskData 1" << std::endl;
-
-    if (IsTaskReady())
-    {
-        std::cout << "CInternalModule::SetTaskData 2" << std::endl;
-        *m_pxOperatingDataContainer = *pxDataContainer;
-        SetFsmState(m_pxOperatingDataContainer -> m_uiFsmCommandState);
-        return true;
-    }
-    else
-    {
-        std::cout << "CInternalModule::SetTaskData 3" << std::endl;
-        return false;
-    }
-}
-
-//-------------------------------------------------------------------------------
-bool CInternalModule::GetTaskData(CDataContainerDataBase* pxDataContainer)
-{
-    std::cout << "CInternalModule::GetTaskData 1" << std::endl;
-
-    m_pxOperatingDataContainer -> m_uiFsmCommandState = GetFsmState();
-    *pxDataContainer = *m_pxOperatingDataContainer;
-
-    return true;
 }
 
 ////-------------------------------------------------------------------------------
@@ -308,7 +279,7 @@ void CInternalModule::Allocate(void)
 //-------------------------------------------------------------------------------
 uint8_t CInternalModule::GetModuleType(uint8_t uiAddress)
 {
-    std::cout << "CInternalModule::GetModuleType 1"  << std::endl;
+//    std::cout << "CInternalModule::GetModuleType 1"  << std::endl;
     uint8_t auiSpiTxBuffer[TX_RX_BUFF_SIZE];
     uint8_t auiSpiRxBuffer[TX_RX_BUFF_SIZE];
 
@@ -321,34 +292,34 @@ uint8_t CInternalModule::GetModuleType(uint8_t uiAddress)
                                         GET_MODULE_TYPE_COMMAND_ANSWER_LENGTH +
                                         ONE_BYTE_CRC_LENGTH,
                                         LOW_SPEED_IN_HZ);
-    std::cout << "CInternalModule::GetModuleType 2"  << std::endl;
+//    std::cout << "CInternalModule::GetModuleType 2"  << std::endl;
 
-    {
-        cout << "GET_MODULE_TYPE_COMMAND auiSpiRxBuffer" << endl;
-        unsigned char *pucSourceTemp;
-        pucSourceTemp = (unsigned char*)auiSpiRxBuffer;
-        for(int i=0; i<16; )
-        {
-            for(int j=0; j<8; j++)
-            {
-                cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
-            }
-            cout << endl;
-            i += 8;
-        }
-    }
+//    {
+//        cout << "GET_MODULE_TYPE_COMMAND auiSpiRxBuffer" << endl;
+//        unsigned char *pucSourceTemp;
+//        pucSourceTemp = (unsigned char*)auiSpiRxBuffer;
+//        for(int i=0; i<16; )
+//        {
+//            for(int j=0; j<8; j++)
+//            {
+//                cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+//            }
+//            cout << endl;
+//            i += 8;
+//        }
+//    }
 
     // модуль отвечает?
     if (auiSpiRxBuffer[GET_MODULE_TYPE_COMMAND_OFFSET] ==
             GET_MODULE_TYPE_COMMAND) // if echo answer is ok.
     {
-        std::cout << "CInternalModule::GetModuleType 3"  << std::endl;
+//        std::cout << "CInternalModule::GetModuleType 3"  << std::endl;
         // обмен данными прошёл без ошибок?
         if ((iCrcSummOneByteCompare(&auiSpiRxBuffer[GET_MODULE_TYPE_COMMAND_OFFSET],
                                     GET_MODULE_TYPE_COMMAND_LENGTH +
                                     GET_MODULE_TYPE_COMMAND_ANSWER_LENGTH) > 0))
         {
-            std::cout << "CInternalModule::GetModuleType 4"  << std::endl;
+//            std::cout << "CInternalModule::GetModuleType 4"  << std::endl;
             // модуль присутствует.
             return auiSpiRxBuffer[MODULE_TYPE_OFFSET];
         }
@@ -368,10 +339,7 @@ uint8_t CInternalModule::GetModuleType(uint8_t uiAddress)
 //-----------------------------------------------------------------------------------------------------
 void CInternalModule::SearchModules(void)
 {
-    std::cout << "CInternalModule::SearchModules 1"  << std::endl;
-//    memset(reinterpret_cast<uint8_t*>(&m_xDeviceConfigSearch),
-//           0,
-//           sizeof(struct TConfigDataPackOne));
+//    std::cout << "CInternalModule::SearchModules 1"  << std::endl;
 
     // опросим интерфейс SPI. какие модули присутствуют?
     for (uint8_t i = 0; i < SPI_MAX_BUS_ADDRESS; i++)
@@ -380,29 +348,38 @@ void CInternalModule::SearchModules(void)
         // то его нет или он неисправен.
         for (uint8_t j = 0; j < MODULE_REQUEST_QUANTITY; j++)
         {
-            if (GetModuleType(i) != 0)
+            uint8_t uiType = GetModuleType(i);
+//            std::cout << "CInternalModule::SearchModules 2"  << std::endl;
+//            std::cout << "CInternalModule::SearchModules uiType "  << (int)uiType << std::endl;
+            if (uiType != 0)
             {
-//                // сохраним тип модуля в массиве для упорядочивания следования модулей при поиске на SPI.
-//                m_xDeviceConfigSearch.axModulesContext[m_xDeviceConfigSearch.uiModulesQuantity].uiType =
-//                    m_auiSpiRxBuffer[MODULE_TYPE_OFFSET];
-//                // сохраним адрес модуля в массиве для упорядочивания следования модулей при поиске на SPI.
-//                m_xDeviceConfigSearch.axModulesContext[m_xDeviceConfigSearch.uiModulesQuantity].uiAddress = i;
-//                // модуль присутствует. увеличим значение переменной -
-//                // фактическое количество модулей в системе.
-//                (m_xDeviceConfigSearch.uiModulesQuantity)++;
-//
-//                if (m_xDeviceConfigSearch.uiModulesQuantity >=
-//                        INTERNAL_MODULE_QUANTITY)
-//                {
-//                    return;
-//                }
+//                std::cout << "CInternalModule::SearchModules 3"  << std::endl;
+                CConfigurationCreate::TConfigDataPackOne* pxDeviceConfigSearch =
+                    (CConfigurationCreate::TConfigDataPackOne*)
+                    (((CDataContainerDataBase*)GetCustomertDataContainerPointer()) -> m_puiDataPointer);
+                // сохраним тип модуля в массиве для упорядочивания следования модулей при поиске на SPI.
+                pxDeviceConfigSearch ->
+                axModulesContext[pxDeviceConfigSearch -> uiModulesQuantity].uiType = uiType;
+                // сохраним адрес модуля в массиве для упорядочивания следования модулей при поиске на SPI.
+                pxDeviceConfigSearch ->
+                axModulesContext[pxDeviceConfigSearch -> uiModulesQuantity].uiAddress = i;
+
+                std::cout << "CInternalModule::SearchModules ucSlaveAddress "  << (int)pxDeviceConfigSearch ->
+                          axModulesContext[pxDeviceConfigSearch -> uiModulesQuantity].uiAddress << std::endl;
+                std::cout << "CInternalModule::SearchModules uiType "  << (int)pxDeviceConfigSearch ->
+                          axModulesContext[pxDeviceConfigSearch -> uiModulesQuantity].uiType << std::endl;
+                // модуль присутствует. увеличим значение переменной -
+                // фактическое количество модулей в системе.
+                (pxDeviceConfigSearch -> uiModulesQuantity)++;
+
+                if (pxDeviceConfigSearch -> uiModulesQuantity >=
+                        INTERNAL_MODULE_QUANTITY)
+                {
+                    return;
+                }
 
                 // перейдём к опросу следующего адреса.
                 break;
-            }
-            else
-            {
-
             }
         }
     }
@@ -431,40 +408,40 @@ uint8_t CInternalModule::Fsm(void)
         break;
 
     case INIT:
-//        std::cout << "CInternalModule::Fsm INIT 1"  << std::endl;
-    {
-        CTaskInterface* pxTask =
-            GetResources() ->
-            GetTaskPointerByNameFromMap(m_sCommunicationDeviceName);
-
-        if (pxTask != 0)
+        std::cout << "CInternalModule::Fsm INIT 1"  << std::endl;
         {
+            CTaskInterface* pxTask =
+                GetResources() ->
+                GetTaskPointerByNameFromMap(m_sCommunicationDeviceName);
+
+            if (pxTask != 0)
+            {
 //                std::cout << "CInternalModule::Fsm INIT 2"  << std::endl;
-            if (pxTask -> GetFsmState() >= READY)
-            {
+                if (pxTask -> GetFsmState() >= READY)
+                {
 //                    std::cout << "CInternalModule::Fsm INIT 3"  << std::endl;
-                SetCommunicationDevice((CSpiCommunicationDevice*)pxTask);
-                uiReadyTaskCounter += 1;
+                    SetCommunicationDevice((CSpiCommunicationDevice*)pxTask);
+                    uiReadyTaskCounter += 1;
 //                    SetFsmState(READY);
+                }
             }
-        }
-        else
-        {
-//                std::cout << "CInternalModule::Fsm INIT 4"  << std::endl;
-            if (GetTimerPointer() -> IsOverflow())
+            else
             {
-                std::cout << "CInternalModule::Fsm INIT 5"  << std::endl;
-                SetFsmState(STOP);
+//                std::cout << "CInternalModule::Fsm INIT 4"  << std::endl;
+                if (GetTimerPointer() -> IsOverflow())
+                {
+                    std::cout << "CInternalModule::Fsm INIT 5"  << std::endl;
+                    SetFsmState(STOP);
+                }
             }
         }
-    }
 
-    if (uiReadyTaskCounter > 0)
-    {
-        SetFsmState(READY);
-    }
+        if (uiReadyTaskCounter > 0)
+        {
+            SetFsmState(READY);
+        }
 
-    break;
+        break;
 
     case READY:
 //        std::cout << "CInternalModule::Fsm READY"  << std::endl;
@@ -495,6 +472,16 @@ uint8_t CInternalModule::Fsm(void)
 //        std::cout << "CInternalModule::Fsm DONE_ERROR"  << std::endl;
 //        SetFsmOperationStatus(DONE_ERROR);
 //        SetFsmState(READY);
+        break;
+
+    case SEARCH_MODULES_START:
+        std::cout << "CInternalModule::Fsm SEARCH_MODULES_START 1"  << std::endl;
+        {
+            SearchModules();
+        std::cout << "CInternalModule::Fsm SEARCH_MODULES_START 2"  << std::endl;
+            ((CDataContainerDataBase*)GetCustomertDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(DONE_OK);
+        }
         break;
 
     default:
