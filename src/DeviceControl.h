@@ -18,6 +18,7 @@ class CLinkInterface;
 class CAnalogueSignals;
 class CDataContainerInterface;
 class CDataContainerDataBase;
+class CConfigurationCreate;
 
 //-------------------------------------------------------------------------------
 class CDeviceControl : public CTask
@@ -25,7 +26,13 @@ class CDeviceControl : public CTask
 public:
     enum
     {
-        DATA_BASE_BLOCK_READ = NEXT_STEP,
+        CONFIGURATION_REQUEST_START = NEXT_STEP,
+        CONFIGURATION_REQUEST_EXECUTOR_READY_CHECK_START,
+        CONFIGURATION_REQUEST_EXECUTOR_READY_CHECK_WAITING,
+        CONFIGURATION_REQUEST_EXECUTOR_DONE_CHECK_START,
+        CONFIGURATION_REQUEST_EXECUTOR_DONE_CHECK_WAITING,
+
+        DATA_BASE_BLOCK_READ,
         DATA_BASE_BLOCK_START_WRITE,
         DATA_BASE_BLOCK_WRITE_END_WAITING,
     };
@@ -33,7 +40,7 @@ public:
     CDeviceControl();
     virtual ~CDeviceControl();
 
-    size_t GetObjectLength(void);
+//    size_t GetObjectLength(void);
 
     // Геттер для m_sDataStoreName
     std::string GetDataStoreName() const
@@ -107,10 +114,15 @@ public:
         m_pxOperatingDataLink = pxValue;
     }
 
+    void SetConfigurationCreateName(const std::string& sName)
+    {
+        m_sConfigurationCreateName = sName;
+    }
+
     uint8_t Init(void);
-    bool SetTaskData(CDataContainerDataBase* pxDataContainer);
-    bool GetTaskData(CDataContainerDataBase* pxDataContainer);
-    CDataContainerDataBase* GetTaskData(void);
+//    bool SetTaskData(CDataContainerDataBase* pxDataContainer);
+//    bool GetTaskData(CDataContainerDataBase* pxDataContainer);
+//    CDataContainerDataBase* GetTaskData(void);
 
     uint16_t ConfigurationRead(uint8_t *puiDestination);
     uint16_t DataBaseBlockRead(uint8_t *puiDestination, uint8_t uiBlockIndex);
@@ -123,6 +135,9 @@ public:
 protected:
     std::string m_sDataStoreName;
     CDataStore* m_pxDataStore;
+
+    std::string m_sConfigurationCreateName;
+    uint8_t m_uiConfigurationCreateId;
 
     std::string m_sDataStoreLinkName;
     CLinkInterface* m_pxDataStoreLink;

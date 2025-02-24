@@ -169,6 +169,8 @@ uint8_t CMainProductionCycle::CreateTasks(void)
 //    SetDataStoreLinkName("DataStoreFileSystem");
     pxDeviceControl ->
     SetDataStoreName("DataStoreFileSystem");
+    pxDeviceControl ->
+    SetConfigurationCreateName("ConfigurationCreate");
     m_xResources.AddCurrentlyRunningTasksList(pxDeviceControl);
 
 //-------------------------------------------------------------------------------
@@ -356,6 +358,8 @@ uint8_t CMainProductionCycle::CreateTasks(void)
                                        std::make_shared<CAnalogueSignals>()));
     pxAnalogueSignals ->
     SetResources(&m_xResources);
+    pxAnalogueSignals ->
+    SetDeviceControlName("DeviceControlRtuUpperLevel");
     m_xResources.AddCurrentlyRunningTasksList(pxAnalogueSignals);
     m_pxAnalogueSignals = pxAnalogueSignals;
 

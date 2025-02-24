@@ -48,6 +48,40 @@ uint8_t CConfigurationCreate::Init(void)
                              AddDataContainer(std::make_shared<CDataContainerDataBase>())));
 }
 
+//-----------------------------------------------------------------------------------------------------
+// сериализует, преобразовывает объект конфигурации из внутреннего формата в формат передачи по интерфейсам связи.
+void CConfigurationCreate::
+ConfigurationToProgrammerFormat(TConfigDataProgrammerPackOne *pxDestination,
+                                TConfigDataPackOne *pxSourse)
+{
+    std::cout << "CConfigurationCreate ConfigurationToProgrammerFormat 1"  << std::endl;
+    pxDestination -> uiModulesQuantity =
+        pxSourse -> uiModulesQuantity;
+
+    for (int i = 0;
+            (i < INTERNAL_MODULE_QUANTITY);
+            i++)
+    {
+        pxDestination -> auiModulesContext[i] =
+            pxSourse -> axModulesContext[i].uiType;
+    }
+
+    pxDestination -> uiLastDiscreteInputModuleAddresPlusOne =
+        pxSourse -> uiLastDiscreteInputModuleAddresPlusOne;
+    pxDestination -> uiLastAnalogueInputModuleAddresPlusOne =
+        pxSourse -> uiLastAnalogueInputModuleAddresPlusOne;
+    pxDestination -> uiDiscreteOutputQuantity =
+        pxSourse -> uiDiscreteOutputQuantity;
+    pxDestination -> uiDiscreteInputSignalsQuantity =
+        pxSourse -> uiDiscreteInputSignalsQuantity;
+    pxDestination -> uiAnalogueInputSignalsQuantity =
+        pxSourse -> uiAnalogueInputSignalsQuantity;
+    pxDestination -> uiDisplayType =
+        pxSourse -> uiDisplayType;
+//    pxDestination -> uiErrorCode =
+//        pxSourse -> uiErrorCode;
+}
+
 //-------------------------------------------------------------------------------
 uint8_t CConfigurationCreate::Fsm(void)
 {
@@ -93,6 +127,7 @@ uint8_t CConfigurationCreate::Fsm(void)
 //        SetFsmState(READY);
         break;
 
+//-------------------------------------------------------------------------------
     case CONFIGURATION_CREATE_START:
         std::cout << "CConfigurationCreate::Fsm CONFIGURATION_CREATE_START"  << std::endl;
         {
@@ -191,6 +226,102 @@ uint8_t CConfigurationCreate::Fsm(void)
     }
     break;
 
+//-------------------------------------------------------------------------------
+    case CONFIGURATION_REQUEST_START:
+        std::cout << "CConfigurationCreate::Fsm CONFIGURATION_REQUEST_START"  << std::endl;
+        {
+//            CDataContainerDataBase* pxDataContainer =
+//                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+//            pxDataContainer -> m_uiTaskId = m_uiInternalModuleId;
+//            pxDataContainer -> m_uiFsmCommandState =
+//                CInternalModule::SEARCH_MODULES_START;
+//            pxDataContainer -> m_puiDataPointer = (uint8_t*)&m_xDeviceConfigSearch;
+//
+//            if (SetTaskData(GetExecutorDataContainerPointer()))
+//            {
+//                SetFsmState(CONFIGURATION_REQUEST_EXECUTOR_DONE_CHECK_START);
+//            }
+//            else
+//            {
+//                SetFsmState(CONFIGURATION_REQUEST_EXECUTOR_READY_CHECK_START);
+//            }
+        }
+        break;
+
+    case CONFIGURATION_REQUEST_EXECUTOR_READY_CHECK_START:
+        std::cout << "CConfigurationCreate::Fsm CONFIGURATION_REQUEST_EXECUTOR_READY_CHECK_START"  << std::endl;
+        {
+            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
+            SetFsmState(CONFIGURATION_REQUEST_EXECUTOR_READY_CHECK_WAITING);
+        }
+
+        break;
+
+    case CONFIGURATION_REQUEST_EXECUTOR_READY_CHECK_WAITING:
+//        //std::cout << "CConfigurationCreate::Fsm CONFIGURATION_REQUEST_EXECUTOR_READY_CHECK_WAITING 1"  << std::endl;
+    {
+        if (SetTaskData(GetExecutorDataContainerPointer()))
+        {
+            std::cout << "CConfigurationCreate::Fsm CONFIGURATION_REQUEST_EXECUTOR_READY_CHECK_WAITING 2"  << std::endl;
+            SetFsmState(CONFIGURATION_REQUEST_EXECUTOR_DONE_CHECK_START);
+        }
+        else
+        {
+            std::cout << "CConfigurationCreate::Fsm CONFIGURATION_REQUEST_EXECUTOR_READY_CHECK_WAITING 3"  << std::endl;
+            // Время ожидания выполнения запроса закончилось?
+            if (GetTimerPointer() -> IsOverflow())
+            {
+                std::cout << "CConfigurationCreate::Fsm CONFIGURATION_REQUEST_EXECUTOR_READY_CHECK_WAITING 4"  << std::endl;
+                ((CDataContainerDataBase*)GetCustomertDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+                SetFsmState(DONE_ERROR);
+            }
+        }
+    }
+    break;
+
+    case CONFIGURATION_REQUEST_EXECUTOR_DONE_CHECK_START:
+        std::cout << "CConfigurationCreate::Fsm CONFIGURATION_REQUEST_EXECUTOR_DONE_CHECK_START"  << std::endl;
+        {
+            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
+            SetFsmState(CONFIGURATION_REQUEST_EXECUTOR_DONE_CHECK_WAITING);
+        }
+
+        break;
+
+    case CONFIGURATION_REQUEST_EXECUTOR_DONE_CHECK_WAITING:
+//        //std::cout << "CConfigurationCreate::Fsm CONFIGURATION_REQUEST_EXECUTOR_DONE_CHECK_WAITING"  << std::endl;
+    {
+        CDataContainerDataBase* pxDataContainer =
+            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+
+        uint8_t uiFsmState = pxDataContainer -> m_uiFsmCommandState;
+
+        if (uiFsmState == DONE_OK)
+        {
+            std::cout << "CConfigurationCreate::Fsm CONFIGURATION_REQUEST_EXECUTOR_DONE_CHECK_WAITING 2"  << std::endl;
+            ((CDataContainerDataBase*)GetCustomertDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(DONE_OK);
+        }
+        else if (uiFsmState == DONE_ERROR)
+        {
+            std::cout << "CConfigurationCreate::Fsm CONFIGURATION_REQUEST_EXECUTOR_DONE_CHECK_WAITING 3"  << std::endl;
+            ((CDataContainerDataBase*)GetCustomertDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+            SetFsmState(DONE_ERROR);
+        }
+        else
+        {
+            // Время ожидания выполнения запроса закончилось?
+            if (GetTimerPointer() -> IsOverflow())
+            {
+                std::cout << "CConfigurationCreate::Fsm CONFIGURATION_REQUEST_EXECUTOR_DONE_CHECK_WAITING 4"  << std::endl;
+                ((CDataContainerDataBase*)GetCustomertDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+                SetFsmState(DONE_ERROR);
+            }
+        }
+    }
+    break;
+
+//-------------------------------------------------------------------------------
     default:
         break;
     }

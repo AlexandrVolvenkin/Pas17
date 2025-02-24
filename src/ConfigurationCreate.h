@@ -41,6 +41,12 @@ public:
         CONFIGURATION_CREATE_EXECUTOR_DONE_CHECK_START,
         CONFIGURATION_CREATE_EXECUTOR_DONE_CHECK_WAITING,
 
+        CONFIGURATION_REQUEST_START,
+        CONFIGURATION_REQUEST_EXECUTOR_READY_CHECK_START,
+        CONFIGURATION_REQUEST_EXECUTOR_READY_CHECK_WAITING,
+        CONFIGURATION_REQUEST_EXECUTOR_DONE_CHECK_START,
+        CONFIGURATION_REQUEST_EXECUTOR_DONE_CHECK_WAITING,
+
     };
 
 #pragma pack(push)
@@ -65,6 +71,7 @@ public:
         uint8_t uiDiscreteInputSignalsQuantity;
         uint8_t uiAnalogueInputSignalsQuantity;
         uint8_t uiDisplayType;
+        uint8_t ui16ErrorCode;
     };
 #pragma pack(pop)
 
@@ -88,7 +95,8 @@ public:
     virtual ~CConfigurationCreate();
 
     void SetInternalModuleName(std::string sName);
-
+    void ConfigurationToProgrammerFormat(TConfigDataProgrammerPackOne *pxDestination,
+                                         TConfigDataPackOne *pxSourse);
     uint8_t Init(void);
     uint8_t Fsm(void);
 
@@ -97,6 +105,7 @@ private:
     uint8_t m_uiInternalModuleId;
 
     uint8_t* m_puiIntermediateBuff;
+    // объект с конфигурацией во внутреннем формате.
     TConfigDataPackOne m_xDeviceConfigSearch;
 
 };

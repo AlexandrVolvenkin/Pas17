@@ -637,8 +637,8 @@ uint8_t CModbusSmSlave::Fsm(void)
     case ANSWER_PROCESSING_WAITING:
 //        std::cout << "CModbusSmSlave::Fsm ANSWER_PROCESSING_WAITING"  << std::endl;
     {
-        m_pxDeviceControl ->
-        GetTaskData(m_pxOperatingDataContainer);
+//        m_pxDeviceControl ->
+//        GetTaskData(m_pxOperatingDataContainer);
 
         uint8_t uiFsmState = m_pxOperatingDataContainer -> m_uiFsmCommandState;
 

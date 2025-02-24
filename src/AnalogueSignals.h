@@ -252,6 +252,11 @@ public:
     CAnalogueSignals();
     virtual ~CAnalogueSignals();
 
+    void SetDeviceControlName(const std::string& sName)
+    {
+        m_sDeviceControlName = sName;
+    }
+
     uint8_t Init(void);
     bool SetTaskData(CDataContainerDataBase* pxDataContainer);
     bool GetTaskData(CDataContainerDataBase* pxDataContainer);
@@ -262,6 +267,9 @@ public:
 protected:
 
 private:
+    std::string m_sDeviceControlName;
+    uint8_t m_uiDeviceControlId;
+
     uint8_t* m_puiIntermediateBuff;
     CDataContainerDataBase* m_pxOperatingDataContainer;
 };

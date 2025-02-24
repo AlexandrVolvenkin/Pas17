@@ -16,6 +16,7 @@
 #include "DataContainer.h"
 #include "Link.h"
 #include "AnalogueSignals.h"
+#include "ConfigurationCreate.h"
 #include "DeviceControl.h"
 
 using namespace std;
@@ -46,57 +47,57 @@ uint8_t CDeviceControl::Init(void)
                              AddDataContainer(std::make_shared<CDataContainerDataBase>())));
 }
 
-//-------------------------------------------------------------------------------
-bool CDeviceControl::SetTaskData(CDataContainerDataBase* pxDataContainer)
-{
-    std::cout << "CDeviceControl::SetTaskData 1" << std::endl;
+////-------------------------------------------------------------------------------
+//bool CDeviceControl::SetTaskData(CDataContainerDataBase* pxDataContainer)
+//{
+//    std::cout << "CDeviceControl::SetTaskData 1" << std::endl;
+//
+//    if (IsTaskReady())
+//    {
+//        std::cout << "CDeviceControl::SetTaskData 2" << std::endl;
+//        *m_pxOperatingDataContainer = *pxDataContainer;
+//        SetFsmState(m_pxOperatingDataContainer -> m_uiFsmCommandState);
+//        return true;
+//    }
+//    else
+//    {
+//        std::cout << "CDeviceControl::SetTaskData 3" << std::endl;
+//        return false;
+//    }
+//}
+//
+////-------------------------------------------------------------------------------
+//bool CDeviceControl::GetTaskData(CDataContainerDataBase* pxDataContainer)
+//{
+//    std::cout << "CDeviceControl::GetTaskData 1" << std::endl;
+//
+//    m_pxOperatingDataContainer -> m_uiFsmCommandState = GetFsmState();
+//    *pxDataContainer = *m_pxOperatingDataContainer;
+//
+//    return true;
+//}
 
-    if (IsTaskReady())
-    {
-        std::cout << "CDeviceControl::SetTaskData 2" << std::endl;
-        *m_pxOperatingDataContainer = *pxDataContainer;
-        SetFsmState(m_pxOperatingDataContainer -> m_uiFsmCommandState);
-        return true;
-    }
-    else
-    {
-        std::cout << "CDeviceControl::SetTaskData 3" << std::endl;
-        return false;
-    }
-}
+////-------------------------------------------------------------------------------
+//CDataContainerDataBase* CDeviceControl::GetTaskData(void)
+//{
+//    std::cout << "CDeviceControl::GetTaskData 1" << std::endl;
+//
+//    m_pxOperatingDataContainer -> m_uiFsmCommandState = GetFsmState();
+//    m_pxOperatingDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+//    m_pxOperatingDataContainer -> m_uiDataLength =
+//        m_pxResources ->
+//        m_pxDataStore ->
+//        GetBlockLength(m_pxOperatingDataContainer -> m_uiDataIndex);
+//
+//    return m_pxOperatingDataContainer;
+//}
 
-//-------------------------------------------------------------------------------
-bool CDeviceControl::GetTaskData(CDataContainerDataBase* pxDataContainer)
-{
-    std::cout << "CDeviceControl::GetTaskData 1" << std::endl;
-
-    m_pxOperatingDataContainer -> m_uiFsmCommandState = GetFsmState();
-    *pxDataContainer = *m_pxOperatingDataContainer;
-
-    return true;
-}
-
-//-------------------------------------------------------------------------------
-CDataContainerDataBase* CDeviceControl::GetTaskData(void)
-{
-    std::cout << "CDeviceControl::GetTaskData 1" << std::endl;
-
-    m_pxOperatingDataContainer -> m_uiFsmCommandState = GetFsmState();
-    m_pxOperatingDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
-    m_pxOperatingDataContainer -> m_uiDataLength =
-        m_pxResources ->
-        m_pxDataStore ->
-        GetBlockLength(m_pxOperatingDataContainer -> m_uiDataIndex);
-
-    return m_pxOperatingDataContainer;
-}
-
-//-------------------------------------------------------------------------------
-size_t CDeviceControl::GetObjectLength(void)
-{
-    std::cout << "CDeviceControl GetObjectLength"  << std::endl;
-    return sizeof(*this);
-}
+////-------------------------------------------------------------------------------
+//size_t CDeviceControl::GetObjectLength(void)
+//{
+//    std::cout << "CDeviceControl GetObjectLength"  << std::endl;
+//    return sizeof(*this);
+//}
 
 //-------------------------------------------------------------------------------
 uint16_t CDeviceControl::ConfigurationRead(uint8_t *puiDestination)
@@ -190,13 +191,13 @@ uint16_t CDeviceControl::DataBaseBlockWrite(void)
 //            pxAnalogueSignals ->
 //            SetTaskData(m_pxOperatingDataContainer);
 
-            CDataContainerDataBase xOperatingDataContainer;
-            xOperatingDataContainer.m_uiFsmCommandState =
-                CAnalogueSignals::DATA_BASE_BLOCK_MODULE_START_WRITE;
-            xOperatingDataContainer.m_uiDataIndex = 1;
-            xOperatingDataContainer.m_puiDataPointer = m_puiIntermediateBuff;
-            pxAnalogueSignals ->
-            SetTaskData(&xOperatingDataContainer);
+//            CDataContainerDataBase xOperatingDataContainer;
+//            xOperatingDataContainer.m_uiFsmCommandState =
+//                CAnalogueSignals::DATA_BASE_BLOCK_MODULE_START_WRITE;
+//            xOperatingDataContainer.m_uiDataIndex = 1;
+//            xOperatingDataContainer.m_puiDataPointer = m_puiIntermediateBuff;
+//            pxAnalogueSignals ->
+//            SetTaskData(&xOperatingDataContainer);
         }
         break;
 
@@ -299,6 +300,10 @@ uint8_t CDeviceControl::Fsm(void)
         SetFsmState(READY);
     }
 
+
+    m_uiConfigurationCreateId =
+        GetResources() ->
+        GetTaskIdByNameFromMap(m_sConfigurationCreateName);
     break;
 
     case READY:
@@ -331,6 +336,100 @@ uint8_t CDeviceControl::Fsm(void)
 //        SetFsmOperationStatus(DONE_ERROR);
 //        SetFsmState(READY);
         break;
+
+    case CONFIGURATION_REQUEST_START:
+        std::cout << "CDeviceControl::Fsm CONFIGURATION_REQUEST_START"  << std::endl;
+        {
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            pxDataContainer -> m_uiTaskId = m_uiConfigurationCreateId;
+            pxDataContainer -> m_uiFsmCommandState =
+                CConfigurationCreate::CONFIGURATION_REQUEST_START;
+            pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+
+            if (SetTaskData(GetExecutorDataContainerPointer()))
+            {
+                SetFsmState(CONFIGURATION_REQUEST_EXECUTOR_DONE_CHECK_START);
+            }
+            else
+            {
+                SetFsmState(CONFIGURATION_REQUEST_EXECUTOR_READY_CHECK_START);
+            }
+        }
+        break;
+
+    case CONFIGURATION_REQUEST_EXECUTOR_READY_CHECK_START:
+        std::cout << "CDeviceControl::Fsm CONFIGURATION_REQUEST_EXECUTOR_READY_CHECK_START"  << std::endl;
+        {
+            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
+            SetFsmState(CONFIGURATION_REQUEST_EXECUTOR_READY_CHECK_WAITING);
+        }
+
+        break;
+
+    case CONFIGURATION_REQUEST_EXECUTOR_READY_CHECK_WAITING:
+//        //std::cout << "CDeviceControl::Fsm CONFIGURATION_REQUEST_EXECUTOR_READY_CHECK_WAITING 1"  << std::endl;
+    {
+        if (SetTaskData(GetExecutorDataContainerPointer()))
+        {
+            std::cout << "CDeviceControl::Fsm CONFIGURATION_REQUEST_EXECUTOR_READY_CHECK_WAITING 2"  << std::endl;
+            SetFsmState(CONFIGURATION_REQUEST_EXECUTOR_DONE_CHECK_START);
+        }
+        else
+        {
+            //std::cout << "CDeviceControl::Fsm CONFIGURATION_REQUEST_EXECUTOR_READY_CHECK_WAITING 3"  << std::endl;
+            // Время ожидания выполнения запроса закончилось?
+            if (GetTimerPointer() -> IsOverflow())
+            {
+                std::cout << "CDeviceControl::Fsm CONFIGURATION_REQUEST_EXECUTOR_READY_CHECK_WAITING 4"  << std::endl;
+                ((CDataContainerDataBase*)GetCustomertDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+                SetFsmState(DONE_ERROR);
+            }
+        }
+    }
+    break;
+
+    case CONFIGURATION_REQUEST_EXECUTOR_DONE_CHECK_START:
+        std::cout << "CDeviceControl::Fsm CONFIGURATION_REQUEST_EXECUTOR_DONE_CHECK_START"  << std::endl;
+        {
+            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
+            SetFsmState(CONFIGURATION_REQUEST_EXECUTOR_DONE_CHECK_WAITING);
+        }
+
+        break;
+
+    case CONFIGURATION_REQUEST_EXECUTOR_DONE_CHECK_WAITING:
+//        //std::cout << "CDeviceControl::Fsm CONFIGURATION_REQUEST_EXECUTOR_DONE_CHECK_WAITING"  << std::endl;
+    {
+        CDataContainerDataBase* pxDataContainer =
+            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+
+        uint8_t uiFsmState = pxDataContainer -> m_uiFsmCommandState;
+
+        if (uiFsmState == DONE_OK)
+        {
+            std::cout << "CDeviceControl::Fsm CONFIGURATION_REQUEST_EXECUTOR_DONE_CHECK_WAITING 2"  << std::endl;
+            ((CDataContainerDataBase*)GetCustomertDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(DONE_OK);
+        }
+        else if (uiFsmState == DONE_ERROR)
+        {
+            std::cout << "CDeviceControl::Fsm CONFIGURATION_REQUEST_EXECUTOR_DONE_CHECK_WAITING 3"  << std::endl;
+            ((CDataContainerDataBase*)GetCustomertDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+            SetFsmState(DONE_ERROR);
+        }
+        else
+        {
+            // Время ожидания выполнения запроса закончилось?
+            if (GetTimerPointer() -> IsOverflow())
+            {
+                std::cout << "CDeviceControl::Fsm CONFIGURATION_REQUEST_EXECUTOR_DONE_CHECK_WAITING 4"  << std::endl;
+                ((CDataContainerDataBase*)GetCustomertDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+                SetFsmState(DONE_ERROR);
+            }
+        }
+    }
+    break;
 
     case DATA_BASE_BLOCK_READ:
         std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_READ 1"  << std::endl;

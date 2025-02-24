@@ -687,6 +687,26 @@ uint16_t CModbusSlave::ReportSlaveID(void)
 //    memcpy(&puiResponse[uiPduOffset + 2], auiTempData, sizeof(auiTempData));
 //    uiLength += sizeof(auiTempData);
 
+
+
+    CDataContainerDataBase* pxDataContainer =
+        (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+    pxDataContainer -> m_uiTaskId = m_uiDeviceControlId;
+    pxDataContainer -> m_uiFsmCommandState =
+        CDeviceControl::CONFIGURATION_REQUEST_START;
+    pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+
+    if (SetTaskData(GetExecutorDataContainerPointer()))
+    {
+        //std::cout << "CModbusSlave::DataBaseRead 4" << std::endl;
+        SetFsmState(REQUEST_PROCESSING_EXECUTOR_DONE_CHECK_START);
+    }
+    else
+    {
+        //std::cout << "CModbusSlave::DataBaseRead 5" << std::endl;
+        SetFsmState(REQUEST_PROCESSING_EXECUTOR_READY_CHECK_START);
+    }
+
     // количество байт в прикладном сообщении массиве конфигурации, не включая остальные.
     puiResponse[uiPduOffset + 1] = uiLength;//sizeof(auiTempData);// + 1;
     uiLength ++;
@@ -919,7 +939,7 @@ uint16_t CModbusSlave::RequestProcessing(void)
 
     switch (uiFunctionCode)
     {
-        //std::cout << "CModbusSlave::RequestProcessing 3" << std::endl;
+    //std::cout << "CModbusSlave::RequestProcessing 3" << std::endl;
     case _FC_READ_COILS:
         //std::cout << "CModbusSlave::RequestProcessing _FC_READ_COILS"  << std::endl;
         uiLength = ReadCoils();
@@ -1813,7 +1833,7 @@ uint16_t CModbusSlave::AnswerProcessing(void)
     // проверяем сохранённый локально текущий код функции.
     switch (m_uiFunctionCode)
     {
-        //std::cout << "CModbusSlave::AnswerProcessing 3" << std::endl;
+    //std::cout << "CModbusSlave::AnswerProcessing 3" << std::endl;
     case _FC_READ_COILS:
         //std::cout << "CModbusSlave::Answer _FC_READ_COILS"  << std::endl;
         uiLength = ReadCoilsAnswer();
