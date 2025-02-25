@@ -76,6 +76,30 @@ CDataContainerInterface* CTask::GetExecutorDataContainerPointer(void)
     return m_pxExecutorDataContainer;
 }
 
+//-------------------------------------------------------------------------------
+void CTask::SetCurrentCustomertDataContainer(CDataContainerInterface* pxDataContainer)
+{
+    m_pxCurrentCustomertDataContainer = pxDataContainer;
+}
+
+//-------------------------------------------------------------------------------
+CDataContainerInterface* CTask::GetCurrentCustomertDataContainerPointer(void)
+{
+    return m_pxCurrentCustomertDataContainer;
+}
+
+//-------------------------------------------------------------------------------
+void CTask::SetCurrentExecutorDataContainer(CDataContainerInterface* pxDataContainer)
+{
+    m_pxCurrentExecutorDataContainer = pxDataContainer;
+}
+
+//-------------------------------------------------------------------------------
+CDataContainerInterface* CTask::GetCurrentExecutorDataContainerPointer(void)
+{
+    return m_pxCurrentExecutorDataContainer;
+}
+
 ////-------------------------------------------------------------------------------
 //void CTask::SetTaskData(CDataContainerInterface* pxDataContainer)
 //{
@@ -104,6 +128,34 @@ bool CTask::IsTaskReady(void)
             (uiFsmState == DONE_OK) ||
             (uiFsmState == DONE_ERROR))
     {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+//-------------------------------------------------------------------------------
+bool CTask::IsDoneOk(void)
+{
+    if (GetFsmOperationStatus() == DONE_OK)
+    {
+        SetFsmOperationStatus(0);
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+//-------------------------------------------------------------------------------
+bool CTask::IsDoneError(void)
+{
+    if (GetFsmOperationStatus() == DONE_ERROR)
+    {
+        SetFsmOperationStatus(0);
         return true;
     }
     else

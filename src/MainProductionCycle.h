@@ -80,6 +80,16 @@ public:
     CMainProductionCycle();
     virtual ~CMainProductionCycle();
 
+    void SetInternalModuleMuvrName(const std::string& sName)
+    {
+        m_sInternalModuleMuvrName = sName;
+    };
+
+    void SetConfigurationCreateName(const std::string& sName)
+    {
+        m_sConfigurationCreateName = sName;
+    };
+
     uint8_t Init(void);
 //    bool SetTaskData(CDataContainerDataBase* pxDataContainer);
 //    bool GetTaskData(CDataContainerDataBase* pxDataContainer);
@@ -113,6 +123,14 @@ private:
     CDataStoreCheck* m_pxDataStoreCheck;
     CAnalogueSignals* m_pxAnalogueSignals;
     CConfigurationCreate* m_pxConfigurationCreate;
+
+    std::string m_sDeviceControlName;
+    CDeviceControl* m_pxDeviceControl;
+
+    std::string m_sInternalModuleMuvrName;
+    uint8_t m_uiInternalModuleMuvrId;
+
+    std::string m_sConfigurationCreateName;
     uint8_t m_uiConfigurationCreateId;
 
     CSpiCommunicationDevice* m_pxSpiCommunicationDevice;
