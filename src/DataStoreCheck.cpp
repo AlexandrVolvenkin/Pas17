@@ -46,6 +46,12 @@ uint8_t CDataStoreCheck::Init(void)
                                AddDataContainer(std::make_shared<CDataContainerDataBase>()));
     m_pxOperatingDataContainer = static_cast<CDataContainerDataBase*>(GetResources() ->
                                  AddDataContainer(std::make_shared<CDataContainerDataBase>()));
+
+    SetExecutorDataContainer(static_cast<CDataContainerDataBase*>(GetResources() ->
+                             AddDataContainer(std::make_shared<CDataContainerDataBase>())));
+
+    SetCustomertDataContainer(GetExecutorDataContainerPointer());
+    SetCurrentCustomertDataContainer(GetExecutorDataContainerPointer());
 }
 
 //-------------------------------------------------------------------------------
@@ -124,6 +130,111 @@ uint8_t CDataStoreCheck::Fsm(void)
         }
         break;
 
+    case DONE_OK:
+//        std::cout << "CDataStoreCheck::Fsm DONE_OK"  << std::endl;
+//        SetFsmOperationStatus(DONE_OK);
+//        SetFsmState(READY);
+        break;
+
+    case DONE_ERROR:
+//        std::cout << "CDataStoreCheck::Fsm DONE_ERROR"  << std::endl;
+//        SetFsmOperationStatus(DONE_ERROR);
+//        SetFsmState(READY);
+        break;
+
+////-------------------------------------------------------------------------------
+//    case SUBTASK_EXECUTOR_READY_CHECK_START:
+//        std::cout << "CDataStoreCheck::Fsm SUBTASK_EXECUTOR_READY_CHECK_START"  << std::endl;
+//        {
+//            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
+//            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_WAITING);
+//        }
+//        break;
+//
+//    case SUBTASK_EXECUTOR_READY_CHECK_START:
+//        std::cout << "CDataStoreCheck::Fsm SUBTASK_EXECUTOR_READY_CHECK_START"  << std::endl;
+//        {
+//            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
+//            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_WAITING);
+//        }
+//
+//        break;
+//
+//    case SUBTASK_EXECUTOR_READY_CHECK_WAITING:
+////        //std::cout << "CDataStoreCheck::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 1"  << std::endl;
+//    {
+//        if (SetTaskData(GetCurrentExecutorDataContainerPointer()))
+//        {
+//            std::cout << "CDataStoreCheck::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 2"  << std::endl;
+//            SetFsmState(SUBTASK_EXECUTOR_DONE_CHECK_START);
+//        }
+//        else
+//        {
+//            std::cout << "CDataStoreCheck::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 3"  << std::endl;
+//            // Время ожидания выполнения запроса закончилось?
+//            if (GetTimerPointer() -> IsOverflow())
+//            {
+//                std::cout << "CDataStoreCheck::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 4"  << std::endl;
+//                ((CDataContainerDataBase*)GetCurrentCustomertDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+//                SetFsmState(DONE_ERROR);
+//            }
+//        }
+//    }
+//    break;
+//
+//    case SUBTASK_EXECUTOR_DONE_CHECK_START:
+//        std::cout << "CDataStoreCheck::Fsm SUBTASK_EXECUTOR_DONE_CHECK_START 1"  << std::endl;
+//        {
+//            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
+//            SetFsmState(SUBTASK_EXECUTOR_DONE_CHECK_WAITING);
+//        }
+//
+//        break;
+//
+//    case SUBTASK_EXECUTOR_DONE_CHECK_WAITING:
+////        //std::cout << "CDataStoreCheck::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 1"  << std::endl;
+//    {
+//        CDataContainerDataBase* pxDataContainer =
+//            (CDataContainerDataBase*)GetCurrentExecutorDataContainerPointer();
+//
+//        uint8_t uiFsmState = pxDataContainer -> m_uiFsmCommandState;
+//
+//        if (uiFsmState == DONE_OK)
+//        {
+//            std::cout << "CDataStoreCheck::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 2"  << std::endl;
+//
+//            uiFsmState = GetFsmNextSubTaskState();
+//            if (uiFsmState == NO_SUBTASK)
+//            {
+//                std::cout << "CDataStoreCheck::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 3"  << std::endl;
+//                ((CDataContainerDataBase*)GetCurrentCustomertDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+//                SetFsmState(DONE_OK);
+//            }
+//            else
+//            {
+//                std::cout << "CDataStoreCheck::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 4"  << std::endl;
+//                SetFsmState(uiFsmState);
+//            }
+//        }
+//        else if (uiFsmState == DONE_ERROR)
+//        {
+//            std::cout << "CDataStoreCheck::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 5"  << std::endl;
+//            ((CDataContainerDataBase*)GetCurrentCustomertDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+//            SetFsmState(DONE_ERROR);
+//        }
+//        else
+//        {
+//            // Время ожидания выполнения запроса закончилось?
+//            if (GetTimerPointer() -> IsOverflow())
+//            {
+//                std::cout << "CDataStoreCheck::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 6"  << std::endl;
+//                ((CDataContainerDataBase*)GetCurrentCustomertDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+//                SetFsmState(DONE_ERROR);
+//            }
+//        }
+//    }
+//    break;
+
 //-------------------------------------------------------------------------------
     case DATA_STORE_CHECK_START:
         std::cout << "CDataStoreCheck::Fsm DATA_STORE_CHECK_START"  << std::endl;
@@ -165,11 +276,11 @@ uint8_t CDataStoreCheck::Fsm(void)
 
             case 1:
             {
-        std::cout << "CDataStoreCheck::Fsm TEMPORARY_SERVICE_SECTION_LINKED_BLOCKS_CHECK 5"  << std::endl;
+                std::cout << "CDataStoreCheck::Fsm TEMPORARY_SERVICE_SECTION_LINKED_BLOCKS_CHECK 5"  << std::endl;
                 // Блок восстановлен алгоритмом Хемминга после обнаружения ошибки?
                 if (CHammingCodes::GetErrorCode() != CHammingCodes::NONE_ERROR)
                 {
-        std::cout << "CDataStoreCheck::Fsm TEMPORARY_SERVICE_SECTION_LINKED_BLOCKS_CHECK 6"  << std::endl;
+                    std::cout << "CDataStoreCheck::Fsm TEMPORARY_SERVICE_SECTION_LINKED_BLOCKS_CHECK 6"  << std::endl;
                     // Сбросим ошибки декодирования алгоритмом Хемминга.
                     CHammingCodes::SetErrorCode(CHammingCodes::NONE_ERROR);
                     cout << "CHammingCodes::GetErrorCode 1 uiBlock" << (int)i << endl;
@@ -185,11 +296,11 @@ uint8_t CDataStoreCheck::Fsm(void)
                     break;
                 }
             }
-                break;
+            break;
 
             case 2:
             {
-        std::cout << "CDataStoreCheck::Fsm TEMPORARY_SERVICE_SECTION_LINKED_BLOCKS_CHECK 2"  << std::endl;
+                std::cout << "CDataStoreCheck::Fsm TEMPORARY_SERVICE_SECTION_LINKED_BLOCKS_CHECK 2"  << std::endl;
                 // Установим индекс блока, с сохранённым Crc которого,
                 // будем сравнивать Crc блока сохранённое во временном буфере.
                 SetBlockIndex(i);
@@ -197,7 +308,7 @@ uint8_t CDataStoreCheck::Fsm(void)
                 // сохранённого во временном служебном буфере по текущему индексу?
                 if (CheckTemporaryBlock())
                 {
-        std::cout << "CDataStoreCheck::Fsm TEMPORARY_SERVICE_SECTION_LINKED_BLOCKS_CHECK 3"  << std::endl;
+                    std::cout << "CDataStoreCheck::Fsm TEMPORARY_SERVICE_SECTION_LINKED_BLOCKS_CHECK 3"  << std::endl;
                     // Скопируем данные блока считанные при проверке во вспомогательный буфер.
                     memcpy(auiTempArray,
                            GetIntermediateBuff(),
@@ -232,7 +343,7 @@ uint8_t CDataStoreCheck::Fsm(void)
                 }
                 else
                 {
-        std::cout << "CDataStoreCheck::Fsm TEMPORARY_SERVICE_SECTION_LINKED_BLOCKS_CHECK 4"  << std::endl;
+                    std::cout << "CDataStoreCheck::Fsm TEMPORARY_SERVICE_SECTION_LINKED_BLOCKS_CHECK 4"  << std::endl;
                     // Блок не связан с временным служебным буфером.
                     // Возможно произошла ошибка во время записи временного служебного блока.
                     // Продолжим проверку.
@@ -240,10 +351,10 @@ uint8_t CDataStoreCheck::Fsm(void)
                     break;
                 }
             }
-                break;
+            break;
 
             default:
-        std::cout << "CDataStoreCheck::Fsm TEMPORARY_SERVICE_SECTION_LINKED_BLOCKS_CHECK 6"  << std::endl;
+                std::cout << "CDataStoreCheck::Fsm TEMPORARY_SERVICE_SECTION_LINKED_BLOCKS_CHECK 6"  << std::endl;
                 break;
             }
 
@@ -329,8 +440,8 @@ uint8_t CDataStoreCheck::Fsm(void)
         }
 
         std::cout << "CDataStoreCheck::Fsm TEMPORARY_SERVICE_SECTION_LINKED_BLOCKS_CHECK 7"  << std::endl;
-            // Авансом.
-            SetFsmState(SERVICE_SECTION_DATA_WRITE_START);
+        // Авансом.
+        SetFsmState(SERVICE_SECTION_DATA_WRITE_START);
         break;
 
     case CORRUPTED_BLOCK_RECOVERY_WRITE_END_WAITING:

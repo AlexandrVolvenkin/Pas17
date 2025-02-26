@@ -39,7 +39,9 @@ public:
         DONE_OK,
         DONE_ERROR,
 
-        SUBTASK_START,
+        SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_START,
+        SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING,
+
         SUBTASK_EXECUTOR_READY_CHECK_START,
         SUBTASK_EXECUTOR_READY_CHECK_WAITING,
         SUBTASK_EXECUTOR_DONE_CHECK_START,
@@ -61,6 +63,18 @@ public:
 
     virtual void SetFsmNextSubTaskState(uint8_t uiData) {};
     virtual uint8_t GetFsmNextSubTaskState(void) {};
+    virtual void SetFsmNextStateDoneOk(uint8_t uiData) {};
+    virtual uint8_t GetFsmNextStateDoneOk(void) {};
+    virtual void SetFsmNextStateDoneError(uint8_t uiData) {};
+    virtual uint8_t GetFsmNextStateDoneError(void) {};
+    virtual void SetFsmNextStateReadyWaitingError(uint8_t uiData) {};
+    virtual uint8_t GetFsmNextStateReadyWaitingError(void) {};
+    virtual void SetFsmNextStateDoneWaitingError(uint8_t uiData) {};
+    virtual uint8_t GetFsmNextStateDoneWaitingError(void) {};
+    virtual void SetFsmNextStateDoneWaitingDoneError(uint8_t uiData) {};
+    virtual uint8_t GetFsmNextStateDoneWaitingDoneError(void) {};
+    virtual void SetFsmNextStateDoneWaitingDoneOk(uint8_t uiData) {};
+    virtual uint8_t GetFsmNextStateDoneWaitingDoneOk(void) {};
 
     virtual void SetCustomertDataContainer(CDataContainerInterface* pxDataContainer) {};
     virtual CDataContainerInterface* GetCustomertDataContainerPointer(void) {};
@@ -116,6 +130,66 @@ public:
         return m_uiFsmNextSubTaskState;
     };
 
+    void SetFsmNextStateDoneOk(uint8_t uiData)
+    {
+        m_uiFsmNextStateDoneOk = uiData;
+    };
+
+    uint8_t GetFsmNextStateDoneOk(void)
+    {
+        return m_uiFsmNextStateDoneOk;
+    };
+
+    void SetFsmNextStateDoneError(uint8_t uiData)
+    {
+        m_uiFsmNextStateDoneError = uiData;
+    };
+
+    uint8_t GetFsmNextStateDoneError(void)
+    {
+        return m_uiFsmNextStateDoneError;
+    };
+
+    void SetFsmNextStateReadyWaitingError(uint8_t uiData)
+    {
+        m_uiFsmNextStateReadyWaitingError = uiData;
+    };
+
+    uint8_t GetFsmNextStateReadyWaitingError(void)
+    {
+        return m_uiFsmNextStateReadyWaitingError;
+    };
+
+    void SetFsmNextStateDoneWaitingError(uint8_t uiData)
+    {
+        m_uiFsmNextStateDoneWaitingError = uiData;
+    };
+
+    uint8_t GetFsmNextStateDoneWaitingError(void)
+    {
+        return m_uiFsmNextStateDoneWaitingError;
+    };
+
+    void SetFsmNextStateDoneWaitingDoneError(uint8_t uiData)
+    {
+        m_uiFsmNextStateDoneWaitingDoneError = uiData;
+    };
+
+    uint8_t GetFsmNextStateDoneWaitingDoneError(void)
+    {
+        return m_uiFsmNextStateDoneWaitingDoneError;
+    };
+
+    void SetFsmNextStateDoneWaitingDoneOk(uint8_t uiData)
+    {
+        m_uiFsmNextStateDoneWaitingDoneOk = uiData;
+    };
+
+    uint8_t GetFsmNextStateDoneWaitingDoneOk(void)
+    {
+        return m_uiFsmNextStateDoneWaitingDoneOk;
+    };
+
     void SetResources(CResources* pxResources);
     CResources* GetResources(void);
 
@@ -149,6 +223,18 @@ public:
     CResources* m_pxResources;
     // содержит идентификатор шага автомата, начала выполнения следующей подзадачи.
     uint8_t m_uiFsmNextSubTaskState;
+    // содержит идентификатор шага автомата, при успешном завершении подзадачи.
+    uint8_t m_uiFsmNextStateDoneOk;
+    // содержит идентификатор шага автомата, при не успешном завершении подзадачи.
+    uint8_t m_uiFsmNextStateDoneError;
+    // содержит идентификатор шага автомата, при не успешном завершении ожидания готовности подзадачи.
+    uint8_t m_uiFsmNextStateReadyWaitingError;
+    // содержит идентификатор шага автомата, при не успешном завершении ожидания результата подзадачи.
+    uint8_t m_uiFsmNextStateDoneWaitingError;
+    // содержит идентификатор шага автомата, при не успешном завершении подзадачи.
+    uint8_t m_uiFsmNextStateDoneWaitingDoneError;
+    // содержит идентификатор шага автомата, при успешном завершении подзадачи.
+    uint8_t m_uiFsmNextStateDoneWaitingDoneOk;
 
     CDataContainerInterface* m_pxCurrentCustomertDataContainer;
     CDataContainerInterface* m_pxCustomertDataContainer;
@@ -156,6 +242,8 @@ public:
     CDataContainerInterface* m_pxExecutorDataContainer;
 };
 
+
 //-------------------------------------------------------------------------------
 
 #endif // CTASK_H
+

@@ -585,7 +585,7 @@ uint8_t CModbusSmSlave::Fsm(void)
         m_pxModbusSlaveLinkLayer ->
         CommunicationStart();
 //        SetFsmState(MESSAGE_RECEIVE_WAITING);
-        SetFsmState(ANSWER_PROCESSING);
+        SetFsmState(EXECUTOR_ANSWER_PROCESSING);
 
         break;
 
@@ -618,7 +618,7 @@ uint8_t CModbusSmSlave::Fsm(void)
             {
                 std::cout << "CModbusSmSlave::Fsm REQUEST_PROCESSING 2"  << std::endl;
                 GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
-                SetFsmState(ANSWER_PROCESSING_WAITING);
+                SetFsmState(EXECUTOR_ANSWER_PROCESSING_WAITING);
             }
             else
             {
@@ -634,8 +634,8 @@ uint8_t CModbusSmSlave::Fsm(void)
 
         break;
 
-    case ANSWER_PROCESSING_WAITING:
-//        std::cout << "CModbusSmSlave::Fsm ANSWER_PROCESSING_WAITING"  << std::endl;
+    case EXECUTOR_ANSWER_PROCESSING_WAITING:
+//        std::cout << "CModbusSmSlave::Fsm EXECUTOR_ANSWER_PROCESSING_WAITING"  << std::endl;
     {
 //        m_pxDeviceControl ->
 //        GetTaskData(m_pxOperatingDataContainer);
@@ -644,13 +644,13 @@ uint8_t CModbusSmSlave::Fsm(void)
 
         if (uiFsmState == DONE_OK)
         {
-            std::cout << "CModbusSmSlave::Fsm ANSWER_PROCESSING_WAITING 2"  << std::endl;
+            std::cout << "CModbusSmSlave::Fsm EXECUTOR_ANSWER_PROCESSING_WAITING 2"  << std::endl;
             GetTimerPointer() -> Set(m_uiTransmitDelayTimeout);
-            SetFsmState(ANSWER_PROCESSING);
+            SetFsmState(EXECUTOR_ANSWER_PROCESSING);
         }
         else if (uiFsmState == DONE_ERROR)
         {
-            std::cout << "CModbusSmSlave::Fsm ANSWER_PROCESSING_WAITING 3"  << std::endl;
+            std::cout << "CModbusSmSlave::Fsm EXECUTOR_ANSWER_PROCESSING_WAITING 3"  << std::endl;
             GetTimerPointer() -> Set(m_uiTransmitDelayTimeout);
             SetFsmState(MESSAGE_RECEIVE_WAITING);
         }
@@ -659,7 +659,7 @@ uint8_t CModbusSmSlave::Fsm(void)
             // Время ожидания выполнения запроса закончилось?
             if (GetTimerPointer() -> IsOverflow())
             {
-                std::cout << "CModbusSmSlave::Fsm ANSWER_PROCESSING_WAITING 4"  << std::endl;
+                std::cout << "CModbusSmSlave::Fsm EXECUTOR_ANSWER_PROCESSING_WAITING 4"  << std::endl;
 //                m_pxDeviceControl ->
 //                SetFsmCommandState(0);
                 SetFsmState(MESSAGE_RECEIVE_WAITING);
@@ -668,8 +668,8 @@ uint8_t CModbusSmSlave::Fsm(void)
     }
     break;
 
-    case ANSWER_PROCESSING:
-        std::cout << "CModbusSmSlave::Fsm ANSWER_PROCESSING"  << std::endl;
+    case EXECUTOR_ANSWER_PROCESSING:
+        std::cout << "CModbusSmSlave::Fsm EXECUTOR_ANSWER_PROCESSING"  << std::endl;
 //        if (AnswerProcessing())
 //        {
 //            GetTimerPointer() -> Set(m_uiTransmitDelayTimeout);
@@ -735,13 +735,13 @@ uint8_t CModbusSmSlave::Fsm(void)
 //            m_pxModbusSlaveLinkLayer ->
 //            CommunicationReceiveStart();
 //            SetFsmState(MESSAGE_RECEIVE_WAITING);
-            SetFsmState(ANSWER_PROCESSING);
+            SetFsmState(EXECUTOR_ANSWER_PROCESSING);
         }
         else if (m_pxModbusSlaveLinkLayer -> IsDoneError())
         {
             std::cout << "CModbusSmSlave::Fsm AFTER_ANSWERING_WAITING 3"  << std::endl;
 //            SetFsmState(COMMUNICATION_START);
-            SetFsmState(ANSWER_PROCESSING);
+            SetFsmState(EXECUTOR_ANSWER_PROCESSING);
         }
         else
         {
@@ -752,7 +752,7 @@ uint8_t CModbusSmSlave::Fsm(void)
 //                m_pxDeviceControl ->
 //                SetFsmCommandState(0);
 //                SetFsmState(MESSAGE_RECEIVE_WAITING);
-                SetFsmState(ANSWER_PROCESSING);
+                SetFsmState(EXECUTOR_ANSWER_PROCESSING);
             }
         }
         break;

@@ -450,7 +450,8 @@ uint8_t CDeviceControl::Fsm(void)
             {
                 std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_READ 3"  << std::endl;
                 ((CDataContainerDataBase*)GetCustomertDataContainerPointer()) -> m_uiDataLength = uiLength;
-                ((CDataContainerDataBase*)GetCustomertDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+//                ((CDataContainerDataBase*)GetCustomertDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+                ((CDataContainerDataBase*)GetCustomertDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
                 SetFsmState(DONE_OK);
             }
         }

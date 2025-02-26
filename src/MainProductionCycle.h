@@ -51,13 +51,14 @@ public:
 
     enum
     {
-        DATABASE_CHECK_TASK_READY_CHECK = NEXT_STEP,
-        DATABASE_CHECK_TASK_READY_WAITING,
-        DATABASE_CHECK_BEGIN,
-        DATABASE_CHECK_END_WAITING,
-        DATABASE_CHECK_RECAVERY_END_WAITING,
-        DATABASE_CHECK_END_OK,
-        DATABASE_CHECK_END_ERROR,
+        DATA_STORE_CHECK_START = NEXT_STEP,
+        DATA_STORE_CHECK_TASK_READY_CHECK,
+        DATA_STORE_CHECK_TASK_READY_WAITING,
+        DATA_STORE_CHECK_BEGIN,
+        DATA_STORE_CHECK_END_WAITING,
+        DATA_STORE_CHECK_RECAVERY_END_WAITING,
+        DATA_STORE_CHECK_END_OK,
+        DATA_STORE_CHECK_END_ERROR,
 
         CONFIGURATION_CREATE_START,
         CONFIGURATION_CREATE_EXECUTOR_READY_CHECK_START,
@@ -88,6 +89,11 @@ public:
     void SetConfigurationCreateName(const std::string& sName)
     {
         m_sConfigurationCreateName = sName;
+    };
+
+    void SetDataStoreCheckName(const std::string& sName)
+    {
+        m_sDataStoreCheckName = sName;
     };
 
     uint8_t Init(void);
@@ -125,6 +131,7 @@ private:
     CConfigurationCreate* m_pxConfigurationCreate;
 
     std::string m_sDeviceControlName;
+    uint8_t m_uiDeviceControlId;
     CDeviceControl* m_pxDeviceControl;
 
     std::string m_sInternalModuleMuvrName;
@@ -132,6 +139,9 @@ private:
 
     std::string m_sConfigurationCreateName;
     uint8_t m_uiConfigurationCreateId;
+
+    std::string m_sDataStoreCheckName;
+    uint8_t m_uiDataStoreCheckId;
 
     CSpiCommunicationDevice* m_pxSpiCommunicationDevice;
     CInternalModuleInterface* m_pxInternalModule;

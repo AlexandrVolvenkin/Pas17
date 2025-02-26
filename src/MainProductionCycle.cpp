@@ -165,6 +165,8 @@ uint8_t CMainProductionCycle::CreateTasks(void)
     SetConfigurationCreateName("ConfigurationCreate");
     pxMainProductionCycle ->
     SetInternalModuleMuvrName("InternalModuleMuvr");
+    pxMainProductionCycle ->
+    SetDataStoreCheckName("DataStoreCheck");
 
 //-------------------------------------------------------------------------------
     CDeviceControl* pxDeviceControl = 0;
@@ -530,6 +532,10 @@ uint8_t CMainProductionCycle::Fsm(void)
                 GetResources() ->
                 GetTaskIdByNameFromMap("ConfigurationCreate");
 
+            m_uiDataStoreCheckId =
+                GetResources() ->
+                GetTaskIdByNameFromMap("DataStoreCheck");
+
             SetFsmState(READY);
         }
         else
@@ -540,7 +546,7 @@ uint8_t CMainProductionCycle::Fsm(void)
 
     case READY:
         std::cout << "CMainProductionCycle::Fsm READY"  << std::endl;
-        SetFsmState(DATABASE_CHECK_TASK_READY_CHECK);
+        SetFsmState(DATA_STORE_CHECK_TASK_READY_CHECK);
         break;
 
     case DONE_OK:
@@ -556,43 +562,37 @@ uint8_t CMainProductionCycle::Fsm(void)
         break;
 
 //-------------------------------------------------------------------------------
-    case SUBTASK_START:
-        std::cout << "CMainProductionCycle::Fsm SUBTASK_START"  << std::endl;
+    case SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_START:
+        std::cout << "CMainProductionCycle::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_START"  << std::endl;
         {
-            CurrentlyRunningTasksExecution();
-
-//            memset(reinterpret_cast<uint8_t*>(&m_xDeviceConfigSearch),
-//                   0,
-//                   sizeof(struct TConfigDataPackOne));
-//
-//            CDataContainerDataBase* pxDataContainer =
-//                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-//            pxDataContainer -> m_uiTaskId = m_uiInternalModuleId;
-//            pxDataContainer -> m_uiFsmCommandState =
-//                CInternalModule::SEARCH_MODULES_START;
-//            pxDataContainer -> m_puiDataPointer = (uint8_t*)&m_xDeviceConfigSearch;
-
-//            if (SetTaskData(GetExecutorDataContainerPointer()))
-//            {
-//                SetFsmState(SUBTASK_EXECUTOR_DONE_CHECK_START);
-//            }
-//            else
-//            {
-//                SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
-//            }
-
-            if (SetTaskData(GetCurrentExecutorDataContainerPointer()))
-            {
-                SetFsmState(SUBTASK_EXECUTOR_DONE_CHECK_START);
-            }
-            else
-            {
-                SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
-            }
-
+            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING);
         }
         break;
 
+    case SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING:
+//        std::cout << "CMainProductionCycle::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING 1"  << std::endl;
+    {
+        if (SetTaskData(GetCurrentExecutorDataContainerPointer()))
+        {
+            std::cout << "CMainProductionCycle::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING 2"  << std::endl;
+            SetFsmState(GetFsmNextStateDoneOk());
+        }
+        else
+        {
+            std::cout << "CMainProductionCycle::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING 3"  << std::endl;
+            // Время ожидания выполнения запроса закончилось?
+            if (GetTimerPointer() -> IsOverflow())
+            {
+                std::cout << "CMainProductionCycle::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING 4"  << std::endl;
+                ((CDataContainerDataBase*)GetCurrentCustomertDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+                SetFsmState(GetFsmNextStateDoneError());
+            }
+        }
+    }
+    break;
+
+//-------------------------------------------------------------------------------
     case SUBTASK_EXECUTOR_READY_CHECK_START:
         std::cout << "CMainProductionCycle::Fsm SUBTASK_EXECUTOR_READY_CHECK_START"  << std::endl;
         {
@@ -601,8 +601,6 @@ uint8_t CMainProductionCycle::Fsm(void)
             GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
             SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_WAITING);
         }
-
-        break;
 
     case SUBTASK_EXECUTOR_READY_CHECK_WAITING:
 //        //std::cout << "CMainProductionCycle::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 1"  << std::endl;
@@ -622,7 +620,7 @@ uint8_t CMainProductionCycle::Fsm(void)
             {
                 std::cout << "CMainProductionCycle::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 4"  << std::endl;
                 ((CDataContainerDataBase*)GetCurrentCustomertDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
-                SetFsmState(DONE_ERROR);
+                SetFsmState(GetFsmNextStateDoneError());
             }
         }
     }
@@ -652,82 +650,89 @@ uint8_t CMainProductionCycle::Fsm(void)
         if (uiFsmState == DONE_OK)
         {
             std::cout << "CMainProductionCycle::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 2"  << std::endl;
-
-            uiFsmState = GetFsmNextSubTaskState();
-            if (uiFsmState == NO_SUBTASK)
-            {
-                std::cout << "CMainProductionCycle::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 3"  << std::endl;
-                ((CDataContainerDataBase*)GetCurrentCustomertDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-                SetFsmState(DONE_OK);
-            }
-            else
-            {
-                std::cout << "CMainProductionCycle::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 4"  << std::endl;
-                SetFsmState(uiFsmState);
-            }
+            SetFsmState(GetFsmNextStateDoneOk());
         }
         else if (uiFsmState == DONE_ERROR)
         {
-            std::cout << "CMainProductionCycle::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 5"  << std::endl;
+            std::cout << "CMainProductionCycle::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 3"  << std::endl;
             ((CDataContainerDataBase*)GetCurrentCustomertDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
-            SetFsmState(DONE_ERROR);
+            SetFsmState(GetFsmNextStateDoneError());
         }
         else
         {
             // Время ожидания выполнения запроса закончилось?
             if (GetTimerPointer() -> IsOverflow())
             {
-                std::cout << "CMainProductionCycle::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 6"  << std::endl;
+                std::cout << "CMainProductionCycle::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 4"  << std::endl;
                 ((CDataContainerDataBase*)GetCurrentCustomertDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
-                SetFsmState(DONE_ERROR);
+                SetFsmState(GetFsmNextStateDoneError());
             }
         }
     }
     break;
 
-    case DATABASE_CHECK_TASK_READY_CHECK:
-//        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_TASK_READY_CHECK"  << std::endl;
+//-------------------------------------------------------------------------------
+    case DATA_STORE_CHECK_START:
+        std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_START"  << std::endl;
+        {
+            CurrentlyRunningTasksExecution();
+
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            pxDataContainer -> m_uiTaskId = m_uiDataStoreCheckId;
+            pxDataContainer -> m_uiFsmCommandState =
+                CDataStoreCheck::DATA_STORE_CHECK_START;
+            pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+            SetCurrentExecutorDataContainer(pxDataContainer);
+
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+            SetFsmNextSubTaskState(CONFIGURATION_CREATE_START);
+        }
+        break;
+
+    case DATA_STORE_CHECK_TASK_READY_CHECK:
+//        std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_TASK_READY_CHECK"  << std::endl;
         CurrentlyRunningTasksExecution();
 
         GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
-        SetFsmState(DATABASE_CHECK_TASK_READY_WAITING);
-        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_TASK_READY_CHECK 1"  << std::endl;
+        SetFsmState(DATA_STORE_CHECK_TASK_READY_WAITING);
+        std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_TASK_READY_CHECK 1"  << std::endl;
 
 //        if ((m_pxDataStoreCheck -> GetFsmState()) == READY)
 //        {
-//            SetFsmState(DATABASE_CHECK_BEGIN);
-//            std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_TASK_READY_CHECK 1"  << std::endl;
+//            SetFsmState(DATA_STORE_CHECK_BEGIN);
+//            std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_TASK_READY_CHECK 1"  << std::endl;
 //        }
 //        else
 //        {
 //            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
-//            SetFsmState(DATABASE_CHECK_TASK_READY_WAITING);
-//            std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_TASK_READY_CHECK 2"  << std::endl;
+//            SetFsmState(DATA_STORE_CHECK_TASK_READY_WAITING);
+//            std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_TASK_READY_CHECK 2"  << std::endl;
 //        }
         break;
 
-    case DATABASE_CHECK_TASK_READY_WAITING:
-//        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_TASK_READY_WAITING"  << std::endl;
+    case DATA_STORE_CHECK_TASK_READY_WAITING:
+//        std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_TASK_READY_WAITING"  << std::endl;
         CurrentlyRunningTasksExecution();
 
         if ((m_pxDataStoreCheck -> GetFsmState()) >= READY)
         {
 //            SetFsmState(MAIN_CYCLE_MODBUS_SLAVE);
-            SetFsmState(DATABASE_CHECK_BEGIN);
-            std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_TASK_READY_WAITING 1"  << std::endl;
+            SetFsmState(DATA_STORE_CHECK_BEGIN);
+            std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_TASK_READY_WAITING 1"  << std::endl;
         }
         else
         {
             if (GetTimerPointer() -> IsOverflow())
             {
                 SetFsmState(STOP);
-                std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_TASK_READY_WAITING 2"  << std::endl;
+                std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_TASK_READY_WAITING 2"  << std::endl;
             }
         }
         break;
 
-    case DATABASE_CHECK_BEGIN:
-        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_BEGIN"  << std::endl;
+    case DATA_STORE_CHECK_BEGIN:
+        std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_BEGIN"  << std::endl;
         CurrentlyRunningTasksExecution();
         m_pxDataStoreCheck -> Check();
         GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
@@ -735,7 +740,7 @@ uint8_t CMainProductionCycle::Fsm(void)
 //        m_pxDataStoreFileSystem -> CreateServiceSection();
 //        m_pxDataStoreFileSystem -> WriteBlock(auiTempBlock, sizeof(auiTempBlock), 0);
 
-        SetFsmState(DATABASE_CHECK_END_WAITING);
+        SetFsmState(DATA_STORE_CHECK_END_WAITING);
 //
 //        if (!(m_pxDataStoreCheck -> Check()))
 //        {
@@ -760,26 +765,26 @@ uint8_t CMainProductionCycle::Fsm(void)
 //        usleep(1000);
         break;
 
-    case DATABASE_CHECK_END_WAITING:
-//        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_END_WAITING"  << std::endl;
+    case DATA_STORE_CHECK_END_WAITING:
+//        std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_END_WAITING"  << std::endl;
         CurrentlyRunningTasksExecution();
 
         if ((m_pxDataStoreCheck -> GetFsmOperationStatus()) == CDataStoreCheck::DATA_STORE_CHECK_ERROR)
         {
-            std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_END_WAITING 1"  << std::endl;
+            std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_END_WAITING 1"  << std::endl;
             m_pxDataStoreFileSystem -> CreateServiceSection();
             m_pxDataStoreFileSystem -> WriteBlock(auiTempBlock, sizeof(auiTempBlock), 0);
             GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
-            SetFsmState(DATABASE_CHECK_RECAVERY_END_WAITING);
-//            std::cout << "CDataStore::Fsm DATABASE_CHECK_END_ERROR"  << std::endl;
+            SetFsmState(DATA_STORE_CHECK_RECAVERY_END_WAITING);
+//            std::cout << "CDataStore::Fsm DATA_STORE_CHECK_END_ERROR"  << std::endl;
         }
         else if (((m_pxDataStoreCheck -> GetFsmOperationStatus()) == CDataStoreCheck::DATA_STORE_NEW_VERSION_ACCEPTED) ||
                  ((m_pxDataStoreCheck -> GetFsmOperationStatus()) == CDataStoreCheck::DATA_STORE_OLD_VERSION_ACCEPTED) ||
                  ((m_pxDataStoreCheck -> GetFsmOperationStatus()) == CDataStoreCheck::DATA_STORE_CHECK_OK))
         {
-            std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_END_WAITING 2"  << std::endl;
-            SetFsmState(DATABASE_CHECK_END_OK);
-//            std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_END_OK"  << std::endl;
+            std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_END_WAITING 2"  << std::endl;
+            SetFsmState(DATA_STORE_CHECK_END_OK);
+//            std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_END_OK"  << std::endl;
         }
         else
         {
@@ -789,39 +794,39 @@ uint8_t CMainProductionCycle::Fsm(void)
                 SetFsmCommandState(0);
                 SetFsmState(STOP);
 //                std::cout << "CMainProductionCycle::Fsm STOP"  << std::endl;
-                std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_END_WAITING 3"  << std::endl;
+                std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_END_WAITING 3"  << std::endl;
             }
         }
         break;
 
-    case DATABASE_CHECK_RECAVERY_END_WAITING:
-        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_RECAVERY_END_WAITING"  << std::endl;
+    case DATA_STORE_CHECK_RECAVERY_END_WAITING:
+        std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_RECAVERY_END_WAITING"  << std::endl;
         CurrentlyRunningTasksExecution();
 
         if ((m_pxDataStoreCheck -> GetFsmOperationStatus()) == CDataStoreCheck::DATA_STORE_CHECK_ERROR)
         {
-            SetFsmState(DATABASE_CHECK_END_ERROR);
-            std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_RECAVERY_END_WAITING 1"  << std::endl;
+            SetFsmState(DATA_STORE_CHECK_END_ERROR);
+            std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_RECAVERY_END_WAITING 1"  << std::endl;
         }
         else if (((m_pxDataStoreCheck -> GetFsmOperationStatus()) == CDataStoreCheck::DATA_STORE_NEW_VERSION_ACCEPTED) ||
                  ((m_pxDataStoreCheck -> GetFsmOperationStatus()) == CDataStoreCheck::DATA_STORE_OLD_VERSION_ACCEPTED) ||
                  ((m_pxDataStoreCheck -> GetFsmOperationStatus()) == CDataStoreCheck::DATA_STORE_CHECK_OK))
         {
-            SetFsmState(DATABASE_CHECK_END_OK);
-            std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_RECAVERY_END_WAITING 2"  << std::endl;
+            SetFsmState(DATA_STORE_CHECK_END_OK);
+            std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_RECAVERY_END_WAITING 2"  << std::endl;
         }
         else
         {
             if (GetTimerPointer() -> IsOverflow())
             {
-                SetFsmState(DATABASE_CHECK_END_ERROR);
-                std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_RECAVERY_END_WAITING 3"  << std::endl;
+                SetFsmState(DATA_STORE_CHECK_END_ERROR);
+                std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_RECAVERY_END_WAITING 3"  << std::endl;
             }
         }
         break;
 
-    case DATABASE_CHECK_END_OK:
-//        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_END_OK"  << std::endl;
+    case DATA_STORE_CHECK_END_OK:
+//        std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_END_OK"  << std::endl;
         CurrentlyRunningTasksExecution();
         m_pxDataStoreFileSystem -> ReadServiceSection();
 //        SetFsmState(MAIN_CYCLE_MODULES_INIT);
@@ -829,8 +834,8 @@ uint8_t CMainProductionCycle::Fsm(void)
         SetFsmState(CONFIGURATION_CREATE_START);
         break;
 
-    case DATABASE_CHECK_END_ERROR:
-//        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_END_ERROR"  << std::endl;
+    case DATA_STORE_CHECK_END_ERROR:
+//        std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_END_ERROR"  << std::endl;
         CurrentlyRunningTasksExecution();
         break;
 
@@ -847,101 +852,16 @@ uint8_t CMainProductionCycle::Fsm(void)
             pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
             SetCurrentExecutorDataContainer(pxDataContainer);
 
-//            if (SetTaskData(GetExecutorDataContainerPointer()))
-//            {
-//                SetFsmState(CONFIGURATION_CREATE_EXECUTOR_DONE_CHECK_START);
-//            }
-//            else
-//            {
-//                SetFsmState(CONFIGURATION_CREATE_EXECUTOR_READY_CHECK_START);
-            //            }
-
             SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
-            SetFsmNextSubTaskState(MAIN_CYCLE_MODBUS_SLAVE);
-//            SetFsmNextSubTaskState(NO_SUBTASK);
-
+//            SetFsmNextSubTaskState(MAIN_CYCLE_MODBUS_SLAVE);
+            SetFsmNextStateDoneOk(MAIN_CYCLE_MODBUS_SLAVE);
+            SetFsmNextStateDoneWaitingDoneOk(MAIN_CYCLE_MODBUS_SLAVE);
+            SetFsmNextStateDoneError(DONE_ERROR);
+            SetFsmNextStateReadyWaitingError(DONE_ERROR);
+            SetFsmNextStateDoneWaitingError(DONE_ERROR);
+            SetFsmNextStateDoneWaitingDoneError(DONE_ERROR);
         }
         break;
-
-//    case CONFIGURATION_CREATE_EXECUTOR_READY_CHECK_START:
-//        std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CREATE_EXECUTOR_READY_CHECK_START"  << std::endl;
-//        {
-//            CurrentlyRunningTasksExecution();
-//
-//            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
-//            SetFsmState(CONFIGURATION_CREATE_EXECUTOR_READY_CHECK_WAITING);
-//        }
-//
-//        break;
-//
-//    case CONFIGURATION_CREATE_EXECUTOR_READY_CHECK_WAITING:
-////        //std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CREATE_EXECUTOR_READY_CHECK_WAITING 1"  << std::endl;
-//    {
-//        CurrentlyRunningTasksExecution();
-//
-//        if (SetTaskData(GetExecutorDataContainerPointer()))
-//        {
-//            std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CREATE_EXECUTOR_READY_CHECK_WAITING 2"  << std::endl;
-//            SetFsmState(CONFIGURATION_CREATE_EXECUTOR_DONE_CHECK_START);
-//        }
-//        else
-//        {
-//            //std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CREATE_EXECUTOR_READY_CHECK_WAITING 3"  << std::endl;
-//            // Время ожидания выполнения запроса закончилось?
-//            if (GetTimerPointer() -> IsOverflow())
-//            {
-//                std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CREATE_EXECUTOR_READY_CHECK_WAITING 4"  << std::endl;
-//
-//                SetFsmState(DONE_ERROR);
-//            }
-//        }
-//    }
-//    break;
-//
-//    case CONFIGURATION_CREATE_EXECUTOR_DONE_CHECK_START:
-//        std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CREATE_EXECUTOR_DONE_CHECK_START"  << std::endl;
-//        {
-//            CurrentlyRunningTasksExecution();
-//
-//            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
-//            SetFsmState(CONFIGURATION_CREATE_EXECUTOR_DONE_CHECK_WAITING);
-//        }
-//
-//        break;
-//
-//    case CONFIGURATION_CREATE_EXECUTOR_DONE_CHECK_WAITING:
-////        //std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CREATE_EXECUTOR_DONE_CHECK_WAITING"  << std::endl;
-//    {
-//        CurrentlyRunningTasksExecution();
-//
-//        CDataContainerDataBase* pxDataContainer =
-//            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-//
-//        uint8_t uiFsmState = pxDataContainer -> m_uiFsmCommandState;
-//
-//        if (uiFsmState == DONE_OK)
-//        {
-//            std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CREATE_EXECUTOR_DONE_CHECK_WAITING 2"  << std::endl;
-//            SetFsmState(MAIN_CYCLE_MODBUS_SLAVE);
-//        }
-//        else if (uiFsmState == DONE_ERROR)
-//        {
-//            std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CREATE_EXECUTOR_DONE_CHECK_WAITING 3"  << std::endl;
-//
-//            SetFsmState(DONE_ERROR);
-//        }
-//        else
-//        {
-//            // Время ожидания выполнения запроса закончилось?
-//            if (GetTimerPointer() -> IsOverflow())
-//            {
-//                std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CREATE_EXECUTOR_DONE_CHECK_WAITING 4"  << std::endl;
-//
-//                SetFsmState(DONE_ERROR);
-//            }
-//        }
-//    }
-//    break;
 
     case MAIN_CYCLE_MODULES_INIT:
 //        std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_MODULES_INIT 1"  << std::endl;

@@ -650,7 +650,7 @@ uint8_t CModbusMaster::Fsm(void)
         if (uiFsmState == DONE_OK)
         {
             std::cout << "CModbusMaster::Fsm MESSAGE_RECEIVE_WAITING 2"  << std::endl;
-            SetFsmState(ANSWER_PROCESSING);
+            SetFsmState(EXECUTOR_ANSWER_PROCESSING);
         }
         else if (uiFsmState == DONE_ERROR)
         {
@@ -660,8 +660,8 @@ uint8_t CModbusMaster::Fsm(void)
     }
     break;
 
-    case ANSWER_PROCESSING:
-        std::cout << "CModbusMaster::Fsm ANSWER_PROCESSING"  << std::endl;
+    case EXECUTOR_ANSWER_PROCESSING:
+        std::cout << "CModbusMaster::Fsm EXECUTOR_ANSWER_PROCESSING"  << std::endl;
         if (AnswerProcessing())
         {
             SetFsmState(DONE_OK);
