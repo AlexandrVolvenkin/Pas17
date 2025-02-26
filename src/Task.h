@@ -82,8 +82,8 @@ public:
     virtual void SetExecutorDataContainer(CDataContainerInterface* pxDataContainer) {};
     virtual CDataContainerInterface* GetExecutorDataContainerPointer(void) {};
 
-    virtual void SetCurrentCustomertDataContainer(CDataContainerInterface* pxDataContainer) {};
-    virtual CDataContainerInterface* GetCurrentCustomertDataContainerPointer(void) {};
+    virtual void SetCurrentCustomerDataContainer(CDataContainerInterface* pxDataContainer) {};
+    virtual CDataContainerInterface* GetCurrentCustomerDataContainerPointer(void) {};
 
     virtual void SetCurrentExecutorDataContainer(CDataContainerInterface* pxDataContainer) {};
     virtual CDataContainerInterface* GetCurrentExecutorDataContainerPointer(void) {};
@@ -199,8 +199,8 @@ public:
     void SetExecutorDataContainer(CDataContainerInterface* pxDataContainer);
     CDataContainerInterface* GetExecutorDataContainerPointer(void);
 
-    void SetCurrentCustomertDataContainer(CDataContainerInterface* pxDataContainer);
-    CDataContainerInterface* GetCurrentCustomertDataContainerPointer(void);
+    void SetCurrentCustomerDataContainer(CDataContainerInterface* pxDataContainer);
+    CDataContainerInterface* GetCurrentCustomerDataContainerPointer(void);
 
     void SetCurrentExecutorDataContainer(CDataContainerInterface* pxDataContainer);
     CDataContainerInterface* GetCurrentExecutorDataContainerPointer(void);
@@ -236,7 +236,7 @@ public:
     // содержит идентификатор шага автомата, при успешном завершении подзадачи.
     uint8_t m_uiFsmNextStateDoneWaitingDoneOk;
 
-    CDataContainerInterface* m_pxCurrentCustomertDataContainer;
+    CDataContainerInterface* m_pxCurrentCustomerDataContainer;
     CDataContainerInterface* m_pxCustomertDataContainer;
     CDataContainerInterface* m_pxCurrentExecutorDataContainer;
     CDataContainerInterface* m_pxExecutorDataContainer;

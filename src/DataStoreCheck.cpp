@@ -51,7 +51,7 @@ uint8_t CDataStoreCheck::Init(void)
                              AddDataContainer(std::make_shared<CDataContainerDataBase>())));
 
     SetCustomertDataContainer(GetExecutorDataContainerPointer());
-    SetCurrentCustomertDataContainer(GetExecutorDataContainerPointer());
+    SetCurrentCustomerDataContainer(GetExecutorDataContainerPointer());
 }
 
 //-------------------------------------------------------------------------------
@@ -175,7 +175,7 @@ uint8_t CDataStoreCheck::Fsm(void)
 //            if (GetTimerPointer() -> IsOverflow())
 //            {
 //                std::cout << "CDataStoreCheck::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 4"  << std::endl;
-//                ((CDataContainerDataBase*)GetCurrentCustomertDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+//                ((CDataContainerDataBase*)GetCurrentCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
 //                SetFsmState(DONE_ERROR);
 //            }
 //        }
@@ -207,7 +207,7 @@ uint8_t CDataStoreCheck::Fsm(void)
 //            if (uiFsmState == NO_SUBTASK)
 //            {
 //                std::cout << "CDataStoreCheck::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 3"  << std::endl;
-//                ((CDataContainerDataBase*)GetCurrentCustomertDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+//                ((CDataContainerDataBase*)GetCurrentCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
 //                SetFsmState(DONE_OK);
 //            }
 //            else
@@ -219,7 +219,7 @@ uint8_t CDataStoreCheck::Fsm(void)
 //        else if (uiFsmState == DONE_ERROR)
 //        {
 //            std::cout << "CDataStoreCheck::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 5"  << std::endl;
-//            ((CDataContainerDataBase*)GetCurrentCustomertDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+//            ((CDataContainerDataBase*)GetCurrentCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
 //            SetFsmState(DONE_ERROR);
 //        }
 //        else
@@ -228,7 +228,7 @@ uint8_t CDataStoreCheck::Fsm(void)
 //            if (GetTimerPointer() -> IsOverflow())
 //            {
 //                std::cout << "CDataStoreCheck::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 6"  << std::endl;
-//                ((CDataContainerDataBase*)GetCurrentCustomertDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+//                ((CDataContainerDataBase*)GetCurrentCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
 //                SetFsmState(DONE_ERROR);
 //            }
 //        }

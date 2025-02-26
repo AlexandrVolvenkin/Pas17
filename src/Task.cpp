@@ -77,15 +77,15 @@ CDataContainerInterface* CTask::GetExecutorDataContainerPointer(void)
 }
 
 //-------------------------------------------------------------------------------
-void CTask::SetCurrentCustomertDataContainer(CDataContainerInterface* pxDataContainer)
+void CTask::SetCurrentCustomerDataContainer(CDataContainerInterface* pxDataContainer)
 {
-    m_pxCurrentCustomertDataContainer = pxDataContainer;
+    m_pxCurrentCustomerDataContainer = pxDataContainer;
 }
 
 //-------------------------------------------------------------------------------
-CDataContainerInterface* CTask::GetCurrentCustomertDataContainerPointer(void)
+CDataContainerInterface* CTask::GetCurrentCustomerDataContainerPointer(void)
 {
-    return m_pxCurrentCustomertDataContainer;
+    return m_pxCurrentCustomerDataContainer;
 }
 
 //-------------------------------------------------------------------------------
