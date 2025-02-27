@@ -178,6 +178,7 @@ public:
 //-------------------------------------------------------------------------------
     std::string m_sModbusSlaveLinkLayerName;
     CModbusSlaveLinkLayerInterface* m_pxModbusSlaveLinkLayer;
+    uint8_t m_uiModbusSlaveLinkLayerId;
 
     std::string m_sDeviceControlName;
     CDeviceControl* m_pxDeviceControl;

@@ -50,7 +50,7 @@ uint8_t CDataStoreCheck::Init(void)
     SetExecutorDataContainer(static_cast<CDataContainerDataBase*>(GetResources() ->
                              AddDataContainer(std::make_shared<CDataContainerDataBase>())));
 
-    SetCustomertDataContainer(GetExecutorDataContainerPointer());
+    SetCustomerDataContainer(GetExecutorDataContainerPointer());
     SetCurrentCustomerDataContainer(GetExecutorDataContainerPointer());
 }
 

@@ -356,7 +356,7 @@ void CInternalModule::SearchModules(void)
 //                std::cout << "CInternalModule::SearchModules 3"  << std::endl;
                 CConfigurationCreate::TConfigDataPackOne* pxDeviceConfigSearch =
                     (CConfigurationCreate::TConfigDataPackOne*)
-                    (((CDataContainerDataBase*)GetCustomertDataContainerPointer()) -> m_puiDataPointer);
+                    (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer);
                 // сохраним тип модуля в массиве для упорядочивания следования модулей при поиске на SPI.
                 pxDeviceConfigSearch ->
                 axModulesContext[pxDeviceConfigSearch -> uiModulesQuantity].uiType = uiType;
@@ -479,7 +479,7 @@ uint8_t CInternalModule::Fsm(void)
         {
             SearchModules();
         std::cout << "CInternalModule::Fsm SEARCH_MODULES_START 2"  << std::endl;
-            ((CDataContainerDataBase*)GetCustomertDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(DONE_OK);
         }
         break;

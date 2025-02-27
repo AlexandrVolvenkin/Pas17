@@ -52,7 +52,7 @@ uint8_t CModbusSlave::Init(void)
     SetExecutorDataContainer(static_cast<CDataContainerDataBase*>(GetResources() ->
                              AddDataContainer(std::make_shared<CDataContainerDataBase>())));
 
-    SetCustomertDataContainer(GetExecutorDataContainerPointer());
+    SetCustomerDataContainer(GetExecutorDataContainerPointer());
 //    SetCurrentCustomerDataContainer(GetExecutorDataContainerPointer());
 }
 
@@ -609,50 +609,67 @@ uint16_t CModbusSlave::ReportSlaveID(void)
 
     std::cout << "CModbusSlave::ReportSlaveID 4" << std::endl;
 
+    m_uiFunctionCode = uiFunctionCode;
+
+    CDataContainerDataBase* pxDataContainer =
+        (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+    pxDataContainer -> m_uiTaskId = m_uiDeviceControlId;
+    pxDataContainer -> m_uiFsmCommandState =
+        CDeviceControl::CONFIGURATION_REQUEST_START;
+    pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+
+    SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+    SetFsmNextStateDoneOk(EXECUTOR_ANSWER_PROCESSING);
+//        SetFsmNextStateDoneWaitingDoneOk(EXECUTOR_ANSWER_PROCESSING);
+//        SetFsmNextStateDoneError(DONE_ERROR);
+    SetFsmNextStateReadyWaitingError(RESPONSE_EXCEPTION_SLAVE_OR_SERVER_BUSY);
+    SetFsmNextStateDoneWaitingError(RESPONSE_EXCEPTION_SLAVE_OR_SERVER_FAILURE);
+    SetFsmNextStateDoneWaitingDoneError(RESPONSE_EXCEPTION_SLAVE_OR_SERVER_FAILURE);
+
+////    CDeviceControl* pxDeviceControl =
+////        (CDeviceControl*)GetResources() ->
+////        GetTaskPointerByNameFromMap("DeviceControlRtuUpperLevel");
 //    CDeviceControl* pxDeviceControl =
 //        (CDeviceControl*)GetResources() ->
-//        GetTaskPointerByNameFromMap("DeviceControlRtuUpperLevel");
-    CDeviceControl* pxDeviceControl =
-        (CDeviceControl*)GetResources() ->
-        GetTaskPointerById(m_uiDeviceControlId);
-
-    uiLength = pxDeviceControl ->
-               ConfigurationRead(&puiResponse[uiPduOffset + 2]);
-//    uiLength = m_pxResources ->
-//               m_pxDeviceControl ->
-//               ConfigurationRead(&puiResponse[uiPduOffset + 2]);
-
-//    uint8_t auiTempData[] = {1, 15, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 22, 4, 0,};
-//    memcpy(&puiResponse[uiPduOffset + 2], auiTempData, sizeof(auiTempData));
-//    uiLength += sizeof(auiTempData);
-
-
-
-//    CDataContainerDataBase* pxDataContainer =
-//        (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-//    pxDataContainer -> m_uiTaskId = m_uiDeviceControlId;
-//    pxDataContainer -> m_uiFsmCommandState =
-//        CDeviceControl::CONFIGURATION_REQUEST_START;
-//    pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+//        GetTaskPointerById(m_uiDeviceControlId);
 //
-//    if (SetTaskData(GetExecutorDataContainerPointer()))
-//    {
-//        std::cout << "CModbusSlave::DataBaseRead 4" << std::endl;
-//        SetFsmState(REQUEST_PROCESSING_EXECUTOR_DONE_CHECK_START);
-//    }
-//    else
-//    {
-//        std::cout << "CModbusSlave::DataBaseRead 5" << std::endl;
-//        SetFsmState(REQUEST_PROCESSING_EXECUTOR_READY_CHECK_START);
-//    }
-
-    // количество байт в прикладном сообщении массиве конфигурации, не включая остальные.
-    puiResponse[uiPduOffset + 1] = uiLength;//sizeof(auiTempData);// + 1;
-    uiLength ++;
-    uiLength += m_pxModbusSlaveLinkLayer ->
-                ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
-
-    SetFsmState(MESSAGE_TRANSMIT_START);
+//    uiLength = pxDeviceControl ->
+//               ConfigurationRead(&puiResponse[uiPduOffset + 2]);
+////    uiLength = m_pxResources ->
+////               m_pxDeviceControl ->
+////               ConfigurationRead(&puiResponse[uiPduOffset + 2]);
+//
+////    uint8_t auiTempData[] = {1, 15, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 22, 4, 0,};
+////    memcpy(&puiResponse[uiPduOffset + 2], auiTempData, sizeof(auiTempData));
+////    uiLength += sizeof(auiTempData);
+//
+//
+//
+////    CDataContainerDataBase* pxDataContainer =
+////        (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+////    pxDataContainer -> m_uiTaskId = m_uiDeviceControlId;
+////    pxDataContainer -> m_uiFsmCommandState =
+////        CDeviceControl::CONFIGURATION_REQUEST_START;
+////    pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+////
+////    if (SetTaskData(GetExecutorDataContainerPointer()))
+////    {
+////        std::cout << "CModbusSlave::DataBaseRead 4" << std::endl;
+////        SetFsmState(REQUEST_PROCESSING_EXECUTOR_DONE_CHECK_START);
+////    }
+////    else
+////    {
+////        std::cout << "CModbusSlave::DataBaseRead 5" << std::endl;
+////        SetFsmState(REQUEST_PROCESSING_EXECUTOR_READY_CHECK_START);
+////    }
+//
+//    // количество байт в прикладном сообщении массиве конфигурации, не включая остальные.
+//    puiResponse[uiPduOffset + 1] = uiLength;//sizeof(auiTempData);// + 1;
+//    uiLength ++;
+//    uiLength += m_pxModbusSlaveLinkLayer ->
+//                ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
+//
+//    SetFsmState(MESSAGE_TRANSMIT_START);
     std::cout << "CModbusSlave::ReportSlaveID 7" << std::endl;
     return uiLength;
 }
@@ -1456,29 +1473,49 @@ uint16_t CModbusSlave::ReportSlaveIDAnswer(void)
 
     std::cout << "CModbusSlave::ReportSlaveIDAnswer 4" << std::endl;
 
+    CDataContainerDataBase* pxDataContainer =
+        (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+    uiLength = pxDataContainer -> m_uiDataLength;
+
+    std::cout << "CModbusSlave::ReportSlaveIDAnswer uiLength "  << (int)uiLength << std::endl;
+
+    memcpy(&puiResponse[uiPduOffset + 2],
+           (pxDataContainer -> m_puiDataPointer),
+           uiLength);
+
+    // количество байт в прикладном сообщении массиве конфигурации, не включая остальные.
+    puiResponse[uiPduOffset + 1] = uiLength;
+    uiLength ++;
+    uiLength += m_pxModbusSlaveLinkLayer ->
+                ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
+
+    SetFsmState(MESSAGE_TRANSMIT_START);
+
+
+
 //    CDeviceControl* pxDeviceControl =
 //        (CDeviceControl*)GetResources() ->
 //        GetTaskPointerByNameFromMap("DeviceControlRtuUpperLevel");
 
-    CDeviceControl* pxDeviceControl =
-        (CDeviceControl*)GetResources() ->
-        GetTaskPointerById(m_uiDeviceControlId);
-
-    uiLength = pxDeviceControl ->
-               ConfigurationRead(&puiResponse[uiPduOffset + 2]);
-//    uiLength = m_pxResources ->
-    //               m_pxDeviceControl ->
+//    CDeviceControl* pxDeviceControl =
+//        (CDeviceControl*)GetResources() ->
+//        GetTaskPointerById(m_uiDeviceControlId);
+//
+//    uiLength = pxDeviceControl ->
 //               ConfigurationRead(&puiResponse[uiPduOffset + 2]);
-
-//    uint8_t auiTempData[] = {1, 15, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 22, 4, 0,};
-//    memcpy(&puiResponse[uiPduOffset + 2], auiTempData, sizeof(auiTempData));
-//    uiLength += sizeof(auiTempData);
-
-    // количество байт в прикладном сообщении массиве конфигурации, не включая остальные.
-    puiResponse[uiPduOffset + 1] = uiLength;//sizeof(auiTempData);// + 1;
-    uiLength ++;
-    uiLength += m_pxModbusSlaveLinkLayer ->
-                ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
+////    uiLength = m_pxResources ->
+//    //               m_pxDeviceControl ->
+////               ConfigurationRead(&puiResponse[uiPduOffset + 2]);
+//
+////    uint8_t auiTempData[] = {1, 15, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 22, 4, 0,};
+////    memcpy(&puiResponse[uiPduOffset + 2], auiTempData, sizeof(auiTempData));
+////    uiLength += sizeof(auiTempData);
+//
+//    // количество байт в прикладном сообщении массиве конфигурации, не включая остальные.
+//    puiResponse[uiPduOffset + 1] = uiLength;//sizeof(auiTempData);// + 1;
+//    uiLength ++;
+//    uiLength += m_pxModbusSlaveLinkLayer ->
+//                ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
 
     std::cout << "CModbusSlave::ReportSlaveIDAnswer 7" << std::endl;
     return uiLength;
@@ -1910,61 +1947,70 @@ uint8_t CModbusSlave::Fsm(void)
         break;
 
     case INIT:
-//        std::cout << "CModbusSlave::Fsm INIT 1"  << std::endl;
-    {
-        CTaskInterface* pxTask =
-            GetResources() ->
-            GetTaskPointerByNameFromMap(m_sModbusSlaveLinkLayerName);
-
-        if (pxTask != 0)
+        std::cout << "CModbusSlave::Fsm INIT 1"  << std::endl;
         {
-//                std::cout << "CModbusSlave::Fsm INIT 2"  << std::endl;
-            if (pxTask -> GetFsmState() >= READY)
-            {
-//                    std::cout << "CModbusSlave::Fsm INIT 3"  << std::endl;
-                SetModbusSlaveLinkLayer((CModbusSlaveLinkLayer*)pxTask);
-                uiReadyTaskCounter += 1;
-            }
+            m_uiModbusSlaveLinkLayerId =
+                GetResources() ->
+                GetTaskIdByNameFromMap(m_sModbusSlaveLinkLayerName);
+            CModbusSlaveLinkLayer* m_pxModbusSlaveLinkLayer =
+                (CModbusSlaveLinkLayer*)GetResources() ->
+                GetTaskPointerById(m_uiModbusSlaveLinkLayerId);
+            SetModbusSlaveLinkLayer(((CModbusSlaveLinkLayer*)(GetResources() ->
+                                     GetTaskPointerById(m_uiModbusSlaveLinkLayerId))));
+
+//        CTaskInterface* pxTask =
+//            GetResources() ->
+//            GetTaskPointerByNameFromMap(m_sModbusSlaveLinkLayerName);
+//
+//        if (pxTask != 0)
+//        {
+////                std::cout << "CModbusSlave::Fsm INIT 2"  << std::endl;
+//            if (pxTask -> GetFsmState() >= READY)
+//            {
+////                    std::cout << "CModbusSlave::Fsm INIT 3"  << std::endl;
+//                SetModbusSlaveLinkLayer((CModbusSlaveLinkLayer*)pxTask);
+//                uiReadyTaskCounter += 1;
+//            }
+//        }
+//        else
+//        {
+////                std::cout << "CModbusSlave::Fsm INIT 4"  << std::endl;
+//            if (GetTimerPointer() -> IsOverflow())
+//            {
+//                std::cout << "CModbusSlave::Fsm INIT 5"  << std::endl;
+//                SetFsmState(STOP);
+//            }
+//        }
         }
-        else
+
+
         {
-//                std::cout << "CModbusSlave::Fsm INIT 4"  << std::endl;
-            if (GetTimerPointer() -> IsOverflow())
-            {
-                std::cout << "CModbusSlave::Fsm INIT 5"  << std::endl;
-                SetFsmState(STOP);
-            }
+            m_uiDeviceControlId =
+                GetResources() ->
+                GetTaskIdByNameFromMap(m_sDeviceControlName);
+
+//        if (m_uiDeviceControlId != 0)
+//        {
+////                std::cout << "CModbusSlave::Fsm INIT 2"  << std::endl;
+//            uiReadyTaskCounter += 1;
+//        }
+//        else
+//        {
+////                std::cout << "CModbusSlave::Fsm INIT 4"  << std::endl;
+//            if (GetTimerPointer() -> IsOverflow())
+//            {
+//                std::cout << "CModbusSlave::Fsm INIT 5"  << std::endl;
+//                SetFsmState(STOP);
+//            }
+//        }
         }
-    }
 
-
-    {
-        m_uiDeviceControlId =
-            GetResources() ->
-            GetTaskIdByNameFromMap(m_sDeviceControlName);
-
-        if (m_uiDeviceControlId != 0)
-        {
-//                std::cout << "CModbusSlave::Fsm INIT 2"  << std::endl;
-            uiReadyTaskCounter += 1;
-        }
-        else
-        {
-//                std::cout << "CModbusSlave::Fsm INIT 4"  << std::endl;
-            if (GetTimerPointer() -> IsOverflow())
-            {
-                std::cout << "CModbusSlave::Fsm INIT 5"  << std::endl;
-                SetFsmState(STOP);
-            }
-        }
-    }
-
-    if (uiReadyTaskCounter > 1)
-    {
+//    if (uiReadyTaskCounter > 1)
+//    {
         std::cout << "CModbusSlave::Fsm INIT 9"  << std::endl;
         SetFsmState(READY);
-    }
-    break;
+//    }
+        break;
 
     case READY:
         std::cout << "CModbusSlave::Fsm READY"  << std::endl;
@@ -1996,6 +2042,7 @@ uint8_t CModbusSlave::Fsm(void)
         if (SetTaskData(GetExecutorDataContainerPointer()))
         {
             std::cout << "CModbusSlave::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING 2"  << std::endl;
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(GetFsmNextStateDoneOk());
         }
         else
@@ -2005,7 +2052,7 @@ uint8_t CModbusSlave::Fsm(void)
             if (GetTimerPointer() -> IsOverflow())
             {
                 std::cout << "CModbusSlave::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING 4"  << std::endl;
-                ((CDataContainerDataBase*)GetCustomertDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+                ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
                 SetFsmState(GetFsmNextStateReadyWaitingError());
             }
         }
@@ -2036,7 +2083,7 @@ uint8_t CModbusSlave::Fsm(void)
             if (GetTimerPointer() -> IsOverflow())
             {
                 std::cout << "CModbusSlave::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 4"  << std::endl;
-                ((CDataContainerDataBase*)GetCustomertDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+                ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
                 SetFsmState(GetFsmNextStateReadyWaitingError());
             }
         }
@@ -2063,12 +2110,13 @@ uint8_t CModbusSlave::Fsm(void)
         if (uiFsmState == DONE_OK)
         {
             std::cout << "CModbusSlave::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 2"  << std::endl;
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(GetFsmNextStateDoneOk());
         }
         else if (uiFsmState == DONE_ERROR)
         {
             std::cout << "CModbusSlave::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 3"  << std::endl;
-            ((CDataContainerDataBase*)GetCustomertDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
             SetFsmState(GetFsmNextStateDoneWaitingDoneError());
         }
         else
@@ -2077,7 +2125,7 @@ uint8_t CModbusSlave::Fsm(void)
             if (GetTimerPointer() -> IsOverflow())
             {
                 std::cout << "CModbusSlave::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 4"  << std::endl;
-                ((CDataContainerDataBase*)GetCustomertDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+                ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
                 SetFsmState(GetFsmNextStateDoneWaitingError());
             }
         }
@@ -2087,6 +2135,21 @@ uint8_t CModbusSlave::Fsm(void)
 //-------------------------------------------------------------------------------
     case COMMUNICATION_START:
         std::cout << "CModbusSlave::Fsm COMMUNICATION_START"  << std::endl;
+//        CDataContainerDataBase* pxDataContainer =
+//            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+//        pxDataContainer -> m_uiTaskId = m_uiModbusSlaveLinkLayerId;
+//        pxDataContainer -> m_uiFsmCommandState =
+//            CModbusRtuSlaveLinkLayer::COMMUNICATION_START;
+//        SetFsmState(MESSAGE_RECEIVE_WAITING);
+
+        //        SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+//        SetFsmNextStateDoneOk(EXECUTOR_ANSWER_PROCESSING);
+////        SetFsmNextStateDoneWaitingDoneOk(EXECUTOR_ANSWER_PROCESSING);
+////        SetFsmNextStateDoneError(DONE_ERROR);
+//        SetFsmNextStateReadyWaitingError(RESPONSE_EXCEPTION_SLAVE_OR_SERVER_BUSY);
+//        SetFsmNextStateDoneWaitingError(RESPONSE_EXCEPTION_SLAVE_OR_SERVER_FAILURE);
+//        SetFsmNextStateDoneWaitingDoneError(RESPONSE_EXCEPTION_SLAVE_OR_SERVER_FAILURE);
+//
         m_pxOperatingDataContainer -> m_uiFsmCommandState =
             CModbusRtuSlaveLinkLayer::COMMUNICATION_START;
         m_pxModbusSlaveLinkLayer ->
@@ -2096,6 +2159,13 @@ uint8_t CModbusSlave::Fsm(void)
 
     case COMMUNICATION_RECEIVE_START:
         std::cout << "CModbusSlave::Fsm COMMUNICATION_RECEIVE_START"  << std::endl;
+//        CDataContainerDataBase* pxDataContainer =
+//            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+//        pxDataContainer -> m_uiTaskId = m_uiModbusSlaveLinkLayerId;
+//        pxDataContainer -> m_uiFsmCommandState =
+//            CModbusRtuSlaveLinkLayer::COMMUNICATION_RECEIVE_START;
+//        SetFsmState(MESSAGE_RECEIVE_WAITING);
+
         m_pxOperatingDataContainer -> m_uiFsmCommandState =
             CModbusRtuSlaveLinkLayer::COMMUNICATION_RECEIVE_START;
         m_pxModbusSlaveLinkLayer ->
@@ -2105,6 +2175,13 @@ uint8_t CModbusSlave::Fsm(void)
 
     case COMMUNICATION_RECEIVE_CONTINUE:
         std::cout << "CModbusSlave::Fsm COMMUNICATION_RECEIVE_CONTINUE"  << std::endl;
+//        CDataContainerDataBase* pxDataContainer =
+//            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+//        pxDataContainer -> m_uiTaskId = m_uiModbusSlaveLinkLayerId;
+//        pxDataContainer -> m_uiFsmCommandState =
+//            CModbusRtuSlaveLinkLayer::COMMUNICATION_RECEIVE_CONTINUE;
+//        SetFsmState(MESSAGE_RECEIVE_WAITING);
+
         m_pxOperatingDataContainer -> m_uiFsmCommandState =
             CModbusRtuSlaveLinkLayer::COMMUNICATION_RECEIVE_CONTINUE;
         m_pxModbusSlaveLinkLayer ->
@@ -2115,6 +2192,11 @@ uint8_t CModbusSlave::Fsm(void)
     case MESSAGE_RECEIVE_WAITING:
 //        std::cout << "CModbusSlave::Fsm MESSAGE_RECEIVE_WAITING"  << std::endl;
     {
+//        CDataContainerDataBase* pxDataContainer =
+//            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+//
+//        uint8_t uiFsmState = pxDataContainer -> m_uiFsmCommandState;
+
         m_pxModbusSlaveLinkLayer ->
         GetTaskData(m_pxOperatingDataContainer);
 

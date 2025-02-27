@@ -76,8 +76,8 @@ public:
     virtual void SetFsmNextStateDoneWaitingDoneOk(uint8_t uiData) {};
     virtual uint8_t GetFsmNextStateDoneWaitingDoneOk(void) {};
 
-    virtual void SetCustomertDataContainer(CDataContainerInterface* pxDataContainer) {};
-    virtual CDataContainerInterface* GetCustomertDataContainerPointer(void) {};
+    virtual void SetCustomerDataContainer(CDataContainerInterface* pxDataContainer) {};
+    virtual CDataContainerInterface* GetCustomerDataContainerPointer(void) {};
 
     virtual void SetExecutorDataContainer(CDataContainerInterface* pxDataContainer) {};
     virtual CDataContainerInterface* GetExecutorDataContainerPointer(void) {};
@@ -193,8 +193,8 @@ public:
     void SetResources(CResources* pxResources);
     CResources* GetResources(void);
 
-    void SetCustomertDataContainer(CDataContainerInterface* pxDataContainer);
-    CDataContainerInterface* GetCustomertDataContainerPointer(void);
+    void SetCustomerDataContainer(CDataContainerInterface* pxDataContainer);
+    CDataContainerInterface* GetCustomerDataContainerPointer(void);
 
     void SetExecutorDataContainer(CDataContainerInterface* pxDataContainer);
     CDataContainerInterface* GetExecutorDataContainerPointer(void);
@@ -237,7 +237,7 @@ public:
     uint8_t m_uiFsmNextStateDoneWaitingDoneOk;
 
     CDataContainerInterface* m_pxCurrentCustomerDataContainer;
-    CDataContainerInterface* m_pxCustomertDataContainer;
+    CDataContainerInterface* m_pxCustomerDataContainer;
     CDataContainerInterface* m_pxCurrentExecutorDataContainer;
     CDataContainerInterface* m_pxExecutorDataContainer;
 };
