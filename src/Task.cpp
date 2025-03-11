@@ -193,22 +193,35 @@ bool CTask::SetTaskData(CDataContainerInterface* pxDataContainer)
 {
     std::cout << "CTask::SetTaskData 1" << std::endl;
 
+    std::cout << "CTask::SetTaskData TaskId "  << (int)pxDataContainer ->
+              GetTaskId() << std::endl;
     CTaskInterface* pxTask =
         GetResources() ->
         GetTaskPointerById(pxDataContainer ->
                            GetTaskId());
 
-    if (pxTask -> IsTaskReady())
+    std::cout << "CTask::SetTaskData m_sTaskName "  << pxTask ->
+              GetTaskName() << std::endl;
+
+    if (pxTask)
     {
-        std::cout << "CTask::SetTaskData 2" << std::endl;
-        pxTask -> SetCustomerDataContainer(pxDataContainer);
-        pxTask -> SetFsmState(pxDataContainer ->
-                              GetFsmCommandState());
-        return true;
+        if (pxTask -> IsTaskReady())
+        {
+            std::cout << "CTask::SetTaskData 2" << std::endl;
+            pxTask -> SetCustomerDataContainer(pxDataContainer);
+            pxTask -> SetFsmState(pxDataContainer ->
+                                  GetFsmCommandState());
+            return true;
+        }
+        else
+        {
+            std::cout << "CTask::SetTaskData 3" << std::endl;
+            return false;
+        }
     }
     else
     {
-        std::cout << "CTask::SetTaskData 3" << std::endl;
+        std::cout << "CTask::SetTaskData 4" << std::endl;
         return false;
     }
 }

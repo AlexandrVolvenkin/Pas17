@@ -292,7 +292,7 @@ CTaskInterface* CResources::AddCommonTaskToMap(std::string sTaskName, std::share
 
 //    std::cout << "CResources::AddCommonTaskToMap this name" << " " << (this -> GetTaskNamePointer()) << std::endl;
 //    std::cout << "CResources::AddCommonTaskToMap sTaskName" << " " << (sTaskName) << std::endl;
-
+    pxTask -> SetTaskName(sTaskName);
     m_mpxCommonTaskMap[sTaskName] = pxTask;
 
     return pxTask.get();
@@ -414,5 +414,3 @@ CDataContainerInterface* CResources::AddDataContainer(std::shared_ptr<CDataConta
 
 //-------------------------------------------------------------------------------
 
-CTaskInterface** m_ppxCommonTaskPointers;
-uint8_t m_uiUsedCommonTaskPointersCounter;

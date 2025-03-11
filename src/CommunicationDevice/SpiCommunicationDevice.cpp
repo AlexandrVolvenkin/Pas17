@@ -49,7 +49,7 @@ void CSpiCommunicationDevice::Init(void)
     ChipSelectPinSet();
 
     SetFsmState(READY);
-};
+}
 
 //-------------------------------------------------------------------------------
 int8_t CSpiCommunicationDevice::Open(void)

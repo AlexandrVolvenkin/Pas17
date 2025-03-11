@@ -38,7 +38,7 @@ TGpioControl CGpio::m_xGpioControl;
 void CGpio::Init(void)
 {
     Open();
-};
+}
 
 //-------------------------------------------------------------------------------
 int8_t CGpio::Open(void)
@@ -87,7 +87,7 @@ int8_t CGpio::Open(void)
 
     std::cout << "CGpio::Open 3"  << std::endl;
     return 0;
-};
+}
 
 //-------------------------------------------------------------------------------
 int8_t CGpio::Close(void)

@@ -57,7 +57,7 @@ void CLink::SetTaskPerformer(CTaskInterface* pxTaskPerformer)
 CTaskInterface* CLink::GetTaskPerformerPointer(void)
 {
     return m_pxTaskPerformer;
-};
+}
 
 //-------------------------------------------------------------------------------
 void CLink::SetDataContainer(CDataContainerInterface* pxDataContainer)

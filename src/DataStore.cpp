@@ -970,7 +970,7 @@ uint8_t CDataStore::GetBlockLength(uint8_t uiBlock)
 //           axBlockPositionData[uiBlock].uiLength;
     return aucDataBaseBlockLength[uiBlock];
 //    return 0;
-};
+}
 
 //-------------------------------------------------------------------------------
 // Главный автомат записи хранилища.

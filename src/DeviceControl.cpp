@@ -455,93 +455,10 @@ uint8_t CDeviceControl::Fsm(void)
 
             SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
             SetFsmNextStateDoneOk(CONFIGURATION_REQUEST_EXECUTOR_ANSWER_PROCESSING);
-//        SetFsmNextStateDoneWaitingDoneOk(EXECUTOR_ANSWER_PROCESSING);
-//        SetFsmNextStateDoneError(DONE_ERROR);
-            SetFsmNextStateReadyWaitingError(DONE_ERROR);
             SetFsmNextStateDoneWaitingError(DONE_ERROR);
             SetFsmNextStateDoneWaitingDoneError(DONE_ERROR);
-
-//            CDataContainerDataBase* pxDataContainer =
-//                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-//            pxDataContainer -> m_uiTaskId = m_uiConfigurationCreateId;
-//            pxDataContainer -> m_uiFsmCommandState =
-//                CConfigurationCreate::CONFIGURATION_REQUEST_START;
-//            pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
-//
-//            if (SetTaskData(GetExecutorDataContainerPointer()))
-//            {
-//                SetFsmState(CONFIGURATION_REQUEST_EXECUTOR_DONE_CHECK_START);
-//            }
-//            else
-//            {
-//                SetFsmState(CONFIGURATION_REQUEST_EXECUTOR_READY_CHECK_START);
-//            }
         }
         break;
-
-//    case CONFIGURATION_REQUEST_EXECUTOR_READY_CHECK_WAITING:
-////        //std::cout << "CDeviceControl::Fsm CONFIGURATION_REQUEST_EXECUTOR_READY_CHECK_WAITING 1"  << std::endl;
-//    {
-//        if (SetTaskData(GetExecutorDataContainerPointer()))
-//        {
-//            std::cout << "CDeviceControl::Fsm CONFIGURATION_REQUEST_EXECUTOR_READY_CHECK_WAITING 2"  << std::endl;
-//            SetFsmState(CONFIGURATION_REQUEST_EXECUTOR_DONE_CHECK_START);
-//        }
-//        else
-//        {
-//            //std::cout << "CDeviceControl::Fsm CONFIGURATION_REQUEST_EXECUTOR_READY_CHECK_WAITING 3"  << std::endl;
-//            // Время ожидания выполнения запроса закончилось?
-//            if (GetTimerPointer() -> IsOverflow())
-//            {
-//                std::cout << "CDeviceControl::Fsm CONFIGURATION_REQUEST_EXECUTOR_READY_CHECK_WAITING 4"  << std::endl;
-//                ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
-//                SetFsmState(DONE_ERROR);
-//            }
-//        }
-//    }
-//    break;
-//
-//    case CONFIGURATION_REQUEST_EXECUTOR_DONE_CHECK_START:
-//        std::cout << "CDeviceControl::Fsm CONFIGURATION_REQUEST_EXECUTOR_DONE_CHECK_START"  << std::endl;
-//        {
-//            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
-//            SetFsmState(CONFIGURATION_REQUEST_EXECUTOR_DONE_CHECK_WAITING);
-//        }
-//
-//        break;
-//
-//    case CONFIGURATION_REQUEST_EXECUTOR_DONE_CHECK_WAITING:
-////        //std::cout << "CDeviceControl::Fsm CONFIGURATION_REQUEST_EXECUTOR_DONE_CHECK_WAITING"  << std::endl;
-//    {
-//        CDataContainerDataBase* pxDataContainer =
-//            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-//
-//        uint8_t uiFsmState = pxDataContainer -> m_uiFsmCommandState;
-//
-//        if (uiFsmState == DONE_OK)
-//        {
-//            std::cout << "CDeviceControl::Fsm CONFIGURATION_REQUEST_EXECUTOR_DONE_CHECK_WAITING 2"  << std::endl;
-//            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-//            SetFsmState(DONE_OK);
-//        }
-//        else if (uiFsmState == DONE_ERROR)
-//        {
-//            std::cout << "CDeviceControl::Fsm CONFIGURATION_REQUEST_EXECUTOR_DONE_CHECK_WAITING 3"  << std::endl;
-//            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
-//            SetFsmState(DONE_ERROR);
-//        }
-//        else
-//        {
-//            // Время ожидания выполнения запроса закончилось?
-//            if (GetTimerPointer() -> IsOverflow())
-//            {
-//                std::cout << "CDeviceControl::Fsm CONFIGURATION_REQUEST_EXECUTOR_DONE_CHECK_WAITING 4"  << std::endl;
-//                ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
-//                SetFsmState(DONE_ERROR);
-//            }
-//        }
-//    }
-//    break;
 
     case CONFIGURATION_REQUEST_EXECUTOR_ANSWER_PROCESSING:
         std::cout << "CDeviceControl::Fsm CONFIGURATION_REQUEST_EXECUTOR_ANSWER_PROCESSING"  << std::endl;

@@ -13,6 +13,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "InternalModule.h"
+
 // MUVR
 //// коды типа модуля.
 #define MODULE_TYPE_MVPS3 0x06
@@ -150,7 +152,7 @@ class CResources;
 class CCommunicationDevice;
 class CCommunicationDeviceInterface;
 class CSpiCommunicationDevice;
-class CInternalModule;
+//class CInternalModule;
 class CDataContainerInterface;
 class CDataContainerDataBase;
 class CAnalogueSignals;

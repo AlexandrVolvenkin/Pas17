@@ -59,6 +59,8 @@ public:
 
 //    CTaskInterface();
 //    virtual ~CTaskInterface();
+    virtual void SetTaskName(std::string& sTaskName) {};
+    virtual std::string& GetTaskName(void) {};
     virtual char* GetTaskNamePointer(void) {};
 
     virtual void SetFsmNextSubTaskState(uint8_t uiData) {};
@@ -119,6 +121,16 @@ public:
     CTask();
     CTask(CResources* pxResources);
     virtual ~CTask();
+
+    void SetTaskName(std::string& sTaskName)
+    {
+        m_sTaskName = sTaskName;
+    };
+
+    std::string& GetTaskName(void)
+    {
+        return m_sTaskName;
+    };
 
     void SetFsmNextSubTaskState(uint8_t uiData)
     {
@@ -219,7 +231,7 @@ public:
 
 public:
     char m_acTaskName[TASK_NAME_LENGTH] = {0};
-//    std::string m_sTaskName;
+    std::string m_sTaskName;
     CResources* m_pxResources;
     // содержит идентификатор шага автомата, начала выполнения следующей подзадачи.
     uint8_t m_uiFsmNextSubTaskState;

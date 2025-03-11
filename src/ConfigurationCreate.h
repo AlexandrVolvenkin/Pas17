@@ -36,10 +36,15 @@ public:
     enum
     {
         CONFIGURATION_CREATE_START = NEXT_STEP,
-        CONFIGURATION_CREATE_EXECUTOR_READY_CHECK_START,
-        CONFIGURATION_CREATE_EXECUTOR_READY_CHECK_WAITING,
-        CONFIGURATION_CREATE_EXECUTOR_DONE_CHECK_START,
-        CONFIGURATION_CREATE_EXECUTOR_DONE_CHECK_WAITING,
+//        CONFIGURATION_CREATE_EXECUTOR_READY_CHECK_START,
+//        CONFIGURATION_CREATE_EXECUTOR_READY_CHECK_WAITING,
+//        CONFIGURATION_CREATE_EXECUTOR_DONE_CHECK_START,
+//        CONFIGURATION_CREATE_EXECUTOR_DONE_CHECK_WAITING,
+        CONFIGURATION_CREATE_EXECUTOR_ANSWER_PROCESSING,
+        CONFIGURATION_CREATE_INTERNAL_MODULES_SEARCH_MODULES_START,
+        CONFIGURATION_CREATE_INTERNAL_MODULES_SEARCH_MODULES_EXECUTOR_ANSWER_PROCESSING,
+        CONFIGURATION_CREATE_INTERNAL_MODULES_SERVICE_DATA_CREATE_START,
+        CONFIGURATION_CREATE_INTERNAL_MODULES_SERVICE_DATA_CREATE_EXECUTOR_ANSWER_PROCESSING,
 
         CONFIGURATION_REQUEST_START,
 //        CONFIGURATION_REQUEST_EXECUTOR_READY_CHECK_START,
@@ -72,6 +77,29 @@ public:
         uint8_t uiAnalogueInputSignalsQuantity;
         uint8_t uiDisplayType;
         uint8_t ui16ErrorCode;
+        // служебные переменные. вычисляются при старте. хранятся на протяжении всего времени работы.
+        // используются для вычисления адресов, смещений и т.д.
+        // целостность данных проверяется перед каждым рабочим циклом 100mc.
+        uint8_t uiInternalModulesQuantity;
+        uint8_t uiExternalModulesQuantity;
+
+        unsigned int uiHandledDiscreteInputQuantity;
+        unsigned int uiHandledFunctionBlockQuantity;
+
+        uint8_t uiLastDiscreteInputModuleIndex; // индексы модулей последних по порядку в своей группе.
+        uint8_t uiLastAnalogueInputModuleIndex;
+        uint8_t uiLastDiscreteOutputModuleIndex;
+        uint8_t uiLastAnalogueOutputModuleIndex;
+
+        uint8_t uiServiceDiscreteInputModuleQuantity; // количество модулей.
+        uint8_t uiServiceAnalogueInputModuleQuantity;
+        uint8_t uiServiceDiscreteOutputModuleQuantity;
+        uint8_t uiServiceAnalogueOutputModuleQuantity;
+
+        uint8_t uiServiceDiscreteInputQuantity; // количество входов-выходов.
+        uint8_t uiServiceAnalogueInputQuantity;
+        uint8_t uiServiceDiscreteOutputQuantity;
+        uint8_t uiServiceAnalogueOutputQuantity;
     };
 #pragma pack(pop)
 

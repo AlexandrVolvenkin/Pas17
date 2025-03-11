@@ -16,6 +16,7 @@
 #include "SpiCommunicationDevice.h"
 #include "DataContainer.h"
 #include "ConfigurationCreate.h"
+#include "InternalModuleMuvr.h"
 #include "InternalModule.h"
 
 using namespace std;
@@ -371,6 +372,7 @@ void CInternalModule::SearchModules(void)
                 // модуль присутствует. увеличим значение переменной -
                 // фактическое количество модулей в системе.
                 (pxDeviceConfigSearch -> uiModulesQuantity)++;
+                (pxDeviceConfigSearch -> uiInternalModulesQuantity)++;
 
                 if (pxDeviceConfigSearch -> uiModulesQuantity >=
                         INTERNAL_MODULE_QUANTITY)
@@ -384,6 +386,117 @@ void CInternalModule::SearchModules(void)
         }
     }
 }
+
+//-----------------------------------------------------------------------------------------------------
+void CInternalModule::ServiceDataCreate(void)
+{
+//    std::cout << "CInternalModule::ServiceDataCreate 1"  << std::endl;
+
+    // получим указатель на объект конфигурации.
+    CConfigurationCreate::TConfigDataPackOne* pxDeviceConfigSearch =
+        (CConfigurationCreate::TConfigDataPackOne*)
+        (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer);
+
+    // вычисление служебных переменных для внутренних модулей.
+    for (uint8_t i = 0;
+            i < INTERNAL_MODULE_QUANTITY;
+            i++)
+    {
+        switch(pxDeviceConfigSearch ->
+                axModulesContext[i].uiType)
+        {
+        case MODULE_TYPE_MUVR:
+            pxDeviceConfigSearch ->
+            uiLastAnalogueInputModuleAddresPlusOne =
+                (pxDeviceConfigSearch ->
+                 axModulesContext[i].uiAddress + 1);
+            (pxDeviceConfigSearch ->
+             uiServiceAnalogueInputModuleQuantity)++;
+            pxDeviceConfigSearch ->
+            uiLastAnalogueInputModuleIndex = i;
+            pxDeviceConfigSearch ->
+            uiDiscreteInputSignalsQuantity += MUVR_DISCRETE_INPUT_QUANTITY;
+            pxDeviceConfigSearch ->
+            uiAnalogueInputSignalsQuantity += MUVR_ANALOG_INPUT_QUANTITY;
+            pxDeviceConfigSearch ->
+            uiServiceDiscreteInputQuantity += MUVR_DISCRETE_INPUT_QUANTITY;
+            pxDeviceConfigSearch ->
+            uiServiceAnalogueInputQuantity += MUVR_ANALOG_INPUT_QUANTITY;
+            break;
+
+        default:
+            break;
+        };
+    }
+}
+
+//-----------------------------------------------------------------------------------------------------
+void CInternalModule::CreateDevices(void)
+{
+//    TMemoryAllocationContext xMemoryAllocationContext;
+//    InitAllocationContext(xMemoryAllocationContext);
+//
+//    for (uint8_t i = 0;
+//            i < (m_xDeviceConfigSearch.uiModulesQuantity);
+//            i++)
+//    {
+//        CPlatform::WatchdogReset();
+//
+//        uint8_t uiType = m_xDeviceConfigSearch.axModulesContext[i].uiType;
+//        switch (uiType)
+//        {
+//        case MODULE_TYPE_MVSN:
+////        case MODULE_TYPE_MVDI:
+////        case MODULE_TYPE_MVDS9:
+//            if (m_xDeviceConfigSearch.uiDiscreteInputQuantity <
+//                    DISCRETE_INPUT_MODULE_MAX_NUMBER)
+//            {
+////            m_apxDevices[i] = new CMvsn21;
+////            m_apxDevices[i] -> m_pxDriver = new CMvsn21Driver(uiType);
+//                m_apxDrivers[i] = new CMvsn21Driver(uiType);
+//                xMemoryAllocationContext.uiAddress = m_xDeviceConfigSearch.axModulesContext[i].uiAddress;
+////            m_apxDevices[i] -> m_pxDriver -> Allocate(xMemoryAllocationContext);
+//                m_apxDrivers[i] -> Allocate(xMemoryAllocationContext);
+//                m_xDeviceConfigSearch.uiDiscreteInputQuantity += 1;
+//            }
+//            break;
+//
+//        case MODULE_TYPE_MVDO5:
+//            break;
+//
+//        case MODULE_TYPE_MR53:
+//        case MODULE_TYPE_MR54:
+//            if (m_xDeviceConfigSearch.uiDiscreteOutputQuantity <
+//                    DISCRETE_OUTPUT_MODULE_MAX_NUMBER)
+//            {
+////            m_apxDevices[i] = new CModuleMrXX;
+////            m_apxDevices[i] -> m_pxDriver = new CModuleMrXXDriver(uiType);
+//                m_apxDrivers[i] = new CModuleMrXXDriver(uiType);
+//                xMemoryAllocationContext.uiAddress = m_xDeviceConfigSearch.axModulesContext[i].uiAddress;
+////            m_apxDevices[i] -> m_pxDriver -> Allocate(xMemoryAllocationContext);
+//                m_apxDrivers[i] -> Allocate(xMemoryAllocationContext);
+//                m_xDeviceConfigSearch.uiDiscreteOutputQuantity += 1;
+//            }
+//            break;
+//
+//        case MODULE_TYPE_MVI:
+//            break;
+//
+//        default:
+//            break;
+//        }
+//    }
+}
+
+////-----------------------------------------------------------------------------------------------------
+//void CInternalModule::DestroyDevices(uint8_t uiLength)
+//{
+//    for (uint16_t i = 0; i < uiLength; i++)
+//    {
+////        delete m_apxDevices[i];
+////        delete m_apxDrivers[i];
+//    }
+//}
 
 //-------------------------------------------------------------------------------
 uint8_t CInternalModule::Fsm(void)
@@ -478,7 +591,17 @@ uint8_t CInternalModule::Fsm(void)
         std::cout << "CInternalModule::Fsm SEARCH_MODULES_START 1"  << std::endl;
         {
             SearchModules();
-        std::cout << "CInternalModule::Fsm SEARCH_MODULES_START 2"  << std::endl;
+            std::cout << "CInternalModule::Fsm SEARCH_MODULES_START 2"  << std::endl;
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(DONE_OK);
+        }
+        break;
+
+    case SERVICE_DATA_CREATE_START:
+        std::cout << "CInternalModule::Fsm SERVICE_DATA_CREATE_START 1"  << std::endl;
+        {
+            ServiceDataCreate();
+            std::cout << "CInternalModule::Fsm SERVICE_DATA_CREATE_START 2"  << std::endl;
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(DONE_OK);
         }

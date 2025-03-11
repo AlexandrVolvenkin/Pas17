@@ -55,6 +55,7 @@ class CCommunicationDeviceInterface;
 class CSpiCommunicationDevice;
 class CDataContainerInterface;
 class CDataContainerDataBase;
+class CInternalModuleMuvr;
 
 enum
 {
@@ -137,6 +138,9 @@ public:
 
     virtual void Allocate(void) {};
     virtual uint8_t GetModuleType(uint8_t uiAddress) {};
+    virtual void SearchModules(void) {};
+    virtual void ServiceDataCreate(void) {};
+    virtual void CreateDevices(void) {};
     virtual uint8_t DataBaseRead(uint8_t uiAddress) {};
 };
 //-------------------------------------------------------------------------------
@@ -155,6 +159,7 @@ public:
     enum
     {
         SEARCH_MODULES_START = NEXT_STEP,
+        SERVICE_DATA_CREATE_START,
 
     };
 
@@ -274,6 +279,8 @@ public:
     void Allocate(void);
     uint8_t GetModuleType(uint8_t uiAddress);
     void SearchModules(void);
+    void ServiceDataCreate(void);
+    void CreateDevices(void);
 
 protected:
     std::string m_sCommunicationDeviceName;
