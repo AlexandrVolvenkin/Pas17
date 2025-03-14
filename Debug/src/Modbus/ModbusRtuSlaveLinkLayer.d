@@ -8,6 +8,7 @@ src/Modbus/ModbusRtuSlaveLinkLayer.o: \
  D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src/Dfa.h \
  D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src/Resources.h \
  D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src/Task.h \
+ D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src/ConfigurationCreate.h \
  D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\CommunicationDevice/CommunicationDevice.h \
  ../src/Modbus/ModbusRtuSlaveLinkLayer.h ../src/Modbus/Modbus.h \
  ../src/Modbus/ModbusSlaveLinkLayer.h \
@@ -30,6 +31,8 @@ D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src/Dfa.h:
 D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src/Resources.h:
 
 D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src/Task.h:
+
+D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src/ConfigurationCreate.h:
 
 D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\CommunicationDevice/CommunicationDevice.h:
 

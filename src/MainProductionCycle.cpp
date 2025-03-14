@@ -31,6 +31,7 @@
 #include "Link.h"
 #include "DataContainer.h"
 #include "AnalogueSignals.h"
+#include "SystemComponentsCreate.h"
 
 #include "MainProductionCycle.h"
 
@@ -385,6 +386,18 @@ uint8_t CMainProductionCycle::CreateTasks(void)
     m_xResources.AddCurrentlyRunningTasksList(pxConfigurationCreate);
     m_pxConfigurationCreate = pxConfigurationCreate;
 
+//-------------------------------------------------------------------------------
+    CSystemComponentsCreate* pxSystemComponentsCreate = 0;
+    pxSystemComponentsCreate =
+        static_cast<CSystemComponentsCreate*>(m_xResources.AddCommonTaskToMap("SystemComponentsCreate",
+                                           std::make_shared<CSystemComponentsCreate>()));
+    pxSystemComponentsCreate ->
+    SetResources(&m_xResources);
+    pxSystemComponentsCreate ->
+    SetInternalModuleName("InternalModuleCommon");
+    m_xResources.AddCurrentlyRunningTasksList(pxSystemComponentsCreate);
+//    m_pxSystemComponentsCreate = pxSystemComponentsCreate;
+
 }
 
 //-------------------------------------------------------------------------------
@@ -535,6 +548,10 @@ uint8_t CMainProductionCycle::Fsm(void)
             m_uiDataStoreCheckId =
                 GetResources() ->
                 GetTaskIdByNameFromMap("DataStoreCheck");
+
+            m_uiSystemComponentsCreateId =
+                GetResources() ->
+                GetTaskIdByNameFromMap("SystemComponentsCreate");
 
             SetFsmState(READY);
         }
@@ -846,6 +863,7 @@ uint8_t CMainProductionCycle::Fsm(void)
         CurrentlyRunningTasksExecution();
         break;
 
+//-------------------------------------------------------------------------------
     case CONFIGURATION_CREATE_START:
         std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CREATE_START"  << std::endl;
         {
@@ -860,9 +878,8 @@ uint8_t CMainProductionCycle::Fsm(void)
 //            SetCurrentExecutorDataContainer(pxDataContainer);
 
             SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
-//            SetFsmNextSubTaskState(MAIN_CYCLE_MODBUS_SLAVE);
-            SetFsmNextStateDoneOk(MAIN_CYCLE_MODBUS_SLAVE);
-            SetFsmNextStateDoneWaitingDoneOk(MAIN_CYCLE_MODBUS_SLAVE);
+            SetFsmNextStateDoneOk(CONFIGURATION_CREATE_EXECUTOR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingDoneOk(CONFIGURATION_CREATE_EXECUTOR_ANSWER_PROCESSING);
             SetFsmNextStateDoneError(DONE_ERROR);
             SetFsmNextStateReadyWaitingError(DONE_ERROR);
             SetFsmNextStateDoneWaitingError(DONE_ERROR);
@@ -870,6 +887,42 @@ uint8_t CMainProductionCycle::Fsm(void)
         }
         break;
 
+    case CONFIGURATION_CREATE_EXECUTOR_ANSWER_PROCESSING:
+        std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CREATE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
+        {
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(SYSTEM_COMPONENTS_CREATE_START);
+        }
+        break;
+
+//-------------------------------------------------------------------------------
+    case SYSTEM_COMPONENTS_CREATE_START:
+        std::cout << "CMainProductionCycle::Fsm SYSTEM_COMPONENTS_CREATE_START"  << std::endl;
+        {
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            pxDataContainer -> m_uiTaskId = m_uiSystemComponentsCreateId;
+            pxDataContainer -> m_uiFsmCommandState =
+                CSystemComponentsCreate::SYSTEM_COMPONENTS_CREATE_INTERNAL_MODULES_HANDLERS_CREATE_START;
+            pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+            SetFsmNextStateDoneOk(SYSTEM_COMPONENTS_CREATE_EXECUTOR_ANSWER_PROCESSING);
+            SetFsmNextStateReadyWaitingError(DONE_ERROR);
+            SetFsmNextStateDoneWaitingError(DONE_ERROR);
+            SetFsmNextStateDoneWaitingDoneError(DONE_ERROR);
+        }
+        break;
+
+    case SYSTEM_COMPONENTS_CREATE_EXECUTOR_ANSWER_PROCESSING:
+        std::cout << "CMainProductionCycle::Fsm SYSTEM_COMPONENTS_CREATE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
+        {
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(MAIN_CYCLE_MODBUS_SLAVE);
+        }
+        break;
+
+//-------------------------------------------------------------------------------
     case MAIN_CYCLE_MODULES_INIT:
 //        std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_MODULES_INIT 1"  << std::endl;
         CurrentlyRunningTasksExecution();

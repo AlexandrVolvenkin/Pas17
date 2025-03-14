@@ -96,8 +96,7 @@ CSemaphore::CSemaphore(key_t keyVal, int value)
             else
             {
                 std::cout << "CSemaphore::CSemaphore 34"  << std::endl;
-                perror("semget");
-//            exit(EXIT_FAILURE);
+                semctl(semId, 0, SETVAL, value); // Установка начального значения семафора
             }
         }
         else
@@ -105,9 +104,11 @@ CSemaphore::CSemaphore(key_t keyVal, int value)
             std::cout << "CSemaphore::CSemaphore 35"  << std::endl;
         }
     }
-
-    std::cout << "CSemaphore::CSemaphore 5"  << std::endl;
-    semctl(semId, 0, SETVAL, value); // Установка начального значения семафора
+    else
+    {
+        std::cout << "CSemaphore::CSemaphore 5"  << std::endl;
+        semctl(semId, 0, SETVAL, value); // Установка начального значения семафора
+    }
 }
 
 //-------------------------------------------------------------------------------

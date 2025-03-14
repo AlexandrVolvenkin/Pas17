@@ -433,59 +433,47 @@ void CInternalModule::ServiceDataCreate(void)
 //-----------------------------------------------------------------------------------------------------
 void CInternalModule::CreateDevices(void)
 {
-//    TMemoryAllocationContext xMemoryAllocationContext;
-//    InitAllocationContext(xMemoryAllocationContext);
-//
-//    for (uint8_t i = 0;
-//            i < (m_xDeviceConfigSearch.uiModulesQuantity);
-//            i++)
-//    {
-//        CPlatform::WatchdogReset();
-//
-//        uint8_t uiType = m_xDeviceConfigSearch.axModulesContext[i].uiType;
-//        switch (uiType)
-//        {
-//        case MODULE_TYPE_MVSN:
-////        case MODULE_TYPE_MVDI:
-////        case MODULE_TYPE_MVDS9:
-//            if (m_xDeviceConfigSearch.uiDiscreteInputQuantity <
-//                    DISCRETE_INPUT_MODULE_MAX_NUMBER)
-//            {
-////            m_apxDevices[i] = new CMvsn21;
-////            m_apxDevices[i] -> m_pxDriver = new CMvsn21Driver(uiType);
-//                m_apxDrivers[i] = new CMvsn21Driver(uiType);
-//                xMemoryAllocationContext.uiAddress = m_xDeviceConfigSearch.axModulesContext[i].uiAddress;
-////            m_apxDevices[i] -> m_pxDriver -> Allocate(xMemoryAllocationContext);
-//                m_apxDrivers[i] -> Allocate(xMemoryAllocationContext);
-//                m_xDeviceConfigSearch.uiDiscreteInputQuantity += 1;
-//            }
-//            break;
-//
-//        case MODULE_TYPE_MVDO5:
-//            break;
-//
-//        case MODULE_TYPE_MR53:
-//        case MODULE_TYPE_MR54:
-//            if (m_xDeviceConfigSearch.uiDiscreteOutputQuantity <
-//                    DISCRETE_OUTPUT_MODULE_MAX_NUMBER)
-//            {
-////            m_apxDevices[i] = new CModuleMrXX;
-////            m_apxDevices[i] -> m_pxDriver = new CModuleMrXXDriver(uiType);
-//                m_apxDrivers[i] = new CModuleMrXXDriver(uiType);
-//                xMemoryAllocationContext.uiAddress = m_xDeviceConfigSearch.axModulesContext[i].uiAddress;
-////            m_apxDevices[i] -> m_pxDriver -> Allocate(xMemoryAllocationContext);
-//                m_apxDrivers[i] -> Allocate(xMemoryAllocationContext);
-//                m_xDeviceConfigSearch.uiDiscreteOutputQuantity += 1;
-//            }
-//            break;
-//
-//        case MODULE_TYPE_MVI:
-//            break;
-//
-//        default:
-//            break;
-//        }
-//    }
+    std::cout << "CInternalModule::CreateDevices 1"  << std::endl;
+
+    // получим указатель на объект конфигурации.
+    CConfigurationCreate::TConfigDataPackOne* pxDeviceConfigSearch =
+        (CConfigurationCreate::TConfigDataPackOne*)
+        (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer);
+
+    for (uint8_t i = 0;
+            i < (pxDeviceConfigSearch ->
+                 uiModulesQuantity);
+            i++)
+    {
+        uint8_t uiType = pxDeviceConfigSearch ->
+                         axModulesContext[i].uiType;
+        switch (uiType)
+        {
+        case MODULE_TYPE_MUVR:
+        {
+            CInternalModuleMuvr* pxInternalModuleMuvr = 0;
+            pxInternalModuleMuvr =
+                static_cast<CInternalModuleMuvr*>(GetResources() ->
+                                                  AddCommonTaskToMap("InternalModuleMuvr" + std::to_string(i),
+                                                          std::make_shared<CInternalModuleMuvr>()));
+            pxInternalModuleMuvr ->
+            SetResources(GetResources());
+            pxInternalModuleMuvr ->
+            SetCommunicationDeviceName("SpiCommunicationDeviceSpi0");
+//            pxInternalModuleMuvr ->
+//            Allocate();
+            pxInternalModuleMuvr ->
+            SetAddress(pxDeviceConfigSearch ->
+                       axModulesContext[i].uiAddress);
+            GetResources() -> AddCurrentlyRunningTasksList(pxInternalModuleMuvr);
+            m_vpxDevices.push_back(pxInternalModuleMuvr);
+        }
+        break;
+
+        default:
+            break;
+        }
+    }
 }
 
 ////-----------------------------------------------------------------------------------------------------
@@ -602,6 +590,16 @@ uint8_t CInternalModule::Fsm(void)
         {
             ServiceDataCreate();
             std::cout << "CInternalModule::Fsm SERVICE_DATA_CREATE_START 2"  << std::endl;
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(DONE_OK);
+        }
+        break;
+
+    case MODULES_HANDLERS_CREATE_START:
+        std::cout << "CInternalModule::Fsm MODULES_HANDLERS_CREATE_START 1"  << std::endl;
+        {
+            CreateDevices();
+            std::cout << "CInternalModule::Fsm MODULES_HANDLERS_CREATE_START 2"  << std::endl;
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(DONE_OK);
         }

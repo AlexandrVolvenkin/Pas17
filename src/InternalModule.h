@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <vector>
 
 
 //#define GET_MODULE_TYPE_COMMAND 0x91 // команда - чтение типа модуля.
@@ -160,7 +161,7 @@ public:
     {
         SEARCH_MODULES_START = NEXT_STEP,
         SERVICE_DATA_CREATE_START,
-
+        MODULES_HANDLERS_CREATE_START,
     };
 
     CInternalModule();
@@ -286,6 +287,8 @@ protected:
     std::string m_sCommunicationDeviceName;
     CCommunicationDeviceInterface* m_pxCommunicationDevice;
     CDataContainerDataBase* m_pxOperatingDataContainer;
+    std::vector<CTaskInterface*> m_vpxDevices;
+
     uint8_t m_uiAddress;
     uint8_t m_uiCommonIndex;
     uint8_t m_uiCommandControl;

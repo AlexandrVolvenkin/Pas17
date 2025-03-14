@@ -16,6 +16,7 @@
 
 //#include "Dfa.h"
 #include "Task.h"
+#include "ConfigurationCreate.h"
 
 class CDfa;
 //class CTaskInterface;
@@ -26,7 +27,9 @@ class CConfiguration;
 class CServiceMarket;
 class CLinkInterface;
 class CAnalogueSignals;
+//class CConfigurationCreate;
 struct TAnalogueInputDescriptionWork;
+//struct TConfigDataPackOne;
 
 //-------------------------------------------------------------------------------
 class CResourcesInterface : public CTask
@@ -41,6 +44,7 @@ public:
     virtual std::list<CTaskInterface*>* GetCommonTasksListPointer(void) {};
     virtual uint8_t* CreateObjectBySize(size_t uiLength) {};
     virtual CDataContainerInterface* AddDataContainer(std::shared_ptr<CDataContainerInterface> pxDataContainer) {};
+    virtual CConfigurationCreate::TConfigDataPackOne* GetDeviceConfigSearchPointer(void) {};
 
 };
 
@@ -77,6 +81,8 @@ public:
     CTaskInterface* GetTaskPointerById(uint8_t uiTaskId);
     uint8_t* CreateObjectBySize(size_t uiLength);
     CDataContainerInterface* AddDataContainer(std::shared_ptr<CDataContainerInterface> pxDataContainer);
+    CConfigurationCreate::TConfigDataPackOne* GetDeviceConfigSearchPointer(void);
+
 
     void ModbusWorkingArraysCreate(uint16_t uiCoilsNumber,
                                    uint16_t uiDiscreteInputsNumber,
@@ -124,6 +130,9 @@ public:
     std::string m_sTaskName;
     CTaskInterface** m_ppxCommonTaskPointers;
     uint8_t m_uiUsedCommonTaskPointersCounter;
+
+    // объект с конфигурацией во внутреннем формате.
+    CConfigurationCreate::TConfigDataPackOne m_xDeviceConfigSearch;
 
     uint8_t* m_puiCoils;
     uint8_t* m_puiDiscreteInputs;

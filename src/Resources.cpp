@@ -15,6 +15,7 @@
 #include "Link.h"
 #include "DataContainer.h"
 #include "AnalogueSignals.h"
+#include "ConfigurationCreate.h"
 #include "Resources.h"
 
 //-------------------------------------------------------------------------------
@@ -30,6 +31,7 @@ CResources::CResources()
     m_mpxCommonTaskMap.clear();
     m_lpxDataContainerList.clear();
     m_uiUsedCommonTaskPointersCounter = 0;
+    m_xDeviceConfigSearch = {0};
 
     m_ppxCommonTaskPointers = new CTaskInterface*[MAX_TASK_NUMBER];
     SetResources(this);
@@ -164,6 +166,12 @@ void CResources::SetInputRegistersNumber(uint16_t uiData)
 uint16_t CResources::GetInputRegistersNumber(void)
 {
     return m_uiInputRegistersNumber;
+}
+
+//-------------------------------------------------------------------------------
+CConfigurationCreate::TConfigDataPackOne* CResources::GetDeviceConfigSearchPointer(void)
+{
+    return &m_xDeviceConfigSearch;
 }
 
 //-----------------------------------------------------------------------------------------------------

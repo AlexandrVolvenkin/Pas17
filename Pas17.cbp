@@ -128,6 +128,8 @@
 		<Unit filename="src/ServiceMarket.h" />
 		<Unit filename="src/StorageDevice.cpp" />
 		<Unit filename="src/StorageDevice.h" />
+		<Unit filename="src/SystemComponentsCreate.cpp" />
+		<Unit filename="src/SystemComponentsCreate.h" />
 		<Unit filename="src/Task.cpp" />
 		<Unit filename="src/Task.h" />
 		<Unit filename="src/TaskManager.cpp" />

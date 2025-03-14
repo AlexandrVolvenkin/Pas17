@@ -24,7 +24,6 @@ CConfigurationCreate::CConfigurationCreate()
 {
     std::cout << "CConfigurationCreate constructor"  << std::endl;
     m_puiIntermediateBuff = new uint8_t[256];
-    m_xDeviceConfigSearch = {0};
     SetFsmState(START);
 }
 
@@ -236,23 +235,7 @@ uint8_t CConfigurationCreate::Fsm(void)
     case CONFIGURATION_CREATE_START:
         std::cout << "CConfigurationCreate::Fsm CONFIGURATION_CREATE_START"  << std::endl;
         {
-            m_xDeviceConfigSearch = {0};
-            //            memset(reinterpret_cast<uint8_t*>(&m_xDeviceConfigSearch),
-//                   0,
-//                   sizeof(struct TConfigDataPackOne));
-
-//            CDataContainerDataBase* pxDataContainer =
-//                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-//            pxDataContainer -> m_uiTaskId = m_uiInternalModuleId;
-//            pxDataContainer -> m_uiFsmCommandState =
-//                CInternalModule::SEARCH_MODULES_START;
-//            pxDataContainer -> m_puiDataPointer = (uint8_t*)&m_xDeviceConfigSearch;
-//
-//            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
-//            SetFsmNextStateDoneOk(CONFIGURATION_CREATE_EXECUTOR_ANSWER_PROCESSING);
-//            SetFsmNextStateReadyWaitingError(DONE_ERROR);
-//            SetFsmNextStateDoneWaitingError(DONE_ERROR);
-//            SetFsmNextStateDoneWaitingDoneError(DONE_ERROR);
+            *(GetResources() -> GetDeviceConfigSearchPointer()) = {0};
         }
         SetFsmState(CONFIGURATION_CREATE_INTERNAL_MODULES_SEARCH_MODULES_START);
         break;
@@ -290,16 +273,13 @@ uint8_t CConfigurationCreate::Fsm(void)
     case CONFIGURATION_CREATE_INTERNAL_MODULES_SEARCH_MODULES_START:
         std::cout << "CConfigurationCreate::Fsm CONFIGURATION_CREATE_INTERNAL_MODULES_SEARCH_MODULES_START"  << std::endl;
         {
-//            memset(reinterpret_cast<uint8_t*>(&m_xDeviceConfigSearch),
-//                   0,
-//                   sizeof(struct TConfigDataPackOne));
-
             CDataContainerDataBase* pxDataContainer =
                 (CDataContainerDataBase*)GetExecutorDataContainerPointer();
             pxDataContainer -> m_uiTaskId = m_uiInternalModuleId;
             pxDataContainer -> m_uiFsmCommandState =
                 CInternalModule::SEARCH_MODULES_START;
-            pxDataContainer -> m_puiDataPointer = (uint8_t*)&m_xDeviceConfigSearch;
+            pxDataContainer -> m_puiDataPointer =
+                (uint8_t*)(GetResources() -> GetDeviceConfigSearchPointer());
 
             SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
             SetFsmNextStateDoneOk(CONFIGURATION_CREATE_INTERNAL_MODULES_SEARCH_MODULES_EXECUTOR_ANSWER_PROCESSING);
@@ -347,7 +327,8 @@ uint8_t CConfigurationCreate::Fsm(void)
             pxDataContainer -> m_uiTaskId = m_uiInternalModuleId;
             pxDataContainer -> m_uiFsmCommandState =
                 CInternalModule::SERVICE_DATA_CREATE_START;
-            pxDataContainer -> m_puiDataPointer = (uint8_t*)&m_xDeviceConfigSearch;
+            pxDataContainer -> m_puiDataPointer =
+                (uint8_t*)(GetResources() -> GetDeviceConfigSearchPointer());
 
             SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
             SetFsmNextStateDoneOk(CONFIGURATION_CREATE_INTERNAL_MODULES_SERVICE_DATA_CREATE_EXECUTOR_ANSWER_PROCESSING);
@@ -372,7 +353,7 @@ uint8_t CConfigurationCreate::Fsm(void)
 //                   uiLength);
             uint16_t  uiLength = sizeof(struct TConfigDataPackOne);
             memcpy(pxExecutorDataContainer -> m_puiDataPointer,
-                   (uint8_t*)&m_xDeviceConfigSearch,
+                   (uint8_t*)(GetResources() -> GetDeviceConfigSearchPointer()),
                    uiLength);
 
             pxExecutorDataContainer -> m_uiDataLength = uiLength;
@@ -411,10 +392,14 @@ uint8_t CConfigurationCreate::Fsm(void)
             CDataContainerDataBase* pxCustomerDataContainer =
                 (CDataContainerDataBase*)GetCustomerDataContainerPointer();
 
-            uint8_t auiTempData[] = {1, 15, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 22, 4, 0,};
-            uint16_t  uiLength = sizeof(auiTempData);
+//            uint8_t auiTempData[] = {1, 15, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 22, 4, 0,};
+//            uint16_t  uiLength = sizeof(auiTempData);
+//            memcpy(pxExecutorDataContainer -> m_puiDataPointer,
+//                   auiTempData,
+//                   uiLength);
+            uint16_t  uiLength = sizeof(struct TConfigDataPackOne);
             memcpy(pxExecutorDataContainer -> m_puiDataPointer,
-                   auiTempData,
+                   (uint8_t*)(GetResources() -> GetDeviceConfigSearchPointer()),
                    uiLength);
 
             pxExecutorDataContainer -> m_uiDataLength = uiLength;

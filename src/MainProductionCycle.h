@@ -38,9 +38,11 @@ class CDataStoreCheck;
 class CDataContainerInterface;
 class CDataContainerDataBase;
 class CConfigurationCreate;
+class CSystemComponentsCreate;
+
 
 //-------------------------------------------------------------------------------
-class CMainProductionCycle : public CTask//, public CDfa
+class CMainProductionCycle : public CTask
 {
 public:
 
@@ -61,10 +63,14 @@ public:
         DATA_STORE_CHECK_END_ERROR,
 
         CONFIGURATION_CREATE_START,
-        CONFIGURATION_CREATE_EXECUTOR_READY_CHECK_START,
-        CONFIGURATION_CREATE_EXECUTOR_READY_CHECK_WAITING,
-        CONFIGURATION_CREATE_EXECUTOR_DONE_CHECK_START,
-        CONFIGURATION_CREATE_EXECUTOR_DONE_CHECK_WAITING,
+        CONFIGURATION_CREATE_EXECUTOR_ANSWER_PROCESSING,
+//        CONFIGURATION_CREATE_EXECUTOR_READY_CHECK_START,
+//        CONFIGURATION_CREATE_EXECUTOR_READY_CHECK_WAITING,
+//        CONFIGURATION_CREATE_EXECUTOR_DONE_CHECK_START,
+//        CONFIGURATION_CREATE_EXECUTOR_DONE_CHECK_WAITING,
+
+        SYSTEM_COMPONENTS_CREATE_START,
+        SYSTEM_COMPONENTS_CREATE_EXECUTOR_ANSWER_PROCESSING,
 
         MAIN_CYCLE_MODULES_INIT,
         MAIN_CYCLE_MODULES_INIT_END_WAITING,
@@ -139,6 +145,9 @@ private:
 
     std::string m_sConfigurationCreateName;
     uint8_t m_uiConfigurationCreateId;
+
+    std::string m_sSystemComponentsCreateName;
+    uint8_t m_uiSystemComponentsCreateId;
 
     std::string m_sDataStoreCheckName;
     uint8_t m_uiDataStoreCheckId;

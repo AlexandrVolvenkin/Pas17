@@ -1,7 +1,8 @@
 src/main.o: ../src/main.cpp ../src/Task.h ../src/Timer.h \
  ../src/Platform.h ../src/Configuration.h ../src/Dfa.h \
- ../src/MainProductionCycle.h ../src/Resources.h ../src/ServiceMarket.h \
- ../src/DataStore.h ../src/DeviceControl.h ../src/InternalModule.h \
+ ../src/MainProductionCycle.h ../src/Resources.h \
+ ../src/ConfigurationCreate.h ../src/ServiceMarket.h ../src/DataStore.h \
+ ../src/DeviceControl.h ../src/InternalModule.h \
  D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\Modbus/ModbusSlave.h \
  D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\Modbus/Modbus.h \
  D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\Modbus/ModbusSlaveLinkLayer.h \
@@ -26,6 +27,8 @@ src/main.o: ../src/main.cpp ../src/Task.h ../src/Timer.h \
 ../src/MainProductionCycle.h:
 
 ../src/Resources.h:
+
+../src/ConfigurationCreate.h:
 
 ../src/ServiceMarket.h:
 

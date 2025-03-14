@@ -133,8 +133,8 @@ private:
     uint8_t m_uiInternalModuleId;
 
     uint8_t* m_puiIntermediateBuff;
-    // объект с конфигурацией во внутреннем формате.
-    TConfigDataPackOne m_xDeviceConfigSearch;
+//    // объект с конфигурацией во внутреннем формате.
+//    TConfigDataPackOne m_xDeviceConfigSearch;
 
 };
 

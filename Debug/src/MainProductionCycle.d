@@ -5,17 +5,18 @@ src/MainProductionCycle.o: ../src/MainProductionCycle.cpp ../src/Task.h \
  D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\CommunicationDevice/SerialPortCommunicationDevice.h \
  D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\CommunicationDevice/TcpCommunicationDevice.h \
  D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\CommunicationDevice/SharedMemoryCommunicationDevice.h \
- ../src/Resources.h ../src/TaskManager.h ../src/ServiceMarket.h \
- ../src/StorageDevice.h ../src/DataStore.h ../src/DataStoreCheck.h \
- ../src/InternalModule.h ../src/InternalModuleMuvr.h \
- ../src/ConfigurationCreate.h \
+ ../src/Resources.h ../src/ConfigurationCreate.h ../src/TaskManager.h \
+ ../src/ServiceMarket.h ../src/StorageDevice.h ../src/DataStore.h \
+ ../src/DataStoreCheck.h ../src/InternalModule.h \
+ ../src/InternalModuleMuvr.h \
  D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\Modbus/ModbusSlaveLinkLayer.h \
  D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src/Configuration.h \
  D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\Modbus/ModbusTcpSlaveLinkLayer.h \
  D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\Modbus/Modbus.h \
  D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\Modbus/ModbusSlaveLinkLayer.h \
  ../src/Link.h ../src/DataContainer.h ../src/AnalogueSignals.h \
- ../src/MainProductionCycle.h ../src/DeviceControl.h \
+ ../src/SystemComponentsCreate.h ../src/MainProductionCycle.h \
+ ../src/DeviceControl.h \
  D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\Modbus/ModbusSlave.h \
  D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\Modbus/ModbusRtuSlaveLinkLayer.h \
  D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\Modbus/ModbusSmSlave.h \
@@ -44,6 +45,8 @@ D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\Commun
 
 ../src/Resources.h:
 
+../src/ConfigurationCreate.h:
+
 ../src/TaskManager.h:
 
 ../src/ServiceMarket.h:
@@ -57,8 +60,6 @@ D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\Commun
 ../src/InternalModule.h:
 
 ../src/InternalModuleMuvr.h:
-
-../src/ConfigurationCreate.h:
 
 D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\Modbus/ModbusSlaveLinkLayer.h:
 
@@ -75,6 +76,8 @@ D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\Modbus
 ../src/DataContainer.h:
 
 ../src/AnalogueSignals.h:
+
+../src/SystemComponentsCreate.h:
 
 ../src/MainProductionCycle.h:
 
