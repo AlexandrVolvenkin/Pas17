@@ -350,17 +350,17 @@ uint8_t CMainProductionCycle::CreateTasks(void)
     m_xResources.AddCurrentlyRunningTasksList(pxInternalModuleCommon);
     m_pxInternalModule = pxInternalModuleCommon;
 
-//-------------------------------------------------------------------------------
-    CInternalModuleMuvr* pxInternalModuleMuvr = 0;
-    pxInternalModuleMuvr =
-        static_cast<CInternalModuleMuvr*>(m_xResources.AddCommonTaskToMap("InternalModuleMuvr",
-                                          std::make_shared<CInternalModuleMuvr>()));
-    pxInternalModuleMuvr ->
-    SetResources(&m_xResources);
-    pxInternalModuleMuvr ->
-    SetCommunicationDeviceName("SpiCommunicationDeviceSpi0");
-    m_xResources.AddCurrentlyRunningTasksList(pxInternalModuleMuvr);
-    m_pxInternalModuleMuvr = pxInternalModuleMuvr;
+////-------------------------------------------------------------------------------
+//    CInternalModuleMuvr* pxInternalModuleMuvr = 0;
+//    pxInternalModuleMuvr =
+//        static_cast<CInternalModuleMuvr*>(m_xResources.AddCommonTaskToMap("InternalModuleMuvr",
+//                                          std::make_shared<CInternalModuleMuvr>()));
+//    pxInternalModuleMuvr ->
+//    SetResources(&m_xResources);
+//    pxInternalModuleMuvr ->
+//    SetCommunicationDeviceName("SpiCommunicationDeviceSpi0");
+//    m_xResources.AddCurrentlyRunningTasksList(pxInternalModuleMuvr);
+//    m_pxInternalModuleMuvr = pxInternalModuleMuvr;
 
 //-------------------------------------------------------------------------------
     CAnalogueSignals* pxAnalogueSignals = 0;
@@ -390,7 +390,7 @@ uint8_t CMainProductionCycle::CreateTasks(void)
     CSystemComponentsCreate* pxSystemComponentsCreate = 0;
     pxSystemComponentsCreate =
         static_cast<CSystemComponentsCreate*>(m_xResources.AddCommonTaskToMap("SystemComponentsCreate",
-                                           std::make_shared<CSystemComponentsCreate>()));
+                std::make_shared<CSystemComponentsCreate>()));
     pxSystemComponentsCreate ->
     SetResources(&m_xResources);
     pxSystemComponentsCreate ->
@@ -480,14 +480,14 @@ uint8_t CMainProductionCycle::InitTasks(void)
 //        (CInternalModule*)(GetResources() ->
 //                          GetTaskPointerByNameFromMap("InternalModuleCommon"));
 
-//-------------------------------------------------------------------------------
-    CInternalModuleMuvr* pxInternalModuleMuvr =
-        (CInternalModuleMuvr*)(GetResources() ->
-                               GetTaskPointerByNameFromMap("InternalModuleMuvr"));
-    pxInternalModuleMuvr ->
-    SetAddress(0);
-
-    GetResources() -> Allocate();
+////-------------------------------------------------------------------------------
+//    CInternalModuleMuvr* pxInternalModuleMuvr =
+//        (CInternalModuleMuvr*)(GetResources() ->
+//                               GetTaskPointerByNameFromMap("InternalModuleMuvr"));
+//    pxInternalModuleMuvr ->
+//    SetAddress(0);
+//
+//    GetResources() -> Allocate();
 }
 
 //-------------------------------------------------------------------------------
@@ -552,6 +552,10 @@ uint8_t CMainProductionCycle::Fsm(void)
             m_uiSystemComponentsCreateId =
                 GetResources() ->
                 GetTaskIdByNameFromMap("SystemComponentsCreate");
+
+            m_uiInternalModuleId =
+                GetResources() ->
+                GetTaskIdByNameFromMap("InternalModuleCommon");
 
             SetFsmState(READY);
         }
@@ -890,6 +894,8 @@ uint8_t CMainProductionCycle::Fsm(void)
     case CONFIGURATION_CREATE_EXECUTOR_ANSWER_PROCESSING:
         std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CREATE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
         {
+            CurrentlyRunningTasksExecution();
+
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(SYSTEM_COMPONENTS_CREATE_START);
         }
@@ -899,6 +905,8 @@ uint8_t CMainProductionCycle::Fsm(void)
     case SYSTEM_COMPONENTS_CREATE_START:
         std::cout << "CMainProductionCycle::Fsm SYSTEM_COMPONENTS_CREATE_START"  << std::endl;
         {
+            CurrentlyRunningTasksExecution();
+
             CDataContainerDataBase* pxDataContainer =
                 (CDataContainerDataBase*)GetExecutorDataContainerPointer();
             pxDataContainer -> m_uiTaskId = m_uiSystemComponentsCreateId;
@@ -917,8 +925,43 @@ uint8_t CMainProductionCycle::Fsm(void)
     case SYSTEM_COMPONENTS_CREATE_EXECUTOR_ANSWER_PROCESSING:
         std::cout << "CMainProductionCycle::Fsm SYSTEM_COMPONENTS_CREATE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
         {
+            CurrentlyRunningTasksExecution();
+
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(MAIN_CYCLE_MODBUS_SLAVE);
+            SetFsmState(INTERNAL_MODULES_DATA_EXCHANGE_START);
+        }
+        break;
+
+//-------------------------------------------------------------------------------
+    case INTERNAL_MODULES_DATA_EXCHANGE_START:
+        std::cout << "CMainProductionCycle::Fsm INTERNAL_MODULES_DATA_EXCHANGE_START"  << std::endl;
+        {
+            CurrentlyRunningTasksExecution();
+
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            pxDataContainer -> m_uiTaskId = m_uiInternalModuleId;
+            pxDataContainer -> m_uiFsmCommandState =
+                CInternalModule::MODULES_DATA_EXCHANGE_START;
+            pxDataContainer -> m_puiDataPointer =
+                (uint8_t*)(GetResources() -> GetDeviceConfigSearchPointer());
+
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+            SetFsmNextStateDoneOk(INTERNAL_MODULES_DATA_EXCHANGE_EXECUTOR_ANSWER_PROCESSING);
+            SetFsmNextStateReadyWaitingError(DONE_ERROR);
+            SetFsmNextStateDoneWaitingError(DONE_ERROR);
+            SetFsmNextStateDoneWaitingDoneError(DONE_ERROR);
+        }
+        break;
+
+    case INTERNAL_MODULES_DATA_EXCHANGE_EXECUTOR_ANSWER_PROCESSING:
+        std::cout << "CMainProductionCycle::Fsm INTERNAL_MODULES_DATA_EXCHANGE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
+        {
+            CurrentlyRunningTasksExecution();
+
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(INTERNAL_MODULES_DATA_EXCHANGE_START);
         }
         break;
 
@@ -1053,11 +1096,11 @@ uint8_t CMainProductionCycle::Fsm(void)
 //            m_pxInternalModuleMuvr ->
 //            SetTaskData(&xOperatingDataContainer);
 
-        CDataContainerDataBase xOperatingDataContainer;
-        xOperatingDataContainer.m_uiFsmCommandState =
-            CInternalModuleMuvr::MUVR_DATA_EXCHANGE;
-        m_pxInternalModuleMuvr ->
-        SetTaskData(&xOperatingDataContainer);
+//        CDataContainerDataBase xOperatingDataContainer;
+//        xOperatingDataContainer.m_uiFsmCommandState =
+//            CInternalModuleMuvr::MUVR_DATA_EXCHANGE;
+//        m_pxInternalModuleMuvr ->
+//        SetTaskData(&xOperatingDataContainer);
 
 
         SetFsmState(MAIN_CYCLE_DISCRETE_SIGNALS_PROCESSING);

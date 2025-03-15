@@ -71,6 +71,8 @@ public:
 
         SYSTEM_COMPONENTS_CREATE_START,
         SYSTEM_COMPONENTS_CREATE_EXECUTOR_ANSWER_PROCESSING,
+        INTERNAL_MODULES_DATA_EXCHANGE_START,
+        INTERNAL_MODULES_DATA_EXCHANGE_EXECUTOR_ANSWER_PROCESSING,
 
         MAIN_CYCLE_MODULES_INIT,
         MAIN_CYCLE_MODULES_INIT_END_WAITING,
@@ -139,6 +141,9 @@ private:
     std::string m_sDeviceControlName;
     uint8_t m_uiDeviceControlId;
     CDeviceControl* m_pxDeviceControl;
+
+    std::string m_sInternalModuleName;
+    uint8_t m_uiInternalModuleId;
 
     std::string m_sInternalModuleMuvrName;
     uint8_t m_uiInternalModuleMuvrId;

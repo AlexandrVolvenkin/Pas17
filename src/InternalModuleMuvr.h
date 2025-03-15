@@ -179,8 +179,8 @@ public:
     void SetCommunicationDeviceName(std::string sName);
     void SetCommunicationDevice(CCommunicationDeviceInterface* pxCommunicationDevice);
     uint8_t Init(void);
-    bool SetTaskData(CDataContainerDataBase* pxDataContainer);
-    bool GetTaskData(CDataContainerDataBase* pxDataContainer);
+//    bool SetTaskData(CDataContainerDataBase* pxDataContainer);
+//    bool GetTaskData(CDataContainerDataBase* pxDataContainer);
 
     uint8_t Fsm(void);
 

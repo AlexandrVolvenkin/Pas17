@@ -46,8 +46,7 @@ uint8_t CSystemComponentsCreate::Init(void)
     std::cout << "CSystemComponentsCreate Init"  << std::endl;
     SetExecutorDataContainer(static_cast<CDataContainerDataBase*>(GetResources() ->
                              AddDataContainer(std::make_shared<CDataContainerDataBase>())));
-    SetExecutorDataContainer(static_cast<CDataContainerDataBase*>(GetResources() ->
-                             AddDataContainer(std::make_shared<CDataContainerDataBase>())));
+    SetCustomerDataContainer(GetExecutorDataContainerPointer());
 }
 
 //-------------------------------------------------------------------------------

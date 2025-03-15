@@ -45,6 +45,7 @@ uint8_t CConfigurationCreate::Init(void)
     std::cout << "CConfigurationCreate Init"  << std::endl;
     SetExecutorDataContainer(static_cast<CDataContainerDataBase*>(GetResources() ->
                              AddDataContainer(std::make_shared<CDataContainerDataBase>())));
+    SetCustomerDataContainer(GetExecutorDataContainerPointer());
 }
 
 //-----------------------------------------------------------------------------------------------------

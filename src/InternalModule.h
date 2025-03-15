@@ -114,8 +114,8 @@ public:
     void CommunicationDeviceInit(const char* pccIpAddress,
                                  uint16_t uiPort) {};
     virtual uint8_t Init(void) {};
-    virtual bool SetTaskData(CDataContainerDataBase* pxDataContainer) {};
-    virtual bool GetTaskData(CDataContainerDataBase* pxDataContainer) {};
+//    virtual bool SetTaskData(CDataContainerDataBase* pxDataContainer) {};
+//    virtual bool GetTaskData(CDataContainerDataBase* pxDataContainer) {};
 
     enum
     {
@@ -162,6 +162,9 @@ public:
         SEARCH_MODULES_START = NEXT_STEP,
         SERVICE_DATA_CREATE_START,
         MODULES_HANDLERS_CREATE_START,
+        MODULES_DATA_EXCHANGE_START,
+        MODULES_DATA_EXCHANGE_NEXT_MODULE_PROCESSING,
+        MODULES_DATA_EXCHANGE_EXECUTOR_ANSWER_PROCESSING,
     };
 
     CInternalModule();
@@ -282,12 +285,16 @@ public:
     void SearchModules(void);
     void ServiceDataCreate(void);
     void CreateDevices(void);
+    void ModulesDataExchange(void);
 
 protected:
     std::string m_sCommunicationDeviceName;
     CCommunicationDeviceInterface* m_pxCommunicationDevice;
     CDataContainerDataBase* m_pxOperatingDataContainer;
     std::vector<CTaskInterface*> m_vpxDevices;
+    std::vector<CTaskInterface*>::iterator m_xDevicesIterator;
+    std::vector<uint8_t> m_vuiDevicesId;
+    std::vector<uint8_t>::iterator m_xDevicesIdIterator;
 
     uint8_t m_uiAddress;
     uint8_t m_uiCommonIndex;

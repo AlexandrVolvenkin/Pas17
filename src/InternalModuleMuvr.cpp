@@ -54,39 +54,42 @@ uint8_t CInternalModuleMuvr::Init(void)
 //                               AddDataContainer(std::make_shared<CDataContainerDataBase>()));
     m_pxOperatingDataContainer = static_cast<CDataContainerDataBase*>(GetResources() ->
                                  AddDataContainer(std::make_shared<CDataContainerDataBase>()));
+    SetExecutorDataContainer(static_cast<CDataContainerDataBase*>(GetResources() ->
+                             AddDataContainer(std::make_shared<CDataContainerDataBase>())));
+    SetCustomerDataContainer(GetExecutorDataContainerPointer());
 
     Allocate();
 }
 
-//-------------------------------------------------------------------------------
-bool CInternalModuleMuvr::SetTaskData(CDataContainerDataBase* pxDataContainer)
-{
-//    std::cout << "CInternalModuleMuvr::SetTaskData 1" << std::endl;
-
-    if (IsTaskReady())
-    {
-//        std::cout << "CInternalModuleMuvr::SetTaskData 2" << std::endl;
-        *m_pxOperatingDataContainer = *pxDataContainer;
-        SetFsmState(m_pxOperatingDataContainer -> m_uiFsmCommandState);
-        return true;
-    }
-    else
-    {
-        std::cout << "CInternalModuleMuvr::SetTaskData 3" << std::endl;
-        return false;
-    }
-}
-
-//-------------------------------------------------------------------------------
-bool CInternalModuleMuvr::GetTaskData(CDataContainerDataBase* pxDataContainer)
-{
-    std::cout << "CInternalModuleMuvr::GetTaskData 1" << std::endl;
-
-    m_pxOperatingDataContainer -> m_uiFsmCommandState = GetFsmState();
-    *pxDataContainer = *m_pxOperatingDataContainer;
-
-    return true;
-}
+////-------------------------------------------------------------------------------
+//bool CInternalModuleMuvr::SetTaskData(CDataContainerDataBase* pxDataContainer)
+//{
+////    std::cout << "CInternalModuleMuvr::SetTaskData 1" << std::endl;
+//
+//    if (IsTaskReady())
+//    {
+////        std::cout << "CInternalModuleMuvr::SetTaskData 2" << std::endl;
+//        *m_pxOperatingDataContainer = *pxDataContainer;
+//        SetFsmState(m_pxOperatingDataContainer -> m_uiFsmCommandState);
+//        return true;
+//    }
+//    else
+//    {
+//        std::cout << "CInternalModuleMuvr::SetTaskData 3" << std::endl;
+//        return false;
+//    }
+//}
+//
+////-------------------------------------------------------------------------------
+//bool CInternalModuleMuvr::GetTaskData(CDataContainerDataBase* pxDataContainer)
+//{
+//    std::cout << "CInternalModuleMuvr::GetTaskData 1" << std::endl;
+//
+//    m_pxOperatingDataContainer -> m_uiFsmCommandState = GetFsmState();
+//    *pxDataContainer = *m_pxOperatingDataContainer;
+//
+//    return true;
+//}
 
 ////-------------------------------------------------------------------------------
 //uint8_t CInternalModuleMuvr::GetType(void)
@@ -383,7 +386,7 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
     switch(auiSpiRxBuffer[SPI_COMMAND_BYTE_OFFSET])
     {
     case MUVR_ANSWER_REPER_POINTS_ADC_DATABASE_ERROR:
-        //std::cout << "CInternalModuleMuvr::DataExchange 15"  << std::endl;
+    //std::cout << "CInternalModuleMuvr::DataExchange 15"  << std::endl;
     // ошибка БД реперных точек, но будет продолжение обмена.
     case MUVR_GET_MEASURE_DATA_COMMAND:
         //std::cout << "CInternalModuleMuvr::DataExchange 16"  << std::endl;
@@ -1056,8 +1059,9 @@ uint8_t CInternalModuleMuvr::Fsm(void)
         break;
 
     case MUVR_DATA_EXCHANGE:
-//        std::cout << "CInternalModuleMuvr::Fsm MUVR_DATA_EXCHANGE"  << std::endl;
-        DataExchange();
+        std::cout << "CInternalModuleMuvr::Fsm MUVR_DATA_EXCHANGE"  << std::endl;
+//        DataExchange();
+        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
         SetFsmState(DONE_OK);
         break;
 
