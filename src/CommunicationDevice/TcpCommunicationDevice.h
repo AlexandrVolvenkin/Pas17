@@ -25,11 +25,11 @@
 
 class CTask;
 class CResources;
-class CCommunicationDeviceNew;
-class CCommunicationDeviceInterfaceNew;
+class CCommunicationDevice;
+class CCommunicationDeviceInterface;
 
 //-------------------------------------------------------------------------------
-class CTcpCommunicationDevice : public CCommunicationDeviceNew
+class CTcpCommunicationDevice : public CCommunicationDevice
 {
 public:
     enum

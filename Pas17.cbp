@@ -18,6 +18,8 @@
 					<Add directory="./" />
 					<Add directory="Pas17/src" />
 					<Add directory="Pas17/src/CommunicationDevice" />
+					<Add directory="Pas17/src/ModbusSM" />
+					<Add directory="Pas17/src/SerialMT" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
@@ -32,6 +34,8 @@
 					<Add directory="./" />
 					<Add directory="Pas17/src" />
 					<Add directory="Pas17/src/CommunicationDevice" />
+					<Add directory="Pas17/src/ModbusSM" />
+					<Add directory="Pas17/src/SerialMT" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -45,11 +49,18 @@
 			<Add directory="src/Modbus" />
 		</Compiler>
 		<Unit filename="../Текущие задачиPas17.txt" />
+		<Unit filename="../протокол МВА.txt" />
 		<Unit filename="../структ и протоколы/структ и прот ПАС-17.txt" />
+		<Unit filename="src/AnalogueSignals.cpp" />
+		<Unit filename="src/AnalogueSignals.h" />
 		<Unit filename="src/CommunicationDevice/CommunicationDevice.cpp" />
 		<Unit filename="src/CommunicationDevice/CommunicationDevice.h" />
 		<Unit filename="src/CommunicationDevice/SerialPortCommunicationDevice.cpp" />
 		<Unit filename="src/CommunicationDevice/SerialPortCommunicationDevice.h" />
+		<Unit filename="src/CommunicationDevice/SharedMemoryCommunicationDevice.cpp" />
+		<Unit filename="src/CommunicationDevice/SharedMemoryCommunicationDevice.h" />
+		<Unit filename="src/CommunicationDevice/SpiCommunicationDevice.cpp" />
+		<Unit filename="src/CommunicationDevice/SpiCommunicationDevice.h" />
 		<Unit filename="src/CommunicationDevice/TcpCommunicationDevice.cpp" />
 		<Unit filename="src/CommunicationDevice/TcpCommunicationDevice.h" />
 		<Unit filename="src/Configuration.h" />
@@ -67,15 +78,6 @@
 		<Unit filename="src/DeviceControl.h" />
 		<Unit filename="src/Dfa.cpp" />
 		<Unit filename="src/Dfa.h" />
-		<Unit filename="src/EveDisplay/EVE_CMD.cpp" />
-		<Unit filename="src/EveDisplay/EVE_CMD.h" />
-		<Unit filename="src/EveDisplay/EVE_HAL.cpp" />
-		<Unit filename="src/EveDisplay/EVE_HAL.h" />
-		<Unit filename="src/EveDisplay/EVE_Resources.h" />
-		<Unit filename="src/EveDisplay/Hardware.cpp" />
-		<Unit filename="src/EveDisplay/Hardware.h" />
-		<Unit filename="src/EveDisplay/USPI.cpp" />
-		<Unit filename="src/EveDisplay/USPI.h" />
 		<Unit filename="src/HammingCodes.cpp" />
 		<Unit filename="src/HammingCodes.h" />
 		<Unit filename="src/InternalModule.cpp" />
@@ -101,6 +103,14 @@
 		<Unit filename="src/Modbus/ModbusSlave.h" />
 		<Unit filename="src/Modbus/ModbusSlaveLinkLayer.cpp" />
 		<Unit filename="src/Modbus/ModbusSlaveLinkLayer.h" />
+		<Unit filename="src/Modbus/ModbusSmMaster.cpp" />
+		<Unit filename="src/Modbus/ModbusSmMaster.h" />
+		<Unit filename="src/Modbus/ModbusSmMasterLinkLayer.cpp" />
+		<Unit filename="src/Modbus/ModbusSmMasterLinkLayer.h" />
+		<Unit filename="src/Modbus/ModbusSmSlave.cpp" />
+		<Unit filename="src/Modbus/ModbusSmSlave.h" />
+		<Unit filename="src/Modbus/ModbusSmSlaveLinkLayer.cpp" />
+		<Unit filename="src/Modbus/ModbusSmSlaveLinkLayer.h" />
 		<Unit filename="src/Modbus/ModbusTcpMasterLinkLayer.cpp" />
 		<Unit filename="src/Modbus/ModbusTcpMasterLinkLayer.h" />
 		<Unit filename="src/Modbus/ModbusTcpSlaveLinkLayer.cpp" />
@@ -110,10 +120,16 @@
 		<Unit filename="src/Platform.h" />
 		<Unit filename="src/Resources.cpp" />
 		<Unit filename="src/Resources.h" />
+		<Unit filename="src/STEP5_floating_point.cpp" />
+		<Unit filename="src/STEP5_floating_point.h" />
+		<Unit filename="src/Semaphore.cpp" />
+		<Unit filename="src/Semaphore.h" />
 		<Unit filename="src/ServiceMarket.cpp" />
 		<Unit filename="src/ServiceMarket.h" />
 		<Unit filename="src/StorageDevice.cpp" />
 		<Unit filename="src/StorageDevice.h" />
+		<Unit filename="src/SystemComponentsCreate.cpp" />
+		<Unit filename="src/SystemComponentsCreate.h" />
 		<Unit filename="src/Task.cpp" />
 		<Unit filename="src/Task.h" />
 		<Unit filename="src/TaskManager.cpp" />

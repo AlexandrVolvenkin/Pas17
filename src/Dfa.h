@@ -24,17 +24,17 @@ public:
         ERROR_OCCURED,
     };
 
-    enum EFsmStates
-    {
-        IDDLE = 1,
-        STOP,
-        START,
-        INIT,
-        READY,
-        DONE_OK,
-        DONE_ERROR,
-        NEXT_STEP,
-    };
+//    enum EFsmStates
+//    {
+//        IDDLE = 1,
+//        STOP,
+//        START,
+//        INIT,
+//        READY,
+//        DONE_OK,
+//        DONE_ERROR,
+//        NEXT_STEP,
+//    };
 
     CDfa();
     virtual ~CDfa();
@@ -46,8 +46,8 @@ public:
     virtual void SetFsmOperationStatus(uint8_t uiData);
     virtual uint8_t GetFsmOperationStatus(void);
     virtual CTimer* GetTimerPointer(void);
-    virtual bool IsDoneOk(void);
-    virtual bool IsDoneError(void);
+//    virtual bool IsDoneOk(void);
+//    virtual bool IsDoneError(void);
 
 protected:
     uint8_t m_uiFsmState;

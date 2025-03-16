@@ -20,6 +20,7 @@ class CDfa;
 class CResourcesInterface;
 class CResources;
 class CDataContainerInterface;
+class CDataContainerDataBase;
 class CMessageBoxInterface;
 class CMessageBoxGeneral;
 
@@ -29,6 +30,7 @@ class CTaskInterface : public CDfa
 public:
     enum
     {
+        NO_SUBTASK = 0,
         IDDLE = 1,
         STOP,
         START,
@@ -36,6 +38,15 @@ public:
         READY,
         DONE_OK,
         DONE_ERROR,
+
+        SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_START,
+        SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING,
+
+        SUBTASK_EXECUTOR_READY_CHECK_START,
+        SUBTASK_EXECUTOR_READY_CHECK_WAITING,
+        SUBTASK_EXECUTOR_DONE_CHECK_START,
+        SUBTASK_EXECUTOR_DONE_CHECK_WAITING,
+
         NEXT_STEP,
     };
 
@@ -48,56 +59,46 @@ public:
 
 //    CTaskInterface();
 //    virtual ~CTaskInterface();
-//    virtual char* GetTaskNamePointer(void);
-//    virtual std::shared_ptr<TArgumentData> GetArgumentDataPointer(void);
-//    virtual void SetResources(CResources* pxResources);
-//    virtual CResources* GetResources(void);
-//    virtual void SetTaskCustomerName(std::string sName);
+    virtual void SetTaskName(std::string& sTaskName) {};
+    virtual std::string& GetTaskName(void) {};
     virtual char* GetTaskNamePointer(void) {};
-//    virtual std::shared_ptr<TArgumentData> GetArgumentDataPointer(void) {};
-//    virtual void SetDataContainer(std::shared_ptr<CDataContainerInterface> pxDataContainer) {};
-//    virtual std::shared_ptr<CDataContainerInterface> GetDataContainerPointer(void) {};
 
-    virtual void SetMessageBoxDataContainer(CDataContainerInterface* pxDataContainer) {};
-    virtual CDataContainerInterface* GetMessageBoxDataContainerPointer(void) {};
+    virtual void SetFsmNextSubTaskState(uint8_t uiData) {};
+    virtual uint8_t GetFsmNextSubTaskState(void) {};
+    virtual void SetFsmNextStateDoneOk(uint8_t uiData) {};
+    virtual uint8_t GetFsmNextStateDoneOk(void) {};
+    virtual void SetFsmNextStateDoneError(uint8_t uiData) {};
+    virtual uint8_t GetFsmNextStateDoneError(void) {};
+    virtual void SetFsmNextStateReadyWaitingError(uint8_t uiData) {};
+    virtual uint8_t GetFsmNextStateReadyWaitingError(void) {};
+    virtual void SetFsmNextStateDoneWaitingError(uint8_t uiData) {};
+    virtual uint8_t GetFsmNextStateDoneWaitingError(void) {};
+    virtual void SetFsmNextStateDoneWaitingDoneError(uint8_t uiData) {};
+    virtual uint8_t GetFsmNextStateDoneWaitingDoneError(void) {};
+    virtual void SetFsmNextStateDoneWaitingDoneOk(uint8_t uiData) {};
+    virtual uint8_t GetFsmNextStateDoneWaitingDoneOk(void) {};
 
-    virtual void SetOperatingDataContainer(CDataContainerInterface* pxDataContainer) {};
-    virtual CDataContainerInterface* GetOperatingDataContainerPointer(void) {};
+    virtual void SetCustomerDataContainer(CDataContainerInterface* pxDataContainer) {};
+    virtual CDataContainerInterface* GetCustomerDataContainerPointer(void) {};
 
-    virtual void SetCommandDataContainer(CDataContainerInterface* pxDataContainer) {};
-    virtual CDataContainerInterface* GetCommandDataContainerPointer(void) {};
+    virtual void SetExecutorDataContainer(CDataContainerInterface* pxDataContainer) {};
+    virtual CDataContainerInterface* GetExecutorDataContainerPointer(void) {};
 
-    virtual void SetMessageBoxPoiner(std::shared_ptr<CMessageBoxInterface> pxMessageBox) {};
-    virtual std::shared_ptr<CMessageBoxInterface> GetMessageBoxPointer(void) {};
+    virtual void SetCurrentCustomerDataContainer(CDataContainerInterface* pxDataContainer) {};
+    virtual CDataContainerInterface* GetCurrentCustomerDataContainerPointer(void) {};
+
+    virtual void SetCurrentExecutorDataContainer(CDataContainerInterface* pxDataContainer) {};
+    virtual CDataContainerInterface* GetCurrentExecutorDataContainerPointer(void) {};
+
+    virtual bool SetTaskData(uint8_t uiTaskId, CDataContainerInterface* pxDataContainer) {};
+
+    virtual size_t GetObjectLength(void) {};
+    virtual bool IsTaskReady(void) {};
+    virtual bool IsDoneOk(void) {};
+    virtual bool IsDoneError(void) {};
 
     virtual void SetResources(CResources* pxResources) {};
     virtual CResources* GetResources(void) {};
-    virtual void SetTaskCustomerName(std::string sName) {};
-//    virtual uint8_t Init(void) {};
-//    virtual uint8_t Fsm(void) {};
-//    virtual uint8_t GetFsmState(void) {};
-//    virtual void SetFsmState(uint8_t uiData) {};
-//    virtual CTimer* GetTimerPointer(void) {};
-
-//   virtual uint8_t GetFsmState(void)
-//    {
-//        return m_uiFsmState;
-//    };
-//
-////protected:
-//    virtual void SetFsmState(uint8_t uiData)
-//    {
-//        m_uiFsmState = uiData;
-//    };
-//    virtual CTimer* GetTimerPointer(void)
-//    {
-//        return &m_xTimer;
-//    };
-//    CTimer m_xTimer;
-//
-//    uint8_t m_uiFsmState;
-//    uint8_t m_uiFsmCommandState;
-//    uint8_t m_uiFsmOperationStatus;
 };
 
 //-------------------------------------------------------------------------------
@@ -108,63 +109,153 @@ public:
 
 
 //-------------------------------------------------------------------------------
-class CTask : public CTaskInterface//, public CDfa
+class CTask : public CTaskInterface
 {
 public:
     enum
     {
         TASK_NAME_LENGTH = 32,
-        TASK_READY_WAITING_TIME = 1000,
+        TASK_READY_WAITING_TIME = 500,
     };
 
     CTask();
     CTask(CResources* pxResources);
     virtual ~CTask();
 
+    void SetTaskName(std::string& sTaskName)
+    {
+        m_sTaskName = sTaskName;
+    };
+
+    std::string& GetTaskName(void)
+    {
+        return m_sTaskName;
+    };
+
+    void SetFsmNextSubTaskState(uint8_t uiData)
+    {
+        m_uiFsmNextSubTaskState = uiData;
+    };
+
+    uint8_t GetFsmNextSubTaskState(void)
+    {
+        return m_uiFsmNextSubTaskState;
+    };
+
+    void SetFsmNextStateDoneOk(uint8_t uiData)
+    {
+        m_uiFsmNextStateDoneOk = uiData;
+    };
+
+    uint8_t GetFsmNextStateDoneOk(void)
+    {
+        return m_uiFsmNextStateDoneOk;
+    };
+
+    void SetFsmNextStateDoneError(uint8_t uiData)
+    {
+        m_uiFsmNextStateDoneError = uiData;
+    };
+
+    uint8_t GetFsmNextStateDoneError(void)
+    {
+        return m_uiFsmNextStateDoneError;
+    };
+
+    void SetFsmNextStateReadyWaitingError(uint8_t uiData)
+    {
+        m_uiFsmNextStateReadyWaitingError = uiData;
+    };
+
+    uint8_t GetFsmNextStateReadyWaitingError(void)
+    {
+        return m_uiFsmNextStateReadyWaitingError;
+    };
+
+    void SetFsmNextStateDoneWaitingError(uint8_t uiData)
+    {
+        m_uiFsmNextStateDoneWaitingError = uiData;
+    };
+
+    uint8_t GetFsmNextStateDoneWaitingError(void)
+    {
+        return m_uiFsmNextStateDoneWaitingError;
+    };
+
+    void SetFsmNextStateDoneWaitingDoneError(uint8_t uiData)
+    {
+        m_uiFsmNextStateDoneWaitingDoneError = uiData;
+    };
+
+    uint8_t GetFsmNextStateDoneWaitingDoneError(void)
+    {
+        return m_uiFsmNextStateDoneWaitingDoneError;
+    };
+
+    void SetFsmNextStateDoneWaitingDoneOk(uint8_t uiData)
+    {
+        m_uiFsmNextStateDoneWaitingDoneOk = uiData;
+    };
+
+    uint8_t GetFsmNextStateDoneWaitingDoneOk(void)
+    {
+        return m_uiFsmNextStateDoneWaitingDoneOk;
+    };
+
     void SetResources(CResources* pxResources);
     CResources* GetResources(void);
-    void SetTaskCustomerName(std::string sName);
 
-    void SetMessageBoxDataContainer(CDataContainerInterface* pxDataContainer);
-    CDataContainerInterface* GetMessageBoxDataContainerPointer(void);
+    void SetCustomerDataContainer(CDataContainerInterface* pxDataContainer);
+    CDataContainerInterface* GetCustomerDataContainerPointer(void);
 
-    void SetOperatingDataContainer(CDataContainerInterface* pxDataContainer);
-    CDataContainerInterface* GetOperatingDataContainerPointer(void);
+    void SetExecutorDataContainer(CDataContainerInterface* pxDataContainer);
+    CDataContainerInterface* GetExecutorDataContainerPointer(void);
 
-    void SetCommandDataContainer(CDataContainerInterface* pxDataContainer);
-    CDataContainerInterface* GetCommandDataContainerPointer(void);
+    void SetCurrentCustomerDataContainer(CDataContainerInterface* pxDataContainer);
+    CDataContainerInterface* GetCurrentCustomerDataContainerPointer(void);
 
-    void SetMessageBoxPoiner(std::shared_ptr<CMessageBoxInterface> pxMessageBox);
-    std::shared_ptr<CMessageBoxInterface> GetMessageBoxPointer(void);
+    void SetCurrentExecutorDataContainer(CDataContainerInterface* pxDataContainer);
+    CDataContainerInterface* GetCurrentExecutorDataContainerPointer(void);
 
-//    uint8_t Init(void);
-    uint8_t Fsm(void);
-//    void AddCurrentlyRunningTask(CTaskInterface* pxTask);
-//    void AddCommonTask(CTaskInterface* pxTask);
-    uint8_t GetFsmState(void);
-    void SetFsmState(uint8_t uiData);
-    CTimer* GetTimerPointer(void);
+    bool SetTaskData(CDataContainerInterface* pxDataContainer);
+    bool SetTaskData(uint8_t uiTaskId, CDataContainerInterface* pxDataContainer);
+//    CDataContainerInterface* GetTaskData(void);
+
+
+    size_t GetObjectLength(void);
+    bool IsTaskReady(void);
+    bool IsDoneOk(void);
+    bool IsDoneError(void);
 
     char* GetTaskNamePointer(void);
-    std::shared_ptr<TArgumentData> GetArgumentDataPointer(void);
 
 public:
     char m_acTaskName[TASK_NAME_LENGTH] = {0};
-//    std::string m_sTaskName;
-//    CTimer m_xTimer;
+    std::string m_sTaskName;
     CResources* m_pxResources;
-    std::string m_sTaskCustomerName;
-    CTaskInterface* m_pxTaskCustomer;
-//    TArgumentData* m_pxArgumentData;
-//    std::shared_ptr<TArgumentData> m_pxArgumentData;
-//    std::shared_ptr<CDataContainerInterface> m_pxDataContainer;
-    std::shared_ptr<CMessageBoxInterface> m_pxMessageBox;
+    // содержит идентификатор шага автомата, начала выполнения следующей подзадачи.
+    uint8_t m_uiFsmNextSubTaskState;
+    // содержит идентификатор шага автомата, при успешном завершении подзадачи.
+    uint8_t m_uiFsmNextStateDoneOk;
+    // содержит идентификатор шага автомата, при не успешном завершении подзадачи.
+    uint8_t m_uiFsmNextStateDoneError;
+    // содержит идентификатор шага автомата, при не успешном завершении ожидания готовности подзадачи.
+    uint8_t m_uiFsmNextStateReadyWaitingError;
+    // содержит идентификатор шага автомата, при не успешном завершении ожидания результата подзадачи.
+    uint8_t m_uiFsmNextStateDoneWaitingError;
+    // содержит идентификатор шага автомата, при не успешном завершении подзадачи.
+    uint8_t m_uiFsmNextStateDoneWaitingDoneError;
+    // содержит идентификатор шага автомата, при успешном завершении подзадачи.
+    uint8_t m_uiFsmNextStateDoneWaitingDoneOk;
 
-    CDataContainerInterface* m_pxMessageBoxDataContainer;
-    CDataContainerInterface* m_pxCommandDataContainer;
-    CDataContainerInterface* m_pxOperatingDataContainer;
+    CDataContainerInterface* m_pxCurrentCustomerDataContainer;
+    CDataContainerInterface* m_pxCustomerDataContainer;
+    CDataContainerInterface* m_pxCurrentExecutorDataContainer;
+    CDataContainerInterface* m_pxExecutorDataContainer;
 };
+
 
 //-------------------------------------------------------------------------------
 
 #endif // CTASK_H
+

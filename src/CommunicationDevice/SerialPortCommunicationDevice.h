@@ -1,4 +1,5 @@
-﻿#ifndef CSERIALPORTCOMMUNICATIONDEVICE_H
+﻿
+#ifndef CSERIALPORTCOMMUNICATIONDEVICE_H
 #define CSERIALPORTCOMMUNICATIONDEVICE_H
 //-------------------------------------------------------------------------------
 //  Source      : FileName.cpp
@@ -25,11 +26,11 @@
 
 class CTask;
 class CResources;
-class CCommunicationDeviceNew;
-class CCommunicationDeviceInterfaceNew;
+class CCommunicationDevice;
+class CCommunicationDeviceInterface;
 
 //-------------------------------------------------------------------------------
-class CSerialPortCommunicationDevice : public CCommunicationDeviceNew
+class CSerialPortCommunicationDevice : public CCommunicationDevice
 {
 public:
     enum

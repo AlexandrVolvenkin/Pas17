@@ -20,32 +20,6 @@
 #include "MessageBox.h"
 #include "DataStore.h"
 
-
-// (sizeof(struct TAnalogueInputDescriptionDataBase) * ANALOG_MODULE_INPUT_QUANTITY)// 28х6=168.
-#define ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_LENGTH 168
-// (sizeof(struct TMrXXOneChannelDataBase) * DISCRETE_OUTPUT_MODULE_RELAY_OUTPUT_QUANTITY)// 3х64=192.
-#define DISCRETE_OUTPUT_MODULE_DATA_BASE_BLOCK_LENGTH 192
-// (sizeof(struct TMbmFunction1234PackOne) * EXTERNAL_MODULE_FUNCTION_1234_QUANTITY) + 1// 13х16=208.
-#define MBM_FUNCTION_1234_BLOCK_DATA_BASE_BLOCK_LENGTH (208 + 1)
-// (sizeof(struct TMbmFunction15Sourse) * EXTERNAL_MODULE_FUNCTION_15_QUANTITY)// 72х3=216.
-#define MBM_FUNCTION_15_BLOCK_DATA_BASE_BLOCK_LENGTH 216
-// (sizeof(struct TDiscreteInputDescriptionWork) * DISCRETE_INPUT_SYGNALS_DATA_BASE_BLOCKS_IN_BLOCK_QUANTITY)// 11х18=198.
-#define DISCRETE_INPUT_SYGNALS_DATA_BASE_BLOCK_LENGTH 192
-// (sizeof(struct TAnalogueOutputRegulatorDescriptionDataBase) * ANALOG_OUTPUT_MODULE_REGULATORS_QUANTITY)// 28х6=168.
-#define CURRENT_OUTPUT_MODULE_REGULATOR_DATA_BASE_BLOCK_LENGTH 56
-#define CURRENT_OUTPUT_MODULE_PSP_DATA_BASE_BLOCK_LENGTH 56
-// DIMENSIONS_PARAMETERS_DATA_BLOCKS_IN_BLOCK_QUANTITY * 6// 6х16=96.
-#define DIMENSIONS_PARAMETERS_DATA_BASE_BLOCK_LENGTH 96
-// TEXT_TITLES_DATA_BASE_BLOCKS_IN_BLOCK_QUANTITY * TEXT_TITLES_DATA_LENGTH// (384 ТР, 24 блока).
-#define TEXT_TITLES_DATA_BASE_BLOCK_LENGTH 224
-// (sizeof(struct TFunctionBlockDescriptionWork) * FUNCTION_BLOCK_DATA_BASE_BLOCKS_IN_BLOCK_QUANTITY)// 19х10=190.
-#define FUNCTION_BLOCK_DATA_BASE_BLOCK_LENGTH 160// 19х10=190 (120 ФБЛ, 12 блоков)
-#define MATHEMATICAL_BLOCK_DATA_BASE_BLOCK_LENGTH 208// 82 – 84 (48 ФБМ, 3 блока 13*16=208 )
-#define DISCRETE_INPUT_MODULE_DATA_BASE_BLOCK_LENGTH 32// 2х16=32.
-#define NETWORK_ADDRESS_DATA_BASE_BLOCK_LENGTH 1
-#define RESERVED_DATA_BASE_BLOCK_LENGTH 1
-#define REFERENCE_POINTS_ADC_CODES_DATA_BASE_BLOCK_LENGTH 42
-
 // массив содержит размеры блоков базы данных.
 // массив базы данных состоит из 100 блоков по 256 байт.
 // когда программатор запрашивает нужный ему блок, (в функции - modbus_reply() - case _FC_DATA_BASE_READ:),
@@ -189,10 +163,6 @@ CDataStore::CDataStore()
             typeid(*this).name());
     m_pxStorageDevice = 0;
     m_puiIntermediateBuff = new uint8_t[CDataStore::MAX_SERVICE_SECTION_DATA_LENGTH];
-    SetCommandDataContainer(new CDataContainerDataBase());
-//    m_pxCommandDataContainer = new CDataContainerDataBase();
-//    m_pxOperatingDataContainer = new CDataContainerDataBase();
-    SetMessageBoxDataContainer(0);
     SetFsmState(START);
 }
 
@@ -200,10 +170,23 @@ CDataStore::CDataStore()
 CDataStore::~CDataStore()
 {
     delete[] m_puiIntermediateBuff;
-//    delete m_pxOperatingDataContainer;
-    delete m_pxCommandDataContainer;
+}
 
+//-------------------------------------------------------------------------------
+uint8_t CDataStore::Init(void)
+{
+    std::cout << "CDataStore Init"  << std::endl;
+    m_pxCommandDataContainer = static_cast<CDataContainerDataBase*>(GetResources() ->
+                               AddDataContainer(std::make_shared<CDataContainerDataBase>()));
+    m_pxOperatingDataContainer = static_cast<CDataContainerDataBase*>(GetResources() ->
+                                 AddDataContainer(std::make_shared<CDataContainerDataBase>()));
+}
 
+//-------------------------------------------------------------------------------
+size_t CDataStore::GetObjectLength(void)
+{
+    std::cout << "CDataStore GetObjectLength"  << std::endl;
+    return sizeof(*this);
 }
 
 //-------------------------------------------------------------------------------
@@ -381,6 +364,7 @@ uint8_t CDataStore::TemporaryBlockWritePrepare(void)
         m_xServiseSection.xServiseSectionData.uiStoredBlocksNumber += 1;
     }
 
+    std::cout << "CDataStore::TemporaryBlockWritePrepare 22"  << std::endl;
     // Вычислим контрольную сумму поступивших данных.
     m_xServiseSection.xServiseSectionData.
     axBlockPositionData[uiBlock].uiCrc =
@@ -490,6 +474,7 @@ uint8_t CDataStore::WriteBlock(uint8_t *puiSource, uint16_t uiLength, uint8_t ui
 {
     std::cout << "CDataStore::WriteBlock 1"  << std::endl;
     std::cout << "CDataStore::WriteBlock 1 uiBlock "  <<  (int)(uiBlock) << std::endl;
+    std::cout << "CDataStore::WriteBlock 1 uiLength "  <<  (int)(uiLength) << std::endl;
     // Произошёл выход за границы буфера?
     if (uiBlock >= (MAX_BLOCKS_NUMBER + SERVICE_SECTION_BLOCK_NUMBER))
     {
@@ -500,6 +485,7 @@ uint8_t CDataStore::WriteBlock(uint8_t *puiSource, uint16_t uiLength, uint8_t ui
 
     CDataContainerDataBase* pxDataContainer = m_pxCommandDataContainer;
 
+    std::cout << "CDataStore::WriteBlock 3"  << std::endl;
     pxDataContainer ->
     SetDataIndex(uiBlock);
     pxDataContainer ->
@@ -509,6 +495,7 @@ uint8_t CDataStore::WriteBlock(uint8_t *puiSource, uint16_t uiLength, uint8_t ui
     pxDataContainer ->
     SetDataLength(uiLength);
 
+    std::cout << "CDataStore::WriteBlock 4"  << std::endl;
     SetFsmCommandState(START_WRITE_TEMPORARY_BLOCK_DATA);
 
     return 1;
@@ -519,18 +506,18 @@ uint8_t CDataStore::WriteBlock(uint8_t *puiSource, uint16_t uiLength, uint8_t ui
 bool CDataStore::WriteBlock(CDataContainerDataBase* pxDataContainer)
 {
     std::cout << "CDataStore WriteBlock 1"  << std::endl;
-    if (GetMessageBoxDataContainerPointer() == 0)
-    {
-        std::cout << "CDataStore WriteBlock 2"  << std::endl;
-//        m_pxCommandDataContainer = pxDataContainer;
-//        SetFsmCommandState(WRITE_DATA_START);
-        return true;
-    }
-    else
-    {
-        std::cout << "CDataStore WriteBlock 3"  << std::endl;
-        return false;
-    }
+//    if (GetMessageBoxDataContainerPointer() == 0)
+//    {
+//        std::cout << "CDataStore WriteBlock 2"  << std::endl;
+////        m_pxCommandDataContainer = pxDataContainer;
+////        SetFsmCommandState(WRITE_DATA_START);
+//        return true;
+//    }
+//    else
+//    {
+//        std::cout << "CDataStore WriteBlock 3"  << std::endl;
+//        return false;
+//    }
 }
 
 //-------------------------------------------------------------------------------
@@ -829,6 +816,22 @@ uint16_t CDataStore::ReadBlock(uint8_t *puiDestination, uint8_t uiBlock)
     uint16_t uiEncodedLength;
     uint16_t uiSourceOffset;
 
+//    for(int i=0; i<100; i++)
+//    {
+//        // Блок существует?
+//        if ((m_xServiseSection.xServiseSectionData.
+//                axBlockPositionData[i].uiLength != 0) &&
+//                (m_xServiseSection.xServiseSectionData.
+//                 axBlockPositionData[i].uiEncodedLength != 0))
+//        {
+//            std::cout << "CDataStore::ReadBlock Block ok " << i << std::endl;
+//        }
+//        else
+//        {
+//            std::cout << "CDataStore::ReadBlock Block error " << i << std::endl;
+//        }
+//    }
+
     // Блок существует?
     if ((m_xServiseSection.xServiseSectionData.
             axBlockPositionData[uiBlock].uiLength != 0) &&
@@ -885,13 +888,13 @@ uint16_t CDataStore::ReadBlock(uint8_t *puiDestination, uint8_t uiBlock)
     {
         std::cout << "CDataStore::ReadBlock 6"  << std::endl;
         memcpy(puiDestination, m_puiIntermediateBuff, uiLength);
-        return 1;
+        return uiLength;
     }
     else
     {
         std::cout << "CDataStore::ReadBlock 7"  << std::endl;
         // Нет данных.
-        return 0;
+        return 2;
     }
 }
 
@@ -967,7 +970,7 @@ uint8_t CDataStore::GetBlockLength(uint8_t uiBlock)
 //           axBlockPositionData[uiBlock].uiLength;
     return aucDataBaseBlockLength[uiBlock];
 //    return 0;
-};
+}
 
 //-------------------------------------------------------------------------------
 // Главный автомат записи хранилища.
@@ -987,6 +990,7 @@ uint8_t CDataStore::Fsm(void)
     case START:
         std::cout << "CDataStore::Fsm START"  << std::endl;
         std::cout << "CDataStore::Fsm m_sStorageDeviceName" << " " << (m_sStorageDeviceName) << std::endl;
+        Init();
         GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
         SetFsmState(INIT);
         break;
@@ -996,7 +1000,7 @@ uint8_t CDataStore::Fsm(void)
     {
         CTaskInterface* pxTask =
             GetResources() ->
-            GetCommonTaskFromMapPointer(m_sStorageDeviceName);
+            GetTaskPointerByNameFromMap(m_sStorageDeviceName);
 
         if (pxTask != 0)
         {

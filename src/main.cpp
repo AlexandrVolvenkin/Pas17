@@ -23,6 +23,8 @@ int main()
     cout << "Hello world!" << endl;
 
     CMainProductionCycle xMainProductionCycle;
+//    xMainProductionCycle.SetConfigurationCreateName("ConfigurationCreate");
+//    xMainProductionCycle.SetInternalModuleMuvrName("InternalModuleMuvr");
 
     while (1)
     {
@@ -85,7 +87,7 @@ int main()
 //
 //    cout << ", Errno = "  << errno;
 //    cout << ", " << strerror(errno) << endl;
-//};
+//}
 ////--------------------------------------------------------------------------
 ////--------------------------------------------------------------------------
 //int main()

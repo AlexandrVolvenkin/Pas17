@@ -21,6 +21,7 @@ public:
     CTimer();
     CTimer(uint16_t uiTime);
     virtual ~CTimer();
+    static uint16_t GetCurrentTime(void);
     void Set(uint16_t uiTime);
     void Reset(void);
     bool IsOverflow(void);

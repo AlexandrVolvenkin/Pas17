@@ -16,6 +16,7 @@
 #include "Resources.h"
 #include "CommunicationDevice.h"
 #include <Crc.h>
+#include "DataContainer.h"
 #include "ModbusSlaveLinkLayer.h"
 #include "ModbusTcpSlaveLinkLayer.h"
 
@@ -24,13 +25,13 @@ using namespace std;
 //-------------------------------------------------------------------------------
 CModbusTcpSlaveLinkLayer::CModbusTcpSlaveLinkLayer()
 {
-    std::cout << "CModbusTcpSlaveLinkLayer constructor"  << std::endl;
+    //std::cout << "CModbusTcpSlaveLinkLayer constructor"  << std::endl;
     m_pxCommunicationDevice = 0;
     SetFsmState(START);
 
     m_pxThread = new std::thread(CModbusTcpSlaveLinkLayer::Process, this);
     std::thread::id th_id = m_pxThread -> get_id();
-    std::cout << "CModbusTcpSlaveLinkLayer th_id" << " " << th_id << std::endl;
+    //std::cout << "CModbusTcpSlaveLinkLayer th_id" << " " << th_id << std::endl;
     // не ждем завершения работы функции
     m_pxThread -> detach();
 }
@@ -45,6 +46,51 @@ CModbusTcpSlaveLinkLayer::~CModbusTcpSlaveLinkLayer()
         m_pxThread -> join();
     }
     delete m_pxThread;
+}
+
+//-------------------------------------------------------------------------------
+uint8_t CModbusTcpSlaveLinkLayer::Init(void)
+{
+    //std::cout << "CModbusTcpSlaveLinkLayer Init"  << std::endl;
+    m_pxOperatingDataContainer = static_cast<CDataContainerDataBase*>(GetResources() ->
+                                 AddDataContainer(std::make_shared<CDataContainerDataBase>()));
+}
+
+//-------------------------------------------------------------------------------
+bool CModbusTcpSlaveLinkLayer::SetTaskData(CDataContainerDataBase* pxDataContainer)
+{
+//    //std::cout << "CModbusTcpSlaveLinkLayer::SetTaskData 1" << std::endl;
+
+    if (IsTaskReady())
+    {
+        //std::cout << "CModbusTcpSlaveLinkLayer::SetTaskData 2" << std::endl;
+        *m_pxOperatingDataContainer = *pxDataContainer;
+        SetFsmState(m_pxOperatingDataContainer -> m_uiFsmCommandState);
+        return true;
+    }
+    else
+    {
+        //std::cout << "CModbusTcpSlaveLinkLayer::SetTaskData 3" << std::endl;
+        return false;
+    }
+}
+
+//-------------------------------------------------------------------------------
+bool CModbusTcpSlaveLinkLayer::GetTaskData(CDataContainerDataBase* pxDataContainer)
+{
+//    //std::cout << "CModbusTcpSlaveLinkLayer::GetTaskData 1" << std::endl;
+
+    m_pxOperatingDataContainer -> m_uiFsmCommandState = GetFsmState();
+    *pxDataContainer = *m_pxOperatingDataContainer;
+
+    return true;
+}
+
+//-------------------------------------------------------------------------------
+size_t CModbusTcpSlaveLinkLayer::GetObjectLength(void)
+{
+    //std::cout << "CModbusTcpSlaveLinkLayer GetObjectLength"  << std::endl;
+    return sizeof(*this);
 }
 
 //-------------------------------------------------------------------------------
@@ -66,7 +112,6 @@ void CModbusTcpSlaveLinkLayer::CommunicationDeviceInit(const char* pccIpAddress,
     m_pxCommunicationDevice -> SetIpAddress(pccIpAddress);
     m_pxCommunicationDevice -> SetPort(uiPort);
 
-//    m_uiGuardTimeout = ((((1000000UL / uiBaudRate) * 8UL * 4UL) / 1000UL) + 1);
     m_uiGuardTimeout = 10;
 }
 
@@ -315,88 +360,77 @@ int8_t CModbusTcpSlaveLinkLayer::FrameCheck(uint8_t *puiSourse, uint16_t uiLengt
 //-------------------------------------------------------------------------------
 uint8_t CModbusTcpSlaveLinkLayer::Fsm(void)
 {
-//    std::cout << "CModbusTcpSlaveLinkLayer::Fsm 1"  << std::endl;
+//    //std::cout << "CModbusTcpSlaveLinkLayer::Fsm 1"  << std::endl;
     switch (GetFsmState())
     {
         int16_t iBytesNumber;
 
     case IDDLE:
-//        std::cout << "CModbusTcpSlaveLinkLayer::Fsm IDDLE"  << std::endl;
+//        //std::cout << "CModbusTcpSlaveLinkLayer::Fsm IDDLE"  << std::endl;
         break;
 
     case STOP:
-//        //std::cout << "CModbusTcpSlaveLinkLayer::Fsm STOP"  << std::endl;
+//        ////std::cout << "CModbusTcpSlaveLinkLayer::Fsm STOP"  << std::endl;
         break;
 
     case START:
-        std::cout << "CModbusTcpSlaveLinkLayer::Fsm START"  << std::endl;
-        std::cout << "CModbusTcpSlaveLinkLayer::Fsm m_sCommunicationDeviceName" << " " << (m_sCommunicationDeviceName) << std::endl;
+        //std::cout << "CModbusTcpSlaveLinkLayer::Fsm START"  << std::endl;
+        //std::cout << "CModbusTcpSlaveLinkLayer::Fsm m_sCommunicationDeviceName" << " " << (m_sCommunicationDeviceName) << std::endl;
+        Init();
         GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
         SetFsmState(INIT);
         break;
 
     case INIT:
-        std::cout << "CModbusTcpSlaveLinkLayer::Fsm INIT 1"  << std::endl;
+//        //std::cout << "CModbusTcpSlaveLinkLayer::Fsm INIT 1"  << std::endl;
         {
             CTaskInterface* pxTask =
                 GetResources() ->
-                GetCommonTaskFromMapPointer(m_sCommunicationDeviceName);
+                GetTaskPointerByNameFromMap(m_sCommunicationDeviceName);
 
             if (pxTask != 0)
             {
-                std::cout << "CModbusTcpSlaveLinkLayer::Fsm INIT 2"  << std::endl;
+//                //std::cout << "CModbusTcpSlaveLinkLayer::Fsm INIT 2"  << std::endl;
                 if (pxTask -> GetFsmState() >= READY)
                 {
-                    SetCommunicationDevice((CCommunicationDeviceInterfaceNew*)pxTask);
-                    SetFsmCommandState(0);
+//                    //std::cout << "CModbusTcpSlaveLinkLayer::Fsm INIT 3"  << std::endl;
+                    SetCommunicationDevice((CCommunicationDeviceInterface*)pxTask);
                     SetFsmState(READY);
-                    std::cout << "CModbusTcpSlaveLinkLayer::Fsm READY"  << std::endl;
                 }
             }
             else
             {
-                std::cout << "CModbusTcpSlaveLinkLayer::Fsm INIT 3"  << std::endl;
+//                //std::cout << "CModbusTcpSlaveLinkLayer::Fsm INIT 4"  << std::endl;
                 if (GetTimerPointer() -> IsOverflow())
                 {
+                    //std::cout << "CModbusTcpSlaveLinkLayer::Fsm INIT 5"  << std::endl;
                     SetFsmState(STOP);
-                    std::cout << "CModbusTcpSlaveLinkLayer::Fsm STOP"  << std::endl;
                 }
             }
         }
         break;
 
     case READY:
-//        std::cout << "CModbusTcpSlaveLinkLayer::Fsm READY"  << std::endl;
-
-        if (GetFsmCommandState() != 0)
-        {
-            std::cout << "CModbusTcpSlaveLinkLayer::Fsm READY 2"  << std::endl;
-            SetFsmState(GetFsmCommandState());
-            SetFsmCommandState(0);
-        }
+//        //std::cout << "CModbusTcpSlaveLinkLayer::Fsm READY"  << std::endl;
         break;
 
     case DONE_OK:
-        std::cout << "CModbusTcpSlaveLinkLayer::Fsm DONE_OK"  << std::endl;
-        SetFsmOperationStatus(DONE_OK);
-        SetFsmState(READY);
+//        //std::cout << "CModbusTcpSlaveLinkLayer::Fsm DONE_OK"  << std::endl;
         break;
 
     case DONE_ERROR:
-        std::cout << "CModbusTcpSlaveLinkLayer::Fsm DONE_ERROR"  << std::endl;
-        SetFsmOperationStatus(DONE_ERROR);
-        SetFsmState(READY);
+//        //std::cout << "CModbusTcpSlaveLinkLayer::Fsm DONE_ERROR"  << std::endl;
         break;
 
     case COMMUNICATION_START:
-        std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_START"  << std::endl;
+        //std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_START"  << std::endl;
         m_pxCommunicationDevice -> Open();
         m_uiFrameLength = 0;
         SetFsmState(COMMUNICATION_RECEIVE_START);
         break;
 
     case COMMUNICATION_RECEIVE_START:
-        std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_START"  << std::endl;
+        //std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_START"  << std::endl;
         m_uiFrameLength = 0;
         iBytesNumber =
             m_pxCommunicationDevice ->
@@ -405,7 +439,7 @@ uint8_t CModbusTcpSlaveLinkLayer::Fsm(void)
                          m_uiReceiveTimeout);
         if (iBytesNumber > 0)
         {
-            std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_START 2"  << std::endl;
+            //std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_START 2"  << std::endl;
             m_uiFrameLength = m_uiFrameLength + iBytesNumber;
             m_uiResponseTransactionId = ((static_cast<uint16_t>(m_auiRxBuffer[0]) << 8) |
                                          (static_cast<uint16_t>(m_auiRxBuffer[1])));
@@ -413,20 +447,19 @@ uint8_t CModbusTcpSlaveLinkLayer::Fsm(void)
         }
         else if (iBytesNumber < 0)
         {
-            std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_START 3"  << std::endl;
-            cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_START errno " << errno << endl;
+//            //std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_START 3"  << std::endl;
+//            cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_START errno " << errno << endl;
             SetFsmState(COMMUNICATION_RECEIVE_ERROR);
         }
         else
         {
-            std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_START 4"  << std::endl;
+            //std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_START 4"  << std::endl;
             cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_START errno " << errno << endl;
-//            SetFsmState(COMMUNICATION_RECEIVE_CONTINUE);
         }
         break;
 
     case COMMUNICATION_RECEIVE_CONTINUE:
-        std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_CONTINUE"  << std::endl;
+        //std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_CONTINUE"  << std::endl;
         m_uiFrameLength = 0;
         iBytesNumber =
             m_pxCommunicationDevice ->
@@ -435,7 +468,7 @@ uint8_t CModbusTcpSlaveLinkLayer::Fsm(void)
                             m_uiReceiveTimeout);
         if (iBytesNumber > 0)
         {
-            std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_CONTINUE 2"  << std::endl;
+            //std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_CONTINUE 2"  << std::endl;
             m_uiFrameLength = m_uiFrameLength + iBytesNumber;
             m_uiResponseTransactionId = ((static_cast<uint16_t>(m_auiRxBuffer[0]) << 8) |
                                          (static_cast<uint16_t>(m_auiRxBuffer[1])));
@@ -443,19 +476,19 @@ uint8_t CModbusTcpSlaveLinkLayer::Fsm(void)
         }
         else if (iBytesNumber < 0)
         {
-            std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_CONTINUE 3"  << std::endl;
+            //std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_CONTINUE 3"  << std::endl;
             cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_CONTINUE errno " << errno << endl;
             SetFsmState(COMMUNICATION_RECEIVE_ERROR);
         }
         else
         {
-            std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_CONTINUE 4"  << std::endl;
+            //std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_CONTINUE 4"  << std::endl;
             cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_CONTINUE errno " << errno << endl;
         }
         break;
 
     case COMMUNICATION_RECEIVE_END:
-        std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END"  << std::endl;
+        //std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END"  << std::endl;
         iBytesNumber =
             m_pxCommunicationDevice ->
             ReceiveContinue((m_auiRxBuffer + m_uiFrameLength),
@@ -463,20 +496,25 @@ uint8_t CModbusTcpSlaveLinkLayer::Fsm(void)
                             m_uiGuardTimeout);
         if (iBytesNumber > 0)
         {
-            std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END 2"  << std::endl;
+            //std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END 2"  << std::endl;
             m_uiFrameLength = m_uiFrameLength + iBytesNumber;
         }
         else if (iBytesNumber < 0)
         {
-            std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END 3"  << std::endl;
+            //std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END 3"  << std::endl;
             SetFsmState(COMMUNICATION_RECEIVE_ERROR);
         }
         else
         {
-            std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END 4"  << std::endl;
+            //std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END 4"  << std::endl;
             m_uiResponseTransactionId = ((static_cast<uint16_t>(m_auiRxBuffer[0]) << 8) |
                                          (static_cast<uint16_t>(m_auiRxBuffer[1])));
             SetFsmState(COMMUNICATION_FRAME_CHECK);
+        }
+        break;
+
+    case COMMUNICATION_FRAME_CHECK:
+        //std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_FRAME_CHECK 1"  << std::endl;
 
             {
                 cout << "CModbusTcpSlaveLinkLayer::Fsm m_auiRxBuffer" << endl;
@@ -492,53 +530,33 @@ uint8_t CModbusTcpSlaveLinkLayer::Fsm(void)
                     i += 8;
                 }
             }
-        }
-        break;
 
-    case COMMUNICATION_FRAME_CHECK:
-        std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_FRAME_CHECK 1"  << std::endl;
         if (FrameCheck(m_auiRxBuffer, m_uiFrameLength))
         {
-            std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_FRAME_CHECK 2"  << std::endl;
+            //std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_FRAME_CHECK 2"  << std::endl;
             SetFsmState(COMMUNICATION_FRAME_RECEIVED);
         }
         else
         {
-            std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_FRAME_CHECK 3"  << std::endl;
+            //std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_FRAME_CHECK 3"  << std::endl;
             SetFsmState(COMMUNICATION_RECEIVE_CONTINUE);
         }
         break;
 
     case COMMUNICATION_FRAME_RECEIVED:
-        std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_FRAME_RECEIVED"  << std::endl;
-
+        //std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_FRAME_RECEIVED"  << std::endl;
         SetFsmState(DONE_OK);
         break;
 
     case COMMUNICATION_TRANSMIT_START:
-        std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_TRANSMIT_START"  << std::endl;
-
-        {
-            cout << "CModbusTcpSlaveLinkLayer::Fsm m_auiTxBuffer" << endl;
-            unsigned char *pucSourceTemp;
-            pucSourceTemp = (unsigned char*)m_auiTxBuffer;
-            for(int i=0; i<32; )
-            {
-                for(int j=0; j<8; j++)
-                {
-                    cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
-                }
-                cout << endl;
-                i += 8;
-            }
-        }
-        std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_TRANSMIT_START m_uiFrameLength "  << (int)m_uiFrameLength << std::endl;
+        //std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_TRANSMIT_START"  << std::endl;
+        //std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_TRANSMIT_START m_uiFrameLength "  << (int)m_uiFrameLength << std::endl;
         m_pxCommunicationDevice -> Write(m_auiTxBuffer, m_uiFrameLength);
         SetFsmState(COMMUNICATION_FRAME_TRANSMITED);
         break;
 
     case COMMUNICATION_FRAME_TRANSMITED:
-        std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_FRAME_TRANSMITED"  << std::endl;
+        //std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_FRAME_TRANSMITED"  << std::endl;
         SetFsmState(DONE_OK);
         {
             cout << "CModbusTcpSlaveLinkLayer::Fsm m_auiTxBuffer" << endl;
@@ -557,7 +575,7 @@ uint8_t CModbusTcpSlaveLinkLayer::Fsm(void)
         break;
 
     case COMMUNICATION_RECEIVE_ERROR:
-        std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_ERROR"  << std::endl;
+        //std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_ERROR"  << std::endl;
         m_pxCommunicationDevice -> Close();
         SetFsmState(DONE_ERROR);
         break;

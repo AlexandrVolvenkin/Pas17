@@ -21,24 +21,31 @@
 #include "DataStore.h"
 #include "Link.h"
 
-//-------------------------------------------------------------------------------
-CLink::CLink()
-{
-    SetFsmState(START);
-}
-
-//-------------------------------------------------------------------------------
-CLink::~CLink()
-{
-//    delete m_pxTaskPerformer;
-    delete m_pxDataContainer;
-}
-
-//-------------------------------------------------------------------------------
-void CLink::SetTaskPerformerName(std::string sName)
-{
-    m_sTaskPerformerName = sName;
-}
+////-------------------------------------------------------------------------------
+//CLink::CLink()
+//{
+//    std::cout << "CLink constructor"  << std::endl;
+////    SetFsmState(START);
+//}
+//
+////-------------------------------------------------------------------------------
+//CLink::~CLink()
+//{
+//    //dtor
+//}
+//
+////-------------------------------------------------------------------------------
+//size_t CLink::GetObjectLength(void)
+//{
+//    std::cout << "CLink GetObjectLength"  << std::endl;
+//    return sizeof(*this);
+//}
+//
+////-------------------------------------------------------------------------------
+//void CLink::SetTaskPerformerName(std::string sName)
+//{
+//    m_sTaskPerformerName = sName;
+//}
 
 //-------------------------------------------------------------------------------
 void CLink::SetTaskPerformer(CTaskInterface* pxTaskPerformer)
@@ -50,7 +57,7 @@ void CLink::SetTaskPerformer(CTaskInterface* pxTaskPerformer)
 CTaskInterface* CLink::GetTaskPerformerPointer(void)
 {
     return m_pxTaskPerformer;
-};
+}
 
 //-------------------------------------------------------------------------------
 void CLink::SetDataContainer(CDataContainerInterface* pxDataContainer)
@@ -64,113 +71,96 @@ CDataContainerInterface* CLink::GetDataContainerPointer(void)
     return m_pxDataContainer;
 }
 
-//-------------------------------------------------------------------------------
-uint8_t CLink::Fsm(void)
-{
-//    std::cout << "CLink::Fsm 1" << endl;
-    switch (GetFsmState())
-    {
-    case IDDLE:
-//        std::cout << "CLink::Fsm IDDLE"  << std::endl;
-//        GetResources() ->
-//        RemoveCurrentlyRunningTasksList(this);
-        break;
-
-    case STOP:
-//        //std::cout << "CLink::Fsm STOP"  << std::endl;
-        break;
-
-    case START:
-        std::cout << "CLink::Fsm START"  << std::endl;
-        std::cout << "CLink::Fsm m_sTaskPerformerName" << " " << (m_sTaskPerformerName) << std::endl;
-        SetFsmState(INIT);
-        break;
-
-    case INIT:
-        std::cout << "CLink::Fsm INIT 1"  << std::endl;
-        {
-            CTaskInterface* pxTask =
-                GetResources() ->
-                GetCommonTaskFromMapPointer(m_sTaskPerformerName);
-
-            SetTaskPerformer(pxTask);
-            SetFsmState(IDDLE);
-            std::cout << "CLink::Fsm READY"  << std::endl;
-        }
-
-        break;
-
-    case READY:
-        std::cout << "CLink::Fsm READY"  << std::endl;
-        break;
-
-    case DONE_OK:
-        std::cout << "CLink::Fsm DONE_OK"  << std::endl;
-        SetFsmOperationStatus(DONE_OK);
-        SetFsmState(READY);
-        break;
-
-    case DONE_ERROR:
-        std::cout << "CLink::Fsm DONE_ERROR"  << std::endl;
-        SetFsmOperationStatus(DONE_ERROR);
-        SetFsmState(READY);
-        break;
-
-    default:
-        break;
-    }
-}
-
-
-
-
-
-
-//// CLink.cpp
-//#include "Link.h"
-//#include <iostream>
-//
-//CLink::CLink(const std::string& performerName, CTaskInterface* performer, CDataContainerInterface* dataContainer)
-//    : m_sTaskPerformerName(performerName),
-//      m_pxTaskPerformer(performer),
-//      m_pxDataContainer(dataContainer)
+////-------------------------------------------------------------------------------
+//uint8_t CLink::Fsm(void)
 //{
-//    // Constructor implementation
-//}
+////    std::cout << "CLink::Fsm 1" << endl;
+//    switch (GetFsmState())
+//    {
+//    case IDDLE:
+////        std::cout << "CLink::Fsm IDDLE"  << std::endl;
+//        break;
 //
-//CLink::~CLink()
-//{
-//    // Destructor implementation
-//    delete m_pxTaskPerformer;
-//    delete m_pxDataContainer;
-//}
+//    case STOP:
+////        //std::cout << "CLink::Fsm STOP"  << std::endl;
+//        break;
 //
-//void CLink::setTaskPerformerName(const std::string& performerName)
-//{
-//    m_sTaskPerformerName = performerName;
-//}
+//    case START:
+//        std::cout << "CLink::Fsm START"  << std::endl;
+//        std::cout << "CLink::Fsm m_sTaskPerformerName" << " " << (m_sTaskPerformerName) << std::endl;
+//        GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
+//        SetFsmState(INIT);
+////                    SetFsmState(READY);
+//        break;
 //
-//std::string CLink::getTaskPerformerName() const
-//{
-//    return m_sTaskPerformerName;
-//}
+//    case INIT:
+//        std::cout << "CLink::Fsm INIT 1"  << std::endl;
+////        {
+////            CTaskInterface* pxTask =
+////                GetResources() ->
+////                GetTaskPointerByNameFromMap(m_sTaskPerformerName);
+////
+////            if (pxTask != 0)
+////            {
+////                std::cout << "CLink::Fsm INIT 2"  << std::endl;
+////                if (pxTask -> GetFsmState() >= READY)
+////                {
+////                    SetTaskPerformer(pxTask);
+////                    SetFsmState(READY);
+////                    std::cout << "CLink::Fsm INIT 3"  << std::endl;
+////                }
+////            }
+////            else
+////            {
+////                std::cout << "CLink::Fsm INIT 4"  << std::endl;
+////                if (GetTimerPointer() -> IsOverflow())
+////                {
+////                    std::cout << "CLink::Fsm INIT 5"  << std::endl;
+////                    SetFsmState(STOP);
+////                }
+////            }
+////        }
 //
-//void CLink::setTaskPerformer(CTaskInterface* performer)
-//{
-//    m_pxTaskPerformer = performer;
-//}
+//                    SetFsmState(READY);
+//        break;
 //
-//CTaskInterface* CLink::getTaskPerformer() const
-//{
-//    return m_pxTaskPerformer;
-//}
+//    case READY:
+////        std::cout << "CLink::Fsm READY"  << std::endl;
+////        {
+////            if (m_pxCommandDataContainer != 0)
+////            {
+////                std::cout << "CLink::Fsm READY 2"  << std::endl;
+////                m_pxOperatingDataContainer = m_pxCommandDataContainer;
+////                SetFsmState(GetFsmCommandState());
+////                SetFsmCommandState(0);
+////                m_pxCommandDataContainer = 0;
+////            }
+////        }
 //
-//void CLink::setDataContainer(CDataContainerInterface* dataContainer)
-//{
-//    m_pxDataContainer = dataContainer;
-//}
 //
-//CDataContainerInterface* CLink::getDataContainer() const
-//{
-//    return m_pxDataContainer;
+////        {
+////            if (GetFsmCommandState() != 0)
+////            {
+////                SetFsmState(GetFsmCommandState());
+////                SetFsmCommandState(0);
+////            }
+////        }
+////        SetFsmState(COMMUNICATION_START);
+//        break;
+//
+//    case DONE_OK:
+//        std::cout << "CLink::Fsm DONE_OK"  << std::endl;
+//        SetFsmOperationStatus(DONE_OK);
+//        SetFsmState(READY);
+//        break;
+//
+//    case DONE_ERROR:
+//        std::cout << "CLink::Fsm DONE_ERROR"  << std::endl;
+//        SetFsmOperationStatus(DONE_ERROR);
+//        SetFsmState(READY);
+//        break;
+//
+//    default:
+//        break;
+//    }
 //}

@@ -9,11 +9,13 @@
 #include <map>
 #include <string>
 #include <typeinfo>
-#include <list>
-#include <algorithm>
 
 #include "Task.h"
 #include "DeviceControl.h"
+#include "Link.h"
+#include "DataContainer.h"
+#include "AnalogueSignals.h"
+#include "ConfigurationCreate.h"
 #include "Resources.h"
 
 //-------------------------------------------------------------------------------
@@ -27,24 +29,18 @@ CResources::CResources()
 
     m_lpxCommonTasksList.clear();
     m_mpxCommonTaskMap.clear();
+    m_lpxDataContainerList.clear();
+    m_uiUsedCommonTaskPointersCounter = 0;
+    m_xDeviceConfigSearch = {0};
 
+    m_ppxCommonTaskPointers = new CTaskInterface*[MAX_TASK_NUMBER];
     SetResources(this);
-//    m_pxResources -> AddCommonListTask(this);
-
-//    ModbusWorkingArraysCreate(COILS_WORK_ARRAY_LENGTH,
-//                              DISCRETE_INPUTS_ARRAY_LENGTH,
-//                              HOLDING_REGISTERS_ARRAY_LENGTH,
-//                              INPUT_REGISTERS_ARRAY_LENGTH);
 }
 
 //-------------------------------------------------------------------------------
 CResources::~CResources()
 {
-    // Освобождаем память
-    for (auto& pair : m_mpxCommonTaskMap)
-    {
-        delete pair.second; // Удаляем указатели на объекты
-    }
+    delete[] m_ppxCommonTaskPointers;
 }
 
 //-------------------------------------------------------------------------------
@@ -173,12 +169,82 @@ uint16_t CResources::GetInputRegistersNumber(void)
 }
 
 //-------------------------------------------------------------------------------
+CConfigurationCreate::TConfigDataPackOne* CResources::GetDeviceConfigSearchPointer(void)
+{
+    return &m_xDeviceConfigSearch;
+}
+
+//-----------------------------------------------------------------------------------------------------
+void CResources::Allocate(void)
+{
+    std::cout << "CResources::Allocate 1"  << std::endl;
+
+    // Подготовим к отправке текущие адреса объектов системы используемых драйверами устройств.
+
+//    xMemoryAllocationContext.puiRxBuffer = m_auiSpiRxBuffer;
+//    xMemoryAllocationContext.puiTxBuffer = m_auiSpiTxBuffer;
+//    xMemoryAllocationContext.puiErrorCode = &m_uiErrorCode;
+
+    // Обнулим общий объём выделенной памяти.
+    m_uiUsedDiscreteInputsState = 0;
+    // Подключим буфер для хранения состояний дискретных входов.
+    m_puiDiscreteInputsState =
+        &m_puiDiscreteInputs[DISCRETE_INPUTS_STATE_OFFSET];
+
+    // Обнулим общий объём выделенной памяти.
+    m_uiUsedDiscreteInputsBadState = 0;
+    // Подключим буфер для хранения состояний достоверности дискретных входов.
+    m_puiDiscreteInputsBadState =
+        &m_puiCoils[DISCRETE_INPUTS_BAD_STATE_OFFSET];
+
+//    // Обнулим общий объём выделенной памяти.
+//    m_uiUsedDiscreteOutputState = 0;
+//    // Подключим буфер для хранения состояний дискретных выходов.
+//    m_puiDiscreteOutputState =
+//        &m_puiDiscreteInputs[DISCRETE_OUTPUT_BIT_ARRAY_OFFSET];
+//
+//    // Обнулим общий объём выделенной памяти.
+//    m_uiUsedDiscreteOutputControl = 0;
+//    // Подключим буфер для управления дискретными выходами.
+//    m_puiDiscreteOutputControl =
+//        &m_puiDiscreteInputs[DISCRETE_OUTPUT_BIT_ARRAY_OFFSET];
+
+    // Обнулим общий объём выделенной памяти.
+    m_uiUsedAnalogueInputsValue = 0;
+    // Подключим буфер для хранения измеренных значений аналоговых входов.
+    m_pfAnalogueInputsValue =
+        (float*)&m_puiHoldingRegisters[ANALOGUE_INPUTS_VALUE_OFFSET];
+
+//    // Обнулим общий объём выделенной памяти.
+//    m_uiUsedAnalogueInputsState = 0;
+//    // Подключим буфер для хранения состояний аналоговых входов.
+//    m_puiAnalogueInputsState =
+//        &m_puiCoils[ANALOGUE_INPUTS_BAD_STATE_OFFSET];
+
+    // Обнулим общий объём выделенной памяти.
+    m_uiUsedAnalogueInputsBadState = 0;
+    // Подключим буфер для хранения состояний достоверности аналоговых входов.
+    m_puiAnalogueInputsBadState =
+        &m_puiCoils[ANALOGUE_INPUTS_BAD_STATE_OFFSET];
+
+    // Обнулим общий объём выделенной памяти.
+    m_uiUsedAnalogueInputsOff = 0;
+    // Подключим буфер для хранения отключенных аналоговых входов.
+    m_puiAnalogueInputsOff =
+        &m_puiCoils[ANALOGUE_INPUTS_BAD_STATE_OFFSET];
+
+    // Обнулим общий объём выделенной памяти.
+    m_uiUsedAnalogueInputDescriptionWork = 0;
+
+}
+
+//-------------------------------------------------------------------------------
 void CResources::AddCommonListTask(CTaskInterface* pxTask)
 {
     std::cout << "CResources::AddCommonListTask 1"  << std::endl;
 
-    std::cout << "CResources::AddCommonListTask this name" << " " << (this -> GetTaskNamePointer()) << std::endl;
-    std::cout << "CResources::AddCommonListTask pxTask name" << " " << (pxTask -> GetTaskNamePointer()) << std::endl;
+//    std::cout << "CResources::AddCommonListTask this name" << " " << (this -> GetTaskNamePointer()) << std::endl;
+//    std::cout << "CResources::AddCommonListTask pxTask name" << " " << (pxTask -> GetTaskNamePointer()) << std::endl;
 
     m_lpxCommonTasksList.push_back(pxTask);
 }
@@ -188,39 +254,10 @@ void CResources::AddCurrentlyRunningTasksList(CTaskInterface* pxTask)
 {
     std::cout << "CResources::AddCurrentlyRunningTasksList 1"  << std::endl;
 
-    std::cout << "CResources::AddCurrentlyRunningTasksList this name" << " " << (this -> GetTaskNamePointer()) << std::endl;
-    std::cout << "CResources::AddCurrentlyRunningTasksList pxTask name" << " " << (pxTask -> GetTaskNamePointer()) << std::endl;
+//    std::cout << "CResources::AddCurrentlyRunningTasksList this name" << " " << (this -> GetTaskNamePointer()) << std::endl;
+//    std::cout << "CResources::AddCurrentlyRunningTasksList pxTask name" << " " << (pxTask -> GetTaskNamePointer()) << std::endl;
 
     m_lpxCurrentlyRunningTasksList.push_back(pxTask);
-}
-
-//-------------------------------------------------------------------------------
-void CResources::RemoveCurrentlyRunningTasksList(CTaskInterface* pxTask)
-{
-    std::cout << "CResources::RemoveCurrentlyRunningTasksList 1"  << std::endl;
-
-    std::list<CTaskInterface*>::iterator it;
-
-    for (it=m_lpxCurrentlyRunningTasksList.begin();
-            it!=m_lpxCurrentlyRunningTasksList.end();
-            ++it)
-    {
-        if (*it == pxTask)
-        {
-            std::cout << "CResources::RemoveCurrentlyRunningTasksList 2"  << std::endl;
-//            m_lpxCurrentlyRunningTasksList.erase(it);
-            break; // To avoid calling erase() on already erased elements
-        }
-    }
-
-//    auto it = std::find(m_lpxCurrentlyRunningTasksList.begin(),
-//                        m_lpxCurrentlyRunningTasksList.end(),
-//                        pxTask);
-//
-//    if (it != m_lpxCurrentlyRunningTasksList.end())
-//    {
-//        m_lpxCurrentlyRunningTasksList.remove(it);
-//    }
 }
 
 //-------------------------------------------------------------------------------
@@ -228,9 +265,10 @@ CTaskInterface* CResources::GetCommonListTaskPointer(char* pcTaskName)
 {
     std::cout << "CResources::GetCommonListTaskPointer 1"  << std::endl;
 
-    std::cout << "CResources::GetCommonListTaskPointer this name" << " " << (this -> GetTaskNamePointer()) << std::endl;
-    std::cout << "CResources::GetCommonListTaskPointer pcTaskName" << " " << pcTaskName << std::endl;
+//    std::cout << "CResources::GetCommonListTaskPointer this name" << " " << (this -> GetTaskNamePointer()) << std::endl;
+//    std::cout << "CResources::GetCommonListTaskPointer pcTaskName" << " " << pcTaskName << std::endl;
 
+    //    std::list<std::shared_ptr<CTaskInterface>>::iterator xListIterator;
     std::list<CTaskInterface*>::iterator xListIterator;
 
     for(xListIterator = m_lpxCommonTasksList.begin();
@@ -256,16 +294,16 @@ CTaskInterface* CResources::GetCommonListTaskPointer(char* pcTaskName)
 }
 
 //-------------------------------------------------------------------------------
-void CResources::AddCommonTaskToMap(std::string sTaskName, CTaskInterface* pxTask)
+CTaskInterface* CResources::AddCommonTaskToMap(std::string sTaskName, std::shared_ptr<CTaskInterface> pxTask)
 {
     std::cout << "CResources::AddCommonTaskToMap 1"  << std::endl;
 
-    std::cout << "CResources::AddCommonTaskToMap this name" << " " << (this -> GetTaskNamePointer()) << std::endl;
-    std::cout << "CResources::AddCommonTaskToMap sTaskName" << " " << (sTaskName) << std::endl;
-
-//    m_lpxCommonTasksList.push_back(pxTask);
-//    m_mpxCommonTaskMap[sTaskName].push_back(pxTask);
+//    std::cout << "CResources::AddCommonTaskToMap this name" << " " << (this -> GetTaskNamePointer()) << std::endl;
+//    std::cout << "CResources::AddCommonTaskToMap sTaskName" << " " << (sTaskName) << std::endl;
+    pxTask -> SetTaskName(sTaskName);
     m_mpxCommonTaskMap[sTaskName] = pxTask;
+
+    return pxTask.get();
 }
 
 //-------------------------------------------------------------------------------
@@ -276,10 +314,9 @@ bool CResources::CheckCommonTaskMap(void)
     for (const auto& pair : m_mpxCommonTaskMap)
     {
         std::string key = pair.first;
-        CTaskInterface* taskPtr = pair.second;
+        CTaskInterface* taskPtr = pair.second.get();
 
         // Проверяем, не является ли указатель нулем или равен 0
-//        if (taskPtr == nullptr || *taskPtr == nullptr)
         if (taskPtr == 0)
         {
             std::cout << "Task '" << key << "' has a NULL pointer or is set to zero." << std::endl;
@@ -288,6 +325,7 @@ bool CResources::CheckCommonTaskMap(void)
         else
         {
             std::cout << "Task '" << key << "' is valid and has a pointer to task." << std::endl;
+            std::cout << "CResources::CheckCommonTaskMap GetObjectLength() "  << (int)(taskPtr -> GetObjectLength()) << std::endl;
         }
     }
 
@@ -295,156 +333,92 @@ bool CResources::CheckCommonTaskMap(void)
 }
 
 //-------------------------------------------------------------------------------
-CTaskInterface* CResources::GetCommonTaskFromMapPointer(std::string sTaskName)
+CTaskInterface* CResources::GetTaskPointerByNameFromMap(std::string sTaskName)
 {
-    std::cout << "CResources::GetCommonTaskFromMapPointer 1"  << std::endl;
-
-    std::cout << "CResources::GetCommonTaskFromMapPointer this name" << " " << (this -> GetTaskNamePointer()) << std::endl;
-    std::cout << "CResources::GetCommonTaskFromMapPointer sTaskName" << " " << (sTaskName) << std::endl;
-
-    // Пытаемся получить значение по ключу 1
-    std::map<std::string, CTaskInterface*>::iterator it = m_mpxCommonTaskMap.find(sTaskName);
+//    std::cout << "CResources::GetTaskPointerByNameFromMap 1"  << std::endl;
+    auto it = m_mpxCommonTaskMap.find(sTaskName);
 
     if (it != m_mpxCommonTaskMap.end())
     {
         // ключ найден
-        std::cout << "CResources::GetCommonTaskFromMapPointer 2"  << std::endl;
-        std::cout << "CResources::GetCommonTaskFromMapPointer this name" << " " << ((it -> second) -> GetTaskNamePointer()) << std::endl;
-        return it -> second;
+//        std::cout << "CResources::GetTaskPointerByNameFromMap 2" << std::endl;
+//            std::cout << "CResources::GetTaskPointerByNameFromMap this name" << " "
+//                      << ((it -> second) -> GetTaskNamePointer()) << std::endl;
+        return it -> second.get(); // Преобразование shared_ptr в raw указатель
     }
     else
     {
-        std::cout << "CResources::GetCommonTaskFromMapPointer 3"  << std::endl;
-        return 0;
-    }
-
-//    if (strstr(((*xListIterator) -> GetTaskNamePointer()), pcTaskName) != 0)
-//    {
-//        std::cout << "CResources::GetCommonTaskFromMapPointer 2"  << std::endl;
-//        return (*xListIterator);
-//    }
-////        else
-////        {
-////            std::cout << "CResources::GetCommonTaskFromMapPointer 3"  << std::endl;
-////            return 0;
-////        }
-//
-//    std::list<CTaskInterface*>::iterator xListIterator;
-//
-//    for(xListIterator = m_lpxCommonTasksList.begin();
-//            xListIterator != m_lpxCommonTasksList.end();
-//            xListIterator++)
-//    {
-//        std::cout << "CResources::GetCommonTaskFromMapPointer xListIterator name" << " " << ((*xListIterator) -> GetTaskNamePointer()) << std::endl;
-//
-//        if (strstr(((*xListIterator) -> GetTaskNamePointer()), pcTaskName) != 0)
-//        {
-//            std::cout << "CResources::GetCommonTaskFromMapPointer 2"  << std::endl;
-//            return (*xListIterator);
-//        }
-////        else
-////        {
-////            std::cout << "CResources::GetCommonTaskFromMapPointer 3"  << std::endl;
-////            return 0;
-////        }
-//    }
-//
-//    std::cout << "CResources::GetCommonTaskFromMapPointer 4"  << std::endl;
-//    return 0;
-}
-
-////-------------------------------------------------------------------------------
-//std::list<CTaskInterface*>* CResources::GetCommonTasksListPointer(void)
-//{
-//    return &m_lpxCommonTasksList;
-//}
-
-////-------------------------------------------------------------------------------
-//std::list<CTaskInterface*>* CResources::GetCurrentlyRunningTasksListPointer(void)
-//{
-//    return &m_lpxCurrentlyRunningTasksList;
-//}
-
-//-------------------------------------------------------------------------------
-void CResources::CurrentlyRunningTasksExecution(void)
-{
-//    std::cout << "CResources CurrentlyRunningTasksExecution"  << std::endl;
-
-//        std::list<CTaskInterface*>::iterator xListIterator;
-//
-//        for(xListIterator =
-//                    GetResources() -> m_lpxCurrentlyRunningTasksList.begin();
-//                xListIterator !=
-//                GetResources() -> m_lpxCurrentlyRunningTasksList.end();
-//                xListIterator++)
-//        {
-//            (*xListIterator) -> Fsm();
-//        }
-
-    for(m_xCurrentlyRunningTasksListIterator =
-                m_lpxCurrentlyRunningTasksList.begin();
-            m_xCurrentlyRunningTasksListIterator !=
-            m_lpxCurrentlyRunningTasksList.end();
-            m_xCurrentlyRunningTasksListIterator++)
-    {
-        (*(m_xCurrentlyRunningTasksListIterator)) -> Fsm();
+//        std::cout << "CResources::GetTaskPointerByNameFromMap 3" << std::endl;
+        return nullptr; // Вернем nullptr, если ключ не найден
     }
 }
 
 //-------------------------------------------------------------------------------
-uint8_t CResources::Fsm(void)
+uint8_t CResources::GetTaskIdByNameFromMap(std::string sTaskName)
 {
-//    std::cout << "CResources::Fsm 1" << endl;
-    switch (GetFsmState())
+//    std::cout << "CResources::GetTaskIdByNameFromMap 1"  << std::endl;
+    CTaskInterface* pxTask = GetTaskPointerByNameFromMap(sTaskName);
+
+    if (pxTask != nullptr)
     {
-    case IDDLE:
-//        std::cout << "CResources::Fsm IDDLE"  << std::endl;
-//        GetResources() ->
-//        RemoveCurrentlyRunningTasksList(this);
-        break;
-
-    case STOP:
-//        //std::cout << "CResources::Fsm STOP"  << std::endl;
-        break;
-
-    case START:
-        std::cout << "CResources::Fsm START"  << std::endl;
-//        std::cout << "CResources::Fsm m_sTaskPerformerName" << " " << (m_sTaskPerformerName) << std::endl;
-        SetFsmState(INIT);
-        break;
-
-    case INIT:
-        std::cout << "CResources::Fsm INIT 1"  << std::endl;
-//        {
-//            CTaskInterface* pxTask =
-//                GetResources() ->
-//                GetCommonTaskFromMapPointer(m_sTaskPerformerName);
-//
-//            SetTaskPerformer(pxTask);
-//            SetFsmState(IDDLE);
-//            std::cout << "CResources::Fsm READY"  << std::endl;
-//        }
-
-        break;
-
-    case READY:
-        std::cout << "CResources::Fsm READY"  << std::endl;
-        break;
-
-    case DONE_OK:
-        std::cout << "CResources::Fsm DONE_OK"  << std::endl;
-        SetFsmOperationStatus(DONE_OK);
-        SetFsmState(READY);
-        break;
-
-    case DONE_ERROR:
-        std::cout << "CResources::Fsm DONE_ERROR"  << std::endl;
-        SetFsmOperationStatus(DONE_ERROR);
-        SetFsmState(READY);
-        break;
-
-    default:
-        break;
+        // ключ найден
+        std::cout << "CResources::GetTaskIdByNameFromMap 2"  << std::endl;
+        if (m_uiUsedCommonTaskPointersCounter < MAX_TASK_NUMBER)
+        {
+            std::cout << "CResources::GetTaskIdByNameFromMap 3"  << std::endl;
+            m_ppxCommonTaskPointers[m_uiUsedCommonTaskPointersCounter] = pxTask;
+            m_uiUsedCommonTaskPointersCounter++;
+            // Вернем индекс на указатель в массиве плюс 1. это будет id задачи в системе.
+            // id задач начинаются с единицы. ноль - задачи не существует.
+            return m_uiUsedCommonTaskPointersCounter;
+        }
+        else
+        {
+            std::cout << "CResources::GetTaskIdByNameFromMap 4"  << std::endl;
+            return 0;
+        }
+    }
+    else
+    {
+        std::cout << "CResources::GetTaskIdByNameFromMap 5"  << std::endl;
+        // ключ не найден
+        return 0; // Вернем 0, если ключ не найден
     }
 }
+
+//-------------------------------------------------------------------------------
+CTaskInterface* CResources::GetTaskPointerById(uint8_t uiTaskId)
+{
+//    std::cout << "CResources::GetTaskPointerById 1"  << std::endl;
+
+    if (uiTaskId > 0)
+    {
+        std::cout << "CResources::GetTaskPointerById 2"  << std::endl;
+        return m_ppxCommonTaskPointers[(uiTaskId - 1)];
+    }
+    else
+    {
+        std::cout << "CResources::GetTaskPointerById 3"  << std::endl;
+        return nullptr;
+    }
+}
+
+//-------------------------------------------------------------------------------
+uint8_t* CResources::CreateObjectBySize(size_t uiLength)
+{
+    std::cout << "CResources::CreateObjectBySize 1"  << std::endl;
+
+    return new uint8_t[uiLength];
+}
+
+//-------------------------------------------------------------------------------
+CDataContainerInterface* CResources::AddDataContainer(std::shared_ptr<CDataContainerInterface> pxDataContainer)
+{
+    std::cout << "CResources::AddDataContainer 1"  << std::endl;
+
+    m_lpxDataContainerList.push_back(pxDataContainer);
+    return pxDataContainer.get();
+}
+
+//-------------------------------------------------------------------------------
 

@@ -56,6 +56,9 @@ public:
     CDataStoreCheck();
     virtual ~CDataStoreCheck();
 
+    uint8_t Init(void);
+    size_t GetObjectLength(void);
+
     uint8_t Check(void);
     uint8_t Fsm(void);
 

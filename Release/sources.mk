@@ -29,8 +29,7 @@ obj/Debug/src \
 obj/Debug/src/Modbus \
 obj/Release/Pas17/src/CommunicationDevice \
 obj/Release/Pas17/src \
-src/CommunicationDevice \
 src \
-src/EveDisplay \
+src/CommunicationDevice \
 src/Modbus \
 

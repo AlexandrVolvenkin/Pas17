@@ -23,6 +23,17 @@ CDataContainerDataBase::~CDataContainerDataBase()
 }
 
 //-------------------------------------------------------------------------------
+void CDataContainerDataBase::SetTaskId(uint8_t value)
+{
+    m_uiTaskId = value;
+}
+
+uint8_t CDataContainerDataBase::GetTaskId() const
+{
+    return m_uiTaskId;
+}
+
+//-------------------------------------------------------------------------------
 void CDataContainerDataBase::SetFsmCommandState(uint8_t value)
 {
     m_uiFsmCommandState = value;

@@ -11,29 +11,40 @@
 #include <stdint.h>
 #include <list>
 #include <map>
+#include <memory>
 #include <string>
 
 //#include "Dfa.h"
 #include "Task.h"
+#include "ConfigurationCreate.h"
 
 class CDfa;
 //class CTaskInterface;
 //class CTask;
 class CDeviceControl;
 class CDataStore;
-class CConfigurationCreate;
+class CConfiguration;
 class CServiceMarket;
+class CLinkInterface;
+class CAnalogueSignals;
+//class CConfigurationCreate;
+struct TAnalogueInputDescriptionWork;
+//struct TConfigDataPackOne;
 
 //-------------------------------------------------------------------------------
 class CResourcesInterface : public CTask
 {
 public:
+    virtual void Allocate(void) {};
     virtual void AddCommonListTask(CTaskInterface* pxTask) {};
     virtual CTaskInterface* GetCommonListTaskPointer(char* pcTaskName) {};
-    virtual void AddCommonTaskToMap(std::string sTaskName, CTaskInterface* pxTask) {};
+    virtual CTaskInterface* AddCommonTaskToMap(std::string sTaskName, std::shared_ptr<CTaskInterface>) {};
     virtual bool CheckCommonTaskMap(void) {};
-    virtual CTaskInterface* GetCommonTaskFromMapPointer(std::string sTaskName) {};
+    virtual CTaskInterface* GetTaskPointerByNameFromMap(std::string sTaskName) {};
     virtual std::list<CTaskInterface*>* GetCommonTasksListPointer(void) {};
+    virtual uint8_t* CreateObjectBySize(size_t uiLength) {};
+    virtual CDataContainerInterface* AddDataContainer(std::shared_ptr<CDataContainerInterface> pxDataContainer) {};
+    virtual CConfigurationCreate::TConfigDataPackOne* GetDeviceConfigSearchPointer(void) {};
 
 };
 
@@ -52,16 +63,26 @@ public:
 class CResources : public CResourcesInterface
 {
 public:
+    enum
+    {
+        MAX_TASK_NUMBER = 256,
+    };
+
     CResources();
     virtual ~CResources();
 
     void AddCommonListTask(CTaskInterface* pxTask);
     void AddCurrentlyRunningTasksList(CTaskInterface* pxTask);
-    void RemoveCurrentlyRunningTasksList(CTaskInterface* pxTask);
     CTaskInterface* GetCommonListTaskPointer(char* pcTaskName);
-    void AddCommonTaskToMap(std::string sTaskName, CTaskInterface* pxTask);
+    CTaskInterface* AddCommonTaskToMap(std::string sTaskName, std::shared_ptr<CTaskInterface> pxTask);
     bool CheckCommonTaskMap(void);
-    CTaskInterface* GetCommonTaskFromMapPointer(std::string sTaskName);
+    CTaskInterface* GetTaskPointerByNameFromMap(std::string sTaskName);
+    uint8_t GetTaskIdByNameFromMap(std::string sTaskName);
+    CTaskInterface* GetTaskPointerById(uint8_t uiTaskId);
+    uint8_t* CreateObjectBySize(size_t uiLength);
+    CDataContainerInterface* AddDataContainer(std::shared_ptr<CDataContainerInterface> pxDataContainer);
+    CConfigurationCreate::TConfigDataPackOne* GetDeviceConfigSearchPointer(void);
+
 
     void ModbusWorkingArraysCreate(uint16_t uiCoilsNumber,
                                    uint16_t uiDiscreteInputsNumber,
@@ -88,11 +109,7 @@ public:
     void SetInputRegistersNumber(uint16_t uiData);
     uint16_t GetInputRegistersNumber(void);
 
-//    std::list<CTaskInterface*>* GetCommonTasksListPointer(void);
-//    std::list<CTaskInterface*>* GetCurrentlyRunningTasksListPointer(void);
-    void CurrentlyRunningTasksExecution(void);
-
-    uint8_t Fsm(void);
+    void Allocate(void);
 
 //protected:
 //
@@ -101,41 +118,58 @@ public:
     std::list<CTaskInterface*>::iterator m_xCommonTasksListIterator;
     std::list<CTaskInterface*> m_lpxCurrentlyRunningTasksList;
     std::list<CTaskInterface*>::iterator m_xCurrentlyRunningTasksListIterator;
+    std::list<std::shared_ptr<CDataContainerInterface>> m_lpxDataContainerList;
+
+    TAnalogueInputDescriptionWork* m_pxAnalogueInputDescriptionWork;
+//    uint8_t* m_puiAnalogueInputDescriptionWork;
+    uint32_t m_uiUsedAnalogueInputDescriptionWork;
+
 
     // Создаем std::map, где ключ - строка, значение - указатель на объект
-    std::map<std::string, CTaskInterface*> m_mpxCommonTaskMap;
+    std::map<std::string, std::shared_ptr<CTaskInterface>> m_mpxCommonTaskMap;
     std::string m_sTaskName;
+    CTaskInterface** m_ppxCommonTaskPointers;
+    uint8_t m_uiUsedCommonTaskPointersCounter;
 
-    uint8_t m_uiAddress;
-    uint8_t *m_puiRxBuffer;
-    uint8_t *m_puiTxBuffer;
-    uint8_t *m_puiErrorCode;
-//    uint8_t *m_puiDiscreteOutputState;
-//    uint8_t m_uiUsedDiscreteOutputState;
-//    TDiscreteOutputControl *m_pxDiscreteOutputControl;
-//    uint8_t m_uiUsedDiscreteOutputs;
-//    TOutputData *m_pxDiscreteOutputDataBase;
-////    uint8_t *m_puiExternalReceiptAddress;
-////    uint8_t *m_puiExternalResetAddress;
-//    uint8_t m_uiUsedDiscreteOutputDataBase;
-//    uint8_t* m_puiErrorAlarmDataArray;
-//    uint8_t m_uiUsedErrorAlarmDataArray;
+    // объект с конфигурацией во внутреннем формате.
+    CConfigurationCreate::TConfigDataPackOne m_xDeviceConfigSearch;
 
-    uint8_t *m_puiCoils;
-
-    uint8_t *m_puiDiscreteInputs;
-    uint8_t m_uiUsedDiscreteInputs;
-
-    uint16_t *m_puiHoldingRegisters;
-    uint16_t *m_puiInputRegisters;
+    uint8_t* m_puiCoils;
+    uint8_t* m_puiDiscreteInputs;
+    uint16_t* m_puiHoldingRegisters;
+    uint16_t* m_puiInputRegisters;
     uint16_t m_uiCoilsNumber;
     uint16_t m_uiDiscreteInputsNumber;
     uint16_t m_uiHoldingRegistersNumber;
     uint16_t m_uiInputRegistersNumber;
 
+
+    uint8_t m_uiAddress;
+    uint8_t* m_puiRxBuffer;
+    uint8_t* m_puiTxBuffer;
+    uint8_t* m_puiErrorCode;
+
+    uint8_t* m_puiDiscreteInputsState;
+    uint32_t m_uiUsedDiscreteInputsState;
+    uint8_t* m_puiDiscreteInputsBadState;
+    uint8_t m_uiUsedDiscreteInputsBadState;
+    uint8_t* m_puiDiscreteOutputState;
+    uint8_t m_uiUsedDiscreteOutputState;
+    uint8_t* m_puiDiscreteOutputControl;
+    uint8_t m_uiUsedDiscreteOutputControl;
+
+    float* m_pfAnalogueInputsValue;
+    uint32_t m_uiUsedAnalogueInputsValue;
+    uint8_t* m_puiAnalogueInputsState;
+    uint32_t m_uiUsedAnalogueInputsState;
+    uint8_t* m_puiAnalogueInputsOff;
+    uint32_t m_uiUsedAnalogueInputsOff;
+    uint8_t* m_puiAnalogueInputsBadState;
+    uint32_t m_uiUsedAnalogueInputsBadState;
+
     CDeviceControl* m_pxDeviceControl;
     CDataStore* m_pxDataStore;
-    CConfigurationCreate* m_pxConfigurationCreate;
+    CConfiguration* m_pxConfigurationCreate;
     CServiceMarket* m_pxServiceMarket;
 };
 

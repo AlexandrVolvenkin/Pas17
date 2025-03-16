@@ -36,7 +36,7 @@ void CModbusSlaveLinkLayer::SetCommunicationDeviceName(std::string sName)
 }
 
 //-------------------------------------------------------------------------------
-void CModbusSlaveLinkLayer::SetCommunicationDevice(CCommunicationDeviceInterfaceNew* pxCommunicationDevice)
+void CModbusSlaveLinkLayer::SetCommunicationDevice(CCommunicationDeviceInterface* pxCommunicationDevice)
 {
     m_pxCommunicationDevice = pxCommunicationDevice;
 }

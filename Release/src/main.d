@@ -8,7 +8,10 @@ src/main.o: ../src/main.cpp ../src/Task.h ../src/Timer.h \
  D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src/Configuration.h \
  D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\Modbus/ModbusSlaveLinkLayer.h \
  D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\Modbus/ModbusTcpSlaveLinkLayer.h \
- D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\Modbus/ModbusRtuSlaveLinkLayer.h
+ D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\Modbus/ModbusRtuSlaveLinkLayer.h \
+ D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\Modbus/ModbusSmSlave.h \
+ D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\Modbus/ModbusSmSlaveLinkLayer.h \
+ D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\Modbus/ModbusSmSlaveLinkLayer.h
 
 ../src/Task.h:
 
@@ -45,3 +48,9 @@ D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\Modbus
 D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\Modbus/ModbusTcpSlaveLinkLayer.h:
 
 D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\Modbus/ModbusRtuSlaveLinkLayer.h:
+
+D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\Modbus/ModbusSmSlave.h:
+
+D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\Modbus/ModbusSmSlaveLinkLayer.h:
+
+D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\Modbus/ModbusSmSlaveLinkLayer.h:

@@ -16,13 +16,13 @@
 
 
 //-------------------------------------------------------------------------------
-CCommunicationDeviceNew::CCommunicationDeviceNew()
+CCommunicationDevice::CCommunicationDevice()
 {
     //ctor
 }
 
 //-------------------------------------------------------------------------------
-CCommunicationDeviceNew::~CCommunicationDeviceNew()
+CCommunicationDevice::~CCommunicationDevice()
 {
     //dtor
 }

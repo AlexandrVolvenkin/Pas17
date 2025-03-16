@@ -25,16 +25,24 @@
 #include "ModbusTcpSlaveLinkLayer.h"
 #include "ModbusRtuSlaveLinkLayer.h"
 
+#include "ModbusSmSlave.h"
+#include "ModbusSmSlaveLinkLayer.h"
+
 class CTask;
 //class CResources;
 class CLedBlinker;
-class CConfigurationCreate;
+class CConfiguration;
 class CDataStoreCheck;
 //class CDataStore;
 //class CDeviceControl;
+class CDataContainerInterface;
+class CDataContainerDataBase;
+class CConfigurationCreate;
+class CSystemComponentsCreate;
+
 
 //-------------------------------------------------------------------------------
-class CMainProductionCycle : public CTask//, public CDfa
+class CMainProductionCycle : public CTask
 {
 public:
 
@@ -45,21 +53,62 @@ public:
 
     enum
     {
-        DATABASE_CHECK_TASK_READY_CHECK = NEXT_STEP,
-        DATABASE_CHECK_TASK_READY_WAITING,
-        DATABASE_CHECK_BEGIN,
-        DATABASE_CHECK_END_WAITING,
-        DATABASE_CHECK_RECAVERY_END_WAITING,
-        DATABASE_CHECK_END_OK,
-        DATABASE_CHECK_END_ERROR,
+        DATA_STORE_CHECK_START = NEXT_STEP,
+        DATA_STORE_CHECK_TASK_READY_CHECK,
+        DATA_STORE_CHECK_TASK_READY_WAITING,
+        DATA_STORE_CHECK_BEGIN,
+        DATA_STORE_CHECK_END_WAITING,
+        DATA_STORE_CHECK_RECAVERY_END_WAITING,
+        DATA_STORE_CHECK_END_OK,
+        DATA_STORE_CHECK_END_ERROR,
 
+        CONFIGURATION_CREATE_START,
+        CONFIGURATION_CREATE_EXECUTOR_ANSWER_PROCESSING,
+//        CONFIGURATION_CREATE_EXECUTOR_READY_CHECK_START,
+//        CONFIGURATION_CREATE_EXECUTOR_READY_CHECK_WAITING,
+//        CONFIGURATION_CREATE_EXECUTOR_DONE_CHECK_START,
+//        CONFIGURATION_CREATE_EXECUTOR_DONE_CHECK_WAITING,
+
+        SYSTEM_COMPONENTS_CREATE_START,
+        SYSTEM_COMPONENTS_CREATE_EXECUTOR_ANSWER_PROCESSING,
+        INTERNAL_MODULES_DATA_EXCHANGE_START,
+        INTERNAL_MODULES_DATA_EXCHANGE_EXECUTOR_ANSWER_PROCESSING,
+        INTERNAL_MODULES_DATA_EXCHANGE_MAIN_CYCLE_START_WAITING,
+
+        MAIN_CYCLE_MODULES_INIT,
+        MAIN_CYCLE_MODULES_INIT_END_WAITING,
         MAIN_CYCLE_MODBUS_SLAVE,
+        MAIN_CYCLE_START_WAITING,
+        MAIN_CYCLE_MODULES_INTERACTION,
+        MAIN_CYCLE_DISCRETE_SIGNALS_PROCESSING,
+        MAIN_CYCLE_END,
+
         LED_BLINK_ON,
         LED_BLINK_OFF,
     };
 
     CMainProductionCycle();
     virtual ~CMainProductionCycle();
+
+    void SetInternalModuleMuvrName(const std::string& sName)
+    {
+        m_sInternalModuleMuvrName = sName;
+    };
+
+    void SetConfigurationCreateName(const std::string& sName)
+    {
+        m_sConfigurationCreateName = sName;
+    };
+
+    void SetDataStoreCheckName(const std::string& sName)
+    {
+        m_sDataStoreCheckName = sName;
+    };
+
+    uint8_t Init(void);
+//    bool SetTaskData(CDataContainerDataBase* pxDataContainer);
+//    bool GetTaskData(CDataContainerDataBase* pxDataContainer);
+    void Allocate(void);
 
 //    std::list<CTaskInterface*>* GetCommonTasksListPointer(void)
 //    {
@@ -81,17 +130,37 @@ private:
 //    std::list<CTaskInterface*>::iterator m_xCommonTasksListIterator;
 //    std::list<CTaskInterface*> m_lpxCurrentlyRunningTasksList;
 //    std::list<CTaskInterface*>::iterator m_xCurrentlyRunningTasksListIterator;
+    uint8_t* m_puiIntermediateBuff;
 
     CResources m_xResources;
 //    CDeviceControl m_xDeviceControl;
     CDataStore* m_pxDataStoreFileSystem;
     CDataStoreCheck* m_pxDataStoreCheck;
+    CAnalogueSignals* m_pxAnalogueSignals;
+    CConfigurationCreate* m_pxConfigurationCreate;
 
-    CSpi* m_pxSpiCommunicationDevice;
+    std::string m_sDeviceControlName;
+    uint8_t m_uiDeviceControlId;
+    CDeviceControl* m_pxDeviceControl;
+
+    std::string m_sInternalModuleName;
+    uint8_t m_uiInternalModuleId;
+
+    std::string m_sInternalModuleMuvrName;
+    uint8_t m_uiInternalModuleMuvrId;
+
+    std::string m_sConfigurationCreateName;
+    uint8_t m_uiConfigurationCreateId;
+
+    std::string m_sSystemComponentsCreateName;
+    uint8_t m_uiSystemComponentsCreateId;
+
+    std::string m_sDataStoreCheckName;
+    uint8_t m_uiDataStoreCheckId;
+
+    CSpiCommunicationDevice* m_pxSpiCommunicationDevice;
     CInternalModuleInterface* m_pxInternalModule;
     CInternalModuleInterface* m_pxInternalModuleMuvr;
-
-    CConfigurationCreate* m_pxConfigurationCreate;
 
     CServiceMarket* m_pxServiceMarket;
 
@@ -106,6 +175,8 @@ private:
 //    CModbusRtuSlaveTopLevelProduction* m_pxModusRtuSlaveTopLevelProduction;
     CModbusRtuSlaveLinkLayer* m_pxModbusRtuSlaveLinkLayerUpperLevel;
     CModbusSlave* m_pxModbusRtuSlaveUpperLevel;
+
+    CDataContainerDataBase* m_pxOperatingDataContainer;
 
     uint8_t *m_puiCoils;
     uint8_t *m_puiDiscreteInputs;

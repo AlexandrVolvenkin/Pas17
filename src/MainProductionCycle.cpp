@@ -12,8 +12,10 @@
 #include "Task.h"
 #include "Platform.h"
 #include "CommunicationDevice.h"
+#include "SpiCommunicationDevice.h"
 #include "SerialPortCommunicationDevice.h"
 #include "TcpCommunicationDevice.h"
+#include "SharedMemoryCommunicationDevice.h"
 #include "Resources.h"
 #include "TaskManager.h"
 #include "ServiceMarket.h"
@@ -28,8 +30,9 @@
 #include "ModbusTcpSlaveLinkLayer.h"
 #include "Link.h"
 #include "DataContainer.h"
+#include "AnalogueSignals.h"
+#include "SystemComponentsCreate.h"
 
-#include "EVE_HAL.h"
 #include "MainProductionCycle.h"
 
 //class CMainThreadProduction;
@@ -56,7 +59,7 @@ uint8_t auiTempBlock[]
     0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF
 };
 
-CSpi xSpiCommunicationDevice;
+//CSpi xSpiCommunicationDevice;
 
 
 //-------------------------------------------------------------------------------
@@ -67,6 +70,7 @@ CMainProductionCycle::CMainProductionCycle()
     sprintf(m_acTaskName,
             "%s",
             typeid(*this).name());
+    m_puiIntermediateBuff = new uint8_t[1024];
     SetResources(&m_xResources);
     SetFsmState(START);
 }
@@ -98,6 +102,57 @@ CMainProductionCycle::~CMainProductionCycle()
 //    delete m_pxModusRtuSlaveTopLevelProduction;
     delete m_pxModbusRtuSlaveLinkLayerUpperLevel;
     delete m_pxModbusRtuSlaveUpperLevel;
+
+    delete[] m_puiIntermediateBuff;
+}
+
+//-------------------------------------------------------------------------------
+uint8_t CMainProductionCycle::Init(void)
+{
+    std::cout << "CMainProductionCycle Init"  << std::endl;
+    m_pxOperatingDataContainer = static_cast<CDataContainerDataBase*>(GetResources() ->
+                                 AddDataContainer(std::make_shared<CDataContainerDataBase>()));
+    SetExecutorDataContainer(static_cast<CDataContainerDataBase*>(GetResources() ->
+                             AddDataContainer(std::make_shared<CDataContainerDataBase>())));
+
+    SetCustomerDataContainer(GetExecutorDataContainerPointer());
+//    SetCurrentCustomerDataContainer(GetExecutorDataContainerPointer());
+}
+
+////-------------------------------------------------------------------------------
+//bool CMainProductionCycle::SetTaskData(CDataContainerDataBase* pxDataContainer)
+//{
+//    std::cout << "CMainProductionCycle::SetTaskData 1" << std::endl;
+//
+//    if (IsTaskReady())
+//    {
+//        std::cout << "CMainProductionCycle::SetTaskData 2" << std::endl;
+//        *m_pxOperatingDataContainer = *pxDataContainer;
+//        SetFsmState(m_pxOperatingDataContainer -> m_uiFsmCommandState);
+//        return true;
+//    }
+//    else
+//    {
+//        std::cout << "CMainProductionCycle::SetTaskData 3" << std::endl;
+//        return false;
+//    }
+//}
+//
+////-------------------------------------------------------------------------------
+//bool CMainProductionCycle::GetTaskData(CDataContainerDataBase* pxDataContainer)
+//{
+//    std::cout << "CMainProductionCycle::GetTaskData 1" << std::endl;
+//
+//    m_pxOperatingDataContainer -> m_uiFsmCommandState = GetFsmState();
+//    *pxDataContainer = *m_pxOperatingDataContainer;
+//
+//    return true;
+//}
+
+//-----------------------------------------------------------------------------------------------------
+void CMainProductionCycle::Allocate(void)
+{
+    std::cout << "CMainProductionCycle::Allocate 1"  << std::endl;
 }
 
 //-------------------------------------------------------------------------------
@@ -105,51 +160,60 @@ uint8_t CMainProductionCycle::CreateTasks(void)
 {
     std::cout << "CMainProductionCycle CreateTasks"  << std::endl;
 
-    m_pxSpiCommunicationDevice = new CSpi();
+//-------------------------------------------------------------------------------
+    CMainProductionCycle* pxMainProductionCycle = this;
+    pxMainProductionCycle ->
+    SetConfigurationCreateName("ConfigurationCreate");
+    pxMainProductionCycle ->
+    SetInternalModuleMuvrName("InternalModuleMuvr");
+    pxMainProductionCycle ->
+    SetDataStoreCheckName("DataStoreCheck");
 
 //-------------------------------------------------------------------------------
     CDeviceControl* pxDeviceControl = 0;
-    pxDeviceControl = new CDeviceControl();
-    m_xResources.AddCommonTaskToMap("DeviceControlRtuUpperLevel",
-                                    pxDeviceControl);
+    pxDeviceControl =
+        static_cast<CDeviceControl*>(m_xResources.AddCommonTaskToMap("DeviceControlRtuUpperLevel",
+                                     std::make_shared<CDeviceControl>()));
     pxDeviceControl ->
     SetResources(&m_xResources);
-//    m_xResources.AddCurrentlyRunningTasksList(pxDeviceControl);
+//    pxDeviceControl ->
+//    SetDataStoreLinkName("DataStoreFileSystem");
+    pxDeviceControl ->
+    SetDataStoreName("DataStoreFileSystem");
+    pxDeviceControl ->
+    SetConfigurationCreateName("ConfigurationCreate");
+    m_xResources.AddCurrentlyRunningTasksList(pxDeviceControl);
 
 //-------------------------------------------------------------------------------
     CStorageDeviceFileSystem* pxStorageDeviceFileSystem = 0;
-    pxStorageDeviceFileSystem = new CStorageDeviceFileSystem();
-    m_xResources.AddCommonTaskToMap("StorageDeviceFileSystem",
-                                    pxStorageDeviceFileSystem);
+    pxStorageDeviceFileSystem =
+        static_cast<CStorageDeviceFileSystem*>(m_xResources.AddCommonTaskToMap("StorageDeviceFileSystem",
+                std::make_shared<CStorageDeviceFileSystem>()));
     pxStorageDeviceFileSystem ->
     SetResources(&m_xResources);
-//    pxStorageDeviceFileSystem ->
-//    SetTaskCustomerName("DataStoreFileSystem");
     m_xResources.AddCurrentlyRunningTasksList(pxStorageDeviceFileSystem);
 
+//-------------------------------------------------------------------------------
     CDataStore* pxDataStoreFileSystem = 0;
-    pxDataStoreFileSystem = new CDataStore();
-    m_xResources.AddCommonTaskToMap("DataStoreFileSystem",
-                                    pxDataStoreFileSystem);
+    pxDataStoreFileSystem =
+        static_cast<CDataStore*>(m_xResources.AddCommonTaskToMap("DataStoreFileSystem",
+                                 std::make_shared<CDataStore>()));
     pxDataStoreFileSystem ->
     SetResources(&m_xResources);
     pxDataStoreFileSystem ->
     SetStorageDeviceName("StorageDeviceFileSystem");
-//    pxDataStoreFileSystem ->
-//    SetTaskCustomerName("DataStoreCheck");
     m_xResources.AddCurrentlyRunningTasksList(pxDataStoreFileSystem);
     m_pxDataStoreFileSystem = pxDataStoreFileSystem;
 
+//-------------------------------------------------------------------------------
     CDataStoreCheck* pxDataStoreCheck = 0;
-    pxDataStoreCheck = new CDataStoreCheck();
-    m_xResources.AddCommonTaskToMap("DataStoreCheck",
-                                    pxDataStoreCheck);
+    pxDataStoreCheck =
+        static_cast<CDataStoreCheck*>(m_xResources.AddCommonTaskToMap("DataStoreCheck",
+                                      std::make_shared<CDataStoreCheck>()));
     pxDataStoreCheck ->
     SetResources(&m_xResources);
     pxDataStoreCheck ->
     SetStorageDeviceName("StorageDeviceFileSystem");
-//    pxDataStoreCheck ->
-//    SetDataStoreName("DataStoreFileSystem");
     m_xResources.AddCurrentlyRunningTasksList(pxDataStoreCheck);
     m_pxDataStoreCheck = pxDataStoreCheck;
 
@@ -161,17 +225,17 @@ uint8_t CMainProductionCycle::CreateTasks(void)
                                            INPUT_REGISTERS_ARRAY_LENGTH);
 
     CSerialPortCommunicationDevice* pxSerialPortCommunicationDeviceCom1 = 0;
-    pxSerialPortCommunicationDeviceCom1 = new CSerialPortCommunicationDevice();
-    m_xResources.AddCommonTaskToMap("SerialPortCommunicationDeviceCom1",
-                                    pxSerialPortCommunicationDeviceCom1);
+    pxSerialPortCommunicationDeviceCom1 =
+        static_cast<CSerialPortCommunicationDevice*>(m_xResources.AddCommonTaskToMap("SerialPortCommunicationDeviceCom1",
+                std::make_shared<CSerialPortCommunicationDevice>()));
     pxSerialPortCommunicationDeviceCom1 ->
     SetResources(&m_xResources);
 
 //-------------------------------------------------------------------------------
     CModbusRtuSlaveLinkLayer* pxModbusRtuSlaveLinkLayerUpperLevel = 0;
-    pxModbusRtuSlaveLinkLayerUpperLevel = new CModbusRtuSlaveLinkLayer();
-    m_xResources.AddCommonTaskToMap("ModbusRtuSlaveLinkLayerUpperLevel",
-                                    pxModbusRtuSlaveLinkLayerUpperLevel);
+    pxModbusRtuSlaveLinkLayerUpperLevel =
+        static_cast<CModbusRtuSlaveLinkLayer*>(m_xResources.AddCommonTaskToMap("ModbusRtuSlaveLinkLayerUpperLevel",
+                std::make_shared<CModbusRtuSlaveLinkLayer>()));
     pxModbusRtuSlaveLinkLayerUpperLevel ->
     SetResources(&m_xResources);
     pxModbusRtuSlaveLinkLayerUpperLevel ->
@@ -179,9 +243,9 @@ uint8_t CMainProductionCycle::CreateTasks(void)
 
 //-------------------------------------------------------------------------------
     CModbusSlave* pxModbusRtuSlaveUpperLevel = 0;
-    pxModbusRtuSlaveUpperLevel = new CModbusSlave();
-    m_xResources.AddCommonTaskToMap("ModbusRtuSlaveUpperLevel",
-                                    pxModbusRtuSlaveUpperLevel);
+    pxModbusRtuSlaveUpperLevel =
+        static_cast<CModbusSlave*>(m_xResources.AddCommonTaskToMap("ModbusRtuSlaveUpperLevel",
+                                   std::make_shared<CModbusSlave>()));
     pxModbusRtuSlaveUpperLevel ->
     SetResources(&m_xResources);
     pxModbusRtuSlaveUpperLevel ->
@@ -189,38 +253,22 @@ uint8_t CMainProductionCycle::CreateTasks(void)
     pxModbusRtuSlaveUpperLevel ->
     SetDeviceControlName("DeviceControlRtuUpperLevel");
     pxModbusRtuSlaveUpperLevel ->
-    ModbusWorkingArraysInit();
+    WorkingArraysInit();
     m_xResources.AddCurrentlyRunningTasksList(pxModbusRtuSlaveUpperLevel);
 
 //-------------------------------------------------------------------------------
-// создадим связь заказчика с исполнителем
-    CLink* pxDeviceControlLinkRtuUpperLevel = 0;
-    pxDeviceControlLinkRtuUpperLevel = new CLink();
-    m_xResources.AddCommonTaskToMap("DeviceControlLinkRtuUpperLevel",
-                                    pxDeviceControlLinkRtuUpperLevel);
-    pxDeviceControlLinkRtuUpperLevel ->
-    SetResources(&m_xResources);
-    pxDeviceControlLinkRtuUpperLevel ->
-    SetTaskPerformerName("DeviceControlRtuUpperLevel");
-    pxDeviceControlLinkRtuUpperLevel ->
-    SetDataContainer(new CDataContainerDataBase());
-    m_xResources.AddCurrentlyRunningTasksList(pxDeviceControlLinkRtuUpperLevel);
-
-
-
-//-------------------------------------------------------------------------------
     CTcpCommunicationDevice* pxTcpCommunicationDeviceUpperLevel = 0;
-    pxTcpCommunicationDeviceUpperLevel = new CTcpCommunicationDevice();
-    m_xResources.AddCommonTaskToMap("TcpCommunicationDeviceUpperLevel",
-                                    pxTcpCommunicationDeviceUpperLevel);
+    pxTcpCommunicationDeviceUpperLevel =
+        static_cast<CTcpCommunicationDevice*>(m_xResources.AddCommonTaskToMap("TcpCommunicationDeviceUpperLevel",
+                std::make_shared<CTcpCommunicationDevice>()));
     pxTcpCommunicationDeviceUpperLevel ->
     SetResources(&m_xResources);
 
 //-------------------------------------------------------------------------------
     CModbusTcpSlaveLinkLayer* pxModbusTcpSlaveLinkLayerUpperLevel = 0;
-    pxModbusTcpSlaveLinkLayerUpperLevel = new CModbusTcpSlaveLinkLayer();
-    m_xResources.AddCommonTaskToMap("ModbusTcpSlaveLinkLayerUpperLevel",
-                                    pxModbusTcpSlaveLinkLayerUpperLevel);
+    pxModbusTcpSlaveLinkLayerUpperLevel =
+        static_cast<CModbusTcpSlaveLinkLayer*>(m_xResources.AddCommonTaskToMap("ModbusTcpSlaveLinkLayerUpperLevel",
+                std::make_shared<CModbusTcpSlaveLinkLayer>()));
     pxModbusTcpSlaveLinkLayerUpperLevel ->
     SetResources(&m_xResources);
     pxModbusTcpSlaveLinkLayerUpperLevel ->
@@ -228,9 +276,9 @@ uint8_t CMainProductionCycle::CreateTasks(void)
 
 //-------------------------------------------------------------------------------
     CModbusSlave* pxModbusTcpSlaveUpperLevel = 0;
-    pxModbusTcpSlaveUpperLevel = new CModbusSlave();
-    m_xResources.AddCommonTaskToMap("ModbusTcpSlaveUpperLevel",
-                                    pxModbusTcpSlaveUpperLevel);
+    pxModbusTcpSlaveUpperLevel =
+        static_cast<CModbusSlave*>(m_xResources.AddCommonTaskToMap("ModbusTcpSlaveUpperLevel",
+                                   std::make_shared<CModbusSlave>()));
     pxModbusTcpSlaveUpperLevel ->
     SetResources(&m_xResources);
     pxModbusTcpSlaveUpperLevel ->
@@ -238,8 +286,118 @@ uint8_t CMainProductionCycle::CreateTasks(void)
     pxModbusTcpSlaveUpperLevel ->
     SetDeviceControlName("DeviceControlRtuUpperLevel");
     pxModbusTcpSlaveUpperLevel ->
-    ModbusWorkingArraysInit();
+    WorkingArraysInit();
     m_xResources.AddCurrentlyRunningTasksList(pxModbusTcpSlaveUpperLevel);
+
+
+//-------------------------------------------------------------------------------
+    CSharedMemoryCommunicationDevice* pxSharedMemoryCommunicationDeviceEveDisplay = 0;
+    pxSharedMemoryCommunicationDeviceEveDisplay =
+        static_cast<CSharedMemoryCommunicationDevice*>(m_xResources.AddCommonTaskToMap("SharedMemoryCommunicationDeviceEveDisplay",
+                std::make_shared<CSharedMemoryCommunicationDevice>()));
+    pxSharedMemoryCommunicationDeviceEveDisplay ->
+    SetResources(&m_xResources);
+
+//-------------------------------------------------------------------------------
+    CModbusSmSlaveLinkLayer* pxModbusSmSlaveLinkLayerEveDisplay = 0;
+    pxModbusSmSlaveLinkLayerEveDisplay =
+        static_cast<CModbusSmSlaveLinkLayer*>(m_xResources.AddCommonTaskToMap("ModbusSmSlaveLinkLayerEveDisplay",
+                std::make_shared<CModbusSmSlaveLinkLayer>()));
+    pxModbusSmSlaveLinkLayerEveDisplay ->
+    SetResources(&m_xResources);
+    pxModbusSmSlaveLinkLayerEveDisplay ->
+    SetCommunicationDeviceName("SharedMemoryCommunicationDeviceEveDisplay");
+    m_xResources.AddCurrentlyRunningTasksList(pxModbusSmSlaveLinkLayerEveDisplay);
+
+//-------------------------------------------------------------------------------
+    CModbusSlave* pxModbusSmSlaveEveDisplay = 0;
+    pxModbusSmSlaveEveDisplay =
+        static_cast<CModbusSlave*>(m_xResources.AddCommonTaskToMap("ModbusSmSlaveEveDisplay",
+                                   std::make_shared<CModbusSlave>()));
+//    CModbusSmSlave* pxModbusSmSlaveEveDisplay = 0;
+//    pxModbusSmSlaveEveDisplay =
+//        static_cast<CModbusSmSlave*>(m_xResources.AddCommonTaskToMap("ModbusSmSlaveEveDisplay",
+//                                   std::make_shared<CModbusSmSlave>()));
+    pxModbusSmSlaveEveDisplay ->
+    SetResources(&m_xResources);
+    pxModbusSmSlaveEveDisplay ->
+    SetModbusSlaveLinkLayerName("ModbusSmSlaveLinkLayerEveDisplay");
+    pxModbusSmSlaveEveDisplay ->
+    SetDeviceControlName("DeviceControlRtuUpperLevel");
+    pxModbusSmSlaveEveDisplay ->
+    WorkingArraysInit();
+    m_xResources.AddCurrentlyRunningTasksList(pxModbusSmSlaveEveDisplay);
+
+
+
+//-------------------------------------------------------------------------------
+    CSpiCommunicationDevice* pxSpiCommunicationDeviceSpi0 = 0;
+    pxSpiCommunicationDeviceSpi0 =
+        static_cast<CSpiCommunicationDevice*>(m_xResources.AddCommonTaskToMap("SpiCommunicationDeviceSpi0",
+                std::make_shared<CSpiCommunicationDevice>()));
+    pxSpiCommunicationDeviceSpi0 ->
+    SetResources(&m_xResources);
+
+//-------------------------------------------------------------------------------
+    CInternalModule* pxInternalModuleCommon = 0;
+    pxInternalModuleCommon =
+        static_cast<CInternalModule*>(m_xResources.AddCommonTaskToMap("InternalModuleCommon",
+                                      std::make_shared<CInternalModule>()));
+    pxInternalModuleCommon ->
+    SetResources(&m_xResources);
+    pxInternalModuleCommon ->
+    SetCommunicationDeviceName("SpiCommunicationDeviceSpi0");
+    m_xResources.AddCurrentlyRunningTasksList(pxInternalModuleCommon);
+    m_pxInternalModule = pxInternalModuleCommon;
+
+////-------------------------------------------------------------------------------
+//    CInternalModuleMuvr* pxInternalModuleMuvr = 0;
+//    pxInternalModuleMuvr =
+//        static_cast<CInternalModuleMuvr*>(m_xResources.AddCommonTaskToMap("InternalModuleMuvr",
+//                                          std::make_shared<CInternalModuleMuvr>()));
+//    pxInternalModuleMuvr ->
+//    SetResources(&m_xResources);
+//    pxInternalModuleMuvr ->
+//    SetCommunicationDeviceName("SpiCommunicationDeviceSpi0");
+//    m_xResources.AddCurrentlyRunningTasksList(pxInternalModuleMuvr);
+//    m_pxInternalModuleMuvr = pxInternalModuleMuvr;
+
+//-------------------------------------------------------------------------------
+    CAnalogueSignals* pxAnalogueSignals = 0;
+    pxAnalogueSignals =
+        static_cast<CAnalogueSignals*>(m_xResources.AddCommonTaskToMap("AnalogueSignals",
+                                       std::make_shared<CAnalogueSignals>()));
+    pxAnalogueSignals ->
+    SetResources(&m_xResources);
+    pxAnalogueSignals ->
+    SetDeviceControlName("DeviceControlRtuUpperLevel");
+    m_xResources.AddCurrentlyRunningTasksList(pxAnalogueSignals);
+    m_pxAnalogueSignals = pxAnalogueSignals;
+
+//-------------------------------------------------------------------------------
+    CConfigurationCreate* pxConfigurationCreate = 0;
+    pxConfigurationCreate =
+        static_cast<CConfigurationCreate*>(m_xResources.AddCommonTaskToMap("ConfigurationCreate",
+                                           std::make_shared<CConfigurationCreate>()));
+    pxConfigurationCreate ->
+    SetResources(&m_xResources);
+    pxConfigurationCreate ->
+    SetInternalModuleName("InternalModuleCommon");
+    m_xResources.AddCurrentlyRunningTasksList(pxConfigurationCreate);
+    m_pxConfigurationCreate = pxConfigurationCreate;
+
+//-------------------------------------------------------------------------------
+    CSystemComponentsCreate* pxSystemComponentsCreate = 0;
+    pxSystemComponentsCreate =
+        static_cast<CSystemComponentsCreate*>(m_xResources.AddCommonTaskToMap("SystemComponentsCreate",
+                std::make_shared<CSystemComponentsCreate>()));
+    pxSystemComponentsCreate ->
+    SetResources(&m_xResources);
+    pxSystemComponentsCreate ->
+    SetInternalModuleName("InternalModuleCommon");
+    m_xResources.AddCurrentlyRunningTasksList(pxSystemComponentsCreate);
+//    m_pxSystemComponentsCreate = pxSystemComponentsCreate;
+
 }
 
 //-------------------------------------------------------------------------------
@@ -247,22 +405,18 @@ uint8_t CMainProductionCycle::InitTasks(void)
 {
     std::cout << "CMainProductionCycle Init"  << std::endl;
 
+//-------------------------------------------------------------------------------
     CGpio::Init();
-    cout << "CGpio::Init" << endl;
-//	CPlatform::LedInitialization();
-//	cout << "CPlatform::LedInitialization" << endl;
-    m_pxSpiCommunicationDevice -> Init();
-    cout << "m_pxSpiCommunicationDevice -> Open" << endl;
-
 
 //-------------------------------------------------------------------------------
     CSerialPortCommunicationDevice* pxSerialPortCommunicationDeviceCom1 =
         (CSerialPortCommunicationDevice*)(GetResources() ->
-                                          GetCommonTaskFromMapPointer("SerialPortCommunicationDeviceCom1"));
+                                          GetTaskPointerByNameFromMap("SerialPortCommunicationDeviceCom1"));
 
     pxSerialPortCommunicationDeviceCom1 -> Init();
     pxSerialPortCommunicationDeviceCom1 -> SetDeviceName("/dev/ttyO1");
     pxSerialPortCommunicationDeviceCom1 -> SetBaudRate(9600);
+//    pxSerialPortCommunicationDeviceCom1 -> SetBaudRate(115200);
     pxSerialPortCommunicationDeviceCom1 -> SetDataBits(8);
     pxSerialPortCommunicationDeviceCom1 -> SetParity('N');
     pxSerialPortCommunicationDeviceCom1 -> SetStopBit(2);
@@ -270,7 +424,7 @@ uint8_t CMainProductionCycle::InitTasks(void)
 //-------------------------------------------------------------------------------
     CModbusSlave* pxModbusRtuSlaveUpperLevel =
         (CModbusSlave*)(GetResources() ->
-                        GetCommonTaskFromMapPointer("ModbusRtuSlaveUpperLevel"));
+                        GetTaskPointerByNameFromMap("ModbusRtuSlaveUpperLevel"));
 
     pxModbusRtuSlaveUpperLevel ->
     SetOwnAddress(1);
@@ -279,7 +433,7 @@ uint8_t CMainProductionCycle::InitTasks(void)
 //-------------------------------------------------------------------------------
     CTcpCommunicationDevice* pxTcpCommunicationDeviceUpperLevel =
         (CTcpCommunicationDevice*)(GetResources() ->
-                                   GetCommonTaskFromMapPointer("TcpCommunicationDeviceUpperLevel"));
+                                   GetTaskPointerByNameFromMap("TcpCommunicationDeviceUpperLevel"));
 
     pxTcpCommunicationDeviceUpperLevel -> Init();
     pxTcpCommunicationDeviceUpperLevel -> SetIpAddress("127.0.0.1");
@@ -288,47 +442,59 @@ uint8_t CMainProductionCycle::InitTasks(void)
 //-------------------------------------------------------------------------------
     CModbusSlave* pxModbusTcpSlaveUpperLevel =
         (CModbusSlave*)(GetResources() ->
-                        GetCommonTaskFromMapPointer("ModbusTcpSlaveUpperLevel"));
+                        GetTaskPointerByNameFromMap("ModbusTcpSlaveUpperLevel"));
 
     pxModbusTcpSlaveUpperLevel ->
     SetOwnAddress(1);
 
 
+//-------------------------------------------------------------------------------
+    CSharedMemoryCommunicationDevice* pxSharedMemoryCommunicationDeviceEveDisplay =
+        (CSharedMemoryCommunicationDevice*)(GetResources() ->
+                                            GetTaskPointerByNameFromMap("SharedMemoryCommunicationDeviceEveDisplay"));
 
-//    // Проход по всем элементам std::map с использованием итераторов
-//    std::map<std::string, CTaskInterface*>::iterator it;
-//
-//    while (1)
-//    {
-//        bool bTaskIsReady = 0;
-//
-//        for (it = GetResources() -> m_mpxCommonTaskMap.begin();
-//                it != GetResources() -> m_mpxCommonTaskMap.end();
-//                it++)
-//        {
-//            if ((it -> second -> Fsm()) < READY)
-//            {
-//                bTaskIsReady = 0;
-//            }
-//        }
-//    }
+    pxSharedMemoryCommunicationDeviceEveDisplay -> Init();
+//    pxSharedMemoryCommunicationDeviceEveDisplay -> SetDeviceName("/dev/ttyO1");
+
+//-------------------------------------------------------------------------------
+//    CModbusSmSlave* pxModbusSmSlaveEveDisplay =
+//        (CModbusSmSlave*)(GetResources() ->
+//                          GetTaskPointerByNameFromMap("ModbusSmSlaveEveDisplay"));
+    CModbusSlave* pxModbusSmSlaveEveDisplay =
+        (CModbusSlave*)(GetResources() ->
+                        GetTaskPointerByNameFromMap("ModbusSmSlaveEveDisplay"));
+
+    pxModbusSmSlaveEveDisplay ->
+    SetOwnAddress(1);
+
+
+//-------------------------------------------------------------------------------
+    CSpiCommunicationDevice* pxSpiCommunicationDeviceSpi0 =
+        (CSpiCommunicationDevice*)(GetResources() ->
+                                   GetTaskPointerByNameFromMap("SpiCommunicationDeviceSpi0"));
+
+    pxSpiCommunicationDeviceSpi0 -> Init();
+
+////-------------------------------------------------------------------------------
+//    CInternalModule* pxInternalModuleCommon =
+//        (CInternalModule*)(GetResources() ->
+//                          GetTaskPointerByNameFromMap("InternalModuleCommon"));
+
+////-------------------------------------------------------------------------------
+//    CInternalModuleMuvr* pxInternalModuleMuvr =
+//        (CInternalModuleMuvr*)(GetResources() ->
+//                               GetTaskPointerByNameFromMap("InternalModuleMuvr"));
+//    pxInternalModuleMuvr ->
+//    SetAddress(0);
+
+//-------------------------------------------------------------------------------
+    GetResources() -> Allocate();
 }
 
 //-------------------------------------------------------------------------------
 void CMainProductionCycle::CurrentlyRunningTasksExecution(void)
 {
 //    std::cout << "CMainProductionCycle CurrentlyRunningTasksExecution"  << std::endl;
-
-//        std::list<CTaskInterface*>::iterator xListIterator;
-//
-//        for(xListIterator =
-//                    GetResources() -> m_lpxCurrentlyRunningTasksList.begin();
-//                xListIterator !=
-//                GetResources() -> m_lpxCurrentlyRunningTasksList.end();
-//                xListIterator++)
-//        {
-//            (*xListIterator) -> Fsm();
-//        }
 
     for(GetResources() -> m_xCurrentlyRunningTasksListIterator =
                 GetResources() -> m_lpxCurrentlyRunningTasksList.begin();
@@ -344,8 +510,9 @@ void CMainProductionCycle::CurrentlyRunningTasksExecution(void)
 uint8_t CMainProductionCycle::Fsm(void)
 {
 //        std::cout << "CMainProductionCycle::Fsm 1"  << std::endl;
-    GetResources() ->
-    CurrentlyRunningTasksExecution();
+
+    usleep(1000);
+//    CurrentlyRunningTasksExecution();
 
     switch (GetFsmState())
     {
@@ -362,27 +529,8 @@ uint8_t CMainProductionCycle::Fsm(void)
     case START:
         std::cout << "CMainProductionCycle::Fsm START"  << std::endl;
         std::cout << "m_acTaskName " << m_acTaskName << std::endl;
+        Init();
         CreateTasks();
-
-//        m_pxInternalModule ->
-//        GetModuleType(0);
-//        {
-//
-////            CInternalModuleMuvr xInternalModuleMuvr;
-//////            CInternalModule xInternalModuleMuvr;
-////            xInternalModuleMuvr.
-////            GetModuleType(0);
-//
-////            CInternalModuleMuvr xInternalModuleMuvr;
-//////            CInternalModule xInternalModuleMuvr;
-////            xInternalModuleMuvr.
-////            DataBaseRead(0);
-//            m_pxInternalModuleMuvr ->
-//            DataBaseRead(0);
-//
-//        }
-
-//        EVE_HAL::InitializeNEW(true);
 
 //        GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
         SetFsmState(INIT);
@@ -393,6 +541,23 @@ uint8_t CMainProductionCycle::Fsm(void)
         if (GetResources() -> CheckCommonTaskMap())
         {
             InitTasks();
+
+            m_uiConfigurationCreateId =
+                GetResources() ->
+                GetTaskIdByNameFromMap("ConfigurationCreate");
+
+            m_uiDataStoreCheckId =
+                GetResources() ->
+                GetTaskIdByNameFromMap("DataStoreCheck");
+
+            m_uiSystemComponentsCreateId =
+                GetResources() ->
+                GetTaskIdByNameFromMap("SystemComponentsCreate");
+
+            m_uiInternalModuleId =
+                GetResources() ->
+                GetTaskIdByNameFromMap("InternalModuleCommon");
+
             SetFsmState(READY);
         }
         else
@@ -403,60 +568,208 @@ uint8_t CMainProductionCycle::Fsm(void)
 
     case READY:
         std::cout << "CMainProductionCycle::Fsm READY"  << std::endl;
-        SetFsmState(DATABASE_CHECK_TASK_READY_CHECK);
+        SetFsmState(DATA_STORE_CHECK_TASK_READY_CHECK);
         break;
 
-    case DATABASE_CHECK_TASK_READY_CHECK:
-//        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_TASK_READY_CHECK"  << std::endl;
-        //CurrentlyRunningTasksExecution();
+    case DONE_OK:
+//        std::cout << "CMainProductionCycle::Fsm DONE_OK"  << std::endl;
+//        SetFsmOperationStatus(DONE_OK);
+//        SetFsmState(READY);
+        break;
+
+    case DONE_ERROR:
+//        std::cout << "CMainProductionCycle::Fsm DONE_ERROR"  << std::endl;
+//        SetFsmOperationStatus(DONE_ERROR);
+//        SetFsmState(READY);
+        break;
+
+//-------------------------------------------------------------------------------
+    case SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_START:
+        std::cout << "CMainProductionCycle::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_START"  << std::endl;
+        {
+            CurrentlyRunningTasksExecution();
+
+            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING);
+        }
+        break;
+
+    case SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING:
+//        std::cout << "CMainProductionCycle::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING 1"  << std::endl;
+    {
+        CurrentlyRunningTasksExecution();
+
+        if (SetTaskData(GetExecutorDataContainerPointer()))
+        {
+            std::cout << "CMainProductionCycle::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING 2"  << std::endl;
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(GetFsmNextStateDoneOk());
+        }
+        else
+        {
+            std::cout << "CMainProductionCycle::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING 3"  << std::endl;
+            // Время ожидания выполнения запроса закончилось?
+            if (GetTimerPointer() -> IsOverflow())
+            {
+                std::cout << "CMainProductionCycle::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING 4"  << std::endl;
+                ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+                SetFsmState(GetFsmNextStateReadyWaitingError());
+            }
+        }
+    }
+    break;
+
+//-------------------------------------------------------------------------------
+    case SUBTASK_EXECUTOR_READY_CHECK_START:
+        std::cout << "CMainProductionCycle::Fsm SUBTASK_EXECUTOR_READY_CHECK_START"  << std::endl;
+        {
+            CurrentlyRunningTasksExecution();
+
+            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_WAITING);
+        }
+        break;
+
+    case SUBTASK_EXECUTOR_READY_CHECK_WAITING:
+//        std::cout << "CMainProductionCycle::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 1"  << std::endl;
+    {
+        CurrentlyRunningTasksExecution();
+
+        if (SetTaskData(GetExecutorDataContainerPointer()))
+        {
+            std::cout << "CMainProductionCycle::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 2"  << std::endl;
+            SetFsmState(SUBTASK_EXECUTOR_DONE_CHECK_START);
+        }
+        else
+        {
+            std::cout << "CMainProductionCycle::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 3"  << std::endl;
+            // Время ожидания выполнения запроса закончилось?
+            if (GetTimerPointer() -> IsOverflow())
+            {
+                std::cout << "CMainProductionCycle::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 4"  << std::endl;
+                ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+                SetFsmState(GetFsmNextStateReadyWaitingError());
+            }
+        }
+    }
+    break;
+
+    case SUBTASK_EXECUTOR_DONE_CHECK_START:
+        std::cout << "CMainProductionCycle::Fsm SUBTASK_EXECUTOR_DONE_CHECK_START 1"  << std::endl;
+        {
+            CurrentlyRunningTasksExecution();
+
+            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
+            SetFsmState(SUBTASK_EXECUTOR_DONE_CHECK_WAITING);
+        }
+
+        break;
+
+    case SUBTASK_EXECUTOR_DONE_CHECK_WAITING:
+//        std::cout << "CMainProductionCycle::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 1"  << std::endl;
+    {
+        CurrentlyRunningTasksExecution();
+
+        CDataContainerDataBase* pxDataContainer =
+            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+
+        uint8_t uiFsmState = pxDataContainer -> m_uiFsmCommandState;
+
+        if (uiFsmState == DONE_OK)
+        {
+            std::cout << "CMainProductionCycle::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 2"  << std::endl;
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(GetFsmNextStateDoneOk());
+        }
+        else if (uiFsmState == DONE_ERROR)
+        {
+            std::cout << "CMainProductionCycle::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 3"  << std::endl;
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+            SetFsmState(GetFsmNextStateDoneWaitingDoneError());
+        }
+        else
+        {
+            // Время ожидания выполнения запроса закончилось?
+            if (GetTimerPointer() -> IsOverflow())
+            {
+                std::cout << "CMainProductionCycle::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 4"  << std::endl;
+                ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+                SetFsmState(GetFsmNextStateDoneWaitingError());
+            }
+        }
+    }
+    break;
+
+//-------------------------------------------------------------------------------
+    case DATA_STORE_CHECK_START:
+        std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_START"  << std::endl;
+        {
+            CurrentlyRunningTasksExecution();
+
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            pxDataContainer -> m_uiTaskId = m_uiDataStoreCheckId;
+            pxDataContainer -> m_uiFsmCommandState =
+                CDataStoreCheck::DATA_STORE_CHECK_START;
+            pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+//            SetCurrentExecutorDataContainer(pxDataContainer);
+
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+            SetFsmNextSubTaskState(CONFIGURATION_CREATE_START);
+        }
+        break;
+
+    case DATA_STORE_CHECK_TASK_READY_CHECK:
+//        std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_TASK_READY_CHECK"  << std::endl;
+        CurrentlyRunningTasksExecution();
 
         GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
-        SetFsmState(DATABASE_CHECK_TASK_READY_WAITING);
-        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_TASK_READY_CHECK 1"  << std::endl;
+        SetFsmState(DATA_STORE_CHECK_TASK_READY_WAITING);
+        std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_TASK_READY_CHECK 1"  << std::endl;
 
 //        if ((m_pxDataStoreCheck -> GetFsmState()) == READY)
 //        {
-//            SetFsmState(DATABASE_CHECK_BEGIN);
-//            std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_TASK_READY_CHECK 1"  << std::endl;
+//            SetFsmState(DATA_STORE_CHECK_BEGIN);
+//            std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_TASK_READY_CHECK 1"  << std::endl;
 //        }
 //        else
 //        {
 //            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
-//            SetFsmState(DATABASE_CHECK_TASK_READY_WAITING);
-//            std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_TASK_READY_CHECK 2"  << std::endl;
+//            SetFsmState(DATA_STORE_CHECK_TASK_READY_WAITING);
+//            std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_TASK_READY_CHECK 2"  << std::endl;
 //        }
         break;
 
-    case DATABASE_CHECK_TASK_READY_WAITING:
-//        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_TASK_READY_WAITING"  << std::endl;
-        //CurrentlyRunningTasksExecution();
+    case DATA_STORE_CHECK_TASK_READY_WAITING:
+//        std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_TASK_READY_WAITING"  << std::endl;
+        CurrentlyRunningTasksExecution();
 
-        if ((m_pxDataStoreCheck -> GetFsmState()) == READY)
+        if ((m_pxDataStoreCheck -> GetFsmState()) >= READY)
         {
-            SetFsmState(MAIN_CYCLE_MODBUS_SLAVE);
-//            SetFsmState(DATABASE_CHECK_BEGIN);
-            std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_TASK_READY_WAITING 1"  << std::endl;
+//            SetFsmState(MAIN_CYCLE_MODBUS_SLAVE);
+            SetFsmState(DATA_STORE_CHECK_BEGIN);
+            std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_TASK_READY_WAITING 1"  << std::endl;
         }
         else
         {
             if (GetTimerPointer() -> IsOverflow())
             {
                 SetFsmState(STOP);
-                std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_TASK_READY_WAITING 2"  << std::endl;
+                std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_TASK_READY_WAITING 2"  << std::endl;
             }
         }
         break;
 
-    case DATABASE_CHECK_BEGIN:
-        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_BEGIN"  << std::endl;
-        //CurrentlyRunningTasksExecution();
+    case DATA_STORE_CHECK_BEGIN:
+        std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_BEGIN"  << std::endl;
+        CurrentlyRunningTasksExecution();
         m_pxDataStoreCheck -> Check();
         GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
-        SetFsmState(DATABASE_CHECK_END_WAITING);
 
 //        m_pxDataStoreFileSystem -> CreateServiceSection();
 //        m_pxDataStoreFileSystem -> WriteBlock(auiTempBlock, sizeof(auiTempBlock), 0);
 
+        SetFsmState(DATA_STORE_CHECK_END_WAITING);
 //
 //        if (!(m_pxDataStoreCheck -> Check()))
 //        {
@@ -481,176 +794,350 @@ uint8_t CMainProductionCycle::Fsm(void)
 //        usleep(1000);
         break;
 
-    case DATABASE_CHECK_END_WAITING:
-//        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_END_WAITING"  << std::endl;
-        //CurrentlyRunningTasksExecution();
+    case DATA_STORE_CHECK_END_WAITING:
+//        std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_END_WAITING"  << std::endl;
+        CurrentlyRunningTasksExecution();
 
-//        if ((m_pxDataStoreCheck -> GetFsmState()) == CDataStoreCheck::DATA_STORE_CHECK_ERROR)
-//        {
-//        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_END_WAITING 1"  << std::endl;
-//            m_pxDataStoreFileSystem -> CreateServiceSection();
-//            m_pxDataStoreFileSystem -> WriteBlock(auiTempBlock, sizeof(auiTempBlock), 0);
-//            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
-//            SetFsmState(DATABASE_CHECK_RECAVERY_END_WAITING);
-////            std::cout << "CDataStore::Fsm DATABASE_CHECK_END_ERROR"  << std::endl;
-//        }
-//        else if (((m_pxDataStoreCheck -> GetFsmState()) == CDataStoreCheck::DATA_STORE_NEW_VERSION_ACCEPTED) ||
-//                 ((m_pxDataStoreCheck -> GetFsmState()) == CDataStoreCheck::DATA_STORE_OLD_VERSION_ACCEPTED) ||
-//                 ((m_pxDataStoreCheck -> GetFsmState()) == CDataStoreCheck::DATA_STORE_CHECK_OK))
-//        {
-//        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_END_WAITING 2"  << std::endl;
-//            SetFsmState(DATABASE_CHECK_END_OK);
-////            std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_END_OK"  << std::endl;
-//        }
-//        else
-//        {
-//            if (GetTimerPointer() -> IsOverflow())
-//            {
-//                SetFsmState(STOP);
-////                std::cout << "CMainProductionCycle::Fsm STOP"  << std::endl;
-//        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_END_WAITING 3"  << std::endl;
-//            }
-//        }
-        break;
-
-    case DATABASE_CHECK_RECAVERY_END_WAITING:
-        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_RECAVERY_END_WAITING"  << std::endl;
-        //CurrentlyRunningTasksExecution();
-
-        if ((m_pxDataStoreCheck -> GetFsmState()) == CDataStoreCheck::DATA_STORE_CHECK_ERROR)
+        if ((m_pxDataStoreCheck -> GetFsmOperationStatus()) == CDataStoreCheck::DATA_STORE_CHECK_ERROR)
         {
-            SetFsmState(DATABASE_CHECK_END_ERROR);
-            std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_RECAVERY_END_WAITING 1"  << std::endl;
+            std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_END_WAITING 1"  << std::endl;
+            m_pxDataStoreFileSystem -> CreateServiceSection();
+            m_pxDataStoreFileSystem -> WriteBlock(auiTempBlock, sizeof(auiTempBlock), 0);
+            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
+            SetFsmState(DATA_STORE_CHECK_RECAVERY_END_WAITING);
+//            std::cout << "CDataStore::Fsm DATA_STORE_CHECK_END_ERROR"  << std::endl;
         }
-        else if (((m_pxDataStoreCheck -> GetFsmState()) == CDataStoreCheck::DATA_STORE_NEW_VERSION_ACCEPTED) ||
-                 ((m_pxDataStoreCheck -> GetFsmState()) == CDataStoreCheck::DATA_STORE_OLD_VERSION_ACCEPTED) ||
-                 ((m_pxDataStoreCheck -> GetFsmState()) == CDataStoreCheck::DATA_STORE_CHECK_OK))
+        else if (((m_pxDataStoreCheck -> GetFsmOperationStatus()) == CDataStoreCheck::DATA_STORE_NEW_VERSION_ACCEPTED) ||
+                 ((m_pxDataStoreCheck -> GetFsmOperationStatus()) == CDataStoreCheck::DATA_STORE_OLD_VERSION_ACCEPTED) ||
+                 ((m_pxDataStoreCheck -> GetFsmOperationStatus()) == CDataStoreCheck::DATA_STORE_CHECK_OK))
         {
-            SetFsmState(DATABASE_CHECK_END_OK);
-            std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_RECAVERY_END_WAITING 2"  << std::endl;
+            std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_END_WAITING 2"  << std::endl;
+            SetFsmState(DATA_STORE_CHECK_END_OK);
+//            std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_END_OK"  << std::endl;
         }
         else
         {
             if (GetTimerPointer() -> IsOverflow())
             {
-                SetFsmState(DATABASE_CHECK_END_ERROR);
-                std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_RECAVERY_END_WAITING 3"  << std::endl;
+                m_pxDataStoreCheck ->
+                SetFsmCommandState(0);
+                SetFsmState(STOP);
+//                std::cout << "CMainProductionCycle::Fsm STOP"  << std::endl;
+                std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_END_WAITING 3"  << std::endl;
             }
         }
         break;
 
-    case DATABASE_CHECK_END_OK:
-//        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_END_OK"  << std::endl;
-        //CurrentlyRunningTasksExecution();
+    case DATA_STORE_CHECK_RECAVERY_END_WAITING:
+        std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_RECAVERY_END_WAITING"  << std::endl;
+        CurrentlyRunningTasksExecution();
+
+        if ((m_pxDataStoreCheck -> GetFsmOperationStatus()) == CDataStoreCheck::DATA_STORE_CHECK_ERROR)
+        {
+            SetFsmState(DATA_STORE_CHECK_END_ERROR);
+            std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_RECAVERY_END_WAITING 1"  << std::endl;
+        }
+        else if (((m_pxDataStoreCheck -> GetFsmOperationStatus()) == CDataStoreCheck::DATA_STORE_NEW_VERSION_ACCEPTED) ||
+                 ((m_pxDataStoreCheck -> GetFsmOperationStatus()) == CDataStoreCheck::DATA_STORE_OLD_VERSION_ACCEPTED) ||
+                 ((m_pxDataStoreCheck -> GetFsmOperationStatus()) == CDataStoreCheck::DATA_STORE_CHECK_OK))
+        {
+            SetFsmState(DATA_STORE_CHECK_END_OK);
+            std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_RECAVERY_END_WAITING 2"  << std::endl;
+        }
+        else
+        {
+            if (GetTimerPointer() -> IsOverflow())
+            {
+                SetFsmState(DATA_STORE_CHECK_END_ERROR);
+                std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_RECAVERY_END_WAITING 3"  << std::endl;
+            }
+        }
         break;
 
-    case DATABASE_CHECK_END_ERROR:
-//        std::cout << "CMainProductionCycle::Fsm DATABASE_CHECK_END_ERROR"  << std::endl;
-        //CurrentlyRunningTasksExecution();
+    case DATA_STORE_CHECK_END_OK:
+//        std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_END_OK"  << std::endl;
+        CurrentlyRunningTasksExecution();
+        m_pxDataStoreFileSystem -> ReadServiceSection();
+//        SetFsmState(MAIN_CYCLE_MODULES_INIT);
+//        SetFsmState(MAIN_CYCLE_MODBUS_SLAVE);
+        SetFsmState(CONFIGURATION_CREATE_START);
         break;
+
+    case DATA_STORE_CHECK_END_ERROR:
+//        std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_END_ERROR"  << std::endl;
+        CurrentlyRunningTasksExecution();
+        break;
+
+//-------------------------------------------------------------------------------
+    case CONFIGURATION_CREATE_START:
+        std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CREATE_START"  << std::endl;
+        {
+            CurrentlyRunningTasksExecution();
+
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            pxDataContainer -> m_uiTaskId = m_uiConfigurationCreateId;
+            pxDataContainer -> m_uiFsmCommandState =
+                CConfigurationCreate::CONFIGURATION_CREATE_START;
+            pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+//            SetCurrentExecutorDataContainer(pxDataContainer);
+
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+            SetFsmNextStateDoneOk(CONFIGURATION_CREATE_EXECUTOR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingDoneOk(CONFIGURATION_CREATE_EXECUTOR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneError(DONE_ERROR);
+            SetFsmNextStateReadyWaitingError(DONE_ERROR);
+            SetFsmNextStateDoneWaitingError(DONE_ERROR);
+            SetFsmNextStateDoneWaitingDoneError(DONE_ERROR);
+        }
+        break;
+
+    case CONFIGURATION_CREATE_EXECUTOR_ANSWER_PROCESSING:
+        std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CREATE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
+        {
+            CurrentlyRunningTasksExecution();
+
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(SYSTEM_COMPONENTS_CREATE_START);
+        }
+        break;
+
+//-------------------------------------------------------------------------------
+    case SYSTEM_COMPONENTS_CREATE_START:
+        std::cout << "CMainProductionCycle::Fsm SYSTEM_COMPONENTS_CREATE_START"  << std::endl;
+        {
+            CurrentlyRunningTasksExecution();
+
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            pxDataContainer -> m_uiTaskId = m_uiSystemComponentsCreateId;
+            pxDataContainer -> m_uiFsmCommandState =
+                CSystemComponentsCreate::SYSTEM_COMPONENTS_CREATE_INTERNAL_MODULES_HANDLERS_CREATE_START;
+            pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+            SetFsmNextStateDoneOk(SYSTEM_COMPONENTS_CREATE_EXECUTOR_ANSWER_PROCESSING);
+            SetFsmNextStateReadyWaitingError(DONE_ERROR);
+            SetFsmNextStateDoneWaitingError(DONE_ERROR);
+            SetFsmNextStateDoneWaitingDoneError(DONE_ERROR);
+        }
+        break;
+
+    case SYSTEM_COMPONENTS_CREATE_EXECUTOR_ANSWER_PROCESSING:
+        std::cout << "CMainProductionCycle::Fsm SYSTEM_COMPONENTS_CREATE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
+        {
+            CurrentlyRunningTasksExecution();
+
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(MAIN_CYCLE_MODBUS_SLAVE);
+            SetFsmState(INTERNAL_MODULES_DATA_EXCHANGE_START);
+        }
+        break;
+
+//-------------------------------------------------------------------------------
+    case INTERNAL_MODULES_DATA_EXCHANGE_START:
+        std::cout << "CMainProductionCycle::Fsm INTERNAL_MODULES_DATA_EXCHANGE_START"  << std::endl;
+        {
+            CurrentlyRunningTasksExecution();
+
+//            GetTimerPointer() -> Set(100);
+
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            pxDataContainer -> m_uiTaskId = m_uiInternalModuleId;
+            pxDataContainer -> m_uiFsmCommandState =
+                CInternalModule::MODULES_DATA_EXCHANGE_START;
+            pxDataContainer -> m_puiDataPointer =
+                (uint8_t*)(GetResources() -> GetDeviceConfigSearchPointer());
+
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+            SetFsmNextStateDoneOk(INTERNAL_MODULES_DATA_EXCHANGE_EXECUTOR_ANSWER_PROCESSING);
+            SetFsmNextStateReadyWaitingError(DONE_ERROR);
+            SetFsmNextStateDoneWaitingError(DONE_ERROR);
+            SetFsmNextStateDoneWaitingDoneError(DONE_ERROR);
+        }
+        break;
+
+    case INTERNAL_MODULES_DATA_EXCHANGE_EXECUTOR_ANSWER_PROCESSING:
+        std::cout << "CMainProductionCycle::Fsm INTERNAL_MODULES_DATA_EXCHANGE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
+        {
+            CurrentlyRunningTasksExecution();
+
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(INTERNAL_MODULES_DATA_EXCHANGE_MAIN_CYCLE_START_WAITING);
+        }
+        break;
+
+    case INTERNAL_MODULES_DATA_EXCHANGE_MAIN_CYCLE_START_WAITING:
+//        std::cout << "CMainProductionCycle::Fsm INTERNAL_MODULES_DATA_EXCHANGE_MAIN_CYCLE_START_WAITING 1"  << std::endl;
+        {
+            CurrentlyRunningTasksExecution();
+
+//            if (GetTimerPointer() -> IsOverflow())
+//            {
+//                std::cout << "CMainProductionCycle::Fsm INTERNAL_MODULES_DATA_EXCHANGE_MAIN_CYCLE_START_WAITING 2"  << std::endl;
+//                GetTimerPointer() -> Set(100);
+//                SetFsmState(INTERNAL_MODULES_DATA_EXCHANGE_START);
+//            }
+                SetFsmState(INTERNAL_MODULES_DATA_EXCHANGE_START);
+        }
+        break;
+
+//-------------------------------------------------------------------------------
+    case MAIN_CYCLE_MODULES_INIT:
+//        std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_MODULES_INIT 1"  << std::endl;
+        CurrentlyRunningTasksExecution();
+
+//        CDataContainerDataBase* pxDataContainer =
+//            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+//        pxDataContainer -> m_uiTaskId = m_uiDeviceControlId;
+//        pxDataContainer -> m_uiFsmCommandState =
+//            CDeviceControl::DATA_BASE_BLOCK_READ;
+//        pxDataContainer -> m_uiDataIndex = uiBlockIndex;
+//        pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+//
+//        if (SetTaskData(GetExecutorDataContainerPointer()))
+//        {
+//            std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_MODULES_INIT 2" << std::endl;
+//            SetFsmState(REQUEST_PROCESSING_EXECUTOR_DONE_CHECK_START);
+//        }
+//        else
+//        {
+//            std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_MODULES_INIT 3" << std::endl;
+//            SetFsmState(REQUEST_PROCESSING_EXECUTOR_READY_CHECK_START);
+//        }
+
+//        m_pxOperatingDataContainer -> m_uiFsmCommandState =
+//            CAnalogueSignals::DATA_BASE_BLOCK_START_READ;
+        m_pxOperatingDataContainer -> m_uiFsmCommandState =
+            CAnalogueSignals::DATA_BASE_BLOCK_CHECK_START;
+        m_pxAnalogueSignals ->
+        SetTaskData(m_pxOperatingDataContainer);
+
+        GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
+        SetFsmState(MAIN_CYCLE_MODULES_INIT_END_WAITING);
+        break;
+
+    case MAIN_CYCLE_MODULES_INIT_END_WAITING:
+//        std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_MODULES_INIT_END_WAITING"  << std::endl;
+    {
+        CurrentlyRunningTasksExecution();
+
+        m_pxAnalogueSignals ->
+        GetTaskData(m_pxOperatingDataContainer);
+
+        uint8_t uiFsmState = m_pxOperatingDataContainer -> m_uiFsmCommandState;
+
+        if (uiFsmState == DONE_OK)
+        {
+            std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_MODULES_INIT_END_WAITING 2"  << std::endl;
+            SetFsmState(MAIN_CYCLE_MODBUS_SLAVE);
+        }
+        else if (uiFsmState == DONE_ERROR)
+        {
+            std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_MODULES_INIT_END_WAITING 3"  << std::endl;
+            SetFsmState(DONE_ERROR);
+        }
+        else
+        {
+            // Время ожидания выполнения запроса закончилось?
+            if (GetTimerPointer() -> IsOverflow())
+            {
+                std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_MODULES_INIT_END_WAITING 4"  << std::endl;
+                SetFsmState(DONE_ERROR);
+            }
+        }
+    }
+    break;
 
     case MAIN_CYCLE_MODBUS_SLAVE:
-//        std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_MODBUS_SLAVE"  << std::endl;
+        std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_MODBUS_SLAVE"  << std::endl;
 //        m_pxModbusTcpSlaveUpperLevel -> Fsm();
 //        m_pxModbusRtuSlaveUpperLevel -> Fsm();
-        //CurrentlyRunningTasksExecution();
+        CurrentlyRunningTasksExecution();
 
-        usleep(1000);
+        GetTimerPointer() -> Set(100);
+
+//        usleep(1000);
+        SetFsmState(MAIN_CYCLE_START_WAITING);
         break;
 
-    case LED_BLINK_ON:
-//        //std::cout << "CMainProductionCycle::Fsm LED_BLINK_ON"  << std::endl;
-//        m_pxLedBlinker -> Fsm();
-        usleep(1000);
+    case MAIN_CYCLE_START_WAITING:
+//        std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_START_WAITING 1"  << std::endl;
+        CurrentlyRunningTasksExecution();
+
+        if (GetTimerPointer() -> IsOverflow())
+        {
+//            std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_START_WAITING 2"  << std::endl;
+            GetTimerPointer() -> Set(100);
+            SetFsmState(MAIN_CYCLE_MODULES_INTERACTION);
+        }
+
         break;
 
-    case LED_BLINK_OFF:
-//        //std::cout << "CMainProductionCycle::Fsm LED_BLINK_ON"  << std::endl;
-        SetFsmState(START);
-        break;
-
-    default:
-        break;
-    }
-
-    return GetFsmState();
-}
-
-//-------------------------------------------------------------------------------
-
-
-
-
-//-------------------------------------------------------------------------------
-CLedBlinker::CLedBlinker()
-{
-    std::cout << "CLedBlinker constructor"  << std::endl;
-    SetFsmState(START);
-}
-
-//-------------------------------------------------------------------------------
-CLedBlinker::~CLedBlinker()
-{
-    std::cout << "CLedBlinker destructor"  << std::endl;
-}
-
-//-------------------------------------------------------------------------------
-uint8_t CLedBlinker::Init(void)
-{
-    std::cout << "CLedBlinker Init"  << std::endl;
-}
-
-//-------------------------------------------------------------------------------
-uint8_t CLedBlinker::Fsm(void)
-{
-//        std::cout << "CLedBlinker::Fsm 1"  << std::endl;
-
-    switch (GetFsmState())
+    case MAIN_CYCLE_MODULES_INTERACTION:
+//        std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_MODULES_INTERACTION"  << std::endl;
     {
-    case START:
-        //std::cout << "CLedBlinker::Fsm START"  << std::endl;
-        SetFsmState(LED_ON);
+        CurrentlyRunningTasksExecution();
+
+        //        m_pxInternalModule ->
+        //        GetModuleType(0);
+        //        {
+        //
+        ////            CInternalModuleMuvr xInternalModuleMuvr;
+        //////            CInternalModule xInternalModuleMuvr;
+        ////            xInternalModuleMuvr.
+        ////            GetModuleType(0);
+        //
+        ////            CInternalModuleMuvr xInternalModuleMuvr;
+        //////            CInternalModule xInternalModuleMuvr;
+        ////            xInternalModuleMuvr.
+        ////            DataBaseRead(0);
+        ////            m_pxInternalModuleMuvr ->
+        ////            DataBaseRead(0);
+        //            m_pxInternalModuleMuvr ->
+        //            GetModuleType(0);
+        //
+        //        }
+
+//            CDataContainerDataBase xOperatingDataContainer;
+//            xOperatingDataContainer.m_uiFsmCommandState =
+//                CInternalModuleMuvr::MUVR_GET_MODULE_TYPE;
+//            m_pxInternalModuleMuvr ->
+//            SetTaskData(&xOperatingDataContainer);
+
+//            CDataContainerDataBase xOperatingDataContainer;
+//            xOperatingDataContainer.m_uiFsmCommandState =
+//                CInternalModuleMuvr::MUVR_DATA_BASE_READ;
+//            xOperatingDataContainer.m_puiDataPointer =
+//                m_puiIntermediateBuff;
+//            m_pxInternalModuleMuvr ->
+//            SetTaskData(&xOperatingDataContainer);
+
+//        CDataContainerDataBase xOperatingDataContainer;
+//        xOperatingDataContainer.m_uiFsmCommandState =
+//            CInternalModuleMuvr::MUVR_DATA_EXCHANGE;
+//        m_pxInternalModuleMuvr ->
+//        SetTaskData(&xOperatingDataContainer);
+
+
+        SetFsmState(MAIN_CYCLE_DISCRETE_SIGNALS_PROCESSING);
+
+    }
+    break;
+
+    case MAIN_CYCLE_DISCRETE_SIGNALS_PROCESSING:
+//        std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_DISCRETE_SIGNALS_PROCESSING"  << std::endl;
+        CurrentlyRunningTasksExecution();
+
+        SetFsmState(MAIN_CYCLE_END);
         break;
 
-    case READY:
-        //std::cout << "CLedBlinker::Fsm READY"  << std::endl;
-        break;
+    case MAIN_CYCLE_END:
+//        std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_END"  << std::endl;
+        CurrentlyRunningTasksExecution();
 
-    case IDDLE:
-        //std::cout << "CLedBlinker::Fsm IDDLE"  << std::endl;
-        break;
-
-    case STOP:
-//        //std::cout << "CLedBlinker::Fsm STOP"  << std::endl;
-        SetFsmState(START);
-        break;
-
-    case LED_ON:
-        std::cout << "CLedBlinker::Fsm LED_ON"  << std::endl;
-        GetTimerPointer() -> Set(500);
-        SetFsmState(LED_ON_PERIOD_END_WAITING);
-        break;
-
-    case LED_ON_PERIOD_END_WAITING:
-//        //std::cout << "CLedBlinker::Fsm LED_ON_PERIOD_END_WAITING"  << std::endl;
-        if (GetTimerPointer() -> IsOverflow())
-        {
-            SetFsmState(LED_OFF);
-        }
-        break;
-
-    case LED_OFF:
-        std::cout << "CLedBlinker::Fsm LED_OFF"  << std::endl;
-        GetTimerPointer() -> Set(500);
-        SetFsmState(LED_OFF_PERIOD_END_WAITING);
-        break;
-
-    case LED_OFF_PERIOD_END_WAITING:
-//        //std::cout << "CLedBlinker::Fsm LED_OFF_PERIOD_END_WAITING"  << std::endl;
-        if (GetTimerPointer() -> IsOverflow())
-        {
-            SetFsmState(LED_ON);
-        }
+        SetFsmState(MAIN_CYCLE_START_WAITING);
         break;
 
     default:
@@ -659,5 +1146,8 @@ uint8_t CLedBlinker::Fsm(void)
 
     return GetFsmState();
 }
+
+//-------------------------------------------------------------------------------
+
 
 //-------------------------------------------------------------------------------

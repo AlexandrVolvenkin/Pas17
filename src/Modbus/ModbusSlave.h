@@ -36,11 +36,29 @@ public:
     {
         COMMUNICATION_START = NEXT_STEP,
         COMMUNICATION_RECEIVE_START,
+        COMMUNICATION_RECEIVE_CONTINUE,
         MESSAGE_RECEIVE_WAITING,
+
         REQUEST_PROCESSING,
-        BEFORE_ANSWERING_WAITING,
-        MESSAGE_SEND,
-        AFTER_ANSWERING_WAITING,
+
+        EXECUTOR_ANSWER_PROCESSING,
+
+        MESSAGE_TRANSMIT_START,
+        MESSAGE_TRANSMIT_BEFORE_WAITING,
+        MESSAGE_TRANSMIT_AFTER_WAITING,
+
+        RESPONSE_EXCEPTION_ILLEGAL_FUNCTION,
+        RESPONSE_EXCEPTION_ILLEGAL_DATA_ADDRESS,
+        RESPONSE_EXCEPTION_ILLEGAL_DATA_VALUE,
+        RESPONSE_EXCEPTION_SLAVE_OR_SERVER_FAILURE,
+        RESPONSE_EXCEPTION_ACKNOWLEDGE,
+        RESPONSE_EXCEPTION_SLAVE_OR_SERVER_BUSY,
+        RESPONSE_EXCEPTION_NEGATIVE_ACKNOWLEDGE,
+        RESPONSE_EXCEPTION_MEMORY_PARITY,
+        RESPONSE_EXCEPTION_NOT_DEFINED,
+        RESPONSE_EXCEPTION_GATEWAY_PATH,
+        RESPONSE_EXCEPTION_GATEWAY_TARGET,
+        RESPONSE_EXCEPTION_MAX,
     };
 
     enum
@@ -49,37 +67,25 @@ public:
         MAX_MODBUS_MESSAGE_LENGTH = 256,
     };
 
+
     CModbusSlave();
     CModbusSlave(CResources* pxResources);
     virtual ~CModbusSlave();
+
+    uint8_t Init(void);
+    size_t GetObjectLength(void);
 
     void SetModbusSlaveLinkLayerName(std::string sName);
     void SetModbusSlaveLinkLayer(CModbusSlaveLinkLayer* pxModbusSlaveLinkLayer);
 
     void SetDeviceControlName(std::string sName);
     void SetDeviceControl(CDeviceControl* pxDeviceControl);
+    CDeviceControl* GetDeviceContro(void);
 
-    void SetDeviceControlLinkName(std::string sName);
-    void SetDeviceControlLink(CLinkInterface* pxLink);
-
-    void ModbusWorkingArraysInit(void);
-
-    void WorkingArraysInit(uint8_t *puiCoils,
-                           uint8_t *puiDiscreteInputs,
-                           uint16_t *puiHoldingRegisters,
-                           uint16_t *puiInputRegisters,
-                           uint16_t uiCoilsNumber,
-                           uint16_t uiDiscreteInputsNumber,
-                           uint16_t uiHoldingRegistersNumber,
-                           uint16_t uiInputRegistersNumber);
-    void WorkingArraysCreate(uint16_t uiCoilsNumber,
-                             uint16_t uiDiscreteInputsNumber,
-                             uint16_t uiHoldingRegistersNumber,
-                             uint16_t uiInputRegistersNumber);
-    void WorkingArraysDelete(void);
+    void WorkingArraysInit(void);
     static const char *ModbusStringError(int errnum);
-//    void SlaveSet(uint8_t );
 
+//-------------------------------------------------------------------------------
     uint16_t ReadCoils(void);
     uint16_t ReadDiscreteInputs(void);
     uint16_t ReadHoldingRegisters(void);
@@ -97,24 +103,31 @@ public:
     uint16_t DataBaseWrite(void);
     uint16_t RequestProcessing(void);
 
+//-------------------------------------------------------------------------------
+    uint16_t ReadCoilsAnswer(void);
+    uint16_t ReadDiscreteInputsAnswer(void);
+    uint16_t ReadHoldingRegistersAnswer(void);
+    uint16_t ReadInputRegistersAnswer(void);
+    uint16_t WriteSingleCoilAnswer(void);
+    uint16_t WriteSingleRegisterAnswer(void);
+    uint16_t WriteMultipleCoilsAnswer(void);
+    uint16_t WriteMultipleRegistersAnswer(void);
+    uint16_t ReadExceptionStatusAnswer(void);
+    uint16_t ReportSlaveIDAnswer(void);
+    uint16_t WriteAndReadRegistersAnswer(void);
+    uint16_t ProgrammingAnswer(void);
+    uint16_t PollProgrammingAnswer(void);
+    uint16_t DataBaseReadAnswer(void);
+    uint16_t DataBaseWriteAnswer(void);
+    uint16_t AnswerProcessing(void);
+
+//-------------------------------------------------------------------------------
     uint8_t Fsm(void);
 
 //protected:
 //private:
 
-//    virtual bool IsDataWrited(void) = 0;
-//    int8_t MessengerIsReady(void);
-//    virtual uint16_t Tail(uint8_t *, uint16_t ) = 0;
-    uint16_t RequestBasis(uint8_t uiSlave,
-                          uint8_t uiFunctionCode,
-                          uint16_t uiAddress,
-                          uint16_t uiBitNumber,
-                          uint8_t *puiRequest);
-    uint16_t ResponseBasis(uint8_t, uint8_t, uint8_t * );
-    uint16_t ResponseException(uint8_t, uint8_t, uint8_t, uint8_t * );
-//    uint16_t SendMessage(uint8_t *, uint16_t );
-//    virtual uint16_t Send(uint8_t *, uint16_t ) = 0;
-
+    uint16_t ResponseException(uint8_t uiExceptionCode);
     uint16_t ByteToBitPack(uint16_t,
                            uint16_t,
                            uint8_t *,
@@ -129,23 +142,10 @@ public:
     void SetFloat(float, uint16_t * );
 
 public:
-//-------------------------------------------------------------------------------
-// ModbusMaster
-//    int8_t ReadCoilsRequest(uint16_t uiAddress,
-//                            uint16_t uiBitNumber);
-//    uint16_t ReadCoilsReply(uint8_t *puiDestination);
-//    uint8_t CheckConfirmation(uint8_t *puiDestination, uint16_t uiLength);
-    int8_t ReadDiscreteInputsRequest(uint8_t uiSlaveAddress,
-                                     uint16_t uiAddress,
-                                     uint16_t uiBitNumber);
-    uint16_t ReadDiscreteInputsReceive(uint8_t *puiMessage, uint16_t uiLength);
 
 
 //private:
 //protected:
-
-//    static uint8_t CheckConfirmation(uint8_t *puiResponse, uint16_t uiLength);
-    uint16_t AnswerProcessing(uint8_t *puiResponse, uint16_t uiFrameLength);
 
     uint8_t GetOwnAddress(void)
     {
@@ -178,16 +178,17 @@ public:
 //-------------------------------------------------------------------------------
     std::string m_sModbusSlaveLinkLayerName;
     CModbusSlaveLinkLayerInterface* m_pxModbusSlaveLinkLayer;
+    uint8_t m_uiModbusSlaveLinkLayerId;
 
     std::string m_sDeviceControlName;
     CDeviceControl* m_pxDeviceControl;
-
-    std::string m_sDeviceControlLinkName;
-    CLinkInterface* m_pxDeviceControlLink;
+    uint8_t m_uiDeviceControlId;
 
     uint8_t m_uiOwnAddress;
     uint8_t m_uiSlaveAddress;
     uint8_t m_uiFunctionCode;
+    uint16_t  m_uiLength;
+    uint16_t m_uiAddress;
     uint16_t m_uiQuantity;
     uint16_t m_uiMessageLength;
     // таймоут по отсутствию подтверждения.
@@ -210,6 +211,8 @@ public:
 
     friend class CModbusRtu;
     friend class CModbusTcp;
+
+    CDataContainerDataBase* m_pxOperatingDataContainer;
 };
 
 //-------------------------------------------------------------------------------

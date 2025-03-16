@@ -137,6 +137,9 @@ public:
     CDataStore();
     virtual ~CDataStore();
 
+    uint8_t Init(void);
+    size_t GetObjectLength(void);
+
     void SetStorageDeviceName(std::string sName);
     void SetStorageDevice(CStorageDeviceInterface* pxStorageDevice);
 
@@ -161,7 +164,7 @@ public:
 
     void SetBlockIndex(uint8_t uiBlockIndex);
 
-protected:
+//protected:
     void CreateServiceSection(void);
     uint8_t TemporaryServiceSectionWritePrepare(void);
     uint8_t ServiceSectionWritePrepare(void);

@@ -70,33 +70,33 @@ CTimer* CDfa::GetTimerPointer(void)
     return &m_xTimer;
 }
 
-//-------------------------------------------------------------------------------
-bool CDfa::IsDoneOk(void)
-{
-    if (m_uiFsmOperationStatus == DONE_OK)
-    {
-        SetFsmOperationStatus(0);
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
-
-//-------------------------------------------------------------------------------
-bool CDfa::IsDoneError(void)
-{
-    if (m_uiFsmOperationStatus == DONE_ERROR)
-    {
-        SetFsmOperationStatus(0);
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
+////-------------------------------------------------------------------------------
+//bool CDfa::IsDoneOk(void)
+//{
+//    if (m_uiFsmOperationStatus == DONE_OK)
+//    {
+//        SetFsmOperationStatus(0);
+//        return true;
+//    }
+//    else
+//    {
+//        return false;
+//    }
+//}
+//
+////-------------------------------------------------------------------------------
+//bool CDfa::IsDoneError(void)
+//{
+//    if (m_uiFsmOperationStatus == DONE_ERROR)
+//    {
+//        SetFsmOperationStatus(0);
+//        return true;
+//    }
+//    else
+//    {
+//        return false;
+//    }
+//}
 
 
 

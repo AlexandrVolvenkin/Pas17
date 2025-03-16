@@ -17,34 +17,15 @@
 #include "MessageBox.h"
 #include "Task.h"
 
-////-------------------------------------------------------------------------------
-//CTaskInterface::CTaskInterface()
-//{
-//    std::cout << "CTaskInterface constructor 1"  << std::endl;
-////    SetFsmState(IDDLE);
-//}
-//
-////-------------------------------------------------------------------------------
-//CTaskInterface::~CTaskInterface()
-//{
-//    std::cout << "CTaskInterface destructor"  << std::endl;
-//}
-//    char* CTaskInterface::GetTaskNamePointer(void) {};
-//    std::shared_ptr<CTaskInterface::TArgumentData> CTaskInterface::GetArgumentDataPointer(void) {};
-//    void CTaskInterface::SetResources(CResources* pxResources) {};
-//    CResources* CTaskInterface::GetResources(void) {};
-//    void CTaskInterface::SetTaskCustomerName(std::string sName) {};
 //-------------------------------------------------------------------------------
 CTask::CTask()
 {
     std::cout << "CTask constructor 1"  << std::endl;
-//    SetFsmState(IDDLE);
 }
 //-------------------------------------------------------------------------------
 CTask::CTask(CResources* pxResources)
 {
     std::cout << "CTask constructor 2"  << std::endl;
-//    SetFsmState(IDDLE);
 }
 
 //-------------------------------------------------------------------------------
@@ -54,46 +35,10 @@ CTask::~CTask()
 }
 
 //-------------------------------------------------------------------------------
-uint8_t CTask::Fsm(void)
-{
-
-}
-
-//-------------------------------------------------------------------------------
-uint8_t CTask::GetFsmState(void)
-{
-    return m_uiFsmState;
-}
-
-//-------------------------------------------------------------------------------
-void CTask::SetFsmState(uint8_t uiData)
-{
-    m_uiFsmState = uiData;
-}
-
-//-------------------------------------------------------------------------------
-CTimer* CTask::GetTimerPointer(void)
-{
-    return &m_xTimer;
-}
-
-//-------------------------------------------------------------------------------
 char* CTask::GetTaskNamePointer(void)
 {
     return m_acTaskName;
-};
-
-////-------------------------------------------------------------------------------
-//std::shared_ptr<CTaskInterface::TArgumentData> CTask::GetArgumentDataPointer(void)
-//{
-//    return m_pxArgumentData;
-//};
-//
-////-------------------------------------------------------------------------------
-//std::shared_ptr<CDataContainerInterface> CTask::GetDataContainerPointer(void)
-//{
-//    return m_pxDataContainer;
-//};
+}
 
 //-------------------------------------------------------------------------------
 void CTask::SetResources(CResources* pxResources)
@@ -108,101 +53,178 @@ CResources* CTask::GetResources(void)
 }
 
 //-------------------------------------------------------------------------------
-void CTask::SetTaskCustomerName(std::string sName)
+void CTask::SetCustomerDataContainer(CDataContainerInterface* pxDataContainer)
 {
-    m_sTaskCustomerName = sName;
+    m_pxCustomerDataContainer = pxDataContainer;
 }
 
 //-------------------------------------------------------------------------------
-void CTask::SetMessageBoxDataContainer(CDataContainerInterface* pxDataContainer)
+CDataContainerInterface* CTask::GetCustomerDataContainerPointer(void)
 {
-    m_pxMessageBoxDataContainer = pxDataContainer;
+    return m_pxCustomerDataContainer;
 }
 
 //-------------------------------------------------------------------------------
-CDataContainerInterface* CTask::GetMessageBoxDataContainerPointer(void)
+void CTask::SetExecutorDataContainer(CDataContainerInterface* pxDataContainer)
 {
-    return m_pxMessageBoxDataContainer;
-};
-
-//-------------------------------------------------------------------------------
-void CTask::SetOperatingDataContainer(CDataContainerInterface* pxDataContainer)
-{
-    m_pxOperatingDataContainer = pxDataContainer;
+    m_pxExecutorDataContainer = pxDataContainer;
 }
 
 //-------------------------------------------------------------------------------
-CDataContainerInterface* CTask::GetOperatingDataContainerPointer(void)
+CDataContainerInterface* CTask::GetExecutorDataContainerPointer(void)
 {
-    return m_pxOperatingDataContainer;
-};
-
-//-------------------------------------------------------------------------------
-void CTask::SetCommandDataContainer(CDataContainerInterface* pxDataContainer)
-{
-    m_pxCommandDataContainer = pxDataContainer;
+    return m_pxExecutorDataContainer;
 }
 
 //-------------------------------------------------------------------------------
-CDataContainerInterface* CTask::GetCommandDataContainerPointer(void)
+void CTask::SetCurrentCustomerDataContainer(CDataContainerInterface* pxDataContainer)
 {
-    return m_pxCommandDataContainer;
-};
-
-//-------------------------------------------------------------------------------
-void CTask::SetMessageBoxPoiner(std::shared_ptr<CMessageBoxInterface> pxMessageBox)
-{
-    m_pxMessageBox = pxMessageBox;
+    m_pxCurrentCustomerDataContainer = pxDataContainer;
 }
 
 //-------------------------------------------------------------------------------
-std::shared_ptr<CMessageBoxInterface> CTask::GetMessageBoxPointer(void)
+CDataContainerInterface* CTask::GetCurrentCustomerDataContainerPointer(void)
 {
-    return m_pxMessageBox;
-};
+    return m_pxCurrentCustomerDataContainer;
+}
+
+//-------------------------------------------------------------------------------
+void CTask::SetCurrentExecutorDataContainer(CDataContainerInterface* pxDataContainer)
+{
+    m_pxCurrentExecutorDataContainer = pxDataContainer;
+}
+
+//-------------------------------------------------------------------------------
+CDataContainerInterface* CTask::GetCurrentExecutorDataContainerPointer(void)
+{
+    return m_pxCurrentExecutorDataContainer;
+}
 
 ////-------------------------------------------------------------------------------
-//uint8_t CTask::Init(void)
+//void CTask::SetTaskData(CDataContainerInterface* pxDataContainer)
 //{
-//    std::cout << "CTask Init"  << std::endl;
+//
+//}
+//
+////-------------------------------------------------------------------------------
+//CDataContainerInterface* CTask::GetTaskData(void)
+//{
+//    return 0;
 //}
 
-////-------------------------------------------------------------------------------
-//void CTask::AddCurrentlyRunningTask(CTaskInterface* pxTask)
-//{
-//    //std::cout << "CTask::AddCurrentlyRunningTask"  << std::endl;
-//
-//}
+//-------------------------------------------------------------------------------
+size_t CTask::GetObjectLength(void)
+{
+    std::cout << "CTask GetObjectLength"  << std::endl;
+    return sizeof(*this);
+}
 
-////-------------------------------------------------------------------------------
-//void CTask::AddCommonTask(CTaskInterface* pxTask)
-//{
-//    std::cout << "CTask::AddCommonTask 1"  << std::endl;
-//
-//}
+//-------------------------------------------------------------------------------
+bool CTask::IsTaskReady(void)
+{
+    uint8_t uiFsmState = GetFsmState();
 
-////-------------------------------------------------------------------------------
-//uint8_t CTask::Fsm(void)
-//{
-////        std::cout << "CTask::Fsm 1"  << std::endl;
-//
-//    switch (GetFsmState())
-//    {
-//    case IDDLE:
-//        //std::cout << "CTask::Fsm IDDLE"  << std::endl;
-//        break;
-//
-//    case START:
-////        //std::cout << "CTask::Fsm START"  << std::endl;
-//        SetFsmState(START);
-//        break;
-//
-//    default:
-//        break;
-//    }
-//
-//    return GetFsmState();
-//}
+    if ((uiFsmState == READY) ||
+            (uiFsmState == DONE_OK) ||
+            (uiFsmState == DONE_ERROR))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+//-------------------------------------------------------------------------------
+bool CTask::IsDoneOk(void)
+{
+    if (GetFsmOperationStatus() == DONE_OK)
+    {
+        SetFsmOperationStatus(0);
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+//-------------------------------------------------------------------------------
+bool CTask::IsDoneError(void)
+{
+    if (GetFsmOperationStatus() == DONE_ERROR)
+    {
+        SetFsmOperationStatus(0);
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+//-------------------------------------------------------------------------------
+bool CTask::SetTaskData(uint8_t uiTaskId, CDataContainerInterface* pxDataContainer)
+{
+    std::cout << "CTask::SetTaskData 1" << std::endl;
+
+    CTaskInterface* pxTask =
+        GetResources() ->
+        GetTaskPointerById(uiTaskId);
+
+    if (pxTask -> IsTaskReady())
+    {
+        std::cout << "CTask::SetTaskData 2" << std::endl;
+        pxTask -> SetCustomerDataContainer(pxDataContainer);
+        pxTask -> SetFsmState(pxDataContainer ->
+                              GetFsmCommandState());
+        return true;
+    }
+    else
+    {
+        std::cout << "CTask::SetTaskData 3" << std::endl;
+        return false;
+    }
+}
+
+//-------------------------------------------------------------------------------
+bool CTask::SetTaskData(CDataContainerInterface* pxDataContainer)
+{
+    std::cout << "CTask::SetTaskData 1" << std::endl;
+
+    std::cout << "CTask::SetTaskData TaskId "  << (int)pxDataContainer ->
+              GetTaskId() << std::endl;
+    CTaskInterface* pxTask =
+        GetResources() ->
+        GetTaskPointerById(pxDataContainer ->
+                           GetTaskId());
+
+    std::cout << "CTask::SetTaskData m_sTaskName "  << pxTask ->
+              GetTaskName() << std::endl;
+
+    if (pxTask)
+    {
+        if (pxTask -> IsTaskReady())
+        {
+            std::cout << "CTask::SetTaskData 2" << std::endl;
+            pxTask -> SetCustomerDataContainer(pxDataContainer);
+            pxTask -> SetFsmState(pxDataContainer ->
+                                  GetFsmCommandState());
+            return true;
+        }
+        else
+        {
+            std::cout << "CTask::SetTaskData 3" << std::endl;
+            return false;
+        }
+    }
+    else
+    {
+        std::cout << "CTask::SetTaskData 4" << std::endl;
+        return false;
+    }
+}
 
 //-------------------------------------------------------------------------------
 
