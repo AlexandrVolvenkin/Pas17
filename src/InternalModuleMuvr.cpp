@@ -24,7 +24,7 @@ using namespace std;
 //-------------------------------------------------------------------------------
 CInternalModuleMuvr::CInternalModuleMuvr()
 {
-    std::cout << "CInternalModuleMuvr constructor"  << std::endl;
+    //std::cout << "CInternalModuleMuvr constructor"  << std::endl;
     SetFsmState(START);
 }
 
@@ -49,7 +49,7 @@ void CInternalModuleMuvr::SetCommunicationDevice(CCommunicationDeviceInterface* 
 //-------------------------------------------------------------------------------
 uint8_t CInternalModuleMuvr::Init(void)
 {
-    std::cout << "CInternalModuleMuvr Init"  << std::endl;
+    //std::cout << "CInternalModuleMuvr Init"  << std::endl;
 //    m_pxCommandDataContainer = static_cast<CDataContainerDataBase*>(GetResources() ->
 //                               AddDataContainer(std::make_shared<CDataContainerDataBase>()));
     m_pxOperatingDataContainer = static_cast<CDataContainerDataBase*>(GetResources() ->
@@ -64,18 +64,18 @@ uint8_t CInternalModuleMuvr::Init(void)
 ////-------------------------------------------------------------------------------
 //bool CInternalModuleMuvr::SetTaskData(CDataContainerDataBase* pxDataContainer)
 //{
-////    std::cout << "CInternalModuleMuvr::SetTaskData 1" << std::endl;
+////    //std::cout << "CInternalModuleMuvr::SetTaskData 1" << std::endl;
 //
 //    if (IsTaskReady())
 //    {
-////        std::cout << "CInternalModuleMuvr::SetTaskData 2" << std::endl;
+////        //std::cout << "CInternalModuleMuvr::SetTaskData 2" << std::endl;
 //        *m_pxOperatingDataContainer = *pxDataContainer;
 //        SetFsmState(m_pxOperatingDataContainer -> m_uiFsmCommandState);
 //        return true;
 //    }
 //    else
 //    {
-//        std::cout << "CInternalModuleMuvr::SetTaskData 3" << std::endl;
+//        //std::cout << "CInternalModuleMuvr::SetTaskData 3" << std::endl;
 //        return false;
 //    }
 //}
@@ -83,7 +83,7 @@ uint8_t CInternalModuleMuvr::Init(void)
 ////-------------------------------------------------------------------------------
 //bool CInternalModuleMuvr::GetTaskData(CDataContainerDataBase* pxDataContainer)
 //{
-//    std::cout << "CInternalModuleMuvr::GetTaskData 1" << std::endl;
+//    //std::cout << "CInternalModuleMuvr::GetTaskData 1" << std::endl;
 //
 //    m_pxOperatingDataContainer -> m_uiFsmCommandState = GetFsmState();
 //    *pxDataContainer = *m_pxOperatingDataContainer;
@@ -130,7 +130,7 @@ uint8_t CInternalModuleMuvr::Init(void)
 //-----------------------------------------------------------------------------------------------------
 void CInternalModuleMuvr::Allocate(void)
 {
-    std::cout << "CInternalModuleMuvr::Allocate 1"  << std::endl;
+    //std::cout << "CInternalModuleMuvr::Allocate 1"  << std::endl;
 
 //    m_uiAddress = xMemoryAllocationContext.uiAddress;
 //    m_puiRxBuffer = xMemoryAllocationContext.puiRxBuffer;
@@ -210,7 +210,7 @@ void CInternalModuleMuvr::Allocate(void)
 ////-------------------------------------------------------------------------------
 //uint8_t CInternalModuleMuvr::GetModuleType(uint8_t uiAddress)
 //{
-//    std::cout << "CInternalModuleMuvr::GetModuleType 1"  << std::endl;
+//    //std::cout << "CInternalModuleMuvr::GetModuleType 1"  << std::endl;
 //    uint8_t auiSpiTxBuffer[TX_RX_BUFF_SIZE];
 //    uint8_t auiSpiRxBuffer[TX_RX_BUFF_SIZE];
 //
@@ -223,7 +223,7 @@ void CInternalModuleMuvr::Allocate(void)
 //                                        GET_MODULE_TYPE_COMMAND_ANSWER_LENGTH +
 //                                        ONE_BYTE_CRC_LENGTH,
 //                                        LOW_SPEED_IN_HZ);
-//    std::cout << "CInternalModuleMuvr::GetModuleType 2"  << std::endl;
+//    //std::cout << "CInternalModuleMuvr::GetModuleType 2"  << std::endl;
 //
 //    {
 //        cout << "GET_MODULE_TYPE_COMMAND auiSpiRxBuffer" << endl;
@@ -244,14 +244,14 @@ void CInternalModuleMuvr::Allocate(void)
 //    if (auiSpiRxBuffer[GET_MODULE_TYPE_COMMAND_OFFSET] ==
 //            GET_MODULE_TYPE_COMMAND) // if echo answer is ok.
 //    {
-//        std::cout << "CInternalModuleMuvr::GetModuleType 3"  << std::endl;
-////                std::cout << "CInternalModuleMuvr::GetModuleType ucSlaveAddress 1 "  << (int)ucSlaveAddress << std::endl;
+//        //std::cout << "CInternalModuleMuvr::GetModuleType 3"  << std::endl;
+////                //std::cout << "CInternalModuleMuvr::GetModuleType ucSlaveAddress 1 "  << (int)ucSlaveAddress << std::endl;
 //        // обмен данными прошёл без ошибок?
 //        if ((iCrcSummOneByteCompare(&auiSpiRxBuffer[GET_MODULE_TYPE_COMMAND_OFFSET],
 //                                    GET_MODULE_TYPE_COMMAND_LENGTH +
 //                                    GET_MODULE_TYPE_COMMAND_ANSWER_LENGTH) > 0))
 //        {
-//            std::cout << "CInternalModuleMuvr::GetModuleType 4"  << std::endl;
+//            //std::cout << "CInternalModuleMuvr::GetModuleType 4"  << std::endl;
 ////            // модуль присутствует. увеличим значение переменной -
 ////            // фактическое количество модулей в системе.
 ////            (xPlcConfigSearchTemp.ui8ModulesQuantity)++;
@@ -264,12 +264,12 @@ void CInternalModuleMuvr::Allocate(void)
 ////
 ////            AddSystemComponent(auiSpiRxBuffer[MODULE_TYPE_OFFSET],
 ////                               ucSlaveAddress);
-////            std::cout << "CInternalModuleMuvr::GetModuleType ucSlaveAddress "  << (int)xPlcConfigSearchTemp.axConfigSearch[ucSlaveAddress].ui8Address << std::endl;
-////            std::cout << "CInternalModuleMuvr::GetModuleType ui8Type "  << (int)xPlcConfigSearchTemp.axConfigSearch[ucSlaveAddress].ui8Type << std::endl;
+////            //std::cout << "CInternalModuleMuvr::GetModuleType ucSlaveAddress "  << (int)xPlcConfigSearchTemp.axConfigSearch[ucSlaveAddress].ui8Address << std::endl;
+////            //std::cout << "CInternalModuleMuvr::GetModuleType ui8Type "  << (int)xPlcConfigSearchTemp.axConfigSearch[ucSlaveAddress].ui8Type << std::endl;
 //        }
 //        else
 //        {
-//            std::cout << "CInternalModuleMuvr::GetModuleType 5"  << std::endl;
+//            //std::cout << "CInternalModuleMuvr::GetModuleType 5"  << std::endl;
 ////            // сохраним адрес модуля в массиве для упорядочивания следования модулей при поиске на SPI.
 ////            xPlcConfigSearchTemp.axConfigSearch[ucSlaveAddress].ui8Address =
 ////                ucSlaveAddress;
@@ -278,7 +278,7 @@ void CInternalModuleMuvr::Allocate(void)
 ////                               ucSlaveAddress);
 //        }
 //    }
-//    std::cout << "CInternalModuleMuvr::GetModuleType 6"  << std::endl;
+//    //std::cout << "CInternalModuleMuvr::GetModuleType 6"  << std::endl;
 //}
 
 //-----------------------------------------------------------------------------------------------------
@@ -369,7 +369,7 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                                         TAIL_ANSWER_LENGTH,
                                         LOW_SPEED_IN_HZ);
 
-    //std::cout << "CInternalModuleMuvr::DataExchange auiSpiRxBuffer"  << std::endl;
+//    std::cout << "CInternalModuleMuvr::DataExchange auiSpiRxBuffer"  << std::endl;
 //    unsigned char *pucSourceTemp;
 //    pucSourceTemp = (unsigned char*)&auiSpiRxBuffer[0];
 //    for(int i=0; i<32 ; )
@@ -418,16 +418,20 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                     memset(&(m_pfAnalogueInputsValue[i]),
                            0,
                            sizeof(float));
+                    //std::cout << "CInternalModuleMuvr::DataExchange 31"  << std::endl;
                     // установим флаг недостоверности - вход недостоверен.
                     m_puiAnalogueInputsBadState[i] = 1;
+                    //std::cout << "CInternalModuleMuvr::DataExchange 32"  << std::endl;
                     // дискретные данные входа недостоверны, обнулим их.
                     memset(&(m_puiDiscreteInputsState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
                            0,
                            MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
+                    //std::cout << "CInternalModuleMuvr::DataExchange 33"  << std::endl;
                     // установим флаги недостоверности уставок LL, L, H, HH - недостоверны.
                     memset(&(m_puiDiscreteInputsBadState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
                            1,
                            MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
+                    //std::cout << "CInternalModuleMuvr::DataExchange 34"  << std::endl;
                 }
                 // включен режим калибровки текущего входа?
                 else if(
@@ -600,7 +604,7 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
 //-------------------------------------------------------------------------------
 uint8_t CInternalModuleMuvr::DataBaseRead(void)
 {
-    std::cout << "CInternalModuleMuvr::DataBaseRead 1"  << std::endl;
+    //std::cout << "CInternalModuleMuvr::DataBaseRead 1"  << std::endl;
     uint8_t auiSpiTxBuffer[TX_RX_BUFF_SIZE];
     uint8_t auiSpiRxBuffer[TX_RX_BUFF_SIZE];
 
@@ -623,7 +627,7 @@ uint8_t CInternalModuleMuvr::DataBaseRead(void)
                                         LOW_SPEED_IN_HZ);
 
     {
-        std::cout << "CInternalModuleMuvr::DataBaseRead auiSpiRxBuffer"  << std::endl;
+        //std::cout << "CInternalModuleMuvr::DataBaseRead auiSpiRxBuffer"  << std::endl;
         unsigned char *pucSourceTemp;
         pucSourceTemp = (unsigned char*)auiSpiRxBuffer;
         for(int i=0; i<64; )
@@ -640,12 +644,12 @@ uint8_t CInternalModuleMuvr::DataBaseRead(void)
     // модуль отвечает?
     if (auiSpiRxBuffer[SPI_COMMAND_BYTE_OFFSET] == MUVR_GET_DATA_BASE_COMMAND) // if echo answer is ok.
     {
-        std::cout << "CInternalModuleMuvr::DataBaseRead 2"  << std::endl;
+        //std::cout << "CInternalModuleMuvr::DataBaseRead 2"  << std::endl;
         // данные не повреждены?
         if (iCrcSummTwoByteCompare(&auiSpiRxBuffer[SPI_DATA_BYTE_OFFSET],
                                    ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_LENGTH) > 0)
         {
-            std::cout << "CInternalModuleMuvr::DataBaseRead 3"  << std::endl;
+            //std::cout << "CInternalModuleMuvr::DataBaseRead 3"  << std::endl;
 // в модулях аналогового ввода и в памяти прибора, базы данных хранятся в разных форматах.
 //  в модулях аналогового ввода сначала идут данные программирования входов(6 входов, по 20 байт) 120 байт, потом
 // текстовые реквизиты входов(6 входов, по 8 байт) 48 байт. 6 входов(120 + 48 = 168) байт.
@@ -661,9 +665,9 @@ uint8_t CInternalModuleMuvr::DataBaseRead(void)
             pucDestination[119] = pucSource[87];
             pucDestination[120] = pucSource[88];
             pucDestination[121] = pucSource[89];
-//            std::cout << "CInternalModuleMuvr::DataBaseRead pucSource[87] "  << (int)(pucSource[87]) << std::endl;
-//            std::cout << "CInternalModuleMuvr::DataBaseRead pucSource[88] "  << (int)(pucSource[88]) << std::endl;
-//            std::cout << "CInternalModuleMuvr::DataBaseRead pucSource[89] "  << (int)(pucSource[89]) << std::endl;
+//            //std::cout << "CInternalModuleMuvr::DataBaseRead pucSource[87] "  << (int)(pucSource[87]) << std::endl;
+//            //std::cout << "CInternalModuleMuvr::DataBaseRead pucSource[88] "  << (int)(pucSource[88]) << std::endl;
+//            //std::cout << "CInternalModuleMuvr::DataBaseRead pucSource[89] "  << (int)(pucSource[89]) << std::endl;
 
             for (uint8_t i = 0; i < MUVR_ANALOG_INPUT_QUANTITY; i++)
             {
@@ -907,12 +911,12 @@ uint8_t CInternalModuleMuvr::DataBaseBlockWriteCheck(void)
 //-------------------------------------------------------------------------------
 uint8_t CInternalModuleMuvr::Fsm(void)
 {
-//    std::cout << "CInternalModuleMuvr::Fsm 1" << endl;
+//    //std::cout << "CInternalModuleMuvr::Fsm 1" << endl;
     uint8_t uiReadyTaskCounter = 0;
     switch (GetFsmState())
     {
     case IDDLE:
-//        std::cout << "CInternalModuleMuvr::Fsm IDDLE"  << std::endl;
+//        //std::cout << "CInternalModuleMuvr::Fsm IDDLE"  << std::endl;
         break;
 
     case STOP:
@@ -920,14 +924,14 @@ uint8_t CInternalModuleMuvr::Fsm(void)
         break;
 
     case START:
-        std::cout << "CInternalModuleMuvr::Fsm START"  << std::endl;
+        //std::cout << "CInternalModuleMuvr::Fsm START"  << std::endl;
         Init();
         GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
         SetFsmState(INIT);
         break;
 
     case INIT:
-//        std::cout << "CInternalModuleMuvr::Fsm INIT 1"  << std::endl;
+//        //std::cout << "CInternalModuleMuvr::Fsm INIT 1"  << std::endl;
     {
         CTaskInterface* pxTask =
             GetResources() ->
@@ -935,10 +939,10 @@ uint8_t CInternalModuleMuvr::Fsm(void)
 
         if (pxTask != 0)
         {
-//                std::cout << "CInternalModuleMuvr::Fsm INIT 2"  << std::endl;
+//                //std::cout << "CInternalModuleMuvr::Fsm INIT 2"  << std::endl;
             if (pxTask -> GetFsmState() >= READY)
             {
-//                    std::cout << "CInternalModuleMuvr::Fsm INIT 3"  << std::endl;
+//                    //std::cout << "CInternalModuleMuvr::Fsm INIT 3"  << std::endl;
                 SetCommunicationDevice((CSpiCommunicationDevice*)pxTask);
                 uiReadyTaskCounter += 1;
 //                    SetFsmState(READY);
@@ -946,10 +950,10 @@ uint8_t CInternalModuleMuvr::Fsm(void)
         }
         else
         {
-//                std::cout << "CInternalModuleMuvr::Fsm INIT 4"  << std::endl;
+//                //std::cout << "CInternalModuleMuvr::Fsm INIT 4"  << std::endl;
             if (GetTimerPointer() -> IsOverflow())
             {
-                std::cout << "CInternalModuleMuvr::Fsm INIT 5"  << std::endl;
+                //std::cout << "CInternalModuleMuvr::Fsm INIT 5"  << std::endl;
                 SetFsmState(STOP);
             }
         }
@@ -963,12 +967,12 @@ uint8_t CInternalModuleMuvr::Fsm(void)
     break;
 
     case READY:
-//        std::cout << "CInternalModuleMuvr::Fsm READY"  << std::endl;
+//        //std::cout << "CInternalModuleMuvr::Fsm READY"  << std::endl;
 //    {
 //
 //        if (GetCommandDataLink() != 0)
 //        {
-//            std::cout << "CInternalModuleMuvr::Fsm READY 2"  << std::endl;
+//            //std::cout << "CInternalModuleMuvr::Fsm READY 2"  << std::endl;
 //            SetOperatingDataLink(GetCommandDataLink());
 //            SetFsmState(GetCommandDataLink() ->
 //                        GetDataContainerPointer() ->
@@ -982,49 +986,49 @@ uint8_t CInternalModuleMuvr::Fsm(void)
         break;
 
     case DONE_OK:
-//        std::cout << "CInternalModuleMuvr::Fsm DONE_OK"  << std::endl;
+//        //std::cout << "CInternalModuleMuvr::Fsm DONE_OK"  << std::endl;
 //        SetFsmOperationStatus(DONE_OK);
 //        SetFsmState(READY);
         break;
 
     case DONE_ERROR:
-//        std::cout << "CInternalModuleMuvr::Fsm DONE_ERROR"  << std::endl;
+//        //std::cout << "CInternalModuleMuvr::Fsm DONE_ERROR"  << std::endl;
 //        SetFsmOperationStatus(DONE_ERROR);
 //        SetFsmState(READY);
         break;
 
     case MUVR_GET_MODULE_TYPE:
-//        std::cout << "CInternalModuleMuvr::Fsm MUVR_GET_MODULE_TYPE"  << std::endl;
+//        //std::cout << "CInternalModuleMuvr::Fsm MUVR_GET_MODULE_TYPE"  << std::endl;
         GetModuleType(GetAddress());
         SetFsmState(DONE_OK);
         break;
 
     case MUVR_DATA_BASE_READ:
-        std::cout << "CInternalModuleMuvr::Fsm MUVR_DATA_BASE_READ"  << std::endl;
+        //std::cout << "CInternalModuleMuvr::Fsm MUVR_DATA_BASE_READ"  << std::endl;
         DataBaseRead();
         SetFsmState(DONE_OK);
         break;
 
     case MUVR_WRITE_DATA_BASE:
-        std::cout << "CInternalModuleMuvr::Fsm MUVR_WRITE_DATA_BASE"  << std::endl;
+        //std::cout << "CInternalModuleMuvr::Fsm MUVR_WRITE_DATA_BASE"  << std::endl;
         DataBaseBlockWrite();
         GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
         SetFsmState(MUVR_WRITE_DATA_BASE_CHECK);
         break;
 
     case MUVR_WRITE_DATA_BASE_CHECK:
-        std::cout << "CInternalModuleMuvr::Fsm MUVR_WRITE_DATA_BASE_CHECK 1"  << std::endl;
+        //std::cout << "CInternalModuleMuvr::Fsm MUVR_WRITE_DATA_BASE_CHECK 1"  << std::endl;
         {
             uint8_t uiFsmState = DataBaseBlockWriteCheck();
 
             if (uiFsmState == DATA_EXCHANGE_OK)
             {
-                std::cout << "CInternalModuleMuvr::Fsm MUVR_WRITE_DATA_BASE_CHECK 2"  << std::endl;
+                //std::cout << "CInternalModuleMuvr::Fsm MUVR_WRITE_DATA_BASE_CHECK 2"  << std::endl;
                 SetFsmState(DONE_OK);
             }
             else if (uiFsmState == DATA_EXCHANGE_ERROR)
             {
-                std::cout << "CInternalModuleMuvr::Fsm MUVR_WRITE_DATA_BASE_CHECK 3"  << std::endl;
+                //std::cout << "CInternalModuleMuvr::Fsm MUVR_WRITE_DATA_BASE_CHECK 3"  << std::endl;
                 SetFsmState(DONE_ERROR);
             }
             else
@@ -1032,7 +1036,7 @@ uint8_t CInternalModuleMuvr::Fsm(void)
                 // Время ожидания выполнения запроса закончилось?
                 if (GetTimerPointer() -> IsOverflow())
                 {
-                    std::cout << "CInternalModuleMuvr::Fsm MUVR_WRITE_DATA_BASE_CHECK 4"  << std::endl;
+                    //std::cout << "CInternalModuleMuvr::Fsm MUVR_WRITE_DATA_BASE_CHECK 4"  << std::endl;
                     SetFsmState(DONE_ERROR);
                 }
             }
@@ -1059,8 +1063,8 @@ uint8_t CInternalModuleMuvr::Fsm(void)
         break;
 
     case MUVR_DATA_EXCHANGE:
-        std::cout << "CInternalModuleMuvr::Fsm MUVR_DATA_EXCHANGE"  << std::endl;
-//        DataExchange();
+        //std::cout << "CInternalModuleMuvr::Fsm MUVR_DATA_EXCHANGE"  << std::endl;
+        DataExchange();
         ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
         SetFsmState(DONE_OK);
         break;

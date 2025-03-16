@@ -486,8 +486,9 @@ uint8_t CMainProductionCycle::InitTasks(void)
 //                               GetTaskPointerByNameFromMap("InternalModuleMuvr"));
 //    pxInternalModuleMuvr ->
 //    SetAddress(0);
-//
-//    GetResources() -> Allocate();
+
+//-------------------------------------------------------------------------------
+    GetResources() -> Allocate();
 }
 
 //-------------------------------------------------------------------------------
@@ -939,6 +940,8 @@ uint8_t CMainProductionCycle::Fsm(void)
         {
             CurrentlyRunningTasksExecution();
 
+//            GetTimerPointer() -> Set(100);
+
             CDataContainerDataBase* pxDataContainer =
                 (CDataContainerDataBase*)GetExecutorDataContainerPointer();
             pxDataContainer -> m_uiTaskId = m_uiInternalModuleId;
@@ -961,7 +964,22 @@ uint8_t CMainProductionCycle::Fsm(void)
             CurrentlyRunningTasksExecution();
 
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-            SetFsmState(INTERNAL_MODULES_DATA_EXCHANGE_START);
+            SetFsmState(INTERNAL_MODULES_DATA_EXCHANGE_MAIN_CYCLE_START_WAITING);
+        }
+        break;
+
+    case INTERNAL_MODULES_DATA_EXCHANGE_MAIN_CYCLE_START_WAITING:
+//        std::cout << "CMainProductionCycle::Fsm INTERNAL_MODULES_DATA_EXCHANGE_MAIN_CYCLE_START_WAITING 1"  << std::endl;
+        {
+            CurrentlyRunningTasksExecution();
+
+//            if (GetTimerPointer() -> IsOverflow())
+//            {
+//                std::cout << "CMainProductionCycle::Fsm INTERNAL_MODULES_DATA_EXCHANGE_MAIN_CYCLE_START_WAITING 2"  << std::endl;
+//                GetTimerPointer() -> Set(100);
+//                SetFsmState(INTERNAL_MODULES_DATA_EXCHANGE_START);
+//            }
+                SetFsmState(INTERNAL_MODULES_DATA_EXCHANGE_START);
         }
         break;
 
