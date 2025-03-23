@@ -113,29 +113,29 @@ struct TGpioControl
     unsigned long aulGpioMmapAddresses[GPIO_PORT_QUANTITY];
 };
 
-//-------------------------------------------------------------------------------
-class CGpio
-{
-public:
-//    CGpio();
-//    virtual ~CGpio();
-
-    static void Init(void);
-    static int8_t Open(void);
-    static int8_t Close(void);
-    static void SetPinOutput(unsigned char ucPortN, unsigned char ucPinN);
-    static void SetPinInput(unsigned char ucPortN, unsigned char ucPinN);
-    static void SetPin(unsigned char ucPortN, unsigned char ucPinN);
-    static void ClearPin(unsigned char ucPortN, unsigned char ucPinN);
-
-private:
-//    const char *m_pccDeviceName;
-    /* Socket or file descriptor */
-    static int32_t m_iDeviceDescriptorServer;
-    static TGpioControl m_xGpioControl;
-
-};
-//-------------------------------------------------------------------------------
+////-------------------------------------------------------------------------------
+//class CGpio
+//{
+//public:
+////    CGpio();
+////    virtual ~CGpio();
+//
+//    static void Init(void);
+//    static int8_t Open(void);
+//    static int8_t Close(void);
+//    static void SetPinOutput(unsigned char ucPortN, unsigned char ucPinN);
+//    static void SetPinInput(unsigned char ucPortN, unsigned char ucPinN);
+//    static void SetPin(unsigned char ucPortN, unsigned char ucPinN);
+//    static void ClearPin(unsigned char ucPortN, unsigned char ucPinN);
+//
+//private:
+////    const char *m_pccDeviceName;
+//    /* Socket or file descriptor */
+//    static int32_t m_iDeviceDescriptorServer;
+//    static TGpioControl m_xGpioControl;
+//
+//};
+////-------------------------------------------------------------------------------
 
 
 

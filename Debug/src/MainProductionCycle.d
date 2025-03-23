@@ -1,5 +1,6 @@
 src/MainProductionCycle.o: ../src/MainProductionCycle.cpp ../src/Task.h \
  ../src/Timer.h ../src/Platform.h ../src/Configuration.h ../src/Dfa.h \
+ ../src/Gpio.h \
  D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\CommunicationDevice/CommunicationDevice.h \
  D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\CommunicationDevice/SpiCommunicationDevice.h \
  D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\CommunicationDevice/SerialPortCommunicationDevice.h \
@@ -32,6 +33,8 @@ src/MainProductionCycle.o: ../src/MainProductionCycle.cpp ../src/Task.h \
 ../src/Configuration.h:
 
 ../src/Dfa.h:
+
+../src/Gpio.h:
 
 D:\Projects\CurrentProjects\CautoProjects\EclipceProjects\Pas17\Pas17\src\CommunicationDevice/CommunicationDevice.h:
 

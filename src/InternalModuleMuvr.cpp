@@ -79,7 +79,7 @@ uint8_t CInternalModuleMuvr::Init(void)
 //        return false;
 //    }
 //}
-//
+
 ////-------------------------------------------------------------------------------
 //bool CInternalModuleMuvr::GetTaskData(CDataContainerDataBase* pxDataContainer)
 //{

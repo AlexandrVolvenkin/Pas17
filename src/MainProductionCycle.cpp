@@ -11,6 +11,7 @@
 
 #include "Task.h"
 #include "Platform.h"
+#include "Gpio.h"
 #include "CommunicationDevice.h"
 #include "SpiCommunicationDevice.h"
 #include "SerialPortCommunicationDevice.h"
@@ -89,7 +90,7 @@ CMainProductionCycle::~CMainProductionCycle()
     delete m_puiHoldingRegisters;
     delete m_puiInputRegisters;
 
-    CGpio::Close();
+    //CGpio::Close();
     delete m_pxSpiCommunicationDevice;
     delete m_pxInternalModule;
     delete m_pxInternalModuleMuvr;
@@ -350,17 +351,17 @@ uint8_t CMainProductionCycle::CreateTasks(void)
     m_xResources.AddCurrentlyRunningTasksList(pxInternalModuleCommon);
     m_pxInternalModule = pxInternalModuleCommon;
 
-////-------------------------------------------------------------------------------
-//    CInternalModuleMuvr* pxInternalModuleMuvr = 0;
-//    pxInternalModuleMuvr =
-//        static_cast<CInternalModuleMuvr*>(m_xResources.AddCommonTaskToMap("InternalModuleMuvr",
-//                                          std::make_shared<CInternalModuleMuvr>()));
-//    pxInternalModuleMuvr ->
-//    SetResources(&m_xResources);
-//    pxInternalModuleMuvr ->
-//    SetCommunicationDeviceName("SpiCommunicationDeviceSpi0");
-//    m_xResources.AddCurrentlyRunningTasksList(pxInternalModuleMuvr);
-//    m_pxInternalModuleMuvr = pxInternalModuleMuvr;
+//-------------------------------------------------------------------------------
+    CInternalModuleMuvr* pxInternalModuleMuvr = 0;
+    pxInternalModuleMuvr =
+        static_cast<CInternalModuleMuvr*>(m_xResources.AddCommonTaskToMap("InternalModuleMuvr",
+                                          std::make_shared<CInternalModuleMuvr>()));
+    pxInternalModuleMuvr ->
+    SetResources(&m_xResources);
+    pxInternalModuleMuvr ->
+    SetCommunicationDeviceName("SpiCommunicationDeviceSpi0");
+    m_xResources.AddCurrentlyRunningTasksList(pxInternalModuleMuvr);
+    m_pxInternalModuleMuvr = pxInternalModuleMuvr;
 
 //-------------------------------------------------------------------------------
     CAnalogueSignals* pxAnalogueSignals = 0;
@@ -406,7 +407,7 @@ uint8_t CMainProductionCycle::InitTasks(void)
     std::cout << "CMainProductionCycle Init"  << std::endl;
 
 //-------------------------------------------------------------------------------
-    CGpio::Init();
+    //CGpio::Init();
 
 //-------------------------------------------------------------------------------
     CSerialPortCommunicationDevice* pxSerialPortCommunicationDeviceCom1 =
@@ -480,12 +481,12 @@ uint8_t CMainProductionCycle::InitTasks(void)
 //        (CInternalModule*)(GetResources() ->
 //                          GetTaskPointerByNameFromMap("InternalModuleCommon"));
 
-////-------------------------------------------------------------------------------
-//    CInternalModuleMuvr* pxInternalModuleMuvr =
-//        (CInternalModuleMuvr*)(GetResources() ->
-//                               GetTaskPointerByNameFromMap("InternalModuleMuvr"));
-//    pxInternalModuleMuvr ->
-//    SetAddress(0);
+//-------------------------------------------------------------------------------
+    CInternalModuleMuvr* pxInternalModuleMuvr =
+        (CInternalModuleMuvr*)(GetResources() ->
+                               GetTaskPointerByNameFromMap("InternalModuleMuvr"));
+    pxInternalModuleMuvr ->
+    SetAddress(0);
 
 //-------------------------------------------------------------------------------
     GetResources() -> Allocate();
@@ -557,6 +558,10 @@ uint8_t CMainProductionCycle::Fsm(void)
             m_uiInternalModuleId =
                 GetResources() ->
                 GetTaskIdByNameFromMap("InternalModuleCommon");
+
+            m_uiInternalModuleMuvrId =
+                GetResources() ->
+                GetTaskIdByNameFromMap("InternalModuleMuvr");
 
             SetFsmState(READY);
         }
@@ -859,8 +864,8 @@ uint8_t CMainProductionCycle::Fsm(void)
         CurrentlyRunningTasksExecution();
         m_pxDataStoreFileSystem -> ReadServiceSection();
 //        SetFsmState(MAIN_CYCLE_MODULES_INIT);
-//        SetFsmState(MAIN_CYCLE_MODBUS_SLAVE);
-        SetFsmState(CONFIGURATION_CREATE_START);
+        SetFsmState(MAIN_CYCLE_MODBUS_SLAVE);
+//        SetFsmState(CONFIGURATION_CREATE_START);
         break;
 
     case DATA_STORE_CHECK_END_ERROR:
@@ -970,8 +975,8 @@ uint8_t CMainProductionCycle::Fsm(void)
 
     case INTERNAL_MODULES_DATA_EXCHANGE_MAIN_CYCLE_START_WAITING:
 //        std::cout << "CMainProductionCycle::Fsm INTERNAL_MODULES_DATA_EXCHANGE_MAIN_CYCLE_START_WAITING 1"  << std::endl;
-        {
-            CurrentlyRunningTasksExecution();
+    {
+        CurrentlyRunningTasksExecution();
 
 //            if (GetTimerPointer() -> IsOverflow())
 //            {
@@ -979,9 +984,9 @@ uint8_t CMainProductionCycle::Fsm(void)
 //                GetTimerPointer() -> Set(100);
 //                SetFsmState(INTERNAL_MODULES_DATA_EXCHANGE_START);
 //            }
-                SetFsmState(INTERNAL_MODULES_DATA_EXCHANGE_START);
-        }
-        break;
+        SetFsmState(INTERNAL_MODULES_DATA_EXCHANGE_START);
+    }
+    break;
 
 //-------------------------------------------------------------------------------
     case MAIN_CYCLE_MODULES_INIT:
@@ -1120,6 +1125,22 @@ uint8_t CMainProductionCycle::Fsm(void)
 //        m_pxInternalModuleMuvr ->
 //        SetTaskData(&xOperatingDataContainer);
 
+//        CInternalModuleMuvr* pxInternalModuleMuvr =
+//            (CInternalModuleMuvr*)(GetResources() ->
+//                                   GetTaskPointerByNameFromMap("InternalModuleMuvr"));
+
+
+        CDataContainerDataBase* pxDataContainer =
+            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+        pxDataContainer -> m_uiTaskId = m_uiInternalModuleMuvrId;
+        pxDataContainer -> m_uiFsmCommandState =
+            CInternalModuleMuvr::MUVR_DATA_EXCHANGE;
+        SetTaskData(pxDataContainer);
+
+//        m_pxOperatingDataContainer -> m_uiFsmCommandState =
+//            CInternalModuleMuvr::MUVR_DATA_EXCHANGE;
+//        pxInternalModuleMuvr ->
+//        SetTaskData(m_pxOperatingDataContainer);
 
         SetFsmState(MAIN_CYCLE_DISCRETE_SIGNALS_PROCESSING);
 

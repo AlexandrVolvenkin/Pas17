@@ -78,6 +78,8 @@
 		<Unit filename="src/DeviceControl.h" />
 		<Unit filename="src/Dfa.cpp" />
 		<Unit filename="src/Dfa.h" />
+		<Unit filename="src/Gpio.cpp" />
+		<Unit filename="src/Gpio.h" />
 		<Unit filename="src/HammingCodes.cpp" />
 		<Unit filename="src/HammingCodes.h" />
 		<Unit filename="src/InternalModule.cpp" />
