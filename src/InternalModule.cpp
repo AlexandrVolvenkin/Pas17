@@ -311,22 +311,22 @@ uint8_t CInternalModule::GetModuleType(uint8_t uiAddress)
                                         GET_MODULE_TYPE_COMMAND_ANSWER_LENGTH +
                                         ONE_BYTE_CRC_LENGTH,
                                         LOW_SPEED_IN_HZ);
-//    std::cout << "CInternalModule::GetModuleType 2"  << std::endl;
+    std::cout << "CInternalModule::GetModuleType 2"  << std::endl;
 
-//    {
-//        cout << "GET_MODULE_TYPE_COMMAND auiSpiRxBuffer" << endl;
-//        unsigned char *pucSourceTemp;
-//        pucSourceTemp = (unsigned char*)auiSpiRxBuffer;
-//        for(int i=0; i<16; )
-//        {
-//            for(int j=0; j<8; j++)
-//            {
-//                cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
-//            }
-//            cout << endl;
-//            i += 8;
-//        }
-//    }
+    {
+        cout << "GET_MODULE_TYPE_COMMAND auiSpiRxBuffer" << endl;
+        unsigned char *pucSourceTemp;
+        pucSourceTemp = (unsigned char*)auiSpiRxBuffer;
+        for(int i=0; i<16; )
+        {
+            for(int j=0; j<8; j++)
+            {
+                cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+            }
+            cout << endl;
+            i += 8;
+        }
+    }
 
     // модуль отвечает?
     if (auiSpiRxBuffer[GET_MODULE_TYPE_COMMAND_OFFSET] ==

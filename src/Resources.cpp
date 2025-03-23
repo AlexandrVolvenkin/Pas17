@@ -393,7 +393,7 @@ CTaskInterface* CResources::GetTaskPointerById(uint8_t uiTaskId)
 
     if (uiTaskId > 0)
     {
-        std::cout << "CResources::GetTaskPointerById 2"  << std::endl;
+//        std::cout << "CResources::GetTaskPointerById 2"  << std::endl;
         return m_ppxCommonTaskPointers[(uiTaskId - 1)];
     }
     else
