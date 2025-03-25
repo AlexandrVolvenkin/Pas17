@@ -1,10 +1,10 @@
-п»ї//-------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------
 //  Source      : FileName.cpp
 //  Created     : 01.06.2022
 //  Author      : Alexandr Volvenkin
 //  email       : aav-36@mail.ru
 //  GitHub      : https://github.com/AlexandrVolvenkin
-//-------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------
 #ifndef CDATASTORE_H
 #define CDATASTORE_H
 
@@ -12,31 +12,57 @@
 #include <iostream>
 #include <fstream>
 
-
-class CTimer;
-class CTask;
-class CResources;
-class CStorageDeviceInterface;
-class CStorageDeviceFileSystem;
-class CDataContainerInterface;
-class CDataContainerDataBase;
-class CMessageBoxInterface;
-class CMessageBoxGeneral;
+#include "Dfa.h"
+#include "Timer.h"
+#include "StorageDevice.h"
 
 using namespace std;
 
-//-------------------------------------------------------------------------------
-// РҐСЂР°РЅРёР»РёС‰Рµ Р±Р»РѕС‡С‹С… РґР°РЅРЅС‹С….
-// РџСЂРѕРІРµСЂСЏРµС‚ С†РµР»РѕСЃС‚РЅРѕСЃС‚СЊ РґР°РЅРЅС‹С… С…СЂР°РЅРёР»РёС‰Р°.
-// Р’РѕСЃСЃС‚Р°РЅР°РІР»РјРІР°РµС‚ РїРѕРІСЂРµР¶РґС‘РЅРЅС‹Рµ РґР°РЅРЅС‹Рµ СЃ РїРѕРјРѕС‰СЊСЋ Р°Р»РіРѕСЂРёС‚РјР° РҐРµРјРјРёРЅРіР°.
-// Р’РѕСЃСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ РґР°РЅРЅС‹Рµ Р·Р°РїРёСЃС‹РІР°РµРјРѕРіРѕ Р±Р»РѕРєР° РїСЂРё СЃР±РѕРµ РїРёС‚Р°РЅРёСЏ Рё С‚.Рґ.
-// РЎРѕСЃС‚Р°РІ С…СЂР°РЅРёР»РёС‰Р°:
-// 1 - Р±Р»РѕРє СЃР»СѓР¶РµР±РЅС‹С… РґР°РЅРЅС‹С….
-// 2 - РґСѓР±Р»РёСЂСѓСЋС‰РёР№ Р±Р»РѕРє РґР»СЏ Р·Р°РїРёСЃРё РІСЂРµРјРµРЅРЅС‹С… СЃР»СѓР¶РµР±РЅС‹С… РґР°РЅРЅС‹С….
-// 3 - РІСЂРµРјРµРЅРЅР°СЏ РєРѕРїРёСЏ Р·Р°РїРёСЃС‹РІР°РµРјРѕРіРѕ Р±Р»РѕРєР°.
-// 4 - РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРѕ СЃ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕ СЂР°СЃРїРѕР»РѕР¶РµРЅРЅС‹РјРё С…СЂР°РЅРёРјС‹РјРё Р±Р»РѕРєР°РјРё.
-class CDataStore : public CTask
+//-----------------------------------------------------------------------------------------------------
+// Хранилище блочых данных.
+// Проверяет целостность данных хранилища.
+// Восстанавлмвает повреждённые данные с помощью алгоритма Хемминга.
+// Восстанавливает данные записываемого блока при сбое питания и т.д.
+// Состав хранилища:
+// 1 - блок служебных данных.
+// 2 - дублирующий блок для записи временных служебных данных.
+// 3 - временная копия записываемого блока.
+// 4 - пространство с последовательно расположенными хранимыми блоками.
+class CDataStore : public CDfa
 {
+public:
+    CDataStore();
+    CDataStore(CStorageDeviceInterface* pxStorageDevice);
+    virtual ~CDataStore();
+
+    uint8_t Check(void);
+    void CreateServiceSection(void);
+    uint8_t PassingBlockDataAndStartWrite(uint8_t *puiSource, uint16_t uiLength, uint8_t uiBlock);
+    uint16_t ReadBlock(uint8_t * , uint8_t );
+    void CrcOfBlocksCrcCreate(void);
+    bool CrcOfBlocksCrcCheck(void);
+    void Fsm(void);
+    uint8_t GetBlockLength(uint8_t uiBlock)
+    {
+        return m_xServiseSection.xServiseSectionData.
+               axBlockPositionData[uiBlock].uiLength;
+    };
+
+
+private:
+    uint8_t TemporaryServiceSectionWritePrepare(void);
+    uint8_t ServiceSectionWritePrepare(void);
+    uint8_t ReadTemporaryServiceSection(void);
+    uint8_t ReadServiceSection(void);
+    uint8_t CheckTemporaryBlock(void);
+    uint8_t CheckBlock(void);
+    uint8_t TemporaryBlockWritePrepare(void);
+    uint8_t BlockWritePrepare(void);
+//    CTimer* GetTimerPointer(void)
+//    {
+//        return &m_xTimer;
+//    };
+
 public:
     enum
     {
@@ -45,7 +71,7 @@ public:
         MAX_BLOCK_LENGTH = 256,
         MAX_ENCODED_BLOCK_LENGTH =
             ((MAX_BLOCK_LENGTH + TAIL_LENGTH) + ((MAX_BLOCK_LENGTH + TAIL_LENGTH) / 2)),
-        MAX_BLOCKS_NUMBER = 100,
+        MAX_BLOCKS_NUMBER = 10,//(TDataBase::BLOCKS_QUANTITY + SERVICE_SECTION_DATA_BLOCK_NUMBER),
     };
 
     enum
@@ -56,7 +82,9 @@ public:
 
     enum
     {
-        START_WRITE_BLOCK_DATA = NEXT_STEP,
+        IDDLE = 0,
+
+        START_WRITE_BLOCK_DATA,
         READY_TO_WRITE_WAITING_BLOCK_DATA,
         WRITE_END_WAITING_BLOCK_DATA,
 
@@ -71,41 +99,48 @@ public:
         START_WRITE_SERVICE_SECTION_DATA,
         READY_TO_WRITE_WAITING_SERVICE_SECTION_DATA,
         WRITE_END_WAITING_SERVICE_SECTION_DATA,
+    };
 
-        DATA_WRITED_SUCCESSFULLY,
-        WRITE_ERROR,
+    enum
+    {
+        NO_EVENT_FSM_EVENT = 0,
+        WRITE_IN_PROGRESS_FSM_EVENT,
+        STORAGE_DEVICE_BUSY_FSM_EVENT,
+        WRITE_OK_FSM_EVENT,
+        WRITE_ERROR_FSM_EVENT,
     };
 
     struct TBlockPositionData
     {
-        // РЎРјРµС‰РµРЅРёРµ РЅР° РґР°РЅРЅС‹Рµ Р±Р»РѕРєР°.
+        // Смещение на данные блока.
         uint16_t uiOffset;
-        // Р Р°Р·РјРµСЂ С…СЂР°РЅРёРјРѕРіРѕ Р±Р»РѕРєР°.
+        // Размер хранимого блока.
         uint16_t uiLength;
-        // Р Р°Р·РјРµСЂ Р·Р°РєРѕРґРёСЂРѕРІР°РЅРЅРѕРіРѕ С…СЂР°РЅРёРјРѕРіРѕ Р±Р»РѕРєР°.
+        // Размер закодированного хранимого блока.
         uint16_t uiEncodedLength;
-        // Crc Р±Р»РѕРєР° С…СЂР°РЅРёС‚СЃСЏ РѕС‚РґРµР»СЊРЅРѕ РѕС‚ РЅРµРіРѕ РІ СЃР»СѓР¶РµР±РЅРѕРј Р±Р»РѕРєРµ.
-        // РџРѕ РµРіРѕ СЃРѕРІРїР°РґРµРЅРёСЋ РѕРїСЂРµРґРµР»СЏРµС‚СЃСЏ С†РµР»РѕСЃС‚РЅРѕСЃС‚СЊ Р±Р»РѕРєР° Рё РµРіРѕ РїСЂРёРЅР°РґР»РµР¶РЅРѕСЃС‚СЊ Рє С…СЂР°РЅРёР»РёС‰Сѓ.
+        // Crc блока хранится отдельно от него в служебном блоке.
+        // По его совпадению определяется целостность блока и его принадлежность к хранилищу.
         uint16_t uiCrc;
     };
 
     struct TServiseSectionData
     {
-        // РЎРјРµС‰РµРЅРёРµ РЅР° СЃРІРѕР±РѕРґРЅРѕРµ РјРµСЃС‚Рѕ РґР»СЏ Р·Р°РїРёСЃРё РЅРѕРІРѕРіРѕ Р±Р»РѕРєР°.
+        // Смещение на свободное место для записи нового блока.
         uint16_t uiFreeSpaceOffset;
-        // Р Р°Р·РјРµСЂ СЃР»СѓР¶РµР±РЅРѕРіРѕ Р±Р»РѕРєР°.
+        // Размер служебного блока.
         uint16_t uiLength;
-        // Р Р°Р·РјРµСЂ Р·Р°РєРѕРґРёСЂРѕРІР°РЅРЅС‹С… СЃР»СѓР¶РµР±РЅРѕРіРѕ Р±Р»РѕРєР°.
-        // РСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ СЃР°РјРѕРІРѕСЃСЃС‚Р°РЅР°РІР»РёРІР°СЋС‰РёР№СЃСЏ РєРѕРґ РҐРµРјРјРёРЅРіР°(8,4).
-        // РљРѕСЌС„С„РёС†РёРµРЅС‚ - 1.5: РѕРґРёРЅ Р±Р°Р№С‚ РїСЂРµРѕР±СЂР°Р·СѓРµС‚СЃСЏ РІ РєРѕРґРѕРІРѕРµ СЃР»РѕРІРѕ 12 Р±РёС‚,
-        // РёР· РґРІСѓС… Р±Р°Р№С‚ РїРѕР»РµР·РЅС‹С… РґР°РЅРЅС‹С… РїРѕР»СѓС‡Р°РµС‚СЃСЏ С‚СЂРё Р±Р°Р№С‚Р° РєРѕРґРёСЂРѕРІР°РЅРЅС‹С….
+        // Размер закодированных служебного блока.
+        // Используется самовосстанавливающийся код Хемминга(8,4).
+        // Коэффициент - 1.5: один байт преобразуется в кодовое слово 12 бит,
+        // из двух байт полезных данных получается три байта кодированных.
         uint16_t uiEncodedLength;
+//        uint16_t uiLastWritedBlockNumber;
         uint16_t uiStoredBlocksNumber;
-        // РљРѕРЅС‚СЂРѕР»СЊРЅР°СЏ СЃСѓРјРјР° РІС‹С‡РёСЃР»РµРЅРЅР°СЏ РёР· РјР°СЃСЃРёРІР° РєРѕРЅС‚СЂРѕР»СЊРЅС‹С… СЃСѓРјРј Р±Р»РѕРєРѕРІ, РЅРµ РІРєР»СЋС‡Р°СЏ СЃР»СѓР¶РµР±РЅС‹Р№.
-        // РЎРѕС…СЂР°РЅСЏРµС‚СЃСЏ РїСЂРё РїРµСЂРІРѕР№ Рё РїРѕСЃР»РµРґСѓСЋС‰РёС… Р·Р°РїРёСЃСЏС… Р»СЋР±С‹С… Р±Р»РѕРєРѕРІ С‡РµСЂРµР· РїСЂРѕРіСЂР°РјРјР°С‚РѕСЂ.
-        // РќРѕР»СЊ РёР»Рё РµС‘ РЅРµСЃРѕРІРїР°РґРµРЅРёРµ СЃРІРёРґРµС‚РµР»СЊСЃС‚РІСѓРµС‚ Рѕ С‚РѕРј, С‡С‚Рѕ Р±Р°Р·Р° РґР°РЅРЅС‹С… СЃРѕР·РґР°РЅР° РїРѕ СѓРјРѕР»Р°РЅРёСЋ,
-        // Рё РЅРµ РїРѕРґС‚РІРµСЂР¶РґРµРЅР° РїРѕР»СЊР·РѕРІР°С‚РµР»РµРј. Р’ СЌС‚РѕРј СЃР»СѓС‡Р°Рµ РїСЂРёР±РѕСЂ РїРµСЂРµС…РѕРґРёС‚ РІ СЂРµР¶РёРј СЃРёРіРЅР°Р»РёР·Р°С†РёРё РѕР± РѕС€РёР±РєРµ,
-        // РѕР¶РёРґР°СЏ РєРІРёС‚РёСЂРѕРІР°РЅРёСЏ РёР»Рё Р·Р°РїРёСЃРё Р±Р°Р·С‹ РґР°РЅРЅС‹С….
+        // Контрольная сумма вычисленная из массива контрольных сумм блоков, не включая служебный.
+        // Сохраняется при первой и последующих записях любых блоков через программатор.
+        // Ноль или её несовпадение свидетельствует о том, что база данных создана по умоланию,
+        // и не подтверждена пользователем. В этом случае прибор переходит в режим сигнализации об ошибке,
+        // ожидая квитирования или записи базы данных.
         uint16_t uiCrcOfBlocksCrc;
         TBlockPositionData axBlockPositionData[MAX_BLOCKS_NUMBER];
     };
@@ -113,84 +148,39 @@ public:
     struct TServiseSection
     {
         TServiseSectionData xServiseSectionData;
-        // Crc СЃР»СѓР¶РµР±РЅРѕРіРѕ Р±Р»РѕРєР°.
+        // Crc служебного блока.
         uint16_t uiCrc;
     };
 
     enum
     {
-        // РќСѓР»РµРІРѕР№ Р±Р°Р№С‚ РјРѕР¶РµС‚ Р±С‹С‚СЊ СЃС‚С‘СЂС‚ РїСЂРё СЃР±РѕРµ РїРёС‚Р°РЅРёСЏ.
+        // Нулевой байт может быть стёрт при сбое питания.
         TEMPORARY_BLOCK_DATA_BEGIN = 8,
         TEMPORARY_SERVICE_SECTION_DATA_BEGIN =
             (TEMPORARY_BLOCK_DATA_BEGIN + MAX_ENCODED_BLOCK_LENGTH),
         SERVICE_SECTION_DATA_BEGIN =
             TEMPORARY_SERVICE_SECTION_DATA_BEGIN +
             (sizeof(struct TServiseSection) + (sizeof(struct TServiseSection) / 2)),
-        MAX_SERVICE_SECTION_DATA_LENGTH =
-            (sizeof(struct TServiseSection) + (sizeof(struct TServiseSection) / 2)),
-        TEMPORARY_BLOCK_INDEX = MAX_BLOCKS_NUMBER,
-        TEMPORARY_SERVICE_SECTION_INDEX = MAX_BLOCKS_NUMBER + 1,
-        SERVICE_SECTION_INDEX = MAX_BLOCKS_NUMBER + 2,
-        SERVICE_SECTION_BLOCK_NUMBER = 3,
     };
 
-    CDataStore();
-    virtual ~CDataStore();
-
-    uint8_t Init(void);
-    size_t GetObjectLength(void);
-
-    void SetStorageDeviceName(std::string sName);
-    void SetStorageDevice(CStorageDeviceInterface* pxStorageDevice);
-
-    uint8_t WriteBlock(uint8_t *puiSource, uint16_t uiLength, uint8_t uiBlock);
-    bool WriteBlock(CDataContainerDataBase* pxDataContainer);
-    uint16_t ReadBlock(uint8_t *, uint8_t );
-    void CrcOfBlocksCrcCreate(void);
-    bool CrcOfBlocksCrcCheck(void);
-    uint8_t Fsm(void);
-
-    uint8_t* GetIntermediateBuff(void)
-    {
-        return m_puiIntermediateBuff;
-    };
-
-    uint8_t GetBlockLength(uint8_t uiBlock);
-
-    uint16_t GetStoredBlocksNumber(void)
-    {
-        return m_xServiseSection.xServiseSectionData.uiStoredBlocksNumber;
-    };
-
-    void SetBlockIndex(uint8_t uiBlockIndex);
-
-//protected:
-    void CreateServiceSection(void);
-    uint8_t TemporaryServiceSectionWritePrepare(void);
-    uint8_t ServiceSectionWritePrepare(void);
-    uint8_t ReadTemporaryServiceSection(void);
-    uint8_t ReadServiceSection(void);
-    uint8_t CheckTemporaryBlock(void);
-    uint8_t CheckBlock(void);
-    uint8_t TemporaryBlockWritePrepare(void);
-    uint8_t BlockWritePrepare(void);
 
 protected:
-    uint8_t m_uiRequestRetryCounter;
+private:
+    // Данные контекста записи блока.
+    uint8_t m_uiBlock;
+    uint8_t* m_puiBlockSource;
+    uint16_t m_uiBlockLength;
 
-    std::string m_sStorageDeviceName;
-    // РЈРєР°Р·Р°С‚РµР»СЊ РЅР° РѕР±СЉРµРєС‚ РєР»Р°СЃСЃР° СѓСЃС‚СЂРѕР№СЃС‚РІР° С…СЂР°РЅРµРЅРёСЏ.
+    // Указатель на объект класса устройства хранения.
     CStorageDeviceInterface* m_pxStorageDevice;
-    // РЎР»СѓР¶РµР±РЅС‹Рµ РґР°РЅРЅС‹Рµ СЃРёСЃС‚РµРјС‹ С…СЂР°РЅРµРЅРёСЏ.
+    // Служебные данные системы хранения.
     TServiseSection m_xServiseSection;
-    // РњР°СЃСЃРёРІ РєРѕРЅС‚СЂРѕР»СЊРЅС‹С… СЃСѓРјРј Р±Р»РѕРєРѕРІ.
+    // Массив контрольных сумм блоков.
     uint16_t m_auiBlocksCurrentCrc[MAX_BLOCKS_NUMBER];
-    // Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Р№ Р±СѓС„РµСЂ.
+    // Вспомогательный буфер.
     uint8_t* m_puiIntermediateBuff;
-
-    CDataContainerDataBase* m_pxCommandDataContainer;
-    CDataContainerDataBase* m_pxOperatingDataContainer;
+//    CTimer m_xTimer;
 };
 
-//-------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------
 #endif // CDATASTORE_H

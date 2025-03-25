@@ -1,0 +1,7 @@
+#ifndef MBMFUNCTION4_H_INCLUDED
+#define MBMFUNCTION4_H_INCLUDED
+
+#include "PasNewConfig.h"
+
+
+#endif // MBMFUNCTION4_H_INCLUDED

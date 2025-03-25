@@ -1,11 +1,11 @@
-п»ї
-//-------------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------------------------------
 //  Source      : FileName.cpp
 //  Created     : 01.06.2022
 //  Author      : Alexandr Volvenkin
 //  email       : aav-36@mail.ru
 //  GitHub      : https://github.com/AlexandrVolvenkin
-//-------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------
 #ifndef CSTORAGEDEVICE_H
 #define CSTORAGEDEVICE_H
 
@@ -13,36 +13,25 @@
 #include <iostream>
 #include <fstream>
 
-class CTimer;
-class CDataContainerInterface;
-class CDataContainerDataBase;
-class CMessageBoxInterface;
-class CMessageBoxGeneral;
+#include "DataTypes.h"
+#include "Dfa.h"
+#include "Timer.h"
 
 using namespace std;
 
-//-------------------------------------------------------------------------------
-class CStorageDeviceInterface : public CTask
+//-----------------------------------------------------------------------------------------------------
+class CStorageDeviceInterface : public CDfa
 {
 public:
-    enum
-    {
-        WRITE_DATA_START = NEXT_STEP,
-        WRITE_DATA_END,
-        DATA_WRITED_SUCCESSFULLY,
-        WRITE_DATA_ERROR,
-        READ_DATA_START,
-        READ_DATA_END,
-        DATA_READED_SUCCESSFULLY,
-        READ_DATA_ERROR,
-    };
-
-    virtual bool WriteBlock(CDataContainerDataBase* pxDataContainer) {};
+    virtual uint8_t PassingDataAndStartWrite(uint16_t uiOffset, uint8_t *puiSource, uint16_t uiLength) {};
     virtual uint8_t Write(void) {};
-    virtual bool ReadBlock(CDataContainerDataBase* pxDataContainer) {};
-    virtual uint8_t Read(void) {};
+    virtual uint8_t Read(uint8_t *puiDestination, uint16_t uiOffset, uint16_t uiLength) {};
+    virtual void SetIsDataWrited(bool bStatus) {};
+    virtual bool IsDataWrited(void) {};
+    virtual bool IsReadyToWrite(void) {};
 
     virtual void SetBufferPointer(uint8_t* puiBuffer) {};
+
     virtual uint8_t* GetBufferPointer(void) {};
 
     virtual void SetOffset(uint16_t uiOffset) {};
@@ -54,9 +43,7 @@ public:
     virtual void SetByteCounter(uint16_t nuiByteCounter) {};
     virtual uint16_t GetByteCounter(void) {};
 };
-
-//-------------------------------------------------------------------------------
-
+//-----------------------------------------------------------------------------------------------------
 
 
 
@@ -64,14 +51,13 @@ public:
 
 
 
-
-//-------------------------------------------------------------------------------
-class CStorageDevice : public CTask
+//-----------------------------------------------------------------------------------------------------
+class CStorageDevice : public CStorageDeviceInterface
 {
 public:
-//    virtual uint8_t PassingDataAndStartWrite(uint16_t uiOffset, uint8_t *puiSource, uint16_t uiLength) = 0;
+    virtual uint8_t PassingDataAndStartWrite(uint16_t uiOffset, uint8_t *puiSource, uint16_t uiLength) = 0;
     virtual uint8_t Write(void) = 0;
-    virtual uint8_t ReadBlock(uint8_t *puiDestination, uint16_t uiOffset, uint16_t uiLength) = 0;
+    virtual uint8_t Read(uint8_t *puiDestination, uint16_t uiOffset, uint16_t uiLength) = 0;
 //    virtual void SetIsDataWrited(bool bStatus) = 0;
 //    virtual bool IsDataWrited(void) = 0;
     virtual bool IsReadyToWrite(void) = 0;
@@ -113,13 +99,25 @@ public:
         return m_nuiByteCounter;
     };
 
+    void SetIsDataWrited(bool bStatus)
+    {
+        m_bDataIsWrited = bStatus;
+    };
+    bool IsDataWrited(void)
+    {
+        return m_bDataIsWrited;
+    };
+
 protected:
     uint16_t m_nuiByteCounter;
     uint16_t m_uiOffset;
     uint8_t* m_puiBuffer;
     uint16_t m_uiLength;
+    // Флаг - данные записаны.
+    bool m_bDataIsWrited;
+    const char *pccFileName;
 };
-//-------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------
 
 
 
@@ -127,8 +125,10 @@ protected:
 
 
 
-//-------------------------------------------------------------------------------
-class CStorageDeviceFileSystem : public CStorageDeviceInterface
+
+
+//-----------------------------------------------------------------------------------------------------
+class CStorageDeviceFileSystem : public CStorageDevice
 {
 public:
 
@@ -140,20 +140,20 @@ public:
     CStorageDeviceFileSystem();
     virtual ~CStorageDeviceFileSystem();
 
-    bool WriteBlock(CDataContainerDataBase* pxDataContainer);
-    uint8_t Write(void);
-    bool ReadBlock(CDataContainerDataBase* pxDataContainer);
-    uint8_t Read(void);
-    uint8_t Fsm(void);
+    uint8_t PassingDataAndStartWrite(uint16_t uiOffset, uint8_t *puiSource, uint16_t uiLength);
+    uint8_t Read(uint8_t *puiDestination, uint16_t uiOffset, uint16_t uiLength);
+    bool IsReadyToWrite(void)
+    {
+        // Симулируем готовность к записи.
+        // В случае записи средствами ОС проверка не проводится.
+        return true;
+    };
 
 private:
-    const char *pccFileName = "StorageDeviceData.dat";
-
-    CDataContainerDataBase* m_pxCommandDataContainer;
-    CDataContainerDataBase* m_pxOperatingDataContainer;
+    uint8_t Write(void);
 };
 
-//-------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------
 
 
 
@@ -163,5 +163,29 @@ private:
 
 
 
-//-------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------
+class CStorageDeviceFram : public CStorageDeviceFileSystem
+{
+public:
+
+    enum
+    {
+        MAX_BUFFER_LENGTH = 25600,
+    };
+
+    CStorageDeviceFram();
+    virtual ~CStorageDeviceFram();
+};
+
+//-----------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+//-----------------------------------------------------------------------------------------------------
 #endif // CSTORAGEDEVICE_H

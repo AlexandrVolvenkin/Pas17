@@ -1,37 +1,42 @@
-﻿//-------------------------------------------------------------------------------
-//  Source      : FileName.cpp
-//  Created     : 01.06.2022
-//  Author      : Alexandr Volvenkin
-//  email       : aav-36@mail.ru
-//  GitHub      : https://github.com/AlexandrVolvenkin
-//-------------------------------------------------------------------------------
-#ifndef TIMERS_H_INCLUDED
-#define TIMERS_H_INCLUDED
+#ifndef TIMER_H_INCLUDED
+#define TIMER_H_INCLUDED
+
 
 #include <stdint.h>
+#include <fstream>
+#include <iostream>
+#include <iomanip>
+#include <signal.h>		/* for signal */
+//#include "PasNewConfig.h"
 
-#include "Platform.h"
-//class CPlatform;
+using namespace std;
 
-//-------------------------------------------------------------------------------
-class CTimer// : public CTimeMeasure
+#define CLOCKID CLOCK_MONOTONIC//CLOCK_REALTIME
+#define SIG (SIGRTMIN + 1)//SIGRTMAX//
+#define errExit(msg)    do { perror(msg); exit(EXIT_FAILURE); \
+                        } while (0)
+
+//-----------------------------------------------------------------------------------------------------
+class CTimer
 {
 public:
-//-------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------
     CTimer();
     CTimer(uint16_t uiTime);
+//    CTimer(const CTimer& xTimer);
     virtual ~CTimer();
-    static uint16_t GetCurrentTime(void);
+
     void Set(uint16_t uiTime);
     void Reset(void);
     bool IsOverflow(void);
 
-//-------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------
 private:
     uint16_t m_uiTime;
     uint16_t m_uiLastSystemTick;
 };
-//-------------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------------------------------
 
 
 
@@ -40,7 +45,7 @@ private:
 
 
 
-//-------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------
 class CTimeMeasure
 {
 public:
@@ -50,29 +55,61 @@ public:
         TIME_MEASURE_COUNTER_NUMBER = 100
     };
 
-    CTimeMeasure();
-    ~CTimeMeasure();
-
-    uint8_t Begin(void);
-    uint32_t End(void);
+    void Begin(void);
+    void End(void);
     void Store(void);
-//    uint8_t LastMoreThan(int32_t );
+    uint8_t LastMoreThan(int32_t );
 
 
-
-private:
-//    ofstream outdata; // outdata is like cin
-//    const char* pccOutDataFileName;
+    ofstream outdata; // outdata is like cin
+    const char* pccOutDataFileName;
     struct timeval  xTimeCur;
     struct timeval xTimeLast;
     struct timeval  xTimeMax;
     struct timeval  xTimeDelta;
-//    int iTimeMeasureCounter;
-//    int iMeasureCounter;
-//    int aiTimeMeasureAverage[CTimeMeasure::TIME_MEASURE_COUNTER_NUMBER];
+    int iTimeMeasureCounter;
+    int iMeasureCounter;
+    int aiTimeMeasureAverage[CTimeMeasure::TIME_MEASURE_COUNTER_NUMBER];
 
+public:
+    CTimeMeasure()
+    {
+        pccOutDataFileName = "PasTimeMeasure.csv";
+        iMeasureCounter = 0;
+    }
+
+    ~CTimeMeasure()
+    {
+
+    }
 
 };
 
-//-------------------------------------------------------------------------------
-#endif // TIMERS_H_INCLUDED
+extern CTimeMeasure xCTimeMeasure;
+extern CTimeMeasure xProgrammTimeMeasure;
+
+//-----------------------------------------------------------------------------------------------------
+extern timer_t timerid;
+extern timer_t timerid2;
+extern struct sigevent sev;
+extern struct itimerspec its;
+extern sigset_t mask;
+extern struct sigaction sa;
+extern pthread_attr_t attr;
+
+int iHandlerCreate(int signum,
+                   struct sigaction *act,
+                   void (*handler)(int, siginfo_t *, void *));
+int iHandlerBlock(int signum,
+                  sigset_t *mask);
+int iHandlerUnlock(sigset_t *mask);
+int iTimerCreate(timer_t *timerid,
+                 struct sigevent *sevp);
+int iTimerSetTime(timer_t *timerid,
+                  struct itimerspec *new_value,
+                  unsigned long ulTime);
+int iTimerRestart(timer_t *timerid,
+                  struct itimerspec *new_value);
+//void vHandler100Ms(int sig, siginfo_t *si, void *uc);
+void vHandler100Ms(union sigval val);
+#endif // TIMER_H_INCLUDED

@@ -1,0 +1,7 @@
+#ifndef MBMFUNCTION2_H_INCLUDED
+#define MBMFUNCTION2_H_INCLUDED
+
+#include "PasNewConfig.h"
+
+
+#endif // MBMFUNCTION2_H_INCLUDED
