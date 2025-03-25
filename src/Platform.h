@@ -1,15 +1,16 @@
-//-----------------------------------------------------------------------------------------------------
+п»ї//-------------------------------------------------------------------------------
 //  Source      : FileName.cpp
 //  Created     : 01.06.2022
 //  Author      : Alexandr Volvenkin
 //  email       : aav-36@mail.ru
 //  GitHub      : https://github.com/AlexandrVolvenkin
-//-----------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 #ifndef PLATFORM_H
 #define PLATFORM_H
 
-//-----------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 #include <iostream>
+#include <random>
 #include <iomanip>
 #include <stdint.h>
 #include <stdio.h>
@@ -24,8 +25,15 @@
 #include <unistd.h>
 #include <sys/mman.h>
 #include <linux/spi/spidev.h>
+#include <time.h>
+#include <sys/time.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <errno.h>
 
 #include <sys/socket.h>
+#include <linux/if_packet.h>
+#include <net/ethernet.h> /* the L2 protocols */
 
 #if defined(__OpenBSD__) || (defined(__FreeBSD__) && __FreeBSD__ < 5)
 # define OS_BSD
@@ -38,512 +46,23 @@
 # include <arpa/inet.h>
 # include <poll.h>
 # include <netdb.h>
+#include <net/if.h>
+#include <netinet/if_ether.h>
+#include <netinet/ether.h>
+
 
 #include <unistd.h>
 
 /* Include definition for RS485 ioctls: TIOCGRS485 and TIOCSRS485 */
 #include <sys/ioctl.h>
 
+#include "Configuration.h"
 
-//-----------------------------------------------------------------------------------------------------
-class CCommunicationDeviceInterface
-{
-public:
-//    virtual void Initialization(void) = 0;
-//    virtual void SetPortName(const char* pccDeviceName) = 0;
-//    virtual const char* GetPortName(void) = 0;
-//    virtual void SetBaudRate(uint32_t uiBaudRate) = 0;
-//    virtual void SetDataBits(uint8_t uiDataBits) = 0;
-//    virtual void SetParity(char cParity) = 0;
-//    virtual void SetStopBit(uint8_t uiStopBit) = 0;
-//
-//    virtual void SetIpAddress(const char* pccIpAddress) = 0;
-//    virtual const char* GetIpAddress(void) = 0;
-//    virtual void SetPort(uint16_t uiPort) = 0;
-//
-//    virtual int8_t Open(void) = 0;
-//    virtual int8_t Close(void) = 0;
-//    virtual int16_t Write(uint8_t * , uint16_t ) = 0;
-//    virtual int16_t Read(uint8_t * , uint16_t ) = 0;
-//    virtual int Exchange(unsigned char *pucTxBuff,
-//                         unsigned char *pucRxBuff,
-//                         int iLength,
-//                         int iSpeed) = 0;
-//    virtual int Exchange(uint8_t uiAddress,
-//                         unsigned char *pucTxBuff,
-//                         unsigned char *pucRxBuff,
-//                         int iLength,
-//                         int iSpeed) = 0;
-//    virtual bool IsDataWrited(void) = 0;
-//    virtual void ChipSelectPinSet(void) = 0;
-//    virtual void ChipSelectPinDelete(void) = 0;
-//    virtual void ChipSelectAddressSet(unsigned char ucAddress) = 0;
+//#define SOCKET uint32_t
 
-    virtual void Initialization(void){};
-    virtual void SetPortName(const char* pccDeviceName){};
-    virtual const char* GetPortName(void){};
-    virtual void SetBaudRate(uint32_t uiBaudRate){};
-    virtual void SetDataBits(uint8_t uiDataBits){};
-    virtual void SetParity(char cParity){};
-    virtual void SetStopBit(uint8_t uiStopBit){};
+//class CTimer;
 
-    virtual void SetIpAddress(const char* pccIpAddress){};
-    virtual const char* GetIpAddress(void){};
-    virtual void SetPort(uint16_t uiPort){};
-
-    virtual int8_t Open(void){};
-    virtual int8_t Close(void){};
-    virtual int16_t Write(uint8_t * , uint16_t ){};
-    virtual int16_t Read(uint8_t * , uint16_t ){};
-    virtual int Exchange(unsigned char *pucTxBuff,
-                         unsigned char *pucRxBuff,
-                         int iLength,
-                         int iSpeed){};
-    virtual int Exchange(uint8_t uiAddress,
-                         unsigned char *pucTxBuff,
-                         unsigned char *pucRxBuff,
-                         int iLength,
-                         int iSpeed){};
-    virtual bool IsDataWrited(void){};
-    virtual void ChipSelectPinSet(void){};
-    virtual void ChipSelectPinDelete(void){};
-    virtual void ChipSelectAddressSet(unsigned char ucAddress){};
-};
-//-----------------------------------------------------------------------------------------------------
-
-
-
-
-
-
-
-////-----------------------------------------------------------------------------------------------------
-//class CCommunicationDevice : public CCommunicationDeviceInterface
-//{
-//public:
-//    CCommunicationDevice();
-//    virtual ~CCommunicationDevice();
-//
-//    void Initialization(void);
-//    void SetPortName(const char* pccDeviceName);
-//    const char* GetPortName(void);
-//    void SetBaudRate(uint32_t uiBaudRate);
-//    void SetDataBits(uint8_t uiDataBits);
-//    void SetParity(char cParity);
-//    void SetStopBit(uint8_t uiStopBit);
-//
-//    void SetIpAddress(const char* pccIpAddress);
-//    const char* GetIpAddress(void);
-//    void SetPort(uint16_t uiPort);
-//
-//    int8_t Open(void);
-//    int8_t Close(void);
-//    int16_t Write(uint8_t * , uint16_t );
-//    int16_t Read(uint8_t * , uint16_t );
-//    int Exchange(unsigned char *pucTxBuff,
-//                 unsigned char *pucRxBuff,
-//                 int iLength,
-//                 int iSpeed);
-//    int Exchange(uint8_t uiAddress,
-//                 unsigned char *pucTxBuff,
-//                 unsigned char *pucRxBuff,
-//                 int iLength,
-//                 int iSpeed);
-//    bool IsDataWrited(void);
-//    void ChipSelectPinSet(void);
-//    void ChipSelectPinDelete(void);
-//    void ChipSelectAddressSet(unsigned char ucAddress);
-//
-//
-//////-----------------------------------------------------------------------------------------------------
-////private:
-////protected:
-////    // Флаг - данные записаны.
-////    bool m_bDataIsWrited = false;
-////    uint8_t* m_puiTxBuffer;
-////    uint16_t m_nuiTxBuffByteCounter;
-////    uint8_t* m_puiRxBuffer;
-////    uint16_t m_nuiRxBuffByteCounter;
-//};
-////-----------------------------------------------------------------------------------------------------
-//
-//////-----------------------------------------------------------------------------------------------------
-////class CCommunicationDevice : public CCommunicationDeviceInterface
-////{
-////public:
-////    CCommunicationDevice();
-////    virtual ~CCommunicationDevice();
-////
-////    virtual void Initialization(void) = 0;
-////    virtual void SetPortName(const char* pccDeviceName) = 0;
-////    virtual const char* GetPortName(void) = 0;
-////    virtual void SetBaudRate(uint32_t uiBaudRate) = 0;
-////    virtual void SetDataBits(uint8_t uiDataBits) = 0;
-////    virtual void SetParity(char cParity) = 0;
-////    virtual void SetStopBit(uint8_t uiStopBit) = 0;
-////
-////    virtual void SetIpAddress(const char* pccIpAddress) = 0;
-////    virtual const char* GetIpAddress(void) = 0;
-////    virtual void SetPort(uint16_t uiPort) = 0;
-////
-////    virtual int8_t Open(void) = 0;
-////    virtual int8_t Close(void) = 0;
-////    virtual int16_t Write(uint8_t * , uint16_t ) = 0;
-////    virtual int16_t Read(uint8_t * , uint16_t ) = 0;
-////    virtual int Exchange(unsigned char *pucTxBuff,
-////                         unsigned char *pucRxBuff,
-////                         int iLength,
-////                         int iSpeed) = 0;
-////    virtual int Exchange(uint8_t uiAddress,
-////                         unsigned char *pucTxBuff,
-////                         unsigned char *pucRxBuff,
-////                         int iLength,
-////                         int iSpeed) = 0;
-////    virtual bool IsDataWrited(void) = 0;
-////    virtual void ChipSelectPinSet(void) = 0;
-////    virtual void ChipSelectPinDelete(void) = 0;
-////    virtual void ChipSelectAddressSet(unsigned char ucAddress) = 0;
-////
-////
-////////-----------------------------------------------------------------------------------------------------
-//////private:
-//////protected:
-//////    // Флаг - данные записаны.
-//////    bool m_bDataIsWrited = false;
-//////    uint8_t* m_puiTxBuffer;
-//////    uint16_t m_nuiTxBuffByteCounter;
-//////    uint8_t* m_puiRxBuffer;
-//////    uint16_t m_nuiRxBuffByteCounter;
-////};
-//////-----------------------------------------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-//-----------------------------------------------------------------------------------------------------
-class CSerialPortInterface : public CCommunicationDeviceInterface
-{
-public:
-    virtual void Initialization(void) = 0;
-    virtual void SetPortName(const char* pccDeviceName) = 0;
-    virtual const char* GetPortName(void) = 0;
-    virtual void SetBaudRate(uint32_t uiBaudRate) = 0;
-    virtual void SetDataBits(uint8_t uiDataBits) = 0;
-    virtual void SetParity(char cParity) = 0;
-    virtual void SetStopBit(uint8_t uiStopBit) = 0;
-    virtual int8_t Open(void) = 0;
-    virtual int8_t Close(void) = 0;
-    virtual int16_t Write(uint8_t * , uint16_t ) = 0;
-    virtual int16_t Read(uint8_t * , uint16_t ) = 0;
-    virtual bool IsDataWrited(void) = 0;
-};
-//-----------------------------------------------------------------------------------------------------
-
-
-
-
-//-----------------------------------------------------------------------------------------------------
-class CSerialPort : public CSerialPortInterface
-{
-public:
-    enum
-    {
-        UART_MAX_BUFF_LENGTH = 256,
-        UART_INTERMEDIATE_BUFF_LENGTH = 16
-    };
-
-    CSerialPort();
-    virtual ~CSerialPort();
-
-//-----------------------------------------------------------------------------------------------------
-    void Initialization(void);
-    void SetPortName(const char* pccDeviceName);
-    const char* GetPortName(void);
-    void SetBaudRate(uint32_t uiBaudRate);
-    void SetDataBits(uint8_t uiDataBits);
-    void SetParity(char cParity);
-    void SetStopBit(uint8_t uiStopBit);
-    int8_t Open(void);
-    int8_t Close(void);
-//    void Reset(void);
-//    bool IsDataAvailable(void);
-    int16_t Write(uint8_t * , uint16_t );
-    int16_t Read(uint8_t * , uint16_t );
-//    int Exchange(uint8_t uiAddress,
-//                 unsigned char *pucTxBuff,
-//                 unsigned char *pucRxBuff,
-//                 int iLength,
-//                 int iSpeed);
-    bool IsDataWrited(void)
-    {
-        if (m_bDataIsWrited)
-        {
-            m_bDataIsWrited = false;
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    };
-
-
-//-----------------------------------------------------------------------------------------------------
-private:
-protected:
-    const char *m_pccDeviceName;
-    /* Socket or file descriptor */
-    int32_t m_iDeviceDescriptor;
-    struct termios m_xTios;
-    struct serial_rs485 m_xRs485Conf;
-    // Флаг - данные записаны.
-    bool m_bDataIsWrited = false;
-};
-//-----------------------------------------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-//-----------------------------------------------------------------------------------------------------
-class CTcpCommunicationDeviceInterface : public CCommunicationDeviceInterface
-{
-public:
-    virtual void Initialization(void) = 0;
-    virtual void SetIpAddress(const char* pccIpAddress) = 0;
-    virtual const char* GetIpAddress(void) = 0;
-    virtual void SetPort(uint16_t uiPort) = 0;
-    virtual int8_t Listen(void) = 0;
-    virtual int8_t Accept(void) = 0;
-    virtual int8_t Connect(void) = 0;
-    virtual int8_t Open(void) = 0;
-    virtual int8_t Close(void) = 0;
-    virtual int16_t Write(uint8_t * , uint16_t ) = 0;
-    virtual int16_t Read(uint8_t * , uint16_t ) = 0;
-    virtual bool IsDataWrited(void) = 0;
-};
-//-----------------------------------------------------------------------------------------------------
-
-
-
-
-
-
-//-----------------------------------------------------------------------------------------------------
-class CTcpCommunicationDevice : public CTcpCommunicationDeviceInterface
-{
-public:
-    enum
-    {
-        UART_MAX_BUFF_LENGTH = 256,
-        UART_INTERMEDIATE_BUFF_LENGTH = 16
-    };
-
-    CTcpCommunicationDevice();
-    virtual ~CTcpCommunicationDevice();
-
-//-----------------------------------------------------------------------------------------------------
-    void Initialization(void);
-    void SetIpAddress(const char* pccIpAddress);
-    const char* GetIpAddress(void);
-    void SetPort(uint16_t uiPort);
-    int8_t Listen(void);
-    int8_t Accept(void);
-    int8_t Connect(void);
-    int8_t Open(void);
-    int8_t Close(void);
-//    void Reset(void);
-//    bool IsDataAvailable(void);
-    int16_t Write(uint8_t * , uint16_t );
-    int16_t Read(uint8_t * , uint16_t );
-//    int Exchange(uint8_t uiAddress,
-//                 unsigned char *pucTxBuff,
-//                 unsigned char *pucRxBuff,
-//                 int iLength,
-//                 int iSpeed);
-    bool IsDataWrited(void)
-    {
-        if (m_bDataIsWrited)
-        {
-            m_bDataIsWrited = false;
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    };
-
-
-//-----------------------------------------------------------------------------------------------------
-private:
-protected:
-    const char *m_pccIpAddress;
-    uint32_t m_uiIpAddress;
-    uint16_t m_uiPort;
-    /* Socket or file descriptor */
-    int32_t m_iDeviceDescriptor;
-    int32_t m_iDeviceDescriptorAccept;
-    struct sockaddr_in m_Address;
-//    struct termios m_xTios;
-//    struct serial_rs485 m_xRs485Conf;
-//    struct timeval *pto;
-//    fd_set readfds, writefds;
-//    uint32_t m_uiBaudRate;
-//    /* Parity: 'N', 'O', 'E' */
-//    char m_uiParity;
-////    uint8_t m_uiParity;
-//    uint8_t m_uiDataBits;
-//    uint8_t m_uiStopBit;
-    // Флаг - данные записаны.
-    bool m_bDataIsWrited = false;
-//    uint8_t* m_puiTxBuffer;
-//    uint16_t m_nuiTxBuffByteCounter;
-//    uint8_t* m_puiRxBuffer;
-//    uint16_t m_nuiRxBuffByteCounter;
-};
-//-----------------------------------------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
-//-----------------------------------------------------------------------------------------------------
-class CSpiInterface : public CCommunicationDeviceInterface
-{
-public:
-    virtual void Initialization(void) = 0;
-    virtual int8_t Open(void) = 0;
-    virtual int8_t Close(void) = 0;
-    virtual int Exchange(unsigned char *pucTxBuff,
-                         unsigned char *pucRxBuff,
-                         int iLength,
-                         int iSpeed) = 0;
-    virtual int Exchange(uint8_t uiAddress,
-                         unsigned char *pucTxBuff,
-                         unsigned char *pucRxBuff,
-                         int iLength,
-                         int iSpeed) = 0;
-    virtual bool IsDataWrited(void) = 0;
-    virtual void ChipSelectPinSet(void) = 0;
-    virtual void ChipSelectPinDelete(void) = 0;
-    virtual void ChipSelectAddressSet(unsigned char ucAddress) = 0;
-};
-//-----------------------------------------------------------------------------------------------------
-
-
-
-
-//-----------------------------------------------------------------------------------------------------
-#define SPI_PATH "/dev/spidev0.0"
-#define TX_RX_BUFF_SIZE 256
-#define SPI_MODE SPI_MODE_0
-#define SPI_MODE32 SPI_3WIRE
-#define BITS_PER_WORD 8
-#define SPEED_IN_HZ 150000UL
-#define LOW_SPEED_IN_HZ SPEED_IN_HZ
-
-#define SPI_CHIP_SELECT_PIN_0  7 /* (R2) lcd_data1.gpio2[7] A0*/
-#define SPI_CHIP_SELECT_PIN_0_PORT  GPIO_PORT_2
-#define SPI_CHIP_SELECT_PIN_1  11  /* (T2) lcd_data5.gpio2[11] A1*/
-#define SPI_CHIP_SELECT_PIN_1_PORT  GPIO_PORT_2
-#define SPI_CHIP_SELECT_PIN_2  8  /* (R3) lcd_data2.gpio2[8] A2*/
-#define SPI_CHIP_SELECT_PIN_2_PORT  GPIO_PORT_2
-#define SPI_CHIP_SELECT_PIN_3  6  /* (R1) lcd_data0.gpio2[6] A3*/
-#define SPI_CHIP_SELECT_PIN_3_PORT  GPIO_PORT_2
-#define SPI_CHIP_ENABLE_PIN  12 /* (T3) lcd_data6.gpio2[12] ENABLE*/
-#define SPI_CHIP_ENABLE_PIN_PORT  GPIO_PORT_2
-#define SPI_CHIP_MIND_ENABLE_PIN  16 /* (U3) lcd_data10.gpio2[16] SS0*/
-#define SPI_CHIP_MIND_ENABLE_PIN_PORT  GPIO_PORT_2
-
-//-----------------------------------------------------------------------------------------------------
-class CSpi : public CSpiInterface
-{
-public:
-    enum
-    {
-        SPI_MAX_BUS_ADDRESS = 16,
-    };
-
-    CSpi();
-    CSpi(const char* pccDeviceName);
-    virtual ~CSpi();
-
-    void Initialization(void);
-    int8_t Open(void);
-    int8_t Close(void);
-//    int16_t Write(uint8_t * , uint16_t );
-//    int16_t Read(uint8_t * , uint16_t );
-    int Exchange(unsigned char *pucTxBuff,
-                 unsigned char *pucRxBuff,
-                 int iLength,
-                 int iSpeed);
-    int Exchange(uint8_t uiAddress,
-                 unsigned char *pucTxBuff,
-                 unsigned char *pucRxBuff,
-                 int iLength,
-                 int iSpeed);
-    bool IsDataWrited(void)
-    {
-        if (m_bDataIsWrited)
-        {
-            m_bDataIsWrited = false;
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    };
-    void ChipSelectPinSet(void);
-    void ChipSelectPinDelete(void);
-    void ChipSelectAddressSet(unsigned char ucAddress);
-
-    static const uint8_t BUFFER_LENGTH = 64;
-private:
-    const char *m_pccDeviceName;
-    /* Socket or file descriptor */
-    int32_t m_iDeviceDescriptor;
-    static const uint8_t aui8ModuleSlotNumberToSpiAddressMatching[SPI_MAX_BUS_ADDRESS];
-    // Флаг - данные записаны.
-    bool m_bDataIsWrited = false;
-
-};
-//-----------------------------------------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-//-----------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 #define CM_PER 0x44E00000
 #define CM_PER_L4LS_CLKSTCTRL_OFFSET 0x00
 #define CLKACTIVITY_GPIO_3_GDBCLK 21
@@ -594,31 +113,29 @@ struct TGpioControl
     unsigned long aulGpioMmapAddresses[GPIO_PORT_QUANTITY];
 };
 
-//-----------------------------------------------------------------------------------------------------
-class CGpio
-{
-public:
-//    CGpio();
-//    virtual ~CGpio();
-
-    static void Initialization(void);
-    static int8_t Open(void);
-    static int8_t Close(void);
-    static void SetPinOutput(unsigned char ucPortN, unsigned char ucPinN);
-    static void SetPinInput(unsigned char ucPortN, unsigned char ucPinN);
-    static void SetPin(unsigned char ucPortN, unsigned char ucPinN);
-    static void ClearPin(unsigned char ucPortN, unsigned char ucPinN);
-
-private:
-//    const char *m_pccDeviceName;
-    /* Socket or file descriptor */
-    static int32_t m_iDeviceDescriptor;
-    static TGpioControl m_xGpioControl;
-
-};
-//-----------------------------------------------------------------------------------------------------
-
-
+////-------------------------------------------------------------------------------
+//class CGpio
+//{
+//public:
+////    CGpio();
+////    virtual ~CGpio();
+//
+//    static void Init(void);
+//    static int8_t Open(void);
+//    static int8_t Close(void);
+//    static void SetPinOutput(unsigned char ucPortN, unsigned char ucPinN);
+//    static void SetPinInput(unsigned char ucPortN, unsigned char ucPinN);
+//    static void SetPin(unsigned char ucPortN, unsigned char ucPinN);
+//    static void ClearPin(unsigned char ucPortN, unsigned char ucPinN);
+//
+//private:
+////    const char *m_pccDeviceName;
+//    /* Socket or file descriptor */
+//    static int32_t m_iDeviceDescriptorServer;
+//    static TGpioControl m_xGpioControl;
+//
+//};
+////-------------------------------------------------------------------------------
 
 
 
@@ -630,30 +147,21 @@ private:
 
 
 
-//-----------------------------------------------------------------------------------------------------
-#define PRD_EN_PIN  22 /* (U10) gpmc_ad8.gpio0[22] */
-#define PRD_EN_PIN_PORT  GPIO_PORT_0
-#define PRD_3_PIN  5  /* (A16) spi0_cs0.gpio0[5] */
-#define PRD_3_PIN_PORT  GPIO_PORT_0
-#define PRD_2_PIN  20  /* (D13) mcasp0_axr1.gpio3[20] */
-#define PRD_2_PIN_PORT  GPIO_PORT_3
-#define PRD_1_PIN  21  /* (A14) mcasp0_ahclkx.gpio3[21] */
-#define PRD_1_PIN_PORT  GPIO_PORT_3
 
-class CPlatform
-{
-public:
-    CPlatform();
-    virtual ~CPlatform();
-    static void Initialization(void);
-    static void LedInitialization(void);
-    static void LedDestroy(void);
-    static uint16_t GetCurrentTime(void);
 
-private:
+////-------------------------------------------------------------------------------
+//class CPlatform
+//{
+//public:
+//    CPlatform();
+//    virtual ~CPlatform();
+//    static void Init(void);
+//    static uint16_t GetCurrentTime(void);
+//
+//private:
+//
+//protected:
+//};
 
-protected:
-};
-
-//-----------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 #endif // PLATFORM_H

@@ -1,60 +1,66 @@
-
-#include "PasNewConfig.h"
-#include "Timer.h"
-#include "RingBuffer.h"
+п»ї//-------------------------------------------------------------------------------
+//  Source      : FileName.cpp
+//  Created     : 01.06.2022
+//  Author      : Alexandr Volvenkin
+//  email       : aav-36@mail.ru
+//  GitHub      : https://github.com/AlexandrVolvenkin
+//-------------------------------------------------------------------------------
 
 #include "Platform.h"
+#include "Timer.h"
 
-using namespace std;
-
-
-//-----------------------------------------------------------------------------------------------------
+CTimeMeasure xTimeMeasure;
+//-------------------------------------------------------------------------------
 CTimer::CTimer()
 {
 
 }
 
-//-----------------------------------------------------------------------------------------------------
-CTimer::CTimer(uint16_t uiTime) :
-    m_uiTime(uiTime)
+//-------------------------------------------------------------------------------
+CTimer::CTimer(uint16_t uiTime)
 {
-    m_uiLastSystemTick = CPlatform::GetCurrentTime();
+    m_uiLastSystemTick = GetCurrentTime();
+    m_uiTime = uiTime;
 }
 
-////-----------------------------------------------------------------------------------------------------
-//CTimer::CTimer(const CTimer& xTimer)
-//{
-//    m_uiTime = xTimer.m_uiTime;
-//    m_uiLastSystemTick = xTimer.m_uiLastSystemTick;
-//}
-
-//-----------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 CTimer::~CTimer()
 {
 
 }
 
-//-----------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
+uint16_t CTimer::GetCurrentTime(void)
+{
+    struct timeval xCurrentTime;
+
+    gettimeofday( &xCurrentTime, NULL );
+
+    return static_cast<uint16_t>(((xCurrentTime.tv_sec * 1000) +
+                                  (xCurrentTime.tv_usec / 1000)));
+}
+
+//-------------------------------------------------------------------------------
 void CTimer::Set(uint16_t uiTime)
 {
-    m_uiLastSystemTick = CPlatform::GetCurrentTime();
+    m_uiLastSystemTick = GetCurrentTime();
     m_uiTime = uiTime;
 }
 
-//-----------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 void CTimer::Reset(void)
 {
-    m_uiLastSystemTick = CPlatform::GetCurrentTime();
+    m_uiLastSystemTick = GetCurrentTime();
 }
 
-//-----------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 bool CTimer::IsOverflow(void)
 {
-    return ((CPlatform::GetCurrentTime() - m_uiLastSystemTick)  >=
+    return ((uint16_t)(GetCurrentTime() - (uint16_t)m_uiLastSystemTick)  >=
             m_uiTime);
 }
 
-//-----------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 
 
 
@@ -62,76 +68,110 @@ bool CTimer::IsOverflow(void)
 
 
 
-//-----------------------------------------------------------------------------------------------------
-timer_t timerid;
-timer_t timerid2;
-struct sigevent sev;
-struct itimerspec its;
-sigset_t mask;
-struct sigaction sa;
+//-------------------------------------------------------------------------------
+//timer_t timerid;
+//timer_t timerid2;
+//struct sigevent sev;
+//struct itimerspec its;
+//sigset_t mask;
+//struct sigaction sa;
+//
+//
+//CTimeMeasure xCTimeMeasure;
+//CTimeMeasure xProgrammTimeMeasure;
 
-
-CTimeMeasure xCTimeMeasure;
-CTimeMeasure xProgrammTimeMeasure;
-
-////-----------------------------------------------------------------------------------------------------
-//CTimeMeasure::CTimeMeasure()
-//{
+//-------------------------------------------------------------------------------
+CTimeMeasure::CTimeMeasure()
+{
 //    pccOutDataFileName = "PasTimeMeasure.csv";
 //    iMeasureCounter = 0;
 //    CRingBuffer xCMainCycleMeasureRingBuffer;
-//}
+}
 
-//-----------------------------------------------------------------------------------------------------
-void CTimeMeasure::Begin(void)
+//-------------------------------------------------------------------------------
+CTimeMeasure::~CTimeMeasure()
+{
+
+}
+
+//-------------------------------------------------------------------------------
+uint8_t CTimeMeasure::Begin(void)
 {
     gettimeofday( &xTimeLast, NULL );
     if( gettimeofday( &xTimeLast, NULL ) != 0 )
     {
         /* gettimeofday failed - retry next time. */
         xTimeLast.tv_usec = 0;
+        return 0;
+    }
+    else
+    {
+        return 1;
     }
 }
 
-//-----------------------------------------------------------------------------------------------------
-void CTimeMeasure::End(void)
+//-------------------------------------------------------------------------------
+uint32_t CTimeMeasure::End(void)
 {
     if( gettimeofday( &xTimeCur, NULL ) != 0 )
     {
         /* gettimeofday failed - retry next time. */
         xTimeCur.tv_usec = 0;
-    }
-    else
-    {
-        Store();
-    }
-}
-
-//-----------------------------------------------------------------------------------------------------
-uint8_t CTimeMeasure::LastMoreThan(int32_t ui32Seconds)
-{
-    gettimeofday( &xTimeCur, NULL );
-    if ((xTimeCur.tv_sec - xTimeLast.tv_sec) > ui32Seconds)
-    {
-        gettimeofday( &xTimeLast, NULL );
-        return 1;
-    }
-    else
-
-    {
-        gettimeofday( &xTimeLast, NULL );
         return 0;
     }
+    else
+    {
+//        Store();
+        if (xTimeCur.tv_usec &&
+                xTimeLast.tv_usec &&
+                ((uint32_t)xTimeCur.tv_usec - (uint32_t)xTimeLast.tv_usec))
+        {
+            uint32_t uiTime = ((uint32_t)((uint32_t)xTimeCur.tv_usec - (uint32_t)xTimeLast.tv_usec));
+            if (uiTime > 1000000000)
+            {
+                return 0;
+            }
+            else
+            {
+                return uiTime;
+            }
+//            return ((uint32_t)((uint32_t)xTimeCur.tv_usec - (uint32_t)xTimeLast.tv_usec));
+        }
+        else
+        {
+//        std::cout << "CTimeMeasure::End xTimeCur.tv_usec"  << (uint32_t)xTimeCur.tv_usec  << std::endl;
+//        std::cout << "CTimeMeasure::End xTimeLast.tv_usec"  << (uint32_t)xTimeLast.tv_usec  << std::endl;
+//        std::cout << "CTimeMeasure::End xTimeCur.tv_usec"  << (uint32_t)xTimeCur.tv_usec  << std::endl;
+            return 0;
+        }
+    }
 }
+//(uint16_t)(CPlatform::GetCurrentTime() - (uint16_t)m_uiLastSystemTick)
+////-------------------------------------------------------------------------------
+//uint8_t CTimeMeasure::LastMoreThan(int32_t ui32Seconds)
+//{
+//    gettimeofday( &xTimeCur, NULL );
+//    if ((xTimeCur.tv_sec - xTimeLast.tv_sec) > ui32Seconds)
+//    {
+//        gettimeofday( &xTimeLast, NULL );
+//        return 1;
+//    }
+//    else
+//
+//    {
+//        gettimeofday( &xTimeLast, NULL );
+//        return 0;
+//    }
+//}
 
-//-----------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 void CTimeMeasure::Store(void)
 {
     if (xTimeCur.tv_usec &&
             xTimeLast.tv_usec &&
             (xTimeCur.tv_usec > xTimeLast.tv_usec))
     {
-        xCMainCycleMeasureRingBuffer.Push((int32_t)(xTimeCur.tv_usec - xTimeLast.tv_usec));
+//        xCMainCycleMeasureRingBuffer.Push((int32_t)(xTimeCur.tv_usec - xTimeLast.tv_usec));
 
 //        if (iMeasureCounter < STORED_MEASURE_NUMBER)
 //        {
@@ -150,115 +190,5 @@ void CTimeMeasure::Store(void)
     }
 }
 
-//-----------------------------------------------------------------------------------------------------
-int iTimerCreate(timer_t *timerid,
-                 struct sigevent *sevp)
-{
-    pthread_attr_t attr;
-    pthread_attr_init( &attr );
-    sevp -> sigev_notify = SIGEV_THREAD;//SIGEV_SIGNAL;//SIGEV_NONE;//
-    //sevp -> sigev_signo = SIG;
-    sevp -> sigev_notify_function = vHandler100Ms;
-    sevp -> sigev_value.sival_ptr = timerid;
-    //A value that's to be passed to the notification function.
-    //sevp -> sigev_value.sival_int =20;
-    sevp -> sigev_notify_attributes = &attr;
-    if (timer_create(CLOCKID, sevp, timerid) == -1)
-    {
-        return -1;
-    }
-    else
-    {
-        return 0;
-    }
-}
+//-------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------------------------------
-int iTimerSetTime(timer_t *timerid,
-                  struct itimerspec *new_value,
-                  unsigned long ulTime)
-{
-    new_value -> it_value.tv_sec = ulTime / 1000000000;
-    new_value -> it_value.tv_nsec = ulTime % 1000000000;
-    new_value -> it_interval.tv_sec = 0;
-    new_value -> it_interval.tv_nsec = 0;
-
-    if (timer_settime(*timerid, 0, new_value, NULL) == -1)
-    {
-        return -1;
-    }
-    else
-    {
-        return 0;
-    }
-}
-
-//-----------------------------------------------------------------------------------------------------
-int iTimerRestart(timer_t *timerid,
-                  struct itimerspec *new_value)
-{
-    if (timer_settime(*timerid, 0, new_value, NULL) == -1)
-    {
-        return -1;
-    }
-    else
-    {
-        return 0;
-    }
-}
-
-//-----------------------------------------------------------------------------------------------------
-int iHandlerCreate(int signum,
-                   struct sigaction *act,
-                   void (*handler)(int, siginfo_t *, void *))
-{
-    memset(act, 0, sizeof(struct sigaction));
-    act -> sa_flags = SA_SIGINFO;
-    act -> sa_sigaction = handler;
-    sigemptyset(&(act -> sa_mask));
-    if (sigaction(signum, act, NULL) == -1)
-    {
-        return -1;
-    }
-    else
-    {
-        return 0;
-    }
-}
-
-//-----------------------------------------------------------------------------------------------------
-int iHandlerBlock(int signum,
-                  sigset_t *mask)
-{
-    sigemptyset(mask);
-    sigaddset(mask, signum);
-    if (sigprocmask(SIG_BLOCK, mask, NULL) == -1)
-    {
-        return -1;
-    }
-    else
-    {
-        return 0;
-    }
-}
-
-//-----------------------------------------------------------------------------------------------------
-int iHandlerUnlock(sigset_t *mask)
-{
-    /* Разблокируем сигнал таймера, чтобы доставлялись
-       уведомления таймера */
-    if (sigprocmask(SIG_UNBLOCK, mask, NULL) == -1)
-    {
-        return -1;
-    }
-    else
-    {
-        return 0;
-    }
-}
-
-//-----------------------------------------------------------------------------------------------------
-void vHandler100Ms(union sigval val)
-{
-    ucMainCycleTimeStart = 1;
-}
