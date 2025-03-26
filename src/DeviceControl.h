@@ -1,36 +1,158 @@
-#ifndef DEVICECONTROL_H_INCLUDED
-#define DEVICECONTROL_H_INCLUDED
+п»ї#ifndef CDEVICECONTROL_H
+#define CDEVICECONTROL_H
+//-------------------------------------------------------------------------------
+//  Sourse      : FileName.cpp
+//  Created     : 01.06.2022
+//  Author      : Alexandr Volvenkin
+//  email       : aav-36@mail.ru
+//  GitHub      : https://github.com/AlexandrVolvenkin
+//-------------------------------------------------------------------------------
 
-#include "PasNewConfig.h"
+class Timer;
+class Platform;
+class CTask;
+class CResources;
+class CDataStore;
+class CLink;
+class CLinkInterface;
+class CAnalogueSignals;
+class CDataContainerInterface;
+class CDataContainerDataBase;
+class CConfigurationCreate;
+
+//-------------------------------------------------------------------------------
+class CDeviceControl : public CTask
+{
+public:
+    enum
+    {
+        CONFIGURATION_REQUEST_START = NEXT_STEP,
+//        CONFIGURATION_REQUEST_EXECUTOR_READY_CHECK_START,
+//        CONFIGURATION_REQUEST_EXECUTOR_READY_CHECK_WAITING,
+//        CONFIGURATION_REQUEST_EXECUTOR_DONE_CHECK_START,
+//        CONFIGURATION_REQUEST_EXECUTOR_DONE_CHECK_WAITING,
+        CONFIGURATION_REQUEST_EXECUTOR_ANSWER_PROCESSING,
+
+        DATA_BASE_BLOCK_READ,
+        DATA_BASE_BLOCK_START_WRITE,
+        DATA_BASE_BLOCK_WRITE_END_WAITING,
+    };
+
+    CDeviceControl();
+    virtual ~CDeviceControl();
+
+//    size_t GetObjectLength(void);
+
+    // Р“РµС‚С‚РµСЂ РґР»СЏ m_sDataStoreName
+    std::string GetDataStoreName() const
+    {
+        return m_sDataStoreName;
+    }
+
+    // РЎРµС‚С‚РµСЂ РґР»СЏ m_sDataStoreName
+    void SetDataStoreName(const std::string& sName)
+    {
+        m_sDataStoreName = sName;
+    }
+
+    // Р“РµС‚С‚РµСЂ РґР»СЏ m_pxDataStore
+    CDataStore* GetDataStore() const
+    {
+        return m_pxDataStore;
+    }
+
+    // РЎРµС‚С‚РµСЂ РґР»СЏ m_pxDataStore
+    void SetDataStore(CDataStore* pxDataStore)
+    {
+        m_pxDataStore = pxDataStore;
+    }
+
+    // Р“РµС‚С‚РµСЂ РґР»СЏ m_sDataStoreLinkName
+    std::string GetDataStoreLinkName() const
+    {
+        return m_sDataStoreLinkName;
+    }
+
+    // РЎРµС‚С‚РµСЂ РґР»СЏ m_sDataStoreLinkName
+    void SetDataStoreLinkName(const std::string& sName)
+    {
+        m_sDataStoreLinkName = sName;
+    }
+
+    // Р“РµС‚С‚РµСЂ РґР»СЏ m_pxDataStoreLink
+    CLinkInterface* GetDataStoreLink() const
+    {
+        return m_pxDataStoreLink;
+    }
+
+    // РЎРµС‚С‚РµСЂ РґР»СЏ m_pxDataStoreLink
+    void SetDataStoreLink(CLinkInterface* pxLink)
+    {
+        m_pxDataStoreLink = pxLink;
+    }
+
+    // Р“РµС‚С‚РµСЂ РґР»СЏ m_pxCommandDataLink
+    CLinkInterface* GetCommandDataLink() const
+    {
+        return m_pxCommandDataLink;
+    }
+
+    // РЎРµС‚С‚РµСЂ РґР»СЏ m_pxCommandDataLink
+    void SetCommandDataLink(CLinkInterface* pxValue)
+    {
+        m_pxCommandDataLink = pxValue;
+    }
+
+    // Р“РµС‚С‚РµСЂ РґР»СЏ m_pxOperatingDataLink
+    CLinkInterface* GetOperatingDataLink() const
+    {
+        return m_pxOperatingDataLink;
+    }
+
+    // РЎРµС‚С‚РµСЂ РґР»СЏ m_pxOperatingDataLink
+    void SetOperatingDataLink(CLinkInterface* pxValue)
+    {
+        m_pxOperatingDataLink = pxValue;
+    }
+
+    void SetConfigurationCreateName(const std::string& sName)
+    {
+        m_sConfigurationCreateName = sName;
+    }
+
+    uint8_t Init(void);
+//    bool SetTaskData(CDataContainerDataBase* pxDataContainer);
+//    bool GetTaskData(CDataContainerDataBase* pxDataContainer);
+//    CDataContainerDataBase* GetTaskData(void);
+
+    uint16_t ConfigurationRead(uint8_t *puiDestination);
+    uint16_t DataBaseBlockRead(uint8_t *puiDestination, uint8_t uiBlockIndex);
+    uint16_t DataBaseBlockReadAnswer(void);
+    uint16_t DataBaseBlockWrite(void);
+    uint8_t GetFsmOperationStatus(void);
+
+    uint8_t Fsm(void);
+
+protected:
+    std::string m_sDataStoreName;
+    CDataStore* m_pxDataStore;
+
+    std::string m_sConfigurationCreateName;
+    uint8_t m_uiConfigurationCreateId;
+
+    std::string m_sDataStoreLinkName;
+    CLinkInterface* m_pxDataStoreLink;
+
+    CLinkInterface* m_pxCommandDataLink;
+    CLinkInterface* m_pxOperatingDataLink;
+
+    uint8_t* m_puiIntermediateBuff;
+
+    CDataContainerDataBase* m_pxCommandDataContainer;
+    CDataContainerDataBase* m_pxOperatingDataContainer;
+private:
+};
 
 
-//============================================================================
-// команды для драйверов модулей передаваемые через контекст.
-// инкремент уставок - SP, OUT.
-#define DEVICE_CONTROL_MTVI5_INCREMENT_SP_OUT  0x01
-// декремент уставок - SP, OUT.
-#define DEVICE_CONTROL_MTVI5_DECREMENT_SP_OUT  0x02
-// записать байт-команду в массив состояния регуляторов «CONT_ST».
-#define DEVICE_CONTROL_MTVI5_CONT_ST_WRITE  0x04
-// записать параметры в массив аналоговых переменных регуляторов «CONT_AV».
-#define DEVICE_CONTROL_MTVI5_CONT_AV_WRITE  0x05
-#define DEVICE_CONTROL_MTVI5_DATA_BASE_WRITE_BY_PROGRAMMER  0x06
-#define DEVICE_CONTROL_MTVI5_DATA_BASE_WRITE_BY_HMI  0x07
-#define DEVICE_CONTROL_MTVI5_LOAD_OUTS_OSF  0x08
-#define DEVICE_CONTROL_MTVI5_CONT_ST_CHANGE  0x09
-
-// адреса-команды modbus функции 5.
-// включение-выключение режима калибровки.
-#define DEVICE_CONTROL_CALIBRATION_ON_OFF 0x1000
-// калибровка начала шкалы.
-#define DEVICE_CONTROL_SET_BOTTOM_OF_SCALE  0x1100
-// калибровка конца шкалы.
-#define DEVICE_CONTROL_SET_TOP_OF_SCALE  0x1200
-// включение-выключение режима блоуировки.
-#define DEVICE_CONTROL_BLOCK 0x007D
-// квитирование с верхнего уровня.
-#define DEVICE_CONTROL_PC_KVIT  0x007E
-// сброс с верхнего уровня.
-#define DEVICE_CONTROL_PC_RESET 0x007F
-
-#endif // DEVICECONTROL_H_INCLUDED
+//-------------------------------------------------------------------------------
+#endif // CDEVICECONTROL_H

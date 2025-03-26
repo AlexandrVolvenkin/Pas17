@@ -36,16 +36,16 @@ public:
     CGpio();
     virtual ~CGpio();
 
-    void ErrorMessage(const std::string& message, int errorCode);
-    bool GetLineHandler(int chipNumber,
-                        int lineOffset,
-                        std::string consumerLabel);
-    int8_t Open(void);
-    int8_t Close(void);
-    void SetPinOutput(unsigned char ucPortN, unsigned char ucPinN);
-    void SetPinInput(unsigned char ucPortN, unsigned char ucPinN);
-    void SetPin(unsigned char ucPortN, unsigned char ucPinN);
-    void ClearPin(unsigned char ucPortN, unsigned char ucPinN);
+    static void ErrorMessage(const std::string& message, int errorCode);
+    static int GetLineHandler(int chipNumber,
+                              int lineOffset,
+                              std::string consumerLabel);
+//    int8_t Open(void);
+//    int8_t Close(void);
+//    void SetPinOutput(unsigned char ucPortN, unsigned char ucPinN);
+//    void SetPinInput(unsigned char ucPortN, unsigned char ucPinN);
+    static void SetPin(int iLineHandler);
+    static void ClearPin(int iLineHandler);
 
 protected:
 
