@@ -99,6 +99,7 @@ uint8_t CTaskSerialMT::SendMessage(CSerialMT *pxCSerialMT, uint8_t ui8Address)
         // функция-задача принимает сообщение.
         break;
 
+<<<<<<< HEAD
     case TASK_MODE_MESSAGE_SEND_READ_CONTINUOUSLY:
         // функция-задача передаёт сообщение.
         ui8Address = (ui8Address & (~CSerialMT::SERIAL_MT_WRITE));
@@ -107,6 +108,70 @@ uint8_t CTaskSerialMT::SendMessage(CSerialMT *pxCSerialMT, uint8_t ui8Address)
         {
             ui8Status = TASK_STATE_MESSAGE_NOT_SEND;
             return 0;
+=======
+//-------------------------------------------------------------------------------
+bool CTask::IsDoneError(void)
+{
+    if (GetFsmOperationStatus() == DONE_ERROR)
+    {
+        SetFsmOperationStatus(0);
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+//-------------------------------------------------------------------------------
+bool CTask::SetTaskData(uint8_t uiTaskId, CDataContainerInterface* pxDataContainer)
+{
+    std::cout << "CTask::SetTaskData 1" << std::endl;
+
+    CTaskInterface* pxTask =
+        GetResources() ->
+        GetTaskPointerById(uiTaskId);
+
+    if (pxTask -> IsTaskReady())
+    {
+        std::cout << "CTask::SetTaskData 2" << std::endl;
+        pxTask -> SetCustomerDataContainer(pxDataContainer);
+        pxTask -> SetFsmState(pxDataContainer ->
+                              GetFsmCommandState());
+        return true;
+    }
+    else
+    {
+        std::cout << "CTask::SetTaskData 3" << std::endl;
+        return false;
+    }
+}
+
+//-------------------------------------------------------------------------------
+bool CTask::SetTaskData(CDataContainerInterface* pxDataContainer)
+{
+    std::cout << "CTask::SetTaskData 1" << std::endl;
+
+    std::cout << "CTask::SetTaskData TaskId "  << (int)pxDataContainer ->
+              GetTaskId() << std::endl;
+    CTaskInterface* pxTask =
+        GetResources() ->
+        GetTaskPointerById(pxDataContainer ->
+                           GetTaskId());
+
+    std::cout << "CTask::SetTaskData m_sTaskName "  << pxTask ->
+              GetTaskName() << std::endl;
+
+    if (pxTask)
+    {
+        if (pxTask -> IsTaskReady())
+        {
+            std::cout << "CTask::SetTaskData 2" << std::endl;
+            pxTask -> SetCustomerDataContainer(pxDataContainer);
+            pxTask -> SetFsmState(pxDataContainer ->
+                                  GetFsmCommandState());
+            return true;
+>>>>>>> parent of 9e999d3 (new CGpio::CGpio() CInternalModuleMuvr::MUVR_DATA_EXCHANGE  spi Gpio::ClearPin(GpioLineHandler_SPI_CHIP_ENABLE_PIN) ok)
         }
         else
         {
