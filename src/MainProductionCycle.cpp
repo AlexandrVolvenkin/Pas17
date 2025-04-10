@@ -67,10 +67,6 @@ uint8_t auiTempBlock[]
 CMainProductionCycle::CMainProductionCycle()
 {
     std::cout << "CMainProductionCycle constructor"  << std::endl;
-    // получим имя класса.
-    sprintf(m_acTaskName,
-            "%s",
-            typeid(*this).name());
     m_puiIntermediateBuff = new uint8_t[1024];
     SetResources(&m_xResources);
     SetFsmState(START);
@@ -171,233 +167,249 @@ uint8_t CMainProductionCycle::CreateTasks(void)
     SetDataStoreCheckName("DataStoreCheck");
 
 //-------------------------------------------------------------------------------
-    CDeviceControl* pxDeviceControl = 0;
-    pxDeviceControl =
-        static_cast<CDeviceControl*>(m_xResources.AddCommonTaskToMap("DeviceControlRtuUpperLevel",
-                                     std::make_shared<CDeviceControl>()));
-    pxDeviceControl ->
+    CLedBlinker* pxLedBlinker = 0;
+    pxLedBlinker =
+        static_cast<CLedBlinker*>(m_xResources.AddCommonTaskToMap("LedBlinkerMainProductionCycle",
+                                     std::make_shared<CLedBlinker>()));
+    pxLedBlinker ->
     SetResources(&m_xResources);
-//    pxDeviceControl ->
+//    pxLedBlinker ->
 //    SetDataStoreLinkName("DataStoreFileSystem");
-    pxDeviceControl ->
-    SetDataStoreName("DataStoreFileSystem");
-    pxDeviceControl ->
-    SetConfigurationCreateName("ConfigurationCreate");
-    m_xResources.AddCurrentlyRunningTasksList(pxDeviceControl);
-
-//-------------------------------------------------------------------------------
-    CStorageDeviceFileSystem* pxStorageDeviceFileSystem = 0;
-    pxStorageDeviceFileSystem =
-        static_cast<CStorageDeviceFileSystem*>(m_xResources.AddCommonTaskToMap("StorageDeviceFileSystem",
-                std::make_shared<CStorageDeviceFileSystem>()));
-    pxStorageDeviceFileSystem ->
-    SetResources(&m_xResources);
-    m_xResources.AddCurrentlyRunningTasksList(pxStorageDeviceFileSystem);
-
-//-------------------------------------------------------------------------------
-    CDataStore* pxDataStoreFileSystem = 0;
-    pxDataStoreFileSystem =
-        static_cast<CDataStore*>(m_xResources.AddCommonTaskToMap("DataStoreFileSystem",
-                                 std::make_shared<CDataStore>()));
-    pxDataStoreFileSystem ->
-    SetResources(&m_xResources);
-    pxDataStoreFileSystem ->
-    SetStorageDeviceName("StorageDeviceFileSystem");
-    m_xResources.AddCurrentlyRunningTasksList(pxDataStoreFileSystem);
-    m_pxDataStoreFileSystem = pxDataStoreFileSystem;
-
-//-------------------------------------------------------------------------------
-    CDataStoreCheck* pxDataStoreCheck = 0;
-    pxDataStoreCheck =
-        static_cast<CDataStoreCheck*>(m_xResources.AddCommonTaskToMap("DataStoreCheck",
-                                      std::make_shared<CDataStoreCheck>()));
-    pxDataStoreCheck ->
-    SetResources(&m_xResources);
-    pxDataStoreCheck ->
-    SetStorageDeviceName("StorageDeviceFileSystem");
-    m_xResources.AddCurrentlyRunningTasksList(pxDataStoreCheck);
-    m_pxDataStoreCheck = pxDataStoreCheck;
+//    pxLedBlinker ->
+//    SetDataStoreName("DataStoreFileSystem");
+//    pxLedBlinker ->
+//    SetConfigurationCreateName("ConfigurationCreate");
+//    m_xResources.AddCurrentlyRunningTasksList(pxLedBlinker);
 
 
-//-------------------------------------------------------------------------------
-    m_xResources.ModbusWorkingArraysCreate(COILS_WORK_ARRAY_LENGTH,
-                                           DISCRETE_INPUTS_ARRAY_LENGTH,
-                                           HOLDING_REGISTERS_ARRAY_LENGTH,
-                                           INPUT_REGISTERS_ARRAY_LENGTH);
-
-    CSerialPortCommunicationDevice* pxSerialPortCommunicationDeviceCom1 = 0;
-    pxSerialPortCommunicationDeviceCom1 =
-        static_cast<CSerialPortCommunicationDevice*>(m_xResources.AddCommonTaskToMap("SerialPortCommunicationDeviceCom1",
-                std::make_shared<CSerialPortCommunicationDevice>()));
-    pxSerialPortCommunicationDeviceCom1 ->
-    SetResources(&m_xResources);
-
-//-------------------------------------------------------------------------------
-    CModbusRtuSlaveLinkLayer* pxModbusRtuSlaveLinkLayerUpperLevel = 0;
-    pxModbusRtuSlaveLinkLayerUpperLevel =
-        static_cast<CModbusRtuSlaveLinkLayer*>(m_xResources.AddCommonTaskToMap("ModbusRtuSlaveLinkLayerUpperLevel",
-                std::make_shared<CModbusRtuSlaveLinkLayer>()));
-    pxModbusRtuSlaveLinkLayerUpperLevel ->
-    SetResources(&m_xResources);
-    pxModbusRtuSlaveLinkLayerUpperLevel ->
-    SetCommunicationDeviceName("SerialPortCommunicationDeviceCom1");
-
-//-------------------------------------------------------------------------------
-    CModbusSlave* pxModbusRtuSlaveUpperLevel = 0;
-    pxModbusRtuSlaveUpperLevel =
-        static_cast<CModbusSlave*>(m_xResources.AddCommonTaskToMap("ModbusRtuSlaveUpperLevel",
-                                   std::make_shared<CModbusSlave>()));
-    pxModbusRtuSlaveUpperLevel ->
-    SetResources(&m_xResources);
-    pxModbusRtuSlaveUpperLevel ->
-    SetModbusSlaveLinkLayerName("ModbusRtuSlaveLinkLayerUpperLevel");
-    pxModbusRtuSlaveUpperLevel ->
-    SetDeviceControlName("DeviceControlRtuUpperLevel");
-    pxModbusRtuSlaveUpperLevel ->
-    WorkingArraysInit();
-    m_xResources.AddCurrentlyRunningTasksList(pxModbusRtuSlaveUpperLevel);
-
-//-------------------------------------------------------------------------------
-    CTcpCommunicationDevice* pxTcpCommunicationDeviceUpperLevel = 0;
-    pxTcpCommunicationDeviceUpperLevel =
-        static_cast<CTcpCommunicationDevice*>(m_xResources.AddCommonTaskToMap("TcpCommunicationDeviceUpperLevel",
-                std::make_shared<CTcpCommunicationDevice>()));
-    pxTcpCommunicationDeviceUpperLevel ->
-    SetResources(&m_xResources);
-
-//-------------------------------------------------------------------------------
-    CModbusTcpSlaveLinkLayer* pxModbusTcpSlaveLinkLayerUpperLevel = 0;
-    pxModbusTcpSlaveLinkLayerUpperLevel =
-        static_cast<CModbusTcpSlaveLinkLayer*>(m_xResources.AddCommonTaskToMap("ModbusTcpSlaveLinkLayerUpperLevel",
-                std::make_shared<CModbusTcpSlaveLinkLayer>()));
-    pxModbusTcpSlaveLinkLayerUpperLevel ->
-    SetResources(&m_xResources);
-    pxModbusTcpSlaveLinkLayerUpperLevel ->
-    SetCommunicationDeviceName("TcpCommunicationDeviceUpperLevel");
-
-//-------------------------------------------------------------------------------
-    CModbusSlave* pxModbusTcpSlaveUpperLevel = 0;
-    pxModbusTcpSlaveUpperLevel =
-        static_cast<CModbusSlave*>(m_xResources.AddCommonTaskToMap("ModbusTcpSlaveUpperLevel",
-                                   std::make_shared<CModbusSlave>()));
-    pxModbusTcpSlaveUpperLevel ->
-    SetResources(&m_xResources);
-    pxModbusTcpSlaveUpperLevel ->
-    SetModbusSlaveLinkLayerName("ModbusTcpSlaveLinkLayerUpperLevel");
-    pxModbusTcpSlaveUpperLevel ->
-    SetDeviceControlName("DeviceControlRtuUpperLevel");
-    pxModbusTcpSlaveUpperLevel ->
-    WorkingArraysInit();
-    m_xResources.AddCurrentlyRunningTasksList(pxModbusTcpSlaveUpperLevel);
-
-
-//-------------------------------------------------------------------------------
-    CSharedMemoryCommunicationDevice* pxSharedMemoryCommunicationDeviceEveDisplay = 0;
-    pxSharedMemoryCommunicationDeviceEveDisplay =
-        static_cast<CSharedMemoryCommunicationDevice*>(m_xResources.AddCommonTaskToMap("SharedMemoryCommunicationDeviceEveDisplay",
-                std::make_shared<CSharedMemoryCommunicationDevice>()));
-    pxSharedMemoryCommunicationDeviceEveDisplay ->
-    SetResources(&m_xResources);
-
-//-------------------------------------------------------------------------------
-    CModbusSmSlaveLinkLayer* pxModbusSmSlaveLinkLayerEveDisplay = 0;
-    pxModbusSmSlaveLinkLayerEveDisplay =
-        static_cast<CModbusSmSlaveLinkLayer*>(m_xResources.AddCommonTaskToMap("ModbusSmSlaveLinkLayerEveDisplay",
-                std::make_shared<CModbusSmSlaveLinkLayer>()));
-    pxModbusSmSlaveLinkLayerEveDisplay ->
-    SetResources(&m_xResources);
-    pxModbusSmSlaveLinkLayerEveDisplay ->
-    SetCommunicationDeviceName("SharedMemoryCommunicationDeviceEveDisplay");
-    m_xResources.AddCurrentlyRunningTasksList(pxModbusSmSlaveLinkLayerEveDisplay);
-
-//-------------------------------------------------------------------------------
-    CModbusSlave* pxModbusSmSlaveEveDisplay = 0;
-    pxModbusSmSlaveEveDisplay =
-        static_cast<CModbusSlave*>(m_xResources.AddCommonTaskToMap("ModbusSmSlaveEveDisplay",
-                                   std::make_shared<CModbusSlave>()));
-//    CModbusSmSlave* pxModbusSmSlaveEveDisplay = 0;
+////-------------------------------------------------------------------------------
+//    CDeviceControl* pxDeviceControl = 0;
+//    pxDeviceControl =
+//        static_cast<CDeviceControl*>(m_xResources.AddCommonTaskToMap("DeviceControlRtuUpperLevel",
+//                                     std::make_shared<CDeviceControl>()));
+//    pxDeviceControl ->
+//    SetResources(&m_xResources);
+////    pxDeviceControl ->
+////    SetDataStoreLinkName("DataStoreFileSystem");
+//    pxDeviceControl ->
+//    SetDataStoreName("DataStoreFileSystem");
+//    pxDeviceControl ->
+//    SetConfigurationCreateName("ConfigurationCreate");
+//    m_xResources.AddCurrentlyRunningTasksList(pxDeviceControl);
+//
+////-------------------------------------------------------------------------------
+//    CStorageDeviceFileSystem* pxStorageDeviceFileSystem = 0;
+//    pxStorageDeviceFileSystem =
+//        static_cast<CStorageDeviceFileSystem*>(m_xResources.AddCommonTaskToMap("StorageDeviceFileSystem",
+//                std::make_shared<CStorageDeviceFileSystem>()));
+//    pxStorageDeviceFileSystem ->
+//    SetResources(&m_xResources);
+//    m_xResources.AddCurrentlyRunningTasksList(pxStorageDeviceFileSystem);
+//
+////-------------------------------------------------------------------------------
+//    CDataStore* pxDataStoreFileSystem = 0;
+//    pxDataStoreFileSystem =
+//        static_cast<CDataStore*>(m_xResources.AddCommonTaskToMap("DataStoreFileSystem",
+//                                 std::make_shared<CDataStore>()));
+//    pxDataStoreFileSystem ->
+//    SetResources(&m_xResources);
+//    pxDataStoreFileSystem ->
+//    SetStorageDeviceName("StorageDeviceFileSystem");
+//    m_xResources.AddCurrentlyRunningTasksList(pxDataStoreFileSystem);
+//    m_pxDataStoreFileSystem = pxDataStoreFileSystem;
+//
+////-------------------------------------------------------------------------------
+//    CDataStoreCheck* pxDataStoreCheck = 0;
+//    pxDataStoreCheck =
+//        static_cast<CDataStoreCheck*>(m_xResources.AddCommonTaskToMap("DataStoreCheck",
+//                                      std::make_shared<CDataStoreCheck>()));
+//    pxDataStoreCheck ->
+//    SetResources(&m_xResources);
+//    pxDataStoreCheck ->
+//    SetStorageDeviceName("StorageDeviceFileSystem");
+//    m_xResources.AddCurrentlyRunningTasksList(pxDataStoreCheck);
+//    m_pxDataStoreCheck = pxDataStoreCheck;
+//
+//
+////-------------------------------------------------------------------------------
+//    m_xResources.ModbusWorkingArraysCreate(COILS_WORK_ARRAY_LENGTH,
+//                                           DISCRETE_INPUTS_ARRAY_LENGTH,
+//                                           HOLDING_REGISTERS_ARRAY_LENGTH,
+//                                           INPUT_REGISTERS_ARRAY_LENGTH);
+//
+//    CSerialPortCommunicationDevice* pxSerialPortCommunicationDeviceCom1 = 0;
+//    pxSerialPortCommunicationDeviceCom1 =
+//        static_cast<CSerialPortCommunicationDevice*>(m_xResources.AddCommonTaskToMap("SerialPortCommunicationDeviceCom1",
+//                std::make_shared<CSerialPortCommunicationDevice>()));
+//    pxSerialPortCommunicationDeviceCom1 ->
+//    SetResources(&m_xResources);
+//
+////-------------------------------------------------------------------------------
+//    CModbusRtuSlaveLinkLayer* pxModbusRtuSlaveLinkLayerUpperLevel = 0;
+//    pxModbusRtuSlaveLinkLayerUpperLevel =
+//        static_cast<CModbusRtuSlaveLinkLayer*>(m_xResources.AddCommonTaskToMap("ModbusRtuSlaveLinkLayerUpperLevel",
+//                std::make_shared<CModbusRtuSlaveLinkLayer>()));
+//    pxModbusRtuSlaveLinkLayerUpperLevel ->
+//    SetResources(&m_xResources);
+//    pxModbusRtuSlaveLinkLayerUpperLevel ->
+//    SetCommunicationDeviceName("SerialPortCommunicationDeviceCom1");
+//
+////-------------------------------------------------------------------------------
+//    CModbusSlave* pxModbusRtuSlaveUpperLevel = 0;
+//    pxModbusRtuSlaveUpperLevel =
+//        static_cast<CModbusSlave*>(m_xResources.AddCommonTaskToMap("ModbusRtuSlaveUpperLevel",
+//                                   std::make_shared<CModbusSlave>()));
+//    pxModbusRtuSlaveUpperLevel ->
+//    SetResources(&m_xResources);
+//    pxModbusRtuSlaveUpperLevel ->
+//    SetModbusSlaveLinkLayerName("ModbusRtuSlaveLinkLayerUpperLevel");
+//    pxModbusRtuSlaveUpperLevel ->
+//    SetDeviceControlName("DeviceControlRtuUpperLevel");
+//    pxModbusRtuSlaveUpperLevel ->
+//    WorkingArraysInit();
+//    m_xResources.AddCurrentlyRunningTasksList(pxModbusRtuSlaveUpperLevel);
+//
+////-------------------------------------------------------------------------------
+//    CTcpCommunicationDevice* pxTcpCommunicationDeviceUpperLevel = 0;
+//    pxTcpCommunicationDeviceUpperLevel =
+//        static_cast<CTcpCommunicationDevice*>(m_xResources.AddCommonTaskToMap("TcpCommunicationDeviceUpperLevel",
+//                std::make_shared<CTcpCommunicationDevice>()));
+//    pxTcpCommunicationDeviceUpperLevel ->
+//    SetResources(&m_xResources);
+//
+////-------------------------------------------------------------------------------
+//    CModbusTcpSlaveLinkLayer* pxModbusTcpSlaveLinkLayerUpperLevel = 0;
+//    pxModbusTcpSlaveLinkLayerUpperLevel =
+//        static_cast<CModbusTcpSlaveLinkLayer*>(m_xResources.AddCommonTaskToMap("ModbusTcpSlaveLinkLayerUpperLevel",
+//                std::make_shared<CModbusTcpSlaveLinkLayer>()));
+//    pxModbusTcpSlaveLinkLayerUpperLevel ->
+//    SetResources(&m_xResources);
+//    pxModbusTcpSlaveLinkLayerUpperLevel ->
+//    SetCommunicationDeviceName("TcpCommunicationDeviceUpperLevel");
+//
+////-------------------------------------------------------------------------------
+//    CModbusSlave* pxModbusTcpSlaveUpperLevel = 0;
+//    pxModbusTcpSlaveUpperLevel =
+//        static_cast<CModbusSlave*>(m_xResources.AddCommonTaskToMap("ModbusTcpSlaveUpperLevel",
+//                                   std::make_shared<CModbusSlave>()));
+//    pxModbusTcpSlaveUpperLevel ->
+//    SetResources(&m_xResources);
+//    pxModbusTcpSlaveUpperLevel ->
+//    SetModbusSlaveLinkLayerName("ModbusTcpSlaveLinkLayerUpperLevel");
+//    pxModbusTcpSlaveUpperLevel ->
+//    SetDeviceControlName("DeviceControlRtuUpperLevel");
+//    pxModbusTcpSlaveUpperLevel ->
+//    WorkingArraysInit();
+//    m_xResources.AddCurrentlyRunningTasksList(pxModbusTcpSlaveUpperLevel);
+//
+//
+////-------------------------------------------------------------------------------
+//    CSharedMemoryCommunicationDevice* pxSharedMemoryCommunicationDeviceEveDisplay = 0;
+//    pxSharedMemoryCommunicationDeviceEveDisplay =
+//        static_cast<CSharedMemoryCommunicationDevice*>(m_xResources.AddCommonTaskToMap("SharedMemoryCommunicationDeviceEveDisplay",
+//                std::make_shared<CSharedMemoryCommunicationDevice>()));
+//    pxSharedMemoryCommunicationDeviceEveDisplay ->
+//    SetResources(&m_xResources);
+//
+////-------------------------------------------------------------------------------
+//    CModbusSmSlaveLinkLayer* pxModbusSmSlaveLinkLayerEveDisplay = 0;
+//    pxModbusSmSlaveLinkLayerEveDisplay =
+//        static_cast<CModbusSmSlaveLinkLayer*>(m_xResources.AddCommonTaskToMap("ModbusSmSlaveLinkLayerEveDisplay",
+//                std::make_shared<CModbusSmSlaveLinkLayer>()));
+//    pxModbusSmSlaveLinkLayerEveDisplay ->
+//    SetResources(&m_xResources);
+//    pxModbusSmSlaveLinkLayerEveDisplay ->
+//    SetCommunicationDeviceName("SharedMemoryCommunicationDeviceEveDisplay");
+//    m_xResources.AddCurrentlyRunningTasksList(pxModbusSmSlaveLinkLayerEveDisplay);
+//
+////-------------------------------------------------------------------------------
+//    CModbusSlave* pxModbusSmSlaveEveDisplay = 0;
 //    pxModbusSmSlaveEveDisplay =
-//        static_cast<CModbusSmSlave*>(m_xResources.AddCommonTaskToMap("ModbusSmSlaveEveDisplay",
-//                                   std::make_shared<CModbusSmSlave>()));
-    pxModbusSmSlaveEveDisplay ->
-    SetResources(&m_xResources);
-    pxModbusSmSlaveEveDisplay ->
-    SetModbusSlaveLinkLayerName("ModbusSmSlaveLinkLayerEveDisplay");
-    pxModbusSmSlaveEveDisplay ->
-    SetDeviceControlName("DeviceControlRtuUpperLevel");
-    pxModbusSmSlaveEveDisplay ->
-    WorkingArraysInit();
-    m_xResources.AddCurrentlyRunningTasksList(pxModbusSmSlaveEveDisplay);
-
-
-
-//-------------------------------------------------------------------------------
-    CSpiCommunicationDevice* pxSpiCommunicationDeviceSpi0 = 0;
-    pxSpiCommunicationDeviceSpi0 =
-        static_cast<CSpiCommunicationDevice*>(m_xResources.AddCommonTaskToMap("SpiCommunicationDeviceSpi0",
-                std::make_shared<CSpiCommunicationDevice>()));
-    pxSpiCommunicationDeviceSpi0 ->
-    SetResources(&m_xResources);
-
-//-------------------------------------------------------------------------------
-    CInternalModule* pxInternalModuleCommon = 0;
-    pxInternalModuleCommon =
-        static_cast<CInternalModule*>(m_xResources.AddCommonTaskToMap("InternalModuleCommon",
-                                      std::make_shared<CInternalModule>()));
-    pxInternalModuleCommon ->
-    SetResources(&m_xResources);
-    pxInternalModuleCommon ->
-    SetCommunicationDeviceName("SpiCommunicationDeviceSpi0");
-    m_xResources.AddCurrentlyRunningTasksList(pxInternalModuleCommon);
-    m_pxInternalModule = pxInternalModuleCommon;
-
-//-------------------------------------------------------------------------------
-    CInternalModuleMuvr* pxInternalModuleMuvr = 0;
-    pxInternalModuleMuvr =
-        static_cast<CInternalModuleMuvr*>(m_xResources.AddCommonTaskToMap("InternalModuleMuvr",
-                                          std::make_shared<CInternalModuleMuvr>()));
-    pxInternalModuleMuvr ->
-    SetResources(&m_xResources);
-    pxInternalModuleMuvr ->
-    SetCommunicationDeviceName("SpiCommunicationDeviceSpi0");
-    m_xResources.AddCurrentlyRunningTasksList(pxInternalModuleMuvr);
-    m_pxInternalModuleMuvr = pxInternalModuleMuvr;
-
-//-------------------------------------------------------------------------------
-    CAnalogueSignals* pxAnalogueSignals = 0;
-    pxAnalogueSignals =
-        static_cast<CAnalogueSignals*>(m_xResources.AddCommonTaskToMap("AnalogueSignals",
-                                       std::make_shared<CAnalogueSignals>()));
-    pxAnalogueSignals ->
-    SetResources(&m_xResources);
-    pxAnalogueSignals ->
-    SetDeviceControlName("DeviceControlRtuUpperLevel");
-    m_xResources.AddCurrentlyRunningTasksList(pxAnalogueSignals);
-    m_pxAnalogueSignals = pxAnalogueSignals;
-
-//-------------------------------------------------------------------------------
-    CConfigurationCreate* pxConfigurationCreate = 0;
-    pxConfigurationCreate =
-        static_cast<CConfigurationCreate*>(m_xResources.AddCommonTaskToMap("ConfigurationCreate",
-                                           std::make_shared<CConfigurationCreate>()));
-    pxConfigurationCreate ->
-    SetResources(&m_xResources);
-    pxConfigurationCreate ->
-    SetInternalModuleName("InternalModuleCommon");
-    m_xResources.AddCurrentlyRunningTasksList(pxConfigurationCreate);
-    m_pxConfigurationCreate = pxConfigurationCreate;
-
-//-------------------------------------------------------------------------------
-    CSystemComponentsCreate* pxSystemComponentsCreate = 0;
-    pxSystemComponentsCreate =
-        static_cast<CSystemComponentsCreate*>(m_xResources.AddCommonTaskToMap("SystemComponentsCreate",
-                std::make_shared<CSystemComponentsCreate>()));
-    pxSystemComponentsCreate ->
-    SetResources(&m_xResources);
-    pxSystemComponentsCreate ->
-    SetInternalModuleName("InternalModuleCommon");
-    m_xResources.AddCurrentlyRunningTasksList(pxSystemComponentsCreate);
-//    m_pxSystemComponentsCreate = pxSystemComponentsCreate;
+//        static_cast<CModbusSlave*>(m_xResources.AddCommonTaskToMap("ModbusSmSlaveEveDisplay",
+//                                   std::make_shared<CModbusSlave>()));
+////    CModbusSmSlave* pxModbusSmSlaveEveDisplay = 0;
+////    pxModbusSmSlaveEveDisplay =
+////        static_cast<CModbusSmSlave*>(m_xResources.AddCommonTaskToMap("ModbusSmSlaveEveDisplay",
+////                                   std::make_shared<CModbusSmSlave>()));
+//    pxModbusSmSlaveEveDisplay ->
+//    SetResources(&m_xResources);
+//    pxModbusSmSlaveEveDisplay ->
+//    SetModbusSlaveLinkLayerName("ModbusSmSlaveLinkLayerEveDisplay");
+//    pxModbusSmSlaveEveDisplay ->
+//    SetDeviceControlName("DeviceControlRtuUpperLevel");
+//    pxModbusSmSlaveEveDisplay ->
+//    WorkingArraysInit();
+//    m_xResources.AddCurrentlyRunningTasksList(pxModbusSmSlaveEveDisplay);
+//
+//
+//
+////-------------------------------------------------------------------------------
+//    CSpiCommunicationDevice* pxSpiCommunicationDeviceSpi0 = 0;
+//    pxSpiCommunicationDeviceSpi0 =
+//        static_cast<CSpiCommunicationDevice*>(m_xResources.AddCommonTaskToMap("SpiCommunicationDeviceSpi0",
+//                std::make_shared<CSpiCommunicationDevice>()));
+//    pxSpiCommunicationDeviceSpi0 ->
+//    SetResources(&m_xResources);
+//
+////-------------------------------------------------------------------------------
+//    CInternalModule* pxInternalModuleCommon = 0;
+//    pxInternalModuleCommon =
+//        static_cast<CInternalModule*>(m_xResources.AddCommonTaskToMap("InternalModuleCommon",
+//                                      std::make_shared<CInternalModule>()));
+//    pxInternalModuleCommon ->
+//    SetResources(&m_xResources);
+//    pxInternalModuleCommon ->
+//    SetCommunicationDeviceName("SpiCommunicationDeviceSpi0");
+//    m_xResources.AddCurrentlyRunningTasksList(pxInternalModuleCommon);
+//    m_pxInternalModule = pxInternalModuleCommon;
+//
+////-------------------------------------------------------------------------------
+//    CInternalModuleMuvr* pxInternalModuleMuvr = 0;
+//    pxInternalModuleMuvr =
+//        static_cast<CInternalModuleMuvr*>(m_xResources.AddCommonTaskToMap("InternalModuleMuvr",
+//                                          std::make_shared<CInternalModuleMuvr>()));
+//    pxInternalModuleMuvr ->
+//    SetResources(&m_xResources);
+//    pxInternalModuleMuvr ->
+//    SetCommunicationDeviceName("SpiCommunicationDeviceSpi0");
+//    m_xResources.AddCurrentlyRunningTasksList(pxInternalModuleMuvr);
+//    m_pxInternalModuleMuvr = pxInternalModuleMuvr;
+//
+////-------------------------------------------------------------------------------
+//    CAnalogueSignals* pxAnalogueSignals = 0;
+//    pxAnalogueSignals =
+//        static_cast<CAnalogueSignals*>(m_xResources.AddCommonTaskToMap("AnalogueSignals",
+//                                       std::make_shared<CAnalogueSignals>()));
+//    pxAnalogueSignals ->
+//    SetResources(&m_xResources);
+//    pxAnalogueSignals ->
+//    SetDeviceControlName("DeviceControlRtuUpperLevel");
+//    m_xResources.AddCurrentlyRunningTasksList(pxAnalogueSignals);
+//    m_pxAnalogueSignals = pxAnalogueSignals;
+//
+////-------------------------------------------------------------------------------
+//    CConfigurationCreate* pxConfigurationCreate = 0;
+//    pxConfigurationCreate =
+//        static_cast<CConfigurationCreate*>(m_xResources.AddCommonTaskToMap("ConfigurationCreate",
+//                                           std::make_shared<CConfigurationCreate>()));
+//    pxConfigurationCreate ->
+//    SetResources(&m_xResources);
+//    pxConfigurationCreate ->
+//    SetInternalModuleName("InternalModuleCommon");
+//    m_xResources.AddCurrentlyRunningTasksList(pxConfigurationCreate);
+//    m_pxConfigurationCreate = pxConfigurationCreate;
+//
+////-------------------------------------------------------------------------------
+//    CSystemComponentsCreate* pxSystemComponentsCreate = 0;
+//    pxSystemComponentsCreate =
+//        static_cast<CSystemComponentsCreate*>(m_xResources.AddCommonTaskToMap("SystemComponentsCreate",
+//                std::make_shared<CSystemComponentsCreate>()));
+//    pxSystemComponentsCreate ->
+//    SetResources(&m_xResources);
+//    pxSystemComponentsCreate ->
+//    SetInternalModuleName("InternalModuleCommon");
+//    m_xResources.AddCurrentlyRunningTasksList(pxSystemComponentsCreate);
+////    m_pxSystemComponentsCreate = pxSystemComponentsCreate;
 
 }
 
@@ -406,90 +418,90 @@ uint8_t CMainProductionCycle::InitTasks(void)
 {
     std::cout << "CMainProductionCycle Init"  << std::endl;
 
-//-------------------------------------------------------------------------------
-    //CGpio::Init();
-
-//-------------------------------------------------------------------------------
-    CSerialPortCommunicationDevice* pxSerialPortCommunicationDeviceCom1 =
-        (CSerialPortCommunicationDevice*)(GetResources() ->
-                                          GetTaskPointerByNameFromMap("SerialPortCommunicationDeviceCom1"));
-
-    pxSerialPortCommunicationDeviceCom1 -> Init();
-    pxSerialPortCommunicationDeviceCom1 -> SetDeviceName("/dev/ttyO1");
-    pxSerialPortCommunicationDeviceCom1 -> SetBaudRate(9600);
-//    pxSerialPortCommunicationDeviceCom1 -> SetBaudRate(115200);
-    pxSerialPortCommunicationDeviceCom1 -> SetDataBits(8);
-    pxSerialPortCommunicationDeviceCom1 -> SetParity('N');
-    pxSerialPortCommunicationDeviceCom1 -> SetStopBit(2);
-
-//-------------------------------------------------------------------------------
-    CModbusSlave* pxModbusRtuSlaveUpperLevel =
-        (CModbusSlave*)(GetResources() ->
-                        GetTaskPointerByNameFromMap("ModbusRtuSlaveUpperLevel"));
-
-    pxModbusRtuSlaveUpperLevel ->
-    SetOwnAddress(1);
-
-
-//-------------------------------------------------------------------------------
-    CTcpCommunicationDevice* pxTcpCommunicationDeviceUpperLevel =
-        (CTcpCommunicationDevice*)(GetResources() ->
-                                   GetTaskPointerByNameFromMap("TcpCommunicationDeviceUpperLevel"));
-
-    pxTcpCommunicationDeviceUpperLevel -> Init();
-    pxTcpCommunicationDeviceUpperLevel -> SetIpAddress("127.0.0.1");
-    pxTcpCommunicationDeviceUpperLevel -> SetPort(502);
-
-//-------------------------------------------------------------------------------
-    CModbusSlave* pxModbusTcpSlaveUpperLevel =
-        (CModbusSlave*)(GetResources() ->
-                        GetTaskPointerByNameFromMap("ModbusTcpSlaveUpperLevel"));
-
-    pxModbusTcpSlaveUpperLevel ->
-    SetOwnAddress(1);
-
-
-//-------------------------------------------------------------------------------
-    CSharedMemoryCommunicationDevice* pxSharedMemoryCommunicationDeviceEveDisplay =
-        (CSharedMemoryCommunicationDevice*)(GetResources() ->
-                                            GetTaskPointerByNameFromMap("SharedMemoryCommunicationDeviceEveDisplay"));
-
-    pxSharedMemoryCommunicationDeviceEveDisplay -> Init();
-//    pxSharedMemoryCommunicationDeviceEveDisplay -> SetDeviceName("/dev/ttyO1");
-
-//-------------------------------------------------------------------------------
-//    CModbusSmSlave* pxModbusSmSlaveEveDisplay =
-//        (CModbusSmSlave*)(GetResources() ->
-//                          GetTaskPointerByNameFromMap("ModbusSmSlaveEveDisplay"));
-    CModbusSlave* pxModbusSmSlaveEveDisplay =
-        (CModbusSlave*)(GetResources() ->
-                        GetTaskPointerByNameFromMap("ModbusSmSlaveEveDisplay"));
-
-    pxModbusSmSlaveEveDisplay ->
-    SetOwnAddress(1);
-
-
-//-------------------------------------------------------------------------------
-    CSpiCommunicationDevice* pxSpiCommunicationDeviceSpi0 =
-        (CSpiCommunicationDevice*)(GetResources() ->
-                                   GetTaskPointerByNameFromMap("SpiCommunicationDeviceSpi0"));
-
-    pxSpiCommunicationDeviceSpi0 -> Init();
-
 ////-------------------------------------------------------------------------------
-//    CInternalModule* pxInternalModuleCommon =
-//        (CInternalModule*)(GetResources() ->
-//                          GetTaskPointerByNameFromMap("InternalModuleCommon"));
-
-//-------------------------------------------------------------------------------
-    CInternalModuleMuvr* pxInternalModuleMuvr =
-        (CInternalModuleMuvr*)(GetResources() ->
-                               GetTaskPointerByNameFromMap("InternalModuleMuvr"));
-    pxInternalModuleMuvr ->
-    SetAddress(0);
-
-//-------------------------------------------------------------------------------
-    GetResources() -> Allocate();
+//    //CGpio::Init();
+//
+////-------------------------------------------------------------------------------
+//    CSerialPortCommunicationDevice* pxSerialPortCommunicationDeviceCom1 =
+//        (CSerialPortCommunicationDevice*)(GetResources() ->
+//                                          GetTaskPointerByNameFromMap("SerialPortCommunicationDeviceCom1"));
+//
+//    pxSerialPortCommunicationDeviceCom1 -> Init();
+//    pxSerialPortCommunicationDeviceCom1 -> SetDeviceName("/dev/ttyO1");
+//    pxSerialPortCommunicationDeviceCom1 -> SetBaudRate(9600);
+////    pxSerialPortCommunicationDeviceCom1 -> SetBaudRate(115200);
+//    pxSerialPortCommunicationDeviceCom1 -> SetDataBits(8);
+//    pxSerialPortCommunicationDeviceCom1 -> SetParity('N');
+//    pxSerialPortCommunicationDeviceCom1 -> SetStopBit(2);
+//
+////-------------------------------------------------------------------------------
+//    CModbusSlave* pxModbusRtuSlaveUpperLevel =
+//        (CModbusSlave*)(GetResources() ->
+//                        GetTaskPointerByNameFromMap("ModbusRtuSlaveUpperLevel"));
+//
+//    pxModbusRtuSlaveUpperLevel ->
+//    SetOwnAddress(1);
+//
+//
+////-------------------------------------------------------------------------------
+//    CTcpCommunicationDevice* pxTcpCommunicationDeviceUpperLevel =
+//        (CTcpCommunicationDevice*)(GetResources() ->
+//                                   GetTaskPointerByNameFromMap("TcpCommunicationDeviceUpperLevel"));
+//
+//    pxTcpCommunicationDeviceUpperLevel -> Init();
+//    pxTcpCommunicationDeviceUpperLevel -> SetIpAddress("127.0.0.1");
+//    pxTcpCommunicationDeviceUpperLevel -> SetPort(502);
+//
+////-------------------------------------------------------------------------------
+//    CModbusSlave* pxModbusTcpSlaveUpperLevel =
+//        (CModbusSlave*)(GetResources() ->
+//                        GetTaskPointerByNameFromMap("ModbusTcpSlaveUpperLevel"));
+//
+//    pxModbusTcpSlaveUpperLevel ->
+//    SetOwnAddress(1);
+//
+//
+////-------------------------------------------------------------------------------
+//    CSharedMemoryCommunicationDevice* pxSharedMemoryCommunicationDeviceEveDisplay =
+//        (CSharedMemoryCommunicationDevice*)(GetResources() ->
+//                                            GetTaskPointerByNameFromMap("SharedMemoryCommunicationDeviceEveDisplay"));
+//
+//    pxSharedMemoryCommunicationDeviceEveDisplay -> Init();
+////    pxSharedMemoryCommunicationDeviceEveDisplay -> SetDeviceName("/dev/ttyO1");
+//
+////-------------------------------------------------------------------------------
+////    CModbusSmSlave* pxModbusSmSlaveEveDisplay =
+////        (CModbusSmSlave*)(GetResources() ->
+////                          GetTaskPointerByNameFromMap("ModbusSmSlaveEveDisplay"));
+//    CModbusSlave* pxModbusSmSlaveEveDisplay =
+//        (CModbusSlave*)(GetResources() ->
+//                        GetTaskPointerByNameFromMap("ModbusSmSlaveEveDisplay"));
+//
+//    pxModbusSmSlaveEveDisplay ->
+//    SetOwnAddress(1);
+//
+//
+////-------------------------------------------------------------------------------
+//    CSpiCommunicationDevice* pxSpiCommunicationDeviceSpi0 =
+//        (CSpiCommunicationDevice*)(GetResources() ->
+//                                   GetTaskPointerByNameFromMap("SpiCommunicationDeviceSpi0"));
+//
+//    pxSpiCommunicationDeviceSpi0 -> Init();
+//
+//////-------------------------------------------------------------------------------
+////    CInternalModule* pxInternalModuleCommon =
+////        (CInternalModule*)(GetResources() ->
+////                          GetTaskPointerByNameFromMap("InternalModuleCommon"));
+//
+////-------------------------------------------------------------------------------
+//    CInternalModuleMuvr* pxInternalModuleMuvr =
+//        (CInternalModuleMuvr*)(GetResources() ->
+//                               GetTaskPointerByNameFromMap("InternalModuleMuvr"));
+//    pxInternalModuleMuvr ->
+//    SetAddress(0);
+//
+////-------------------------------------------------------------------------------
+//    GetResources() -> Allocate();
 }
 
 //-------------------------------------------------------------------------------
@@ -1170,5 +1182,98 @@ uint8_t CMainProductionCycle::Fsm(void)
 
 //-------------------------------------------------------------------------------
 
+
+
+
+
+
+
+
+//-------------------------------------------------------------------------------
+CLedBlinker::CLedBlinker()
+{
+    std::cout << "CLedBlinker constructor"  << std::endl;
+    SetFsmState(INIT);
+}
+
+//-------------------------------------------------------------------------------
+CLedBlinker::~CLedBlinker()
+{
+    std::cout << "CLedBlinker destructor"  << std::endl;
+}
+
+//-------------------------------------------------------------------------------
+uint8_t CLedBlinker::Init(void)
+{
+    std::cout << "CLedBlinker Init"  << std::endl;
+}
+
+//-------------------------------------------------------------------------------
+uint8_t CLedBlinker::Fsm(void)
+{
+//        std::cout << "CLedBlinker::Fsm 1"  << std::endl;
+
+    switch (GetFsmState())
+    {
+    case INIT:
+//        //std::cout << "CLedBlinker::Fsm INIT 1"  << std::endl;
+        Init();
+        SetFsmState(STOP);
+        break;
+
+    case STOP:
+//        //std::cout << "CLedBlinker::Fsm STOP"  << std::endl;
+        break;
+
+    case START:
+        //std::cout << "CLedBlinker::Fsm START"  << std::endl;
+        SetFsmState(LED_ON);
+        break;
+
+    case DONE_OK:
+//        //std::cout << "CLedBlinker::Fsm DONE_OK"  << std::endl;
+        break;
+
+    case DONE_ERROR:
+//        //std::cout << "CLedBlinker::Fsm DONE_ERROR"  << std::endl;
+        break;
+
+//-------------------------------------------------------------------------------
+    case LED_ON:
+        std::cout << "CLedBlinker::Fsm LED_ON"  << std::endl;
+        GetTimerPointer() -> Set(500);
+        SetFsmState(LED_ON_PERIOD_END_WAITING);
+        break;
+
+    case LED_ON_PERIOD_END_WAITING:
+//        //std::cout << "CLedBlinker::Fsm LED_ON_PERIOD_END_WAITING"  << std::endl;
+        if (GetTimerPointer() -> IsOverflow())
+        {
+            SetFsmState(LED_OFF);
+        }
+        break;
+
+    case LED_OFF:
+        std::cout << "CLedBlinker::Fsm LED_OFF"  << std::endl;
+        GetTimerPointer() -> Set(500);
+        SetFsmState(LED_OFF_PERIOD_END_WAITING);
+        break;
+
+    case LED_OFF_PERIOD_END_WAITING:
+//        //std::cout << "CLedBlinker::Fsm LED_OFF_PERIOD_END_WAITING"  << std::endl;
+        if (GetTimerPointer() -> IsOverflow())
+        {
+            SetFsmState(LED_ON);
+        }
+        break;
+
+    default:
+        break;
+    }
+
+    return GetFsmState();
+}
+
+//-------------------------------------------------------------------------------
 
 //-------------------------------------------------------------------------------

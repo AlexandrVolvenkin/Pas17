@@ -193,8 +193,40 @@ private:
 
 
 
+////-------------------------------------------------------------------------------
+//class CLedBlinker : public CTask//, public CDfa
+//{
+//public:
+//
+//    enum
+//    {
+//        BLINK_PERIOD_TIME = 1000,
+//    };
+//
+//    enum
+//    {
+//        LED_ON = NEXT_STEP,
+//        LED_ON_PERIOD_END_WAITING,
+//        LED_OFF,
+//        LED_OFF_PERIOD_END_WAITING,
+//    };
+//
+//    CLedBlinker();
+//    virtual ~CLedBlinker();
+//
+//    uint8_t Init(void);
+//    uint8_t Fsm(void);
+//
+//private:
+//
+//};
+
+
+
+
+
 //-------------------------------------------------------------------------------
-class CLedBlinker : public CTask//, public CDfa
+class CLedBlinker : public CNewTask
 {
 public:
 
@@ -205,7 +237,14 @@ public:
 
     enum
     {
-        LED_ON = NEXT_STEP,
+        NO_SUBTASK = 0,
+        STOP = 1,
+        START,
+        INIT,
+        DONE_OK,
+        DONE_ERROR,
+
+        LED_ON,
         LED_ON_PERIOD_END_WAITING,
         LED_OFF,
         LED_OFF_PERIOD_END_WAITING,
@@ -220,6 +259,7 @@ public:
 private:
 
 };
+
 
 //-------------------------------------------------------------------------------
 #endif // CMAINPRODUCTIONCYCLE_H
