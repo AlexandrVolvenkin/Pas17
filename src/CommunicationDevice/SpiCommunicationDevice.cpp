@@ -40,6 +40,7 @@ CSpiCommunicationDevice::~CSpiCommunicationDevice()
 {
     delete m_pxSpi0Semaphore;
     close(GpioLineHandler_SPI_CHIP_ENABLE_PIN);
+    close(GpioLineHandler_PRD_EN_PIN);
 //    ChipSelectPinDelete();
     Close();
 }
@@ -142,6 +143,9 @@ int8_t CSpiCommunicationDevice::Open(void)
     printf("SPI Mode is: %d\n", iMode);
     printf("SPI Bits is: %d\n", iBits);
     printf("SPI Speed is: %d\n", (int)ulSpeed);
+
+
+
 
 
 
@@ -355,9 +359,8 @@ void CSpiCommunicationDevice::ChipSelectAddressSet(unsigned char ucAddress)
 {
     unsigned char ucAddressLocal;
 
-    CGpio::SetPin(GpioLineHandler_SPI_CHIP_ENABLE_PIN);
-    CGpio::ClearPin(GpioLineHandler_PRD_EN_PIN);
-    //CGpio::SetPin(PRD_EN_PIN_PORT, PRD_EN_PIN);
+//    CGpio::ClearPin(GpioLineHandler_SPI_CHIP_ENABLE_PIN);
+    CGpio::SetPin(GpioLineHandler_PRD_EN_PIN);
 
     ucAddressLocal = aui8ModuleSlotNumberToSpiAddressMatching[ucAddress];
 
@@ -400,11 +403,10 @@ void CSpiCommunicationDevice::ChipSelectAddressSet(unsigned char ucAddress)
         //CGpio::ClearPin(SPI_CHIP_SELECT_PIN_3_PORT, SPI_CHIP_SELECT_PIN_3);
     }
 
-    usleep(100);
-    CGpio::ClearPin(GpioLineHandler_SPI_CHIP_ENABLE_PIN);
-    CGpio::SetPin(GpioLineHandler_PRD_EN_PIN);
-    //CGpio::ClearPin(PRD_EN_PIN_PORT, PRD_EN_PIN);
+//    usleep(100);
+    CGpio::SetPin(GpioLineHandler_SPI_CHIP_ENABLE_PIN);
     usleep(380);
+    CGpio::ClearPin(GpioLineHandler_PRD_EN_PIN);
 }
 
 //-------------------------------------------------------------------------------
@@ -445,8 +447,7 @@ int CSpiCommunicationDevice::Exchange(uint8_t uiAddress,
     // send the SPI message (all of the above fields, inc. buffers)
     int iStatus = ioctl(m_iDeviceDescriptorServer, SPI_IOC_MESSAGE(1), &xTransfer);
 
-//    //CGpio::ClearPin(SPI_CHIP_ENABLE_PIN_PORT, SPI_CHIP_ENABLE_PIN);
-//    CGpio::ClearPin(GpioLineHandler_SPI_CHIP_ENABLE_PIN);
+    CGpio::ClearPin(GpioLineHandler_SPI_CHIP_ENABLE_PIN);
 
     m_pxSpi0Semaphore -> Release();
 

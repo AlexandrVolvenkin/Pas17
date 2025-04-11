@@ -63,7 +63,8 @@ int CGpio::GetLineHandler(int chipNumber,
 
     Request.lineoffsets[0] = lineOffset;
     Request.lines = 1;
-    Request.flags = (GPIOHANDLE_REQUEST_OUTPUT | GPIOHANDLE_REQUEST_ACTIVE_LOW);
+//    Request.flags = (GPIOHANDLE_REQUEST_OUTPUT | GPIOHANDLE_REQUEST_ACTIVE_LOW);
+    Request.flags = (GPIOHANDLE_REQUEST_OUTPUT);
     Request.default_values[0] = 0;
     strcpy(Request.consumer_label, consumerLabel.c_str());
 
