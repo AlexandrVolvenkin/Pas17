@@ -876,8 +876,8 @@ uint8_t CMainProductionCycle::Fsm(void)
         CurrentlyRunningTasksExecution();
         m_pxDataStoreFileSystem -> ReadServiceSection();
 //        SetFsmState(MAIN_CYCLE_MODULES_INIT);
-        SetFsmState(MAIN_CYCLE_MODBUS_SLAVE);
-//        SetFsmState(CONFIGURATION_CREATE_START);
+//        SetFsmState(MAIN_CYCLE_MODBUS_SLAVE);
+        SetFsmState(CONFIGURATION_CREATE_START);
         break;
 
     case DATA_STORE_CHECK_END_ERROR:
@@ -947,7 +947,7 @@ uint8_t CMainProductionCycle::Fsm(void)
 
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(MAIN_CYCLE_MODBUS_SLAVE);
-            SetFsmState(INTERNAL_MODULES_DATA_EXCHANGE_START);
+//            SetFsmState(INTERNAL_MODULES_DATA_EXCHANGE_START);
         }
         break;
 

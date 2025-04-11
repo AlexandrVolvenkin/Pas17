@@ -383,6 +383,8 @@ uint8_t CConfigurationCreate::Fsm(void)
             SetFsmNextStateDoneWaitingError(DONE_ERROR);
             SetFsmNextStateDoneWaitingDoneError(DONE_ERROR);
         }
+
+            SetFsmState(CONFIGURATION_REQUEST_EXECUTOR_ANSWER_PROCESSING);
         break;
 
     case CONFIGURATION_REQUEST_EXECUTOR_ANSWER_PROCESSING:
