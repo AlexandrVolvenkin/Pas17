@@ -186,6 +186,8 @@ private:
     uint16_t m_uiDiscreteInputsNumber;
     uint16_t m_uiHoldingRegistersNumber;
     uint16_t m_uiInputRegistersNumber;
+
+    CTimer m_xMainCycle100McTimer;
 };
 //-------------------------------------------------------------------------------
 

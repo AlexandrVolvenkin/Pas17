@@ -130,7 +130,7 @@ uint8_t CInternalModuleMuvr::Init(void)
 //-----------------------------------------------------------------------------------------------------
 void CInternalModuleMuvr::Allocate(void)
 {
-    //std::cout << "CInternalModuleMuvr::Allocate 1"  << std::endl;
+    std::cout << "CInternalModuleMuvr::Allocate 1"  << std::endl;
 
 //    m_uiAddress = xMemoryAllocationContext.uiAddress;
 //    m_puiRxBuffer = xMemoryAllocationContext.puiRxBuffer;

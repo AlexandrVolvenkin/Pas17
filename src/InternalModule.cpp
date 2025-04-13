@@ -470,6 +470,7 @@ void CInternalModule::CreateDevices(void)
         case MODULE_TYPE_MUVR:
         {
             std::string sDeviceName = "InternalModuleMuvr" + std::to_string(i);
+            std::cout << "CInternalModule::CreateDevices sDeviceName " << sDeviceName << std::endl;
             CInternalModuleMuvr* pxInternalModuleMuvr = 0;
             //            pxInternalModuleMuvr =
 //                static_cast<CInternalModuleMuvr*>(GetResources() ->
@@ -620,25 +621,25 @@ uint8_t CInternalModule::Fsm(void)
 
 //-------------------------------------------------------------------------------
     case SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_START:
-        std::cout << "CInternalModule::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_START"  << std::endl;
-        {
-            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
-            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING);
-        }
-        break;
+//        std::cout << "CInternalModule::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_START"  << std::endl;
+    {
+        GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
+        SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING);
+    }
+    break;
 
     case SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING:
 //        std::cout << "CInternalModule::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING 1"  << std::endl;
     {
         if (SetTaskData(GetExecutorDataContainerPointer()))
         {
-            std::cout << "CInternalModule::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING 2"  << std::endl;
+//            std::cout << "CInternalModule::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING 2"  << std::endl;
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(GetFsmNextStateDoneOk());
         }
         else
         {
-            std::cout << "CInternalModule::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING 3"  << std::endl;
+//            std::cout << "CInternalModule::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING 3"  << std::endl;
             // Время ожидания выполнения запроса закончилось?
             if (GetTimerPointer() -> IsOverflow())
             {
@@ -652,24 +653,24 @@ uint8_t CInternalModule::Fsm(void)
 
 //-------------------------------------------------------------------------------
     case SUBTASK_EXECUTOR_READY_CHECK_START:
-        std::cout << "CInternalModule::Fsm SUBTASK_EXECUTOR_READY_CHECK_START"  << std::endl;
-        {
-            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
-            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_WAITING);
-        }
-        break;
+//        std::cout << "CInternalModule::Fsm SUBTASK_EXECUTOR_READY_CHECK_START"  << std::endl;
+    {
+        GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
+        SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_WAITING);
+    }
+    break;
 
     case SUBTASK_EXECUTOR_READY_CHECK_WAITING:
 //        std::cout << "CInternalModule::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 1"  << std::endl;
     {
         if (SetTaskData(GetExecutorDataContainerPointer()))
         {
-            std::cout << "CInternalModule::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 2"  << std::endl;
+//            std::cout << "CInternalModule::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 2"  << std::endl;
             SetFsmState(SUBTASK_EXECUTOR_DONE_CHECK_START);
         }
         else
         {
-            std::cout << "CInternalModule::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 3"  << std::endl;
+//            std::cout << "CInternalModule::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 3"  << std::endl;
             // Время ожидания выполнения запроса закончилось?
             if (GetTimerPointer() -> IsOverflow())
             {
@@ -682,13 +683,13 @@ uint8_t CInternalModule::Fsm(void)
     break;
 
     case SUBTASK_EXECUTOR_DONE_CHECK_START:
-        std::cout << "CInternalModule::Fsm SUBTASK_EXECUTOR_DONE_CHECK_START 1"  << std::endl;
-        {
-            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
-            SetFsmState(SUBTASK_EXECUTOR_DONE_CHECK_WAITING);
-        }
+//        std::cout << "CInternalModule::Fsm SUBTASK_EXECUTOR_DONE_CHECK_START 1"  << std::endl;
+    {
+        GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
+        SetFsmState(SUBTASK_EXECUTOR_DONE_CHECK_WAITING);
+    }
 
-        break;
+    break;
 
     case SUBTASK_EXECUTOR_DONE_CHECK_WAITING:
 //        std::cout << "CInternalModule::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 1"  << std::endl;
@@ -700,7 +701,7 @@ uint8_t CInternalModule::Fsm(void)
 
         if (uiFsmState == DONE_OK)
         {
-            std::cout << "CInternalModule::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 2"  << std::endl;
+//            std::cout << "CInternalModule::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 2"  << std::endl;
 //            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(GetFsmNextStateDoneOk());
         }
@@ -755,17 +756,17 @@ uint8_t CInternalModule::Fsm(void)
         break;
 
     case MODULES_DATA_EXCHANGE_START:
-        std::cout << "CInternalModule::Fsm MODULES_DATA_EXCHANGE_START 1"  << std::endl;
-        {
+//        std::cout << "CInternalModule::Fsm MODULES_DATA_EXCHANGE_START 1"  << std::endl;
+    {
 //            m_xDevicesIterator = m_vpxDevices.begin();
-            m_xDevicesIdIterator = m_vuiDevicesId.begin();
-            SetFsmState(MODULES_DATA_EXCHANGE_NEXT_MODULE_PROCESSING);
-        }
-        break;
+        m_xDevicesIdIterator = m_vuiDevicesId.begin();
+        SetFsmState(MODULES_DATA_EXCHANGE_NEXT_MODULE_PROCESSING);
+    }
+    break;
 
     case MODULES_DATA_EXCHANGE_NEXT_MODULE_PROCESSING:
-        std::cout << "CInternalModule::Fsm MODULES_DATA_EXCHANGE_NEXT_MODULE_PROCESSING 1"  << std::endl;
-        {
+//        std::cout << "CInternalModule::Fsm MODULES_DATA_EXCHANGE_NEXT_MODULE_PROCESSING 1"  << std::endl;
+    {
 //            if (m_xDevicesIdIterator == m_vuiDevicesId.end())
 //            {
 //                std::cout << "CInternalModule::Fsm MODULES_DATA_EXCHANGE_NEXT_MODULE_PROCESSING 2"  << std::endl;
@@ -774,41 +775,41 @@ uint8_t CInternalModule::Fsm(void)
 //            }
 //            else
 //            {
-            std::cout << "CInternalModule::Fsm MODULES_DATA_EXCHANGE_NEXT_MODULE_PROCESSING 3"  << std::endl;
-            CDataContainerDataBase* pxDataContainer =
-                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-            pxDataContainer -> m_uiTaskId = (*m_xDevicesIdIterator);
-            m_xDevicesIdIterator++;
-            pxDataContainer -> m_uiFsmCommandState =
-                CInternalModuleMuvr::MUVR_DATA_EXCHANGE;
-            pxDataContainer -> m_puiDataPointer =
-                (uint8_t*)(GetResources() -> GetDeviceConfigSearchPointer());
+//            std::cout << "CInternalModule::Fsm MODULES_DATA_EXCHANGE_NEXT_MODULE_PROCESSING 3"  << std::endl;
+        CDataContainerDataBase* pxDataContainer =
+            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+        pxDataContainer -> m_uiTaskId = (*m_xDevicesIdIterator);
+        m_xDevicesIdIterator++;
+        pxDataContainer -> m_uiFsmCommandState =
+            CInternalModuleMuvr::MUVR_DATA_EXCHANGE;
+        pxDataContainer -> m_puiDataPointer =
+            (uint8_t*)(GetResources() -> GetDeviceConfigSearchPointer());
 
-            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
-            SetFsmNextStateDoneOk(MODULES_DATA_EXCHANGE_EXECUTOR_ANSWER_PROCESSING);
-            SetFsmNextStateReadyWaitingError(DONE_ERROR);
-            SetFsmNextStateDoneWaitingError(DONE_ERROR);
-            SetFsmNextStateDoneWaitingDoneError(DONE_ERROR);
+        SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+        SetFsmNextStateDoneOk(MODULES_DATA_EXCHANGE_EXECUTOR_ANSWER_PROCESSING);
+        SetFsmNextStateReadyWaitingError(DONE_ERROR);
+        SetFsmNextStateDoneWaitingError(DONE_ERROR);
+        SetFsmNextStateDoneWaitingDoneError(DONE_ERROR);
 //            }
-        }
-        break;
+    }
+    break;
 
     case MODULES_DATA_EXCHANGE_EXECUTOR_ANSWER_PROCESSING:
-        std::cout << "CMainProductionCycle::Fsm MODULES_DATA_EXCHANGE_EXECUTOR_ANSWER_PROCESSING 1"  << std::endl;
+//        std::cout << "CMainProductionCycle::Fsm MODULES_DATA_EXCHANGE_EXECUTOR_ANSWER_PROCESSING 1"  << std::endl;
+    {
+        if (m_xDevicesIdIterator == m_vuiDevicesId.end())
         {
-            if (m_xDevicesIdIterator == m_vuiDevicesId.end())
-            {
-                std::cout << "CInternalModule::Fsm MODULES_DATA_EXCHANGE_EXECUTOR_ANSWER_PROCESSING 2"  << std::endl;
-                ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-                SetFsmState(DONE_OK);
-            }
-            else
-            {
-                std::cout << "CInternalModule::Fsm MODULES_DATA_EXCHANGE_EXECUTOR_ANSWER_PROCESSING 3"  << std::endl;
-                SetFsmState(MODULES_DATA_EXCHANGE_NEXT_MODULE_PROCESSING);
-            }
+//                std::cout << "CInternalModule::Fsm MODULES_DATA_EXCHANGE_EXECUTOR_ANSWER_PROCESSING 2"  << std::endl;
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(DONE_OK);
         }
-        break;
+        else
+        {
+//                std::cout << "CInternalModule::Fsm MODULES_DATA_EXCHANGE_EXECUTOR_ANSWER_PROCESSING 3"  << std::endl;
+            SetFsmState(MODULES_DATA_EXCHANGE_NEXT_MODULE_PROCESSING);
+        }
+    }
+    break;
 
     default:
         break;
