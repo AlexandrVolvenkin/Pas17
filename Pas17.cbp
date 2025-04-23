@@ -48,6 +48,8 @@
 			<Add directory="src" />
 			<Add directory="src/Modbus" />
 		</Compiler>
+		<Unit filename="../Декомпозиция проекта/База данных.txt" />
+		<Unit filename="../Декомпозиция проекта/Декомпозиция проекта.txt" />
 		<Unit filename="../Текущие задачиPas17.txt" />
 		<Unit filename="../протокол МВА.txt" />
 		<Unit filename="../структ и протоколы/структ и прот ПАС-17.txt" />
@@ -68,6 +70,8 @@
 		<Unit filename="src/ConfigurationCreate.h" />
 		<Unit filename="src/Crc.cpp" />
 		<Unit filename="src/Crc.h" />
+		<Unit filename="src/DataBaseCreate.cpp" />
+		<Unit filename="src/DataBaseCreate.h" />
 		<Unit filename="src/DataContainer.cpp" />
 		<Unit filename="src/DataContainer.h" />
 		<Unit filename="src/DataStore.cpp" />
