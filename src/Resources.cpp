@@ -174,6 +174,12 @@ CConfigurationCreate::TConfigDataPackOne* CResources::GetDeviceConfigSearchPoint
     return &m_xDeviceConfigSearch;
 }
 
+//-------------------------------------------------------------------------------
+TDiscreteSygnalTextDescriptor* CResources::GetDiscreteSygnalTextDescriptorsWorkPointer(void)
+{
+    return m_pxDiscreteSygnalTextDescriptorsWork;
+}
+
 //-----------------------------------------------------------------------------------------------------
 void CResources::Allocate(void)
 {

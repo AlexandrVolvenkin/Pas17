@@ -32,6 +32,7 @@ class CConfigurationCreate;
 class CDeviceControl;
 
 
+//-------------------------------------------------------------------------------
 // структура описател€ одной размерности.
 // дл€ сериализации, разбора данных полученных по интерфейсам передачи данных.
 #pragma pack(push)
@@ -50,6 +51,25 @@ struct TDimentionParameter
 {
     // “екстовый реквизит размерности Ц 6 символов ASCII, плюс нуль - признак конца строки.
     char acDimentionParameterText[DIMENSIONS_PARAMETERS_NAME_LENGTH + END_OF_STRING_LENGTH];
+};
+
+//-------------------------------------------------------------------------------
+// —труктура описателей - "“екстовый реквизит дискретного сигнала", в базе данных.
+// дл€ сериализации, разбора данных полученных по интерфейсам передачи данных.
+#pragma pack(push)
+#pragma pack(1)
+struct TDiscreteSygnalTextDescriptorPackOne
+{
+    // “екстовый реквизит дискретного сигнала Ц 14 символов ASCII.
+    char acTextDescriptor[DISCRETE_SYGNAL_NAME_LENGTH];
+};
+#pragma pack(pop)
+
+// —труктура описателей - "“екстовый реквизит дискретного сигнала", в базе данных.
+struct TDiscreteSygnalTextDescriptor
+{
+// “екстовый реквизит дискретного сигнала Ц 14 символов ASCII, плюс нуль - признак конца строки.
+    char acTextDescriptor[DISCRETE_SYGNAL_NAME_LENGTH + END_OF_STRING_LENGTH];
 };
 
 //-------------------------------------------------------------------------------
@@ -78,6 +98,12 @@ public:
 
         DIMENTIONS_PARAMETERS_CREATE_START,
         DIMENTIONS_PARAMETERS_CREATE_EXECUTOR_ANSWER_PROCESSING,
+
+        TEXT_TITLES_CREATE_START,
+        TEXT_TITLES_CREATE_DISCRETE_INPUT_MODULE_SIGNALS,
+        TEXT_TITLES_CREATE_ANALOGUE_INPUT_MODULE_SIGNALS,
+        TEXT_TITLES_CREATE_DATA_BASE_BLOCKS_WRITE_START,
+        TEXT_TITLES_CREATE_EXECUTOR_ANSWER_PROCESSING,
     };
 
     CDataBaseCreate();
@@ -88,6 +114,11 @@ public:
 
     uint8_t Init(void);
     uint8_t Fsm(void);
+
+private:
+    void DiscreteSignalsTextTitlesCreateStart(void);
+    void DiscreteInputModuleDiscreteSignalsTextTitlesCreate(void);
+    void AnalogoueInputModuleDiscreteSignalsTextTitlesCreate(void);
 
 private:
     std::string m_sInternalModuleName;

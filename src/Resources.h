@@ -17,6 +17,7 @@
 //#include "Dfa.h"
 #include "Task.h"
 #include "ConfigurationCreate.h"
+#include "DataBaseCreate.h"
 
 class CDfa;
 //class CTaskInterface;
@@ -45,6 +46,7 @@ public:
     virtual uint8_t* CreateObjectBySize(size_t uiLength) {};
     virtual CDataContainerInterface* AddDataContainer(std::shared_ptr<CDataContainerInterface> pxDataContainer) {};
     virtual CConfigurationCreate::TConfigDataPackOne* GetDeviceConfigSearchPointer(void) {};
+    virtual TDiscreteSygnalTextDescriptor* GetDiscreteSygnalTextDescriptorsWorkPointer(void) {};
 
 };
 
@@ -82,6 +84,7 @@ public:
     uint8_t* CreateObjectBySize(size_t uiLength);
     CDataContainerInterface* AddDataContainer(std::shared_ptr<CDataContainerInterface> pxDataContainer);
     CConfigurationCreate::TConfigDataPackOne* GetDeviceConfigSearchPointer(void);
+    TDiscreteSygnalTextDescriptor* GetDiscreteSygnalTextDescriptorsWorkPointer(void);
 
 
     void ModbusWorkingArraysCreate(uint16_t uiCoilsNumber,
@@ -123,6 +126,9 @@ public:
     TAnalogueInputDescriptionWork* m_pxAnalogueInputDescriptionWork;
 //    uint8_t* m_puiAnalogueInputDescriptionWork;
     uint32_t m_uiUsedAnalogueInputDescriptionWork;
+
+    TDiscreteSygnalTextDescriptor *m_pxDiscreteSygnalTextDescriptorsWork;
+    uint32_t m_uiUsedDiscreteSygnalTextDescriptorsWork;
 
 
     // Создаем std::map, где ключ - строка, значение - указатель на объект
