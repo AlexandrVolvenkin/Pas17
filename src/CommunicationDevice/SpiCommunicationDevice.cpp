@@ -151,16 +151,16 @@ int8_t CSpiCommunicationDevice::Open(void)
 
 //    std::cout << "CSpiCommunicationDevice::Open 1"  << std::endl;
 //    ofstream outdata;
-//    // Р§С‚РѕР±С‹ РґРѕР±Р°РІРёС‚СЊ Рё РЅРµ СЃС‚РµСЂРµС‚СЊ СЃС‚Р°СЂС‹Рµ РґР°РЅРЅС‹Рµ РѕС‚РєСЂРѕРµРј С„Р°Р№Р» РЅР° С‡С‚РµРЅРёРµ Рё Р·Р°РїРёСЃСЊ.
+//    // Чтобы добавить и не стереть старые данные откроем файл на чтение и запись.
 //    outdata.open("Spi0Semaphore.sem", (ios::binary | ios::in | ios::out));
-//    // Р¤Р°Р№Р» РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚?
+//    // Файл не существует?
 //    if (!outdata)
 //    {
 //        std::cout << "CSpiCommunicationDevice::Open 2"  << std::endl;
 //        cerr << "CSpiCommunicationDevice::Open Error: file could not be opened" << endl;
-//        // С‡С‚РѕР±С‹ СЃРѕР·РґР°С‚СЊ С„Р°Р№Р» РѕС‚РєСЂРѕРµРј С‚РѕР»СЊРєРѕ РЅР° Р·Р°РїРёСЃСЊ.
+//        // чтобы создать файл откроем только на запись.
 //        outdata.open("Spi0Semaphore.sem", (ios::binary | ios::out));
-//        // Р¤Р°Р№Р» РЅРµ СЃРѕР·РґР°РЅ?
+//        // Файл не создан?
 //        if (!outdata)
 //        {
 //            std::cout << "CSpiCommunicationDevice::Open 3"  << std::endl;
@@ -170,11 +170,11 @@ int8_t CSpiCommunicationDevice::Open(void)
 //    }
 //
 //    std::cout << "CSpiCommunicationDevice::Open 5"  << std::endl;
-//    // Р·Р°РєСЂРѕРµРј С„Р°Р№Р».
+//    // закроем файл.
 //    outdata.close();
 
 
-////    key_t key = ftok("keyfile", 'A'); // РСЃРїРѕР»СЊР·СѓРµРј РєР»СЋС‡ С„Р°Р№Р»РѕРІРѕРіРѕ СѓСЃС‚СЂРѕР№СЃС‚РІР°
+////    key_t key = ftok("keyfile", 'A'); // Используем ключ файлового устройства
 //    key_t key = 12345;
 ////    key_t key = ftok("Spi0Semaphore.sem", 1);
 //    if (key == -1)
@@ -188,7 +188,7 @@ int8_t CSpiCommunicationDevice::Open(void)
 //    }
 //
 ////    int semid;
-//    // РЎРѕР·РґР°РЅРёРµ СЃРµРјР°С„РѕСЂР° СЃ Р·Р°РґР°РЅРЅС‹Рј РєР»СЋС‡РѕРј Рё СЂР°Р·СЂРµС€РµРЅРёСЏРјРё
+//    // Создание семафора с заданным ключом и разрешениями
 //    m_iSpi0SemaphoreId = semget(key, 1, IPC_CREAT | IPC_EXCL | S_IRUSR | S_IWUSR);
 //    if (m_iSpi0SemaphoreId == -1)
 //    {
@@ -203,16 +203,16 @@ int8_t CSpiCommunicationDevice::Open(void)
 //        std::cout << "CSpiCommunicationDevice::Open 9"  << std::endl;
 //    }
 //
-//    semctl(m_iSpi0SemaphoreId, 0, SETVAL, 1); // РЈСЃС‚Р°РЅРѕРІРєР° РЅР°С‡Р°Р»СЊРЅРѕРіРѕ Р·РЅР°С‡РµРЅРёСЏ СЃРµРјР°С„РѕСЂР° РІ 1
+//    semctl(m_iSpi0SemaphoreId, 0, SETVAL, 1); // Установка начального значения семафора в 1
 //    std::cout << "Semaphore created with ID: " << m_iSpi0SemaphoreId << "\n";
 //
-//    // РўРµРїРµСЂСЊ m_iSpi0SemaphoreId СЃРѕРґРµСЂР¶РёС‚ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ СЃРѕР·РґР°РЅРЅРѕРіРѕ СЃРµРјР°С„РѕСЂР°
+//    // Теперь m_iSpi0SemaphoreId содержит идентификатор созданного семафора
 //
-//    // РџСЂРёРјРµСЂ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ СЃРµРјР°С„РѕСЂР°
+//    // Пример использования семафора
 //
-////    // Р—Р°РєСЂС‹РІР°РµРј СЃРµРјР°С„РѕСЂ (РµСЃР»Рё СЌС‚Рѕ РЅРµРѕР±С…РѕРґРёРјРѕ)
+////    // Закрываем семафор (если это необходимо)
 ////    semctl(m_iSpi0SemaphoreId, 0, IPC_RMID);
-//    int result = semctl(m_iSpi0SemaphoreId, 0, IPC_RMID); // РЈРґР°Р»РµРЅРёРµ СЃРµРјР°С„РѕСЂР°
+//    int result = semctl(m_iSpi0SemaphoreId, 0, IPC_RMID); // Удаление семафора
 //    if (result == -1)
 //    {
 //        perror("semctl");
@@ -224,11 +224,11 @@ int8_t CSpiCommunicationDevice::Open(void)
 
     m_pxSpi0Semaphore = new CSemaphore(12345, 1);
 //    m_pxSpi0Semaphore -> Acquire();
-//    sleep(5); // РџСЂРёРјРµСЂ СЂР°Р±РѕС‚С‹ СЃ СЂРµСЃСѓСЂСЃРѕРј
+//    sleep(5); // Пример работы с ресурсом
 //    m_pxSpi0Semaphore -> Release();
 //    CSemaphore xSpi0Semaphore(12345, 1);
 //    xSpi0Semaphore.Acquire();
-//    sleep(5); // РџСЂРёРјРµСЂ СЂР°Р±РѕС‚С‹ СЃ СЂРµСЃСѓСЂСЃРѕРј
+//    sleep(5); // Пример работы с ресурсом
 //    xSpi0Semaphore.Release();
 
     return 0;
@@ -332,7 +332,7 @@ void CSpiCommunicationDevice::ChipSelectPinDelete(void)
 }
 
 //-------------------------------------------------------------------------------
-// РјР°СЃСЃРёРІ СЃРѕРїРѕСЃС‚Р°РІР»РµРЅРёСЏ РЅРѕРјРµСЂР° РїРѕСЃР°РґРѕС‡РЅРѕРіРѕ СЃР»РѕС‚Р° РјРѕРґСѓР»СЏ СЃ Р°РґСЂРµСЃРѕРј РЅР° С€РёРЅРµ SPI.
+// массив сопоставления номера посадочного слота модуля с адресом на шине SPI.
 const uint8_t CSpiCommunicationDevice::aui8ModuleSlotNumberToSpiAddressMatching[] =
 {
 //    0x0F,
@@ -354,7 +354,7 @@ const uint8_t CSpiCommunicationDevice::aui8ModuleSlotNumberToSpiAddressMatching[
 };
 
 //-------------------------------------------------------------------------------
-// СѓСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ Р°РґСЂРµСЃ РЅР° С€РёРЅРµ SPI. Р·Р°Р¶РёРіР°РµС‚ Рё РіР°СЃРёС‚ СЃРІРµС‚РѕРґРёРѕРґ РєРѕРЅС‚СЂРѕР»СЏ РѕР±РјРµРЅР° РґР°РЅРЅС‹РјРё.
+// устанавливает адрес на шине SPI. зажигает и гасит светодиод контроля обмена данными.
 void CSpiCommunicationDevice::ChipSelectAddressSet(unsigned char ucAddress)
 {
     unsigned char ucAddressLocal;
@@ -410,7 +410,7 @@ void CSpiCommunicationDevice::ChipSelectAddressSet(unsigned char ucAddress)
 }
 
 //-------------------------------------------------------------------------------
-// РїСЂРѕРёР·РІРѕРґРёС‚ РѕР±РјРµРЅ РґР°РЅРЅС‹РјРё РїРѕ SPI.
+// производит обмен данными по SPI.
 int CSpiCommunicationDevice::Exchange(uint8_t uiAddress,
                                       unsigned char *pucTxBuff,
                                       unsigned char *pucRxBuff,

@@ -1,4 +1,4 @@
-ï»¿//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 //  Sourse      : FileName.cpp
 //  Created     : 01.06.2022
 //  Author      : Alexandr Volvenkin
@@ -19,7 +19,7 @@ using namespace std;
 CSerialPortCommunicationDevice::CSerialPortCommunicationDevice()
 {
     std::cout << "CSerialPortCommunicationDevice constructor"  << std::endl;
-//    // Ð¿Ð¾Ð»ÑƒÑ‡Ð¸Ð¼ Ð¸Ð¼Ñ ÐºÐ»Ð°ÑÑÐ°.
+//    // ïîëó÷èì èìÿ êëàññà.
 //    sprintf(GetTaskNamePointer(),
 //            "%s",
 //            typeid(*this).name());
@@ -346,7 +346,7 @@ int8_t CSerialPortCommunicationDevice::Open(void)
         return -1;
     }
 
-//    // Ð¡Ð´ÐµÐ»Ð°ÐµÐ¼ Ð½Ðµ Ð±Ð»Ð¾ÐºÐ¸Ñ€ÑƒÑŽÑ‰Ð¸Ð¼.
+//    // Ñäåëàåì íå áëîêèðóþùèì.
 //    int flags = fcntl(m_iDeviceDescriptorServer, F_GETFL, 0);
 //    fcntl(m_iDeviceDescriptorServer, F_SETFL, flags | O_NONBLOCK);
 
@@ -552,7 +552,7 @@ int16_t CSerialPortCommunicationDevice::Write(uint8_t *puiSource, uint16_t uiLen
 }
 
 //-------------------------------------------------------------------------------
-// Ð¿Ñ€Ð¾Ð¸Ð·Ð²Ð¾Ð´Ð¸Ñ‚ Ð¾Ð±Ð¼ÐµÐ½ Ð´Ð°Ð½Ð½Ñ‹Ð¼Ð¸ Ð¿Ð¾ SPI.
+// ïðîèçâîäèò îáìåí äàííûìè ïî SPI.
 int CSerialPortCommunicationDevice::Exchange(uint8_t uiAddress,
         unsigned char *pucTxBuff,
         unsigned char *pucRxBuff,

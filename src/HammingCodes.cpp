@@ -1,4 +1,4 @@
-п»ї
+
 //-------------------------------------------------------------------------------
 //  Based on    : https://github.com/Minho-Cha/8bit-Hamming-Code
 //  Source      : FileName.cpp
@@ -119,88 +119,88 @@ uint8_t CHammingCodes::Recovery(uint16_t uiHammingData)
 }
 
 //-------------------------------------------------------------------------------
-// Р’С‹С‡РёСЃР»СЏРµС‚ РґР»РёРЅСѓ Р·Р°РєРѕРґРёСЂРѕРІР°РЅРЅС‹С… РґР°РЅРЅС‹С….
+// Вычисляет длину закодированных данных.
 uint16_t CHammingCodes::CalculateEncodedDataLength(uint16_t uiLength)
 {
     std::cout << "CHammingCodes::CalculateEncodedDataLength uiLength " << (int)uiLength  << std::endl;
-    // Р”Р»РёРЅР° РЅРµС‡С‘С‚РЅР°СЏ?
+    // Длина нечётная?
     if (uiLength & 1)
     {
-        // Р’С‹СЂРѕРІРЅСЏРµРј РґР»РёРЅСѓ.
+        // Выровняем длину.
         uiLength += 1;
     }
 
     std::cout << "CHammingCodes::CalculateEncodedDataLength uiLength 2 " << (int)uiLength  << std::endl;
     std::cout << "CHammingCodes::CalculateEncodedDataLength uiLength 3 " << (int)(uiLength + (uiLength / 2))  << std::endl;
-    // uiLength * 1.5 (HammingCodes 8 + 4 РЅР° РѕРґРёРЅ Р±Р°Р№С‚ РїСЂРёС…РѕРґРёС‚СЃСЏ 12 Р·Р°РєРѕРґРёСЂРѕРІР°РЅРЅС‹С… Р±РёС‚).
+    // uiLength * 1.5 (HammingCodes 8 + 4 на один байт приходится 12 закодированных бит).
     return (uiLength + (uiLength / 2));
 }
 
 //-------------------------------------------------------------------------------
-// РљРѕРґРёСЂСѓРµС‚ Р±СѓС„РµСЂ РІ РєРѕРґ РҐРµРјРјРёРЅРіР°.
+// Кодирует буфер в код Хемминга.
 uint16_t CHammingCodes::BytesToHammingCodes(uint8_t* puiDestination, uint8_t* puiSource, uint16_t uiLength)
 {
     uint16_t uiEncodedByteCounter = 0;
     uint16_t uiSourceIndex = 0;
     bool bTailIsPresent = false;
 
-    // РљРѕР»РёС‡РµСЃС‚РІРѕ Р±Р°Р№С‚ РґР°РЅРЅС‹С… РЅРµС‡С‘С‚РЅРѕРµ?
+    // Количество байт данных нечётное?
     if ((uiLength > 0) && (uiLength & 1))
     {
         uiLength -= 1;
         bTailIsPresent = true;
     }
 
-    // Р—Р°РєРѕРґРёСЂСѓРµРј РІСЃРµ РґР°РЅРЅС‹Рµ.
+    // Закодируем все данные.
     for (uint16_t i = 0; i < uiLength; i += 2)
     {
         uint32_t uiData;
-        // РџРѕР»СѓС‡РёРј РєРѕРґРѕРІРѕРµ СЃР»РѕРІРѕ 12 Р±РёС‚.
+        // Получим кодовое слово 12 бит.
         uiData = static_cast<uint32_t>(enHamming(puiSource[uiSourceIndex]));
-        // РЎР»РµРґСѓСЋС‰РёР№ Р±Р°Р№С‚ РёСЃС‚РѕС‡РЅРёРєР°.
+        // Следующий байт источника.
         uiSourceIndex++;
-        // РџРѕР»СѓС‡РёРј РєРѕРґРѕРІРѕРµ СЃР»РѕРІРѕ 12 Р±РёС‚.
+        // Получим кодовое слово 12 бит.
         uiData |= (static_cast<uint32_t>(enHamming(puiSource[uiSourceIndex])) << HAMMING_CODE_8_4_BIT_NUMBER);
-        // РЎР»РµРґСѓСЋС‰РёР№ Р±Р°Р№С‚ РёСЃС‚РѕС‡РЅРёРєР°.
+        // Следующий байт источника.
         uiSourceIndex++;
 
         puiDestination[uiEncodedByteCounter] = static_cast<uint8_t>(uiData);
-        // РђРґСЂРµСЃ СЃР»РµРґСѓСЋС‰РµРіРѕ Р±Р°Р№С‚Р° РґР»СЏ СЃРѕС…СЂР°РЅРµРЅРёСЏ.
-        // РЈРІРµР»РёС‡РёРј РєРѕР»РёС‡РµСЃС‚РІРѕ Р·Р°РєРѕРґРёСЂРѕРІР°РЅРЅС‹С… Р±Р°Р№С‚.
+        // Адрес следующего байта для сохранения.
+        // Увеличим количество закодированных байт.
         uiEncodedByteCounter++;
         uiData >>= 8;
         puiDestination[uiEncodedByteCounter] = static_cast<uint8_t>(uiData);
-        // РђРґСЂРµСЃ СЃР»РµРґСѓСЋС‰РµРіРѕ Р±Р°Р№С‚Р° РґР»СЏ СЃРѕС…СЂР°РЅРµРЅРёСЏ.
-        // РЈРІРµР»РёС‡РёРј РєРѕР»РёС‡РµСЃС‚РІРѕ Р·Р°РєРѕРґРёСЂРѕРІР°РЅРЅС‹С… Р±Р°Р№С‚.
+        // Адрес следующего байта для сохранения.
+        // Увеличим количество закодированных байт.
         uiEncodedByteCounter++;
         uiData >>= 8;
         puiDestination[uiEncodedByteCounter] = static_cast<uint8_t>(uiData);
-        // РђРґСЂРµСЃ СЃР»РµРґСѓСЋС‰РµРіРѕ Р±Р°Р№С‚Р° РґР»СЏ СЃРѕС…СЂР°РЅРµРЅРёСЏ.
-        // РЈРІРµР»РёС‡РёРј РєРѕР»РёС‡РµСЃС‚РІРѕ Р·Р°РєРѕРґРёСЂРѕРІР°РЅРЅС‹С… Р±Р°Р№С‚.
+        // Адрес следующего байта для сохранения.
+        // Увеличим количество закодированных байт.
         uiEncodedByteCounter++;
     }
 
     if (bTailIsPresent)
     {
         uint32_t uiData;
-        // РџРѕР»СѓС‡РёРј РєРѕРґРѕРІРѕРµ СЃР»РѕРІРѕ 12 Р±РёС‚.
+        // Получим кодовое слово 12 бит.
         uiData = static_cast<uint32_t>(enHamming(puiSource[uiSourceIndex]));
-        // РџРѕР»СѓС‡РёРј РєРѕРґРѕРІРѕРµ СЃР»РѕРІРѕ 12 Р±РёС‚.
+        // Получим кодовое слово 12 бит.
         uiData |= (static_cast<uint32_t>(enHamming(0)) << HAMMING_CODE_8_4_BIT_NUMBER);
 
         puiDestination[uiEncodedByteCounter] = static_cast<uint8_t>(uiData);
-        // РђРґСЂРµСЃ СЃР»РµРґСѓСЋС‰РµРіРѕ Р±Р°Р№С‚Р° РґР»СЏ СЃРѕС…СЂР°РЅРµРЅРёСЏ.
-        // РЈРІРµР»РёС‡РёРј РєРѕР»РёС‡РµСЃС‚РІРѕ Р·Р°РєРѕРґРёСЂРѕРІР°РЅРЅС‹С… Р±Р°Р№С‚.
+        // Адрес следующего байта для сохранения.
+        // Увеличим количество закодированных байт.
         uiEncodedByteCounter++;
         uiData >>= 8;
         puiDestination[uiEncodedByteCounter] = static_cast<uint8_t>(uiData);
-        // РђРґСЂРµСЃ СЃР»РµРґСѓСЋС‰РµРіРѕ Р±Р°Р№С‚Р° РґР»СЏ СЃРѕС…СЂР°РЅРµРЅРёСЏ.
-        // РЈРІРµР»РёС‡РёРј РєРѕР»РёС‡РµСЃС‚РІРѕ Р·Р°РєРѕРґРёСЂРѕРІР°РЅРЅС‹С… Р±Р°Р№С‚.
+        // Адрес следующего байта для сохранения.
+        // Увеличим количество закодированных байт.
         uiEncodedByteCounter++;
         uiData >>= 8;
         puiDestination[uiEncodedByteCounter] = static_cast<uint8_t>(uiData);
-        // РђРґСЂРµСЃ СЃР»РµРґСѓСЋС‰РµРіРѕ Р±Р°Р№С‚Р° РґР»СЏ СЃРѕС…СЂР°РЅРµРЅРёСЏ.
-        // РЈРІРµР»РёС‡РёРј РєРѕР»РёС‡РµСЃС‚РІРѕ Р·Р°РєРѕРґРёСЂРѕРІР°РЅРЅС‹С… Р±Р°Р№С‚.
+        // Адрес следующего байта для сохранения.
+        // Увеличим количество закодированных байт.
         uiEncodedByteCounter++;
     }
 
@@ -208,42 +208,42 @@ uint16_t CHammingCodes::BytesToHammingCodes(uint8_t* puiDestination, uint8_t* pu
 }
 
 //-------------------------------------------------------------------------------
-// Р”РµРєРѕРґРёСЂСѓРµС‚ Р±СѓС„РµСЂ СЃ РєРѕРґРѕРј РҐРµРјРјРёРЅРіР°.
+// Декодирует буфер с кодом Хемминга.
 uint16_t CHammingCodes::HammingCodesToBytes(uint8_t* puiDestination, uint8_t* puiSource, uint16_t uiEncodedLength)
 {
     uint16_t uiDecodedByteCounter = 0;
     uint16_t uiSourceIndex = 0;
 
-    // uiEncodedLength = (uiLength * 1.5) (HammingCodes 8 + 4 РЅР° РѕРґРёРЅ Р±Р°Р№С‚ РїСЂРёС…РѕРґРёС‚СЃСЏ 12 Р·Р°РєРѕРґРёСЂРѕРІР°РЅРЅС‹С… Р±РёС‚ - РІСЃРµРіРґР° РєСЂР°С‚РЅРѕ С‚СЂС‘Рј).
-    // Р”Р»РёРЅР° Р·Р°РєРѕРґРёСЂРѕРІР°РЅРЅС‹С… РґР°РЅРЅС‹С… РЅРµ РєСЂР°С‚РЅРѕ С‚СЂС‘Рј?
+    // uiEncodedLength = (uiLength * 1.5) (HammingCodes 8 + 4 на один байт приходится 12 закодированных бит - всегда кратно трём).
+    // Длина закодированных данных не кратно трём?
     if ((uiEncodedLength > 0) && (uiEncodedLength % 3) != 0)
     {
-        // РћС€РёР±РєР° - РЅРµ РґРѕСЃС‚Р°С‚РѕС‡РЅРѕ РґР°РЅРЅС‹С… РґР»СЏ РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёСЏ.
+        // Ошибка - не достаточно данных для восстановления.
         return 0;
     }
 
-    // Р”РµРєРѕРґРёСЂСѓРµРј РІСЃРµ РґР°РЅРЅС‹Рµ.
+    // Декодируем все данные.
     for (uint16_t i = 0; i < uiEncodedLength; i += 3)
     {
         uint32_t uiData;
 
         uiData = (static_cast<uint32_t>(puiSource[uiSourceIndex]));
-        // РЎР»РµРґСѓСЋС‰РёР№ Р±Р°Р№С‚ РёСЃС‚РѕС‡РЅРёРєР°.
+        // Следующий байт источника.
         uiSourceIndex++;
         uiData |= (static_cast<uint32_t>(puiSource[uiSourceIndex]) << 8);
-        // РЎР»РµРґСѓСЋС‰РёР№ Р±Р°Р№С‚ РёСЃС‚РѕС‡РЅРёРєР°.
+        // Следующий байт источника.
         uiSourceIndex++;
         uiData |= (static_cast<uint32_t>(puiSource[uiSourceIndex]) << 16);
-        // РЎР»РµРґСѓСЋС‰РёР№ Р±Р°Р№С‚ РёСЃС‚РѕС‡РЅРёРєР°.
+        // Следующий байт источника.
         uiSourceIndex++;
 
-        // Р’РѕСЃСЃС‚Р°РЅРѕРІРёРј Р·Р°РєРѕРґРёСЂРѕРІР°РЅРЅС‹Р№ Р±Р°Р№С‚.
+        // Восстановим закодированный байт.
         puiDestination[uiDecodedByteCounter] = Recovery((static_cast<uint16_t>(uiData) & 0x0FFF));
-        // РЈРІРµР»РёС‡РёРј РєРѕР»РёС‡РµСЃС‚РІРѕ РґРµРєРѕРґРёСЂРѕРІР°РЅРЅС‹С… Р±Р°Р№С‚.
+        // Увеличим количество декодированных байт.
         uiDecodedByteCounter++;
-        // Р’РѕСЃСЃС‚Р°РЅРѕРІРёРј Р·Р°РєРѕРґРёСЂРѕРІР°РЅРЅС‹Р№ Р±Р°Р№С‚.
+        // Восстановим закодированный байт.
         puiDestination[uiDecodedByteCounter] = Recovery((static_cast<uint16_t>(uiData >> HAMMING_CODE_8_4_BIT_NUMBER) & 0x0FFF));
-        // РЈРІРµР»РёС‡РёРј РєРѕР»РёС‡РµСЃС‚РІРѕ РґРµРєРѕРґРёСЂРѕРІР°РЅРЅС‹С… Р±Р°Р№С‚.
+        // Увеличим количество декодированных байт.
         uiDecodedByteCounter++;
     }
 

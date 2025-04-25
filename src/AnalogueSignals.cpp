@@ -88,16 +88,16 @@ void CAnalogueSignals::Allocate(void)
 }
 
 //-----------------------------------------------------------------------------------------------------
-// РїСЂРµРѕР±СЂР°Р·РѕРІС‹РІР°РµС‚ РёР· РѕР±С‰РµРіРѕ С„РѕСЂРјР°С‚Р° Р±Р°Р·С‹ РґР°РЅРЅС‹С…, РІ С„РѕСЂРјР°С‚ С…СЂР°РЅРµРЅРёСЏ РІ RAM, IEEE754.
-// СЃ С‚РµРєСЃС‚РѕРІС‹Рј СЂРµРєРІРёР·РёС‚РѕРј.
-// РІРѕ РїРµСЂРІС‹С… РїР°СЂР°РјРµС‚СЂС‹ РѕРїРёСЃР°С‚РµР»РµР№ Р°РЅР°Р»РѕРіРѕРІРѕРіРѕ РІС…РѕРґР° РёСЃРїРѕР»СЊР·СѓСЋС‚ СЂР°Р·РЅС‹Рµ С‚РёРїС‹ РјРѕРґСѓР»РµР№,
-// РїРѕСЌС‚РѕРјСѓ СѓРґРѕР±РЅРѕ РёРјРµС‚СЊ РІ RAM РґР°РЅРЅС‹Рµ РІ РЅСѓР¶РЅРѕРј С„РѕСЂРјР°С‚Рµ. РІРѕ РІС‚РѕСЂС‹С…, РґР°РЅРЅС‹Рµ РІ СЌС‚РѕРј
-// С„РѕСЂРјР°С‚Рµ РґРѕР»Р¶РЅС‹ Р±С‹С‚СЊ РґРѕСЃС‚СѓРїРЅС‹ РїРѕ РїСЂРѕС‚РѕРєРѕР»Сѓ Modbus.
+// преобразовывает из общего формата базы данных, в формат хранения в RAM, IEEE754.
+// с текстовым реквизитом.
+// во первых параметры описателей аналогового входа используют разные типы модулей,
+// поэтому удобно иметь в RAM данные в нужном формате. во вторых, данные в этом
+// формате должны быть доступны по протоколу Modbus.
 void CAnalogueSignals::Exstract(void)
 {
     std::cout << "CAnalogueSignals::Exstract 1"  << std::endl;
     unsigned char nucBlockCounter;
-    unsigned char nucBlocksInBlockCounter; // РѕРґРёРЅ РѕРїРёСЃР°С‚РµР»СЊ - РѕРґРёРЅ Р±Р»РѕРє, РІ РѕР±С‰РµРј Р±Р»РѕРєРµ.
+    unsigned char nucBlocksInBlockCounter; // один описатель - один блок, в общем блоке.
     TAnalogueInputDescriptionDataBasePackOne *pxSourse;
 //    TAnalogueInputDescriptionWork *pxDestination;
 
@@ -114,10 +114,10 @@ void CAnalogueSignals::Exstract(void)
             i < (m_pxOperatingDataContainer -> m_uiDataLength);
             i++)
     {
-//        // РѕР±СЂР°Р±РѕС‚Р°РЅ РІРµСЃСЊ Р±Р»РѕРє Р±Р°Р·С‹ РґР°РЅРЅС‹С…?
+//        // обработан весь блок базы данных?
 //        if (nucBlocksInBlockCounter == ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCKS_IN_BLOCK_QUANTITY)
 //        {
-//            // СЃР»РµРґСѓСЋС‰РёР№ Р±Р»РѕРє Р±Р°Р·С‹ РґР°РЅРЅС‹С….
+//            // следующий блок базы данных.
 //            nucBlockCounter++;
 ////            pxSourse = (TAnalogueInputDescriptionDataBasePackOne*)(&xPlcDataBase.
 ////                       axPlcDataBaseBlocks[ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_OFFSET + nucBlockCounter].
@@ -291,7 +291,7 @@ uint8_t CAnalogueSignals::Fsm(void)
 //        }
 //        else
 //        {
-//            // Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РІС‹РїРѕР»РЅРµРЅРёСЏ Р·Р°РїСЂРѕСЃР° Р·Р°РєРѕРЅС‡РёР»РѕСЃСЊ?
+//            // Время ожидания выполнения запроса закончилось?
 //            if (GetTimerPointer() -> IsOverflow())
 //            {
 //                std::cout << "CAnalogueSignals::Fsm DATA_BASE_BLOCK_READ_END_WAITING 4"  << std::endl;
@@ -381,7 +381,7 @@ uint8_t CAnalogueSignals::Fsm(void)
 //        }
 //        else
 //        {
-//            // Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РІС‹РїРѕР»РЅРµРЅРёСЏ Р·Р°РїСЂРѕСЃР° Р·Р°РєРѕРЅС‡РёР»РѕСЃСЊ?
+//            // Время ожидания выполнения запроса закончилось?
 //            if (GetTimerPointer() -> IsOverflow())
 //            {
 //                std::cout << "CAnalogueSignals::Fsm DATA_BASE_BLOCK_STORAGE_WRITE_END_WAITING 4"  << std::endl;
@@ -451,7 +451,7 @@ uint8_t CAnalogueSignals::Fsm(void)
 //        }
 //        else
 //        {
-//            // Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РІС‹РїРѕР»РЅРµРЅРёСЏ Р·Р°РїСЂРѕСЃР° Р·Р°РєРѕРЅС‡РёР»РѕСЃСЊ?
+//            // Время ожидания выполнения запроса закончилось?
 //            if (GetTimerPointer() -> IsOverflow())
 //            {
 //                std::cout << "CAnalogueSignals::Fsm DATA_BASE_BLOCK_MODULE_WRITE_END_WAITING 4"  << std::endl;
@@ -529,7 +529,7 @@ uint8_t CAnalogueSignals::Fsm(void)
 //        }
 //        else
 //        {
-//            // Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РІС‹РїРѕР»РЅРµРЅРёСЏ Р·Р°РїСЂРѕСЃР° Р·Р°РєРѕРЅС‡РёР»РѕСЃСЊ?
+//            // Время ожидания выполнения запроса закончилось?
 //            if (GetTimerPointer() -> IsOverflow())
 //            {
 //                std::cout << "CAnalogueSignals::Fsm DATA_BASE_BLOCK_CHECK_MODULE_BLOCK_READ_END_WAITING 4"  << std::endl;
@@ -599,7 +599,7 @@ uint8_t CAnalogueSignals::Fsm(void)
 //        }
 //        else
 //        {
-//            // Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РІС‹РїРѕР»РЅРµРЅРёСЏ Р·Р°РїСЂРѕСЃР° Р·Р°РєРѕРЅС‡РёР»РѕСЃСЊ?
+//            // Время ожидания выполнения запроса закончилось?
 //            if (GetTimerPointer() -> IsOverflow())
 //            {
 //                std::cout << "CAnalogueSignals::Fsm DATA_BASE_BLOCK_CHECK_STORAGE_BLOCK_READ_END_WAITING 4"  << std::endl;
@@ -611,7 +611,7 @@ uint8_t CAnalogueSignals::Fsm(void)
 //
 //    case DATA_BASE_BLOCK_CHECK_MODULE_AND_STORAGE_BLOCK_COMPARE:
 //        std::cout << "CAnalogueSignals::Fsm DATA_BASE_BLOCK_CHECK_MODULE_AND_STORAGE_BLOCK_COMPARE 1"  << std::endl;
-//        // Р±Р°Р·Р° РґР°РЅРЅС‹С… СЃРѕРІРїР°РґР°РµС‚?
+//        // база данных совпадает?
 //        if (memcmp((const void*)&m_puiIntermediateBuff[256],
 //                   (const void*)&m_puiIntermediateBuff[0],
 //                   168) == 0)
@@ -686,7 +686,7 @@ uint8_t CAnalogueSignals::Fsm(void)
 //        }
 //        else
 //        {
-//            // Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РІС‹РїРѕР»РЅРµРЅРёСЏ Р·Р°РїСЂРѕСЃР° Р·Р°РєРѕРЅС‡РёР»РѕСЃСЊ?
+//            // Время ожидания выполнения запроса закончилось?
 //            if (GetTimerPointer() -> IsOverflow())
 //            {
 //                std::cout << "CAnalogueSignals::Fsm DATA_BASE_BLOCK_CHECK_STORAGE_BLOCK_WRITE_END_WAITING 4"  << std::endl;

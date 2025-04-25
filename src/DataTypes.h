@@ -1,4 +1,4 @@
-п»ї//-----------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------
 //  Sourse      : FileName.cpp
 //  Created     : 01.06.2022
 //  Author      : Alexandr Volvenkin
@@ -11,7 +11,7 @@
 #include "Configuration.h"
 
 //-----------------------------------------------------------------------------------------------------
-// Р’РµСЂСЃРёСЏ РїСЂРѕРіСЂР°РјРјРЅРѕРіРѕ РѕР±РµСЃРїРµС‡РµРЅРёСЏ
+// Версия программного обеспечения
 struct TFirmwareVersion
 {
     unsigned char Major;
@@ -19,136 +19,136 @@ struct TFirmwareVersion
     unsigned char Hardware;
 };
 
-// РљРѕРЅС„РёРіСѓСЂР°С†РёСЏ СѓСЃС‚СЂРѕР№СЃС‚РІР° (РќРћР’РђРЇ v1.60)
+// Конфигурация устройства (НОВАЯ v1.60)
 #pragma bitfields = default
 struct TDevConfig
 {
-    unsigned char  ICount;			// Р§РёСЃР»Рѕ РјРѕРґСѓР»РµР№ РІРІРѕРґР°
-    unsigned char  OCount;			// Р§РёСЃР»Рѕ РјРѕРґСѓР»РµР№ РІС‹РІРѕРґР°
-    unsigned char  Windows;		// Р§РёСЃР»Рѕ РѕРєРѕРЅ СЃРёРіРЅР°Р»РёР·Р°С†РёРё
+    unsigned char  ICount;			// Число модулей ввода
+    unsigned char  OCount;			// Число модулей вывода
+    unsigned char  Windows;		// Число окон сигнализации
 
-    unsigned short FixConfig :  1;		// РџСЂРёР·РЅР°Рє С„РёРєСЃРёСЂРѕРІР°РЅРЅРѕР№ РєРѕРЅС„РёРіСѓСЂР°С†РёРё
-    unsigned short MBusMaster:  1;		// РџСЂРёР·РЅР°Рє СЂРµР¶РёРјР° ModBus-Master
-    unsigned short 	  : 14;		// Р Р•Р—Р•Р Р’
+    unsigned short FixConfig :  1;		// Признак фиксированной конфигурации
+    unsigned short MBusMaster:  1;		// Признак режима ModBus-Master
+    unsigned short 	  : 14;		// РЕЗЕРВ
 
-    unsigned char MBTimeout;		// РўР°Р№РјР°СѓС‚ РєР°РЅР°Р»Р° ModBus
+    unsigned char MBTimeout;		// Таймаут канала ModBus
 
-    char BYTE[14];				// Р Р•Р—Р•Р Р’
+    char BYTE[14];				// РЕЗЕРВ
 };
 
-// РќР°СЃС‚СЂРѕР№РєРё РёРЅС‚РµСЂС„РµР№СЃР° ModBus
+// Настройки интерфейса ModBus
 struct TMBusSetting
 {
-    unsigned char NetAddress;		// РЎРµС‚РµРІРѕР№ Р°РґСЂРµСЃ
-    unsigned char BaudRate;		// РЎРєРѕСЂРѕСЃС‚СЊ РѕР±РјРµРЅР°
-    unsigned char LinkParam;		// Р§РёСЃР»Рѕ СЃС‚РѕРї-Р±РёС‚, РїР°СЂРёС‚РµС‚
-    unsigned char Interval;		// РРЅС‚РµСЂРІР°Р» С‚Р°Р№РјРµСЂР°
-    unsigned char Prescaler;		// Р”РµР»РёС‚РµР»СЊ С‚Р°Р№РјРµСЂР°
-    unsigned char Silent[2];		// 2 Р±Р°Р№С‚Р° РїРѕРґ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅСѓСЋ Р·Р°РґРµСЂР¶РєСѓ
+    unsigned char NetAddress;		// Сетевой адрес
+    unsigned char BaudRate;		// Скорость обмена
+    unsigned char LinkParam;		// Число стоп-бит, паритет
+    unsigned char Interval;		// Интервал таймера
+    unsigned char Prescaler;		// Делитель таймера
+    unsigned char Silent[2];		// 2 байта под дополнительную задержку
 
     enum
     {
         STOPBITS_MASK = 0x08,
         PARITY_MASK   = 0x30,
 
-        ONESTOPBITS	= 0x00,			// РћРґРёРЅ СЃС‚РѕРї-Р±РёС‚
-        TWOSTOPBITS	= 0x08,			// Р”РІР° СЃС‚РѕРї-Р±РёС‚Р°
-        NOPARITY	= 0x00,			// Р‘РµР· РїР°СЂРёС‚РµС‚Р°
-        EVENPARITY	= 0x20,			// Р§РµС‚РЅС‹Р№ РїР°СЂРёС‚РµС‚
-        ODDPARITY	= 0x30			// РќРµС‡РµС‚РЅС‹Р№ РїР°СЂРёС‚РµС‚Р°
+        ONESTOPBITS	= 0x00,			// Один стоп-бит
+        TWOSTOPBITS	= 0x08,			// Два стоп-бита
+        NOPARITY	= 0x00,			// Без паритета
+        EVENPARITY	= 0x20,			// Четный паритет
+        ODDPARITY	= 0x30			// Нечетный паритета
     };
 };
 
-// РћРїРёСЃР°С‚РµР»СЊ Р·Р°РїСЂРѕСЃР° ModBus Master
+// Описатель запроса ModBus Master
 struct TMBMRequest
 {
-    unsigned char  NetAddress;		// РЎРµС‚РµРІРѕР№ Р°РґСЂРµСЃ СѓСЃС‚СЂРѕР№СЃС‚РІР°
-    unsigned char  Function;		// Р¤СѓРЅРєС†РёСЏ
-    unsigned short Address;		// РђРґСЂРµСЃ РґР°РЅРЅС‹С…
-    unsigned char  Value;			// Р—РЅР°С‡РµРЅРёРµ
+    unsigned char  NetAddress;		// Сетевой адрес устройства
+    unsigned char  Function;		// Функция
+    unsigned short Address;		// Адрес данных
+    unsigned char  Value;			// Значение
 };
 
-// РћРїРёСЃР°С‚РµР»СЊ СЃРїРёСЃРєР° Р·Р°РїСЂРѕСЃРѕРІ ModBus Master
+// Описатель списка запросов ModBus Master
 struct TMBMRequestList
 {
-    unsigned char Number;			// Р§РёСЃР»Рѕ СЌР»РµРјРµРЅС‚РѕРІ СЃРїРёСЃРєР°
-    TMBMRequest   Request[16];		// Р—Р°РїСЂРѕСЃС‹ ModBus Master
+    unsigned char Number;			// Число элементов списка
+    TMBMRequest   Request[16];		// Запросы ModBus Master
 };
 
-// РћРїРёСЃР°С‚РµР»СЊ РЅР°СЃС‚СЂРѕРµРє РєР°РЅР°Р»РѕРІ РёРЅРґРёРєР°С†РёРё
+// Описатель настроек каналов индикации
 #pragma bitfields = reversed
 union TChannelSetting
 {
     struct
     {
-        unsigned char NoSound:	1;	// РџСЂРёР·РЅР°Рє РѕС‚РєР»СЋС‡РµРЅРёСЏ Р·РІСѓРєР°
+        unsigned char NoSound:	1;	// Признак отключения звука
         unsigned char :		3;
-        unsigned char Type:		4;	// РўРёРї РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ / РѕР±СЂР°Р±РѕС‚РєРё
+        unsigned char Type:		4;	// Тип отображения / обработки
     };
 
     unsigned char Byte;
 
     enum TYPE_INDICATION
     {
-        NORMAL		 = 0,			// РќРµС‚ РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ
-        INDICATION	 = 1,			// РРЅРґРёРєР°С†РёСЏ
-        PREVENTIVE	 = 2,			// РџСЂРµРґСѓРїСЂРµРґРёС‚РµР»СЊРЅР°СЏ СЃРёРіРЅР°Р»РёР·Р°С†РёСЏ
-        EMERGENCY	 = 3,			// РђРІР°СЂРёР№РЅР°СЏ СЃРёРіРЅР°Р»РёР·Р°С†РёСЏ
+        NORMAL		 = 0,			// Нет отображения
+        INDICATION	 = 1,			// Индикация
+        PREVENTIVE	 = 2,			// Предупредительная сигнализация
+        EMERGENCY	 = 3,			// Аварийная сигнализация
 
-        IND_PREVENTIVE = 4,			// РРЅРґРёРєР°С†РёСЏ + РїСЂРµРґСѓРїСЂРµРґРёС‚РµР»СЊРЅР°СЏ СЃРёРіРЅР°Р»РёР·Р°С†РёСЏ
-        IND_EMERGENCY  = 5			// РРЅРґРёРєР°С†РёСЏ + Р°РІР°СЂРёР№РЅР°СЏ СЃРёРіРЅР°Р»РёР·Р°С†РёСЏ
+        IND_PREVENTIVE = 4,			// Индикация + предупредительная сигнализация
+        IND_EMERGENCY  = 5			// Индикация + аварийная сигнализация
     };
 };
 
-// РћРїРёСЃР°С‚РµР»СЊ РЅР°СЃС‚СЂРѕРµРє РєР°РЅР°Р»Р° РјРѕРґСѓР»СЏ РІС‹РІРѕРґР°
+// Описатель настроек канала модуля вывода
 #pragma bitfields = reversed
 union TOutSetting
 {
     struct
     {
         unsigned char :		2;
-        unsigned char LocalReceipt:	1;	// РљРІРёС‚РёСЂРѕРІР°РЅРёРµ СЃ РїР°РЅРµР»Рё
-        unsigned char LocalUnset:	1;	// РЎР±СЂРѕСЃ СЃ РїР°РЅРµР»Рё
-        unsigned char MBusReceipt:	1;	// РљРІРёС‚РёСЂРѕРІР°РЅРёРµ СЃ РІРµСЂС…РЅРµРіРѕ СѓСЂРѕРІРЅСЏ
-        unsigned char MBusUnset:	1;	// РЎР±СЂРѕСЃ СЃ РІРµСЂС…РЅРµРіРѕ СѓСЂРѕРІРЅСЏ
-        unsigned char Mode:		2;	// Р РµР¶РёРј РІС‹С…РѕРґР°
+        unsigned char LocalReceipt:	1;	// Квитирование с панели
+        unsigned char LocalUnset:	1;	// Сброс с панели
+        unsigned char MBusReceipt:	1;	// Квитирование с верхнего уровня
+        unsigned char MBusUnset:	1;	// Сброс с верхнего уровня
+        unsigned char Mode:		2;	// Режим выхода
     };
 
     unsigned char Byte;
 
     enum OUT_MODE
     {
-        LIGHT_SIGNALING  = 0x00,		// РЎРІРµС‚РѕРІР°СЏ СЃРёРіРЅР°Р»РёР·Р°С†РёСЏ
-        SOUND_SIGNALING  = 0x02,		// Р—РІСѓРєРѕРІР°СЏ СЃРёРіРЅР°Р»РёР·Р°С†РёСЏ
-        CONTROL	   = 0x01,		// РЈРїСЂР°РІР»СЏСЋС‰РёР№ РІС‹С…РѕРґ
-        SELFHOLD_CONTROL = 0x03		// РЈРїСЂР°РІР»СЏСЋС‰РёР№ РІС‹С…РѕРґ СЃ СЃР°РјРѕР±Р»РѕРєРёСЂРѕРІРєРѕР№
+        LIGHT_SIGNALING  = 0x00,		// Световая сигнализация
+        SOUND_SIGNALING  = 0x02,		// Звуковая сигнализация
+        CONTROL	   = 0x01,		// Управляющий выход
+        SELFHOLD_CONTROL = 0x03		// Управляющий выход с самоблокировкой
     };
 
-    operator unsigned char()		// РћРїРµСЂР°С‚РѕСЂ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ Рє unsigned char
+    operator unsigned char()		// Оператор преобразования к unsigned char
     {
         return Byte;
     };
 };
 
-// РћРїРёСЃР°С‚РµР»СЊ РєР°РЅР°Р»Р° РІС‹РІРѕРґР°
+// Описатель канала вывода
 struct TOutputData
 {
-    unsigned char DiscreteOutputModuleDataBase[DISCRETE_OUTPUT_NUMBER];		// РќР°СЃС‚СЂРѕР№РєРё РњР -54
-    unsigned char ExternalReceiptAddress[DISCRETE_OUTPUT_NUMBER];		// РђРґСЂРµСЃР° РІС…РѕРґРѕРІ РІРЅРµС€РЅРµРіРѕ РєРІРёС‚РёСЂРѕРІР°РЅРёСЏ
-    unsigned char ExternalResetAddress[DISCRETE_OUTPUT_NUMBER];		// РђРґСЂРµСЃР° РІС…РѕРґРѕРІ РІРЅРµС€РЅРµРіРѕ СЃР±СЂРѕСЃР°
+    unsigned char DiscreteOutputModuleDataBase[DISCRETE_OUTPUT_NUMBER];		// Настройки МР-54
+    unsigned char ExternalReceiptAddress[DISCRETE_OUTPUT_NUMBER];		// Адреса входов внешнего квитирования
+    unsigned char ExternalResetAddress[DISCRETE_OUTPUT_NUMBER];		// Адреса входов внешнего сброса
 };
 
 struct TDiscreteOutputControl
 {
-    // РќРѕРІРѕРµ РЅР°СЂСѓС€РµРЅРёРµ.
+    // Новое нарушение.
     uint8_t uiNewActivation;
-    // РўСЂРµР±РѕРІР°РЅРёРµ РІРєР»СЋС‡РµРЅРёСЏ СЂРµР»Рµ.
+    // Требование включения реле.
     uint8_t uiRelayActivationRequest;
 };
 
 struct TAlarmDfaInit
 {
-    // РЈСЂРѕРІРµРЅСЊ РґРёСЃРєСЂРµС‚РЅРѕРіРѕ СЃРёРіРЅР°Р»Р° РёРЅС‚РµСЂРїСЂРµС‚РёСЂСѓРµРјС‹Р№ РєР°Рє Р°РєС‚РёРІРЅС‹Р№.
+    // Уровень дискретного сигнала интерпретируемый как активный.
     uint8_t uiActivityLevel;
     uint8_t uiAlarmType;
     uint8_t uiSavedAlarmType;
@@ -157,7 +157,7 @@ struct TAlarmDfaInit
 #pragma bitfields = default
 struct TDeviceState
 {
-    // РџСЂРёР·РЅР°Рє СЂР°Р±РѕС‚С‹ РІ СЂРµР¶РёРјРµ РєРѕРЅСЂРѕР»СЏ Р»РёРЅРёРё СЃРІСЏР·Рё ModBus.
+    // Признак работы в режиме конроля линии связи ModBus.
     uint8_t ModbusRtuLinkControlInProgress:  1;
     uint8_t 	  : 7;
 
@@ -165,67 +165,67 @@ struct TDeviceState
 };
 
 //-----------------------------------------------------------------------------------------------------
-// РћРїРёСЃР°С‚РµР»СЊ СЃС‚СЂСѓРєС‚СѓСЂ С…СЂР°РЅРµРЅРёСЏ РґР°РЅРЅС‹С… РІ EEPROM
+// Описатель структур хранения данных в EEPROM
 struct TDataBaseBlockPositionData
 {
-    unsigned char  Field;			// РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РїРѕР»СЏ РґР°РЅРЅС‹С…
-    unsigned char  Size;			// Р Р°Р·РјРµСЂ Р±Р»РѕРєР°
-    unsigned short Offset;			// РЎРјРµС‰РµРЅРёРµ Р±Р»РѕРєР° РґР°РЅРЅС‹С… РѕС‚ РЅР°С‡Р°Р»Р°
+    unsigned char  Field;			// Идентификатор поля данных
+    unsigned char  Size;			// Размер блока
+    unsigned short Offset;			// Смещение блока данных от начала
 };
 
 //-----------------------------------------------------------------------------------------------------
-// Р‘Р” РЅР°СЃС‚СЂРѕРµРє РїСЂРёР±РѕСЂР°
+// БД настроек прибора
 #pragma pack(push)
 #pragma pack(1)
 struct TDataBase
 {
-    // РљРѕРЅС„РёРіСѓСЂР°С†РёСЏ СѓСЃС‚СЂРѕР№СЃС‚РІР°.
+    // Конфигурация устройства.
     TDevConfig	DevConfig;
     unsigned short CRC0;
-    // РџР°СЂР°РјРµС‚СЂС‹ РёРЅС‚РµСЂС„РµР№СЃР° ModBus.
+    // Параметры интерфейса ModBus.
     TMBusSetting   MBSet;
     unsigned short CRC1;
-    // РЈСЂРѕРІРµРЅСЊ РґРёСЃРєСЂРµС‚РЅРѕРіРѕ СЃРёРіРЅР°Р»Р° РёРЅС‚РµСЂРїСЂРµС‚РёСЂСѓРµРјС‹Р№ РєР°Рє Р°РєС‚РёРІРЅС‹Р№.
+    // Уровень дискретного сигнала интерпретируемый как активный.
     unsigned char  ActivityLevel[((MAX_ALARM_WINDOWS_NUMBER + MAX_DISCRETE_INPUTS_NUMBER) / 8)];
     unsigned short CRC2;
-    // РРЅРґРµРєСЃ РѕРєРЅР° СЃРёРіРЅР°Р»РёР·Р°С†РёРё РєРѕС‚РѕСЂРѕРµ РїСЂРёРІСЏР·Р°РЅРѕ Рє С‚РµРєСѓС‰РµРјСѓ РґРёСЃРєСЂРµС‚РЅРѕРјСѓ СЃРёРіРЅР°Р»Сѓ.
+    // Индекс окна сигнализации которое привязано к текущему дискретному сигналу.
     unsigned char  AlarmWindowIndex[(MAX_ALARM_WINDOWS_NUMBER + MAX_DISCRETE_INPUTS_NUMBER)];
     unsigned short CRC3;
-    // РўРёРї СЃРёРіРЅР°Р»РёР·Р°С†РёРё РїСЂРёРІСЏР·Р°РЅРЅС‹Р№ Рє РѕРєРЅСѓ.
+    // Тип сигнализации привязанный к окну.
     unsigned char  AlarmType[MAX_ALARM_WINDOWS_NUMBER];
     unsigned short CRC4;
-    // Р‘Р” РјРѕРґСѓР»РµР№ РІС‹РІРѕРґР°.
+    // БД модулей вывода.
     TOutputData    OutConfig;
     unsigned short CRC5;
-    // Р’С‹С…РѕРґРЅС‹Рµ СЂРµР»Рµ, СЃРѕРїРѕСЃС‚Р°РІР»РµРЅРЅС‹Рµ С„РёР·РёС‡РµСЃРєРёРј РІС…РѕРґР°Рј.
+    // Выходные реле, сопоставленные физическим входам.
     unsigned char  Relay[(MAX_ALARM_WINDOWS_NUMBER + MAX_DISCRETE_INPUTS_NUMBER)];
     unsigned short CRC6;
-    // РЎРїРёСЃРѕРє Р·Р°РїСЂРѕСЃРѕРІ СЃР±РѕСЂР° РґР°РЅРЅС‹С….
+    // Список запросов сбора данных.
     TMBMRequestList InputList;
     unsigned short  CRC7;
-    // РЎРїРёСЃРѕРє Р·Р°РїСЂРѕСЃРѕРІ РєРІРёС‚РёСЂРѕРІР°РЅРёСЏ.
+    // Список запросов квитирования.
     TMBMRequestList ReceiptList;
     unsigned short  CRC8;
-    // РЎРїРёСЃРѕРє Р·Р°РїСЂРѕСЃРѕРІ СЃР±СЂРѕСЃР°.
+    // Список запросов сброса.
     TMBMRequestList UnsetList;
     unsigned short  CRC9;
-    // РЎРѕСЃС‚РѕСЏРЅРёРµ СѓСЃС‚СЂРѕР№СЃС‚РІР° С…СЂР°РЅРёРјРѕРµ РІ EEPROM.
+    // Состояние устройства хранимое в EEPROM.
     TDeviceState DeviceState;
     unsigned short CRC10;
 
     enum DB_FIELDS
     {
-        DEV_CONFIG	= 0,			// РљРѕРЅС„РёРіСѓСЂР°С†РёСЏ СѓСЃС‚СЂРѕР№СЃС‚РІР°
-        MODBUS_SET	= 1,			// РџР°СЂР°РјРµС‚СЂС‹ РёРЅС‚РµСЂС„РµР№СЃР° ModBus
-        ACTIVITY_LEVEL	= 2,			// РўРёРї РІС…РѕРґР°
-        ALARM_WINDOW_INDEX	= 3,			// РџРµСЂРµР°РґСЂРµСЃР°С†РёСЏ
-        ALARM_TYPE	= 4,			// РўРёРїС‹ СЃРёРіРЅР°Р»РёР·Р°С†РёРё РїРѕ РѕРєРЅР°Рј
-        OUT_BASE	= 5,			// Р‘Р” РјРѕРґСѓР»РµР№ РІС‹РІРѕРґР°
-        RELAY		= 6,			// Р’С‹С…РѕРґРЅС‹Рµ СЂРµР»Рµ, СЃРѕРїРѕСЃС‚Р°РІР»РµРЅРЅС‹Рµ С„РёР·РёС‡РµСЃРєРёРј РІС…РѕРґР°Рј
-        INPUT_LIST	= 7,			// Р—Р°РїСЂРѕСЃС‹ СЃР±РѕСЂР° РґР°РЅРЅС‹С…
-        RECEIPT_LIST	= 8,			// Р—Р°РїСЂРѕСЃС‹ РєРІРёС‚РёСЂРѕРІР°РЅРёСЏ
-        UNSET_LIST	= 9,			// Р—Р°РїСЂРѕСЃС‹ СЃР±СЂРѕСЃР°
-        DEVICE_STATE = 10,			// РЎРѕСЃС‚РѕСЏРЅРёРµ СѓСЃС‚СЂРѕР№СЃС‚РІР° С…СЂР°РЅРёРјРѕРµ РІ EEPROM.
+        DEV_CONFIG	= 0,			// Конфигурация устройства
+        MODBUS_SET	= 1,			// Параметры интерфейса ModBus
+        ACTIVITY_LEVEL	= 2,			// Тип входа
+        ALARM_WINDOW_INDEX	= 3,			// Переадресация
+        ALARM_TYPE	= 4,			// Типы сигнализации по окнам
+        OUT_BASE	= 5,			// БД модулей вывода
+        RELAY		= 6,			// Выходные реле, сопоставленные физическим входам
+        INPUT_LIST	= 7,			// Запросы сбора данных
+        RECEIPT_LIST	= 8,			// Запросы квитирования
+        UNSET_LIST	= 9,			// Запросы сброса
+        DEVICE_STATE = 10,			// Состояние устройства хранимое в EEPROM.
         BLOCKS_QUANTITY = 11
     };
 };
@@ -245,7 +245,7 @@ struct TModuleContext
 #pragma pack(1)
 struct TConfigDataPackOne
 {
-    // С„Р°РєС‚РёС‡РµСЃРєРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ РјРѕРґСѓР»РµР№.
+    // фактическое количество модулей.
     uint8_t uiModulesQuantity;
     TModuleContext axModulesContext[INTERNAL_MODULE_QUANTITY];
     uint8_t uiDiscreteOutputQuantity;
@@ -255,12 +255,12 @@ struct TConfigDataPackOne
 };
 #pragma pack(pop)
 
-// РґР»СЏ СЃРµСЂРёР°Р»РёР·Р°С†РёРё, СЂР°Р·Р±РѕСЂР° РґР°РЅРЅС‹С… РїРѕР»СѓС‡РµРЅРЅС‹С… РїРѕ РёРЅС‚РµСЂС„РµР№СЃР°Рј РїРµСЂРµРґР°С‡Рё РґР°РЅРЅС‹С….
+// для сериализации, разбора данных полученных по интерфейсам передачи данных.
 #pragma pack(push)
 #pragma pack(1)
 struct TConfigDataPackOneOld
 {
-    // С„Р°РєС‚РёС‡РµСЃРєРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ РјРѕРґСѓР»РµР№.
+    // фактическое количество модулей.
     uint8_t uiModulesQuantity;
     uint8_t auiModuleType[INTERNAL_MODULE_QUANTITY];
     uint8_t uiDiscreteOutputQuantity;

@@ -1,4 +1,4 @@
-п»ї//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 //  Source      : FileName.cpp
 //  Created     : 01.06.2022
 //  Author      : Alexandr Volvenkin
@@ -53,8 +53,8 @@ int main()
 //// Project / Properties / C/C++ Build / Settings / Tool Settings /
 //// Gross GCC++ Compiler / Dialect / Lang. standart:  ISO C++14
 ////--------------------------------------------------------------------------
-//// Р—Р°РїСѓСЃРє РёР· С‚РµСЂРјРёРЅР°Р»Р° + РїРѕРІС‹С€РµРЅРёРµ РїСЂРёРІРёР»РµРіРёР№:  sudo /home/debian/N2024
-//// РёРЅР°С‡Рµ РѕС€РёР±РєР° Errno = 13 (Permission denied)
+//// Запуск из терминала + повышение привилегий:  sudo /home/debian/N2024
+//// иначе ошибка Errno = 13 (Permission denied)
 ////--------------------------------------------------------------------------
 //#include <linux/spi/spidev.h>
 ////#include <linux/ioctl.h>
@@ -75,7 +75,7 @@ int main()
 //using namespace std;
 ////--------------------------------------------------------------------------
 ////--------------------------------------------------------------------------
-//// Р’С‹РІРѕРґ РґРёР°РіРЅРѕСЃС‚РёРєРё РїРѕ РѕС€РёР±РєРµ
+//// Вывод диагностики по ошибке
 //void ErrorMessage(const char *String, int Handler = 0xFFFF)
 //{
 //    cout << String;
@@ -177,10 +177,10 @@ int main()
 //    memset(TXBuffer, 0x00, sizeof (TXBuffer));
 //    memset(RXBuffer, 0x00, sizeof (RXBuffer));
 //
-//    TXBuffer[0] = 0x30;		// Р§С‚РµРЅРёРµ EVE_REG_ID (0x302000) = 0x7C
+//    TXBuffer[0] = 0x30;		// Чтение EVE_REG_ID (0x302000) = 0x7C
 //    TXBuffer[1] = 0x20;
 //    TXBuffer[2] = 0x00;
-//    TXBuffer[3] = 0x00;		// РџСѓСЃС‚РѕР№ cРёРЅС…СЂРѕ-Р±Р°Р№С‚
+//    TXBuffer[3] = 0x00;		// Пустой cинхро-байт
 //    TXBuffer[4] = 0x00;
 //
 //    struct spi_ioc_transfer Transfer =
@@ -229,8 +229,8 @@ int main()
 //            //cout << "Transfer port SPI complete" << endl;
 //        };
 //
-//        //usleep(10000);							// Р—Р°РґРµСЂР¶РєР° 10 РјСЃ (Obsolete)
-//        usleep(25000);							// Р—Р°РґРµСЂР¶РєР° 25 РјСЃ (Obsolete)
+//        //usleep(10000);							// Задержка 10 мс (Obsolete)
+//        usleep(25000);							// Задержка 25 мс (Obsolete)
 //    };
 //
 //
@@ -372,8 +372,8 @@ int main()
 //// Project / Properties / C/C++ Build / Settings / Tool Settings /
 //// Gross GCC++ Compiler / Dialect / Lang. standart:  ISO C++14
 ////--------------------------------------------------------------------------
-//// Р—Р°РїСѓСЃРє РёР· С‚РµСЂРјРёРЅР°Р»Р° + РїРѕРІС‹С€РµРЅРёРµ РїСЂРёРІРёР»РµРіРёР№:  sudo /home/debian/N2024
-//// РёРЅР°С‡Рµ РѕС€РёР±РєР° Errno = 13 (Permission denied)
+//// Запуск из терминала + повышение привилегий:  sudo /home/debian/N2024
+//// иначе ошибка Errno = 13 (Permission denied)
 ////--------------------------------------------------------------------------
 //#include <linux/spi/spidev.h>
 ////#include <linux/ioctl.h>
@@ -394,7 +394,7 @@ int main()
 //using namespace std;
 ////--------------------------------------------------------------------------
 ////--------------------------------------------------------------------------
-//// Р’С‹РІРѕРґ РґРёР°РіРЅРѕСЃС‚РёРєРё РїРѕ РѕС€РёР±РєРµ
+//// Вывод диагностики по ошибке
 //void ErrorMessage(const char *String, int Handler = 0xFFFF)
 //{
 //    cout << String;
@@ -496,28 +496,28 @@ int main()
 //    memset(TXBuffer, 0x00, sizeof (TXBuffer));
 //    memset(RXBuffer, 0x00, sizeof (RXBuffer));
 //
-//    TXBuffer[0] = 0x30;		// Р§С‚РµРЅРёРµ EVE_REG_ID (0x302000) = 0x7C
+//    TXBuffer[0] = 0x30;		// Чтение EVE_REG_ID (0x302000) = 0x7C
 //    TXBuffer[1] = 0x20;
 //    TXBuffer[2] = 0x00;
-//    TXBuffer[3] = 0x00;		// РџСѓСЃС‚РѕР№ cРёРЅС…СЂРѕ-Р±Р°Р№С‚
+//    TXBuffer[3] = 0x00;		// Пустой cинхро-байт
 //    TXBuffer[4] = 0x00;
 //
-//    TXBuffer[5] = 0x30;		// Р§С‚РµРЅРёРµ EVE_REG_ID (0x302000) = 0x7C
+//    TXBuffer[5] = 0x30;		// Чтение EVE_REG_ID (0x302000) = 0x7C
 //    TXBuffer[6] = 0x20;
 //    TXBuffer[7] = 0x00;
-//    TXBuffer[8] = 0x00;		// РџСѓСЃС‚РѕР№ cРёРЅС…СЂРѕ-Р±Р°Р№С‚
+//    TXBuffer[8] = 0x00;		// Пустой cинхро-байт
 //    TXBuffer[4] = 0x00;
 //
-//    TXBuffer[9] = 0x30;		// Р§С‚РµРЅРёРµ EVE_REG_ID (0x302000) = 0x7C
+//    TXBuffer[9] = 0x30;		// Чтение EVE_REG_ID (0x302000) = 0x7C
 //    TXBuffer[10] = 0x20;
 //    TXBuffer[11] = 0x00;
-//    TXBuffer[12] = 0x00;		// РџСѓСЃС‚РѕР№ cРёРЅС…СЂРѕ-Р±Р°Р№С‚
+//    TXBuffer[12] = 0x00;		// Пустой cинхро-байт
 //    TXBuffer[13] = 0x00;
 //
-//    TXBuffer[14] = 0x30;		// Р§С‚РµРЅРёРµ EVE_REG_ID (0x302000) = 0x7C
+//    TXBuffer[14] = 0x30;		// Чтение EVE_REG_ID (0x302000) = 0x7C
 //    TXBuffer[15] = 0x20;
 //    TXBuffer[16] = 0x00;
-//    TXBuffer[17] = 0x00;		// РџСѓСЃС‚РѕР№ cРёРЅС…СЂРѕ-Р±Р°Р№С‚
+//    TXBuffer[17] = 0x00;		// Пустой cинхро-байт
 //    TXBuffer[18] = 0x00;
 //
 //    struct spi_ioc_transfer Transfer =
@@ -566,8 +566,8 @@ int main()
 //            //cout << "Transfer port SPI complete" << endl;
 //        };
 //
-//        //usleep(10000);							// Р—Р°РґРµСЂР¶РєР° 10 РјСЃ (Obsolete)
-//        usleep(25000);							// Р—Р°РґРµСЂР¶РєР° 25 РјСЃ (Obsolete)
+//        //usleep(10000);							// Задержка 10 мс (Obsolete)
+//        usleep(25000);							// Задержка 25 мс (Obsolete)
 //    };
 //
 //

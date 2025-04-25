@@ -1,4 +1,4 @@
-п»ї//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 //  Source      : FileName.cpp
 //  Created     : 01.06.2022
 //  Author      : Alexandr Volvenkin
@@ -22,7 +22,7 @@
 CResources::CResources()
 {
     std::cout << "CResources constructor"  << std::endl;
-    // РїРѕР»СѓС‡РёРј РёРјСЏ РєР»Р°СЃСЃР°.
+    // получим имя класса.
     sprintf(GetTaskNamePointer(),
             "%s",
             typeid(*this).name());
@@ -179,61 +179,61 @@ void CResources::Allocate(void)
 {
     std::cout << "CResources::Allocate 1"  << std::endl;
 
-    // РџРѕРґРіРѕС‚РѕРІРёРј Рє РѕС‚РїСЂР°РІРєРµ С‚РµРєСѓС‰РёРµ Р°РґСЂРµСЃР° РѕР±СЉРµРєС‚РѕРІ СЃРёСЃС‚РµРјС‹ РёСЃРїРѕР»СЊР·СѓРµРјС‹С… РґСЂР°Р№РІРµСЂР°РјРё СѓСЃС‚СЂРѕР№СЃС‚РІ.
+    // Подготовим к отправке текущие адреса объектов системы используемых драйверами устройств.
 
 //    xMemoryAllocationContext.puiRxBuffer = m_auiSpiRxBuffer;
 //    xMemoryAllocationContext.puiTxBuffer = m_auiSpiTxBuffer;
 //    xMemoryAllocationContext.puiErrorCode = &m_uiErrorCode;
 
-    // РћР±РЅСѓР»РёРј РѕР±С‰РёР№ РѕР±СЉС‘Рј РІС‹РґРµР»РµРЅРЅРѕР№ РїР°РјСЏС‚Рё.
+    // Обнулим общий объём выделенной памяти.
     m_uiUsedDiscreteInputsState = 0;
-    // РџРѕРґРєР»СЋС‡РёРј Р±СѓС„РµСЂ РґР»СЏ С…СЂР°РЅРµРЅРёСЏ СЃРѕСЃС‚РѕСЏРЅРёР№ РґРёСЃРєСЂРµС‚РЅС‹С… РІС…РѕРґРѕРІ.
+    // Подключим буфер для хранения состояний дискретных входов.
     m_puiDiscreteInputsState =
         &m_puiDiscreteInputs[DISCRETE_INPUTS_STATE_OFFSET];
 
-    // РћР±РЅСѓР»РёРј РѕР±С‰РёР№ РѕР±СЉС‘Рј РІС‹РґРµР»РµРЅРЅРѕР№ РїР°РјСЏС‚Рё.
+    // Обнулим общий объём выделенной памяти.
     m_uiUsedDiscreteInputsBadState = 0;
-    // РџРѕРґРєР»СЋС‡РёРј Р±СѓС„РµСЂ РґР»СЏ С…СЂР°РЅРµРЅРёСЏ СЃРѕСЃС‚РѕСЏРЅРёР№ РґРѕСЃС‚РѕРІРµСЂРЅРѕСЃС‚Рё РґРёСЃРєСЂРµС‚РЅС‹С… РІС…РѕРґРѕРІ.
+    // Подключим буфер для хранения состояний достоверности дискретных входов.
     m_puiDiscreteInputsBadState =
         &m_puiCoils[DISCRETE_INPUTS_BAD_STATE_OFFSET];
 
-//    // РћР±РЅСѓР»РёРј РѕР±С‰РёР№ РѕР±СЉС‘Рј РІС‹РґРµР»РµРЅРЅРѕР№ РїР°РјСЏС‚Рё.
+//    // Обнулим общий объём выделенной памяти.
 //    m_uiUsedDiscreteOutputState = 0;
-//    // РџРѕРґРєР»СЋС‡РёРј Р±СѓС„РµСЂ РґР»СЏ С…СЂР°РЅРµРЅРёСЏ СЃРѕСЃС‚РѕСЏРЅРёР№ РґРёСЃРєСЂРµС‚РЅС‹С… РІС‹С…РѕРґРѕРІ.
+//    // Подключим буфер для хранения состояний дискретных выходов.
 //    m_puiDiscreteOutputState =
 //        &m_puiDiscreteInputs[DISCRETE_OUTPUT_BIT_ARRAY_OFFSET];
 //
-//    // РћР±РЅСѓР»РёРј РѕР±С‰РёР№ РѕР±СЉС‘Рј РІС‹РґРµР»РµРЅРЅРѕР№ РїР°РјСЏС‚Рё.
+//    // Обнулим общий объём выделенной памяти.
 //    m_uiUsedDiscreteOutputControl = 0;
-//    // РџРѕРґРєР»СЋС‡РёРј Р±СѓС„РµСЂ РґР»СЏ СѓРїСЂР°РІР»РµРЅРёСЏ РґРёСЃРєСЂРµС‚РЅС‹РјРё РІС‹С…РѕРґР°РјРё.
+//    // Подключим буфер для управления дискретными выходами.
 //    m_puiDiscreteOutputControl =
 //        &m_puiDiscreteInputs[DISCRETE_OUTPUT_BIT_ARRAY_OFFSET];
 
-    // РћР±РЅСѓР»РёРј РѕР±С‰РёР№ РѕР±СЉС‘Рј РІС‹РґРµР»РµРЅРЅРѕР№ РїР°РјСЏС‚Рё.
+    // Обнулим общий объём выделенной памяти.
     m_uiUsedAnalogueInputsValue = 0;
-    // РџРѕРґРєР»СЋС‡РёРј Р±СѓС„РµСЂ РґР»СЏ С…СЂР°РЅРµРЅРёСЏ РёР·РјРµСЂРµРЅРЅС‹С… Р·РЅР°С‡РµРЅРёР№ Р°РЅР°Р»РѕРіРѕРІС‹С… РІС…РѕРґРѕРІ.
+    // Подключим буфер для хранения измеренных значений аналоговых входов.
     m_pfAnalogueInputsValue =
         (float*)&m_puiHoldingRegisters[ANALOGUE_INPUTS_VALUE_OFFSET];
 
-//    // РћР±РЅСѓР»РёРј РѕР±С‰РёР№ РѕР±СЉС‘Рј РІС‹РґРµР»РµРЅРЅРѕР№ РїР°РјСЏС‚Рё.
+//    // Обнулим общий объём выделенной памяти.
 //    m_uiUsedAnalogueInputsState = 0;
-//    // РџРѕРґРєР»СЋС‡РёРј Р±СѓС„РµСЂ РґР»СЏ С…СЂР°РЅРµРЅРёСЏ СЃРѕСЃС‚РѕСЏРЅРёР№ Р°РЅР°Р»РѕРіРѕРІС‹С… РІС…РѕРґРѕРІ.
+//    // Подключим буфер для хранения состояний аналоговых входов.
 //    m_puiAnalogueInputsState =
 //        &m_puiCoils[ANALOGUE_INPUTS_BAD_STATE_OFFSET];
 
-    // РћР±РЅСѓР»РёРј РѕР±С‰РёР№ РѕР±СЉС‘Рј РІС‹РґРµР»РµРЅРЅРѕР№ РїР°РјСЏС‚Рё.
+    // Обнулим общий объём выделенной памяти.
     m_uiUsedAnalogueInputsBadState = 0;
-    // РџРѕРґРєР»СЋС‡РёРј Р±СѓС„РµСЂ РґР»СЏ С…СЂР°РЅРµРЅРёСЏ СЃРѕСЃС‚РѕСЏРЅРёР№ РґРѕСЃС‚РѕРІРµСЂРЅРѕСЃС‚Рё Р°РЅР°Р»РѕРіРѕРІС‹С… РІС…РѕРґРѕРІ.
+    // Подключим буфер для хранения состояний достоверности аналоговых входов.
     m_puiAnalogueInputsBadState =
         &m_puiCoils[ANALOGUE_INPUTS_BAD_STATE_OFFSET];
 
-    // РћР±РЅСѓР»РёРј РѕР±С‰РёР№ РѕР±СЉС‘Рј РІС‹РґРµР»РµРЅРЅРѕР№ РїР°РјСЏС‚Рё.
+    // Обнулим общий объём выделенной памяти.
     m_uiUsedAnalogueInputsOff = 0;
-    // РџРѕРґРєР»СЋС‡РёРј Р±СѓС„РµСЂ РґР»СЏ С…СЂР°РЅРµРЅРёСЏ РѕС‚РєР»СЋС‡РµРЅРЅС‹С… Р°РЅР°Р»РѕРіРѕРІС‹С… РІС…РѕРґРѕРІ.
+    // Подключим буфер для хранения отключенных аналоговых входов.
     m_puiAnalogueInputsOff =
         &m_puiCoils[ANALOGUE_INPUTS_BAD_STATE_OFFSET];
 
-    // РћР±РЅСѓР»РёРј РѕР±С‰РёР№ РѕР±СЉС‘Рј РІС‹РґРµР»РµРЅРЅРѕР№ РїР°РјСЏС‚Рё.
+    // Обнулим общий объём выделенной памяти.
     m_uiUsedAnalogueInputDescriptionWork = 0;
 
 }
@@ -316,7 +316,7 @@ bool CResources::CheckCommonTaskMap(void)
         std::string key = pair.first;
         CTaskInterface* taskPtr = pair.second.get();
 
-        // РџСЂРѕРІРµСЂСЏРµРј, РЅРµ СЏРІР»СЏРµС‚СЃСЏ Р»Рё СѓРєР°Р·Р°С‚РµР»СЊ РЅСѓР»РµРј РёР»Рё СЂР°РІРµРЅ 0
+        // Проверяем, не является ли указатель нулем или равен 0
         if (taskPtr == 0)
         {
             std::cout << "Task '" << key << "' has a NULL pointer or is set to zero." << std::endl;
@@ -340,16 +340,16 @@ CTaskInterface* CResources::GetTaskPointerByNameFromMap(std::string sTaskName)
 
     if (it != m_mpxCommonTaskMap.end())
     {
-        // РєР»СЋС‡ РЅР°Р№РґРµРЅ
+        // ключ найден
 //        std::cout << "CResources::GetTaskPointerByNameFromMap 2" << std::endl;
 //            std::cout << "CResources::GetTaskPointerByNameFromMap this name" << " "
 //                      << ((it -> second) -> GetTaskNamePointer()) << std::endl;
-        return it -> second.get(); // РџСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ shared_ptr РІ raw СѓРєР°Р·Р°С‚РµР»СЊ
+        return it -> second.get(); // Преобразование shared_ptr в raw указатель
     }
     else
     {
 //        std::cout << "CResources::GetTaskPointerByNameFromMap 3" << std::endl;
-        return nullptr; // Р’РµСЂРЅРµРј nullptr, РµСЃР»Рё РєР»СЋС‡ РЅРµ РЅР°Р№РґРµРЅ
+        return nullptr; // Вернем nullptr, если ключ не найден
     }
 }
 
@@ -361,15 +361,15 @@ uint8_t CResources::GetTaskIdByNameFromMap(std::string sTaskName)
 
     if (pxTask != nullptr)
     {
-        // РєР»СЋС‡ РЅР°Р№РґРµРЅ
+        // ключ найден
         std::cout << "CResources::GetTaskIdByNameFromMap 2"  << std::endl;
         if (m_uiUsedCommonTaskPointersCounter < MAX_TASK_NUMBER)
         {
             std::cout << "CResources::GetTaskIdByNameFromMap 3"  << std::endl;
             m_ppxCommonTaskPointers[m_uiUsedCommonTaskPointersCounter] = pxTask;
             m_uiUsedCommonTaskPointersCounter++;
-            // Р’РµСЂРЅРµРј РёРЅРґРµРєСЃ РЅР° СѓРєР°Р·Р°С‚РµР»СЊ РІ РјР°СЃСЃРёРІРµ РїР»СЋСЃ 1. СЌС‚Рѕ Р±СѓРґРµС‚ id Р·Р°РґР°С‡Рё РІ СЃРёСЃС‚РµРјРµ.
-            // id Р·Р°РґР°С‡ РЅР°С‡РёРЅР°СЋС‚СЃСЏ СЃ РµРґРёРЅРёС†С‹. РЅРѕР»СЊ - Р·Р°РґР°С‡Рё РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚.
+            // Вернем индекс на указатель в массиве плюс 1. это будет id задачи в системе.
+            // id задач начинаются с единицы. ноль - задачи не существует.
             return m_uiUsedCommonTaskPointersCounter;
         }
         else
@@ -381,8 +381,8 @@ uint8_t CResources::GetTaskIdByNameFromMap(std::string sTaskName)
     else
     {
         std::cout << "CResources::GetTaskIdByNameFromMap 5"  << std::endl;
-        // РєР»СЋС‡ РЅРµ РЅР°Р№РґРµРЅ
-        return 0; // Р’РµСЂРЅРµРј 0, РµСЃР»Рё РєР»СЋС‡ РЅРµ РЅР°Р№РґРµРЅ
+        // ключ не найден
+        return 0; // Вернем 0, если ключ не найден
     }
 }
 

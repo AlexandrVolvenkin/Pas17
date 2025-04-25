@@ -1,4 +1,4 @@
-ï»¿//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 //  Source      : FileName.cpp
 //  Created     : 01.06.2022
 //  Author      : Alexandr Volvenkin
@@ -32,7 +32,7 @@ CModbusRtuSlaveLinkLayer::CModbusRtuSlaveLinkLayer()
     m_pxThread = new std::thread(CModbusRtuSlaveLinkLayer::Process, this);
     std::thread::id th_id = m_pxThread -> get_id();
     //std::cout << "CModbusRtuSlaveLinkLayer th_id" << " " << th_id << std::endl;
-    // Ğ½Ğµ Ğ¶Ğ´ĞµĞ¼ Ğ·Ğ°Ğ²ĞµÑ€ÑˆĞµĞ½Ğ¸Ñ Ñ€Ğ°Ğ±Ğ¾Ñ‚Ñ‹ Ñ„ÑƒĞ½ĞºÑ†Ğ¸Ğ¸
+    // íå æäåì çàâåğøåíèÿ ğàáîòû ôóíêöèè
     m_pxThread -> detach();
 }
 

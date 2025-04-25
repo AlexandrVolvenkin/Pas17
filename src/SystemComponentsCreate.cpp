@@ -115,7 +115,7 @@ uint8_t CSystemComponentsCreate::Fsm(void)
         else
         {
             std::cout << "CSystemComponentsCreate::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING 3"  << std::endl;
-            // Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РІС‹РїРѕР»РЅРµРЅРёСЏ Р·Р°РїСЂРѕСЃР° Р·Р°РєРѕРЅС‡РёР»РѕСЃСЊ?
+            // Время ожидания выполнения запроса закончилось?
             if (GetTimerPointer() -> IsOverflow())
             {
                 std::cout << "CSystemComponentsCreate::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING 4"  << std::endl;
@@ -146,7 +146,7 @@ uint8_t CSystemComponentsCreate::Fsm(void)
         else
         {
             std::cout << "CSystemComponentsCreate::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 3"  << std::endl;
-            // Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РІС‹РїРѕР»РЅРµРЅРёСЏ Р·Р°РїСЂРѕСЃР° Р·Р°РєРѕРЅС‡РёР»РѕСЃСЊ?
+            // Время ожидания выполнения запроса закончилось?
             if (GetTimerPointer() -> IsOverflow())
             {
                 std::cout << "CSystemComponentsCreate::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 4"  << std::endl;
@@ -188,7 +188,7 @@ uint8_t CSystemComponentsCreate::Fsm(void)
         }
         else
         {
-            // Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РІС‹РїРѕР»РЅРµРЅРёСЏ Р·Р°РїСЂРѕСЃР° Р·Р°РєРѕРЅС‡РёР»РѕСЃСЊ?
+            // Время ожидания выполнения запроса закончилось?
             if (GetTimerPointer() -> IsOverflow())
             {
                 std::cout << "CSystemComponentsCreate::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 4"  << std::endl;

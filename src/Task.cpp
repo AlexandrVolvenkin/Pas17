@@ -1,4 +1,4 @@
-п»ї//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 //  Source      : FileName.cpp
 //  Created     : 01.06.2022
 //  Author      : Alexandr Volvenkin
@@ -385,7 +385,7 @@ uint8_t CNewTask::Fsm(void)
         else
         {
             std::cout << "CNewTask::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 3"  << std::endl;
-            // Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РІС‹РїРѕР»РЅРµРЅРёСЏ Р·Р°РїСЂРѕСЃР° Р·Р°РєРѕРЅС‡РёР»РѕСЃСЊ?
+            // Время ожидания выполнения запроса закончилось?
             if (GetTimerPointer() -> IsOverflow())
             {
                 std::cout << "CNewTask::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 4"  << std::endl;
@@ -421,7 +421,7 @@ uint8_t CNewTask::Fsm(void)
         }
         else
         {
-            // Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РІС‹РїРѕР»РЅРµРЅРёСЏ Р·Р°РїСЂРѕСЃР° Р·Р°РєРѕРЅС‡РёР»РѕСЃСЊ?
+            // Время ожидания выполнения запроса закончилось?
             if (GetTimerPointer() -> IsOverflow())
             {
                 std::cout << "CNewTask::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 4"  << std::endl;

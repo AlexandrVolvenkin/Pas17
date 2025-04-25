@@ -1,4 +1,4 @@
-п»ї#ifndef CRESOURCES_H
+#ifndef CRESOURCES_H
 #define CRESOURCES_H
 //-------------------------------------------------------------------------------
 //  Source      : FileName.cpp
@@ -125,13 +125,13 @@ public:
     uint32_t m_uiUsedAnalogueInputDescriptionWork;
 
 
-    // РЎРѕР·РґР°РµРј std::map, РіРґРµ РєР»СЋС‡ - СЃС‚СЂРѕРєР°, Р·РЅР°С‡РµРЅРёРµ - СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РѕР±СЉРµРєС‚
+    // Создаем std::map, где ключ - строка, значение - указатель на объект
     std::map<std::string, std::shared_ptr<CTaskInterface>> m_mpxCommonTaskMap;
     std::string m_sTaskName;
     CTaskInterface** m_ppxCommonTaskPointers;
     uint8_t m_uiUsedCommonTaskPointersCounter;
 
-    // РѕР±СЉРµРєС‚ СЃ РєРѕРЅС„РёРіСѓСЂР°С†РёРµР№ РІРѕ РІРЅСѓС‚СЂРµРЅРЅРµРј С„РѕСЂРјР°С‚Рµ.
+    // объект с конфигурацией во внутреннем формате.
     CConfigurationCreate::TConfigDataPackOne m_xDeviceConfigSearch;
 
     uint8_t* m_puiCoils;

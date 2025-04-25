@@ -135,7 +135,7 @@ int8_t CTcpCommunicationDevice::Listen(void)
         return -1;
     }
 
-    // РЎРґРµР»Р°РµРј РЅРµ Р±Р»РѕРєРёСЂСѓСЋС‰РёРј.
+    // Сделаем не блокирующим.
     int flags = fcntl(m_iDeviceDescriptorServer, F_GETFL, 0);
     fcntl(m_iDeviceDescriptorServer, F_SETFL, flags | O_NONBLOCK);
 
@@ -165,7 +165,7 @@ int8_t CTcpCommunicationDevice::Accept(void)
     printf("The client connection from %s is accepted\n",
            inet_ntoa(addr.sin_addr));
 
-//        // РЎРґРµР»Р°РµРј РЅРµ Р±Р»РѕРєРёСЂСѓСЋС‰РёРј.
+//        // Сделаем не блокирующим.
 //        int flags = fcntl(m_iDeviceDescriptorClient, F_GETFL, 0);
 //        fcntl(m_iDeviceDescriptorClient, F_SETFL, flags | O_NONBLOCK);
 
@@ -177,7 +177,7 @@ int8_t CTcpCommunicationDevice::Accept(void)
 //int8_t CTcpCommunicationDevice::Accept(uint32_t uiBlockingTime)
 //{
 //    cout << "CTcpCommunicationDevice::Accept 1" << endl;
-//    // РЎРґРµР»Р°РµРј РЅРµ Р±Р»РѕРєРёСЂСѓСЋС‰РёРј.
+//    // Сделаем не блокирующим.
 //    int flags = fcntl(m_iDeviceDescriptorServer, F_GETFL, 0);
 //    fcntl(m_iDeviceDescriptorServer, F_SETFL, flags | O_NONBLOCK);
 //
@@ -218,7 +218,7 @@ int8_t CTcpCommunicationDevice::Accept(void)
 //        printf("The client connection from %s is accepted\n",
 //               inet_ntoa(addr.sin_addr));
 //
-//        // РЎРґРµР»Р°РµРј РЅРµ Р±Р»РѕРєРёСЂСѓСЋС‰РёРј.
+//        // Сделаем не блокирующим.
 //        int flags = fcntl(m_iDeviceDescriptorClient, F_GETFL, 0);
 //        fcntl(m_iDeviceDescriptorClient, F_SETFL, flags | O_NONBLOCK);
 //
@@ -266,7 +266,7 @@ int8_t CTcpCommunicationDevice::Connect(void)
         return -1;
     }
 
-    // РЎРґРµР»Р°РµРј РЅРµ Р±Р»РѕРєРёСЂСѓСЋС‰РёРј.
+    // Сделаем не блокирующим.
     int flags = fcntl(m_iDeviceDescriptorClient, F_GETFL, 0);
     fcntl(m_iDeviceDescriptorClient, F_SETFL, flags | O_NONBLOCK);
 
@@ -320,7 +320,7 @@ int16_t CTcpCommunicationDevice::ReceiveStart(uint8_t *puiDestination,
 {
     std::cout << "CTcpCommunicationDevice::ReceiveStart 1"  << std::endl;
 
-//    // РЎРґРµР»Р°РµРј РЅРµ Р±Р»РѕРєРёСЂСѓСЋС‰РёРј.
+//    // Сделаем не блокирующим.
 //    int flags = fcntl(m_iDeviceDescriptorServer, F_GETFL, 0);
 //    fcntl(m_iDeviceDescriptorServer, F_SETFL, flags | O_NONBLOCK);
 
@@ -370,7 +370,7 @@ int16_t CTcpCommunicationDevice::ReceiveStart(uint8_t *puiDestination,
         printf("The client connection from %s is accepted\n",
                inet_ntoa(addr.sin_addr));
 
-//        // РЎРґРµР»Р°РµРј РЅРµ Р±Р»РѕРєРёСЂСѓСЋС‰РёРј.
+//        // Сделаем не блокирующим.
 //        int flags = fcntl(m_iDeviceDescriptorClient, F_GETFL, 0);
 //        fcntl(m_iDeviceDescriptorClient, F_SETFL, flags | O_NONBLOCK);
 
@@ -500,7 +500,7 @@ int16_t CTcpCommunicationDevice::Write(uint8_t *puiSource, uint16_t uiLength)
 }
 
 //-------------------------------------------------------------------------------
-// РїСЂРѕРёР·РІРѕРґРёС‚ РѕР±РјРµРЅ РґР°РЅРЅС‹РјРё РїРѕ SPI.
+// производит обмен данными по SPI.
 int CTcpCommunicationDevice::Exchange(uint8_t uiAddress,
                                       unsigned char *pucTxBuff,
                                       unsigned char *pucRxBuff,

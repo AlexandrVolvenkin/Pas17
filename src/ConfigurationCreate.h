@@ -1,4 +1,4 @@
-п»ї#ifndef CCONFIGURATIONCREATE_H
+#ifndef CCONFIGURATIONCREATE_H
 #define CCONFIGURATIONCREATE_H
 //-------------------------------------------------------------------------------
 //  Sourse      : FileName.cpp
@@ -67,7 +67,7 @@ public:
 #pragma pack(1)
     struct TConfigDataPackOne
     {
-        // С„Р°РєС‚РёС‡РµСЃРєРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ РјРѕРґСѓР»РµР№.
+        // фактическое количество модулей.
         uint8_t uiModulesQuantity;
         TModuleContext axModulesContext[INTERNAL_MODULE_QUANTITY];
         uint8_t uiLastDiscreteInputModuleAddresPlusOne;
@@ -77,26 +77,26 @@ public:
         uint8_t uiAnalogueInputSignalsQuantity;
         uint8_t uiDisplayType;
         uint8_t ui16ErrorCode;
-        // СЃР»СѓР¶РµР±РЅС‹Рµ РїРµСЂРµРјРµРЅРЅС‹Рµ. РІС‹С‡РёСЃР»СЏСЋС‚СЃСЏ РїСЂРё СЃС‚Р°СЂС‚Рµ. С…СЂР°РЅСЏС‚СЃСЏ РЅР° РїСЂРѕС‚СЏР¶РµРЅРёРё РІСЃРµРіРѕ РІСЂРµРјРµРЅРё СЂР°Р±РѕС‚С‹.
-        // РёСЃРїРѕР»СЊР·СѓСЋС‚СЃСЏ РґР»СЏ РІС‹С‡РёСЃР»РµРЅРёСЏ Р°РґСЂРµСЃРѕРІ, СЃРјРµС‰РµРЅРёР№ Рё С‚.Рґ.
-        // С†РµР»РѕСЃС‚РЅРѕСЃС‚СЊ РґР°РЅРЅС‹С… РїСЂРѕРІРµСЂСЏРµС‚СЃСЏ РїРµСЂРµРґ РєР°Р¶РґС‹Рј СЂР°Р±РѕС‡РёРј С†РёРєР»РѕРј 100mc.
+        // служебные переменные. вычисляются при старте. хранятся на протяжении всего времени работы.
+        // используются для вычисления адресов, смещений и т.д.
+        // целостность данных проверяется перед каждым рабочим циклом 100mc.
         uint8_t uiInternalModulesQuantity;
         uint8_t uiExternalModulesQuantity;
 
         unsigned int uiHandledDiscreteInputQuantity;
         unsigned int uiHandledFunctionBlockQuantity;
 
-        uint8_t uiLastDiscreteInputModuleIndex; // РёРЅРґРµРєСЃС‹ РјРѕРґСѓР»РµР№ РїРѕСЃР»РµРґРЅРёС… РїРѕ РїРѕСЂСЏРґРєСѓ РІ СЃРІРѕРµР№ РіСЂСѓРїРїРµ.
+        uint8_t uiLastDiscreteInputModuleIndex; // индексы модулей последних по порядку в своей группе.
         uint8_t uiLastAnalogueInputModuleIndex;
         uint8_t uiLastDiscreteOutputModuleIndex;
         uint8_t uiLastAnalogueOutputModuleIndex;
 
-        uint8_t uiServiceDiscreteInputModuleQuantity; // РєРѕР»РёС‡РµСЃС‚РІРѕ РјРѕРґСѓР»РµР№.
+        uint8_t uiServiceDiscreteInputModuleQuantity; // количество модулей.
         uint8_t uiServiceAnalogueInputModuleQuantity;
         uint8_t uiServiceDiscreteOutputModuleQuantity;
         uint8_t uiServiceAnalogueOutputModuleQuantity;
 
-        uint8_t uiServiceDiscreteInputQuantity; // РєРѕР»РёС‡РµСЃС‚РІРѕ РІС…РѕРґРѕРІ-РІС‹С…РѕРґРѕРІ.
+        uint8_t uiServiceDiscreteInputQuantity; // количество входов-выходов.
         uint8_t uiServiceAnalogueInputQuantity;
         uint8_t uiServiceDiscreteOutputQuantity;
         uint8_t uiServiceAnalogueOutputQuantity;
@@ -107,7 +107,7 @@ public:
 #pragma pack(1)
     struct TConfigDataProgrammerPackOne
     {
-        // С„Р°РєС‚РёС‡РµСЃРєРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ РјРѕРґСѓР»РµР№.
+        // фактическое количество модулей.
         uint8_t uiModulesQuantity;
         uint8_t auiModulesContext[INTERNAL_MODULE_QUANTITY];
         uint8_t uiLastDiscreteInputModuleAddresPlusOne;
@@ -133,7 +133,7 @@ private:
     uint8_t m_uiInternalModuleId;
 
     uint8_t* m_puiIntermediateBuff;
-//    // РѕР±СЉРµРєС‚ СЃ РєРѕРЅС„РёРіСѓСЂР°С†РёРµР№ РІРѕ РІРЅСѓС‚СЂРµРЅРЅРµРј С„РѕСЂРјР°С‚Рµ.
+//    // объект с конфигурацией во внутреннем формате.
 //    TConfigDataPackOne m_xDeviceConfigSearch;
 
 };

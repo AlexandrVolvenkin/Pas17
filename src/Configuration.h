@@ -1,4 +1,4 @@
-п»ї//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 //  Source      : FileName.cpp
 //  Created     : 01.06.2022
 //  Author      : Alexandr Volvenkin
@@ -8,9 +8,9 @@
 #ifndef CONFIGURATION_H_INCLUDED
 #define CONFIGURATION_H_INCLUDED
 
-// РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ РЅР°С‚СѓСЂР°Р»СЊРЅРѕРіРѕ С‡РёСЃР»Р° РІ С†РµР»РѕРµ.
+// преобразование натурального числа в целое.
 #define CONVERT_NATURAL_NUMBER_TO_INTEGER 1
-// РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ С†РµР»РѕРіРѕ С‡РёСЃР»Р° РІ РЅР°С‚СѓСЂР°Р»СЊРЅРѕРµ.
+// преобразование целого числа в натуральное.
 #define CONVERT_INTEGER_TO_NATURAL_NUMBER 1
 #define END_OF_STRING 0
 #define END_OF_STRING_LENGTH 1
@@ -31,41 +31,41 @@
 
 
 //-----------------------------------------------------------------------------------------------------
-// РіР»Р°РІРЅС‹Рµ РєРѕРЅСЃС‚Р°РЅС‚С‹ РїСЂРѕРµРєС‚Р°. РѕРїСЂРµРґРµР»СЏСЋС‚ СЂР°Р·РјРµСЂС‹ РІСЃРµС… РјР°СЃСЃРёРІРѕРІ.
-#define MAX_HANDLED_DISCRETE_INPUT 384 // РѕРїСЂРµРґРµР»СЏРµС‚СЃСЏ РєР°СЂС‚РѕР№ РїР°РјСЏС‚Рё РїСЂРѕРіСЂР°РјРјР°С‚РѕСЂР°.
+// главные константы проекта. определяют размеры всех массивов.
+#define MAX_HANDLED_DISCRETE_INPUT 384 // определяется картой памяти программатора.
 #define MAX_HANDLED_DISCRETE_OUTPUT 64
 
-// РїСЂРёС‡РёРЅР° РѕРіСЂР°РЅРёС‡РµРЅРёСЏ РєРѕР»РёС‡РµСЃС‚РІР° РѕР±СЂР°Р±Р°С‚С‹РІР°РµРјС‹С… С„СѓРЅРєС†РёРѕРЅР°Р»СЊРЅС‹С… Р±Р»РѕРєРѕРІ:
-// РґР»РёРЅР° РјР°СЃСЃРёРІР° Р°РєС‚РёРІРЅРѕСЃС‚Рё СЃРёРіРЅР°Р»РёР·Р°С†РёРё РґРёСЃРєСЂРµС‚РЅС‹С… СЃРёРіРЅР°Р»РѕРІ РІ РєР°СЂС‚Рµ РїР°РјСЏС‚Рё РїСЂРѕРіСЂР°РјРјР°С‚РѕСЂР° -
-// (504 / 2 = 252), 252 = 192 РґРёСЃРєСЂРµС‚РЅС‹С… СЃРёРіРЅР°Р»Р° + 60 С„СѓРЅРєС†РёРѕРЅР°Р»СЊРЅС‹С… Р±Р»РѕРєР°.
-// 160-663(0xa0 - 0x297); РјР°СЃСЃРёРІ Р°РєС‚РёРІРЅРѕСЃС‚Рё СЃРёРіРЅР°Р»РёР·Р°С†РёРё РґРёСЃРєСЂРµС‚РЅС‹С… СЃРёРіРЅР°Р»РѕРІ
-// Р”СЃ1-Р”СЃ252, РїРѕ 2 Р±РёС‚Р° РЅР° СЃРёРіРЅР°Р» (504);
+// причина ограничения количества обрабатываемых функциональных блоков:
+// длина массива активности сигнализации дискретных сигналов в карте памяти программатора -
+// (504 / 2 = 252), 252 = 192 дискретных сигнала + 60 функциональных блока.
+// 160-663(0xa0 - 0x297); массив активности сигнализации дискретных сигналов
+// Дс1-Дс252, по 2 бита на сигнал (504);
 //#define ALARM_ACTIVITY_DISCRETE_SIGNAL_BIT_ARRAY_LENGTH ((MAX_HANDLED_DISCRETE_INPUT + MAX_HANDLED_FUNCTION_BLOCK) * ALARM_TYPE_QUANTITY_OF_SIGNIFICANT_BIT)
-// (РёСЃС‚РѕС‡РЅРёРє - РґРѕРєСѓРјРµРЅС‚ РџРђРЎ-05-8(16)CD_РР—_С‡2_Р”РЎ. СЃС‚СЂ. 48, PAS_05_NEW_PO.DOC СЃС‚СЂ. 16.)
+// (источник - документ ПАС-05-8(16)CD_ИЗ_ч2_ДС. стр. 48, PAS_05_NEW_PO.DOC стр. 16.)
 
-//(РёСЃС‚РѕС‡РЅРёРє - PAS_05_NEW_PO.DOC СЃС‚СЂ. 16.)
-//РЈРїСЂР°РІР»РµРЅРёРµ СЃРёРіРЅР°Р»РёР·Р°С†РёРµР№ РіСЂСѓРїРї РґРёСЃРєСЂРµС‚РЅС‹С… СЃРёРіРЅР°Р»РѕРІ РЅР° HMI РїР°РЅРµР»Рё:
-//	1) РџСЂРёРЅР°РґР»РµР¶РЅРѕСЃС‚СЊ РєР°Р¶РґРѕРіРѕ РґРёСЃРєСЂРµС‚РЅРѕРіРѕ СЃРёРіРЅР°Р»Р° Рє РєР°РєРѕР№-Р»РёР±Рѕ РіСЂСѓРїРїРµ СЃРёРіРЅР°Р»РёР·Р°С†РёРё
-//	Р·Р°РґР°РµС‚СЃСЏ СЂРµРєРІРёР·РёС‚РѕРј в„–РўР‘Р› РѕРїРёСЃР°С‚РµР»СЏ РґРёСЃРєСЂРµС‚РЅРѕРіРѕ СЃРёРіРЅР°Р»Р°
-//	2) РЎС‚Р°СЂС‚РѕРІР°СЏ Р‘Р” СЃРѕР·РґР°РµС‚СЃСЏ СЃ С„РѕСЂРјРёСЂРѕРІР°РЅРёРµРј РіСЂСѓРїРї СЃРёРіРЅР°Р»РёР·Р°С†РёРё РїРѕ С„РёР·РёС‡РµСЃРєРёРј РјРѕРґСѓР»СЏРј:
-//	- РґРѕ 16 РіСЂСѓРїРї РїРѕ 12 СЃРёРіРЅР°Р»РѕРІ РґР»СЏ РњР’Р”Р,РїРѕ 24 СЃРёРіРЅР°Р»Р° РґР»СЏ РњР’РђР, СЃРµС‚РµРІС‹С… РЅРµС‚
-//	- Р°РєС‚РёРІРЅР°СЏ СЃРёРіРЅР°Р»РёР·Р°С†РёСЏ - РІС‹Р±СЂР°РЅРЅС‹Рј РІ HMI СЃРїРѕСЃРѕР±РѕРј (С†РІРµС‚РѕРј, РїСЂРµСЂС‹РІРёСЃС‚С‹Рј СЃРІРµС‡РµРЅРёРµРј)
-//	- СЃРєРІРёС‚РёСЂРѕРІР°РЅРЅР°СЏ СЃРёРіРЅР°Р». - РІС‹Р±СЂР°РЅРЅС‹Рј РІ HMI СЃРїРѕСЃРѕР±РѕРј (С†РІРµС‚РѕРј, СЂРѕРІРЅС‹Рј СЃРІРµС‡РµРЅРёРј)
-//	3) РџСЂРѕРіСЂР°РјРјРёСЂРѕРІР°РЅРёРµ РіСЂСѓРїРї СЃРёРіРЅР°Р»РёР·Р°С†РёРё вЂ“ РїСЂРѕРіСЂР°РјРјР°С‚РѕСЂРѕРј PRG-05FBL.
-//4) РћР±СЂР°Р±Р°С‚С‹РІР°РµС‚СЃСЏ СЃРёРіРЅР°Р»РёР·Р°С†РёСЏ, Р·Р°РїСЂРѕРіСЂР°РјРјРёСЂРѕРІР°РЅРЅР°СЏ РґР»СЏ Р¤Р‘Р› 1-62,РЅРѕ
-//РњРђРҐ в„– Р”РёСЃРєСЂ. СЃРёРіРЅ. = BInp + в„–Р¤Р‘Р› РњРђРҐ РЅРµ РґРѕР»Р¶РµРЅ РїСЂРµРІС‹С€Р°С‚СЊ 252.
-//в„– Р”РёСЃРєСЂ. СЃРёРіРЅ. РІС‹С…. Р¤Р‘Р› РґР»СЏ СЃРёРіРЅР°Р»РёР·Р°С†РёРё С„РѕСЂРјРёСЂСѓСЋС‚СЃСЏ РєР°Рє BInp + в„–Р¤Р‘Р›.
-//в„– Р”РёСЃРєСЂ.СЃРёРіРЅ. 253 РёСЃРїРѕР»СЊР·РѕРІР°РЅ РґР»СЏ СЃРёРіРЅР°Р»РёР·Р°С†РёРё РѕС‚ BECK
-//5) РћР±С‰Р°СЏ СЃРёРіРЅР°Р»РёР·Р°С†РёСЏ: РїСЂРµРґСѓРїСЂРµРґРёС‚РµР»СЊРЅР°СЏ / Р°РІР°СЂРёР№РЅР°СЏ РјРёРіР°СЋС‰РёРј С‚СЂР°РЅСЃРїР°СЂР°РЅС‚РѕРј Р¶РµР»С‚РѕРіРѕ / РєСЂР°СЃРЅРѕРіРѕ С†РІРµС‚Р° РїРѕ С„РёРєСЃРёСЂРѕРІР°РЅРЅРѕРјСѓ Р°РґСЂРµСЃСѓ ModBus РїСЂРѕС‚РѕРєРѕР»Р° (123,124) СЃРѕ СЃР±СЂРѕСЃРѕРј РїРѕ РљР’ Рё РЎР‘.
+//(источник - PAS_05_NEW_PO.DOC стр. 16.)
+//Управление сигнализацией групп дискретных сигналов на HMI панели:
+//	1) Принадлежность каждого дискретного сигнала к какой-либо группе сигнализации
+//	задается реквизитом №ТБЛ описателя дискретного сигнала
+//	2) Стартовая БД создается с формированием групп сигнализации по физическим модулям:
+//	- до 16 групп по 12 сигналов для МВДИ,по 24 сигнала для МВАИ, сетевых нет
+//	- активная сигнализация - выбранным в HMI способом (цветом, прерывистым свечением)
+//	- сквитированная сигнал. - выбранным в HMI способом (цветом, ровным свеченим)
+//	3) Программирование групп сигнализации – программатором PRG-05FBL.
+//4) Обрабатывается сигнализация, запрограммированная для ФБЛ 1-62,но
+//МАХ № Дискр. сигн. = BInp + №ФБЛ МАХ не должен превышать 252.
+//№ Дискр. сигн. вых. ФБЛ для сигнализации формируются как BInp + №ФБЛ.
+//№ Дискр.сигн. 253 использован для сигнализации от BECK
+//5) Общая сигнализация: предупредительная / аварийная мигающим транспарантом желтого / красного цвета по фиксированному адресу ModBus протокола (123,124) со сбросом по КВ и СБ.
 
-// Р°РґСЂРµСЃР° СЃРёРіРЅР°Р»РёР·Р°С†РёРё С„СѓРЅРєС†РёРѕРЅР°Р»СЊРЅС‹С… Р±Р»РѕРєРѕРІ РЅР°С‡РёРЅР°СЋС‚СЃСЏ РїРѕСЃР»Рµ
-// РїРѕСЃР»РµРґРЅРµРіРѕ Р°РґСЂРµСЃР° СЃРёРіРЅР°Р»РёР·Р°С†РёРё РґРёСЃРєСЂРµС‚РЅС‹С… СЃРёРіРЅР°Р»РѕРІ.
-#define MAX_HANDLED_FUNCTION_BLOCK 120 // РѕРїСЂРµРґРµР»СЏРµС‚СЃСЏ РєР°СЂС‚РѕР№ РїР°РјСЏС‚Рё РїСЂРѕРіСЂР°РјРјР°С‚РѕСЂР°.
+// адреса сигнализации функциональных блоков начинаются после
+// последнего адреса сигнализации дискретных сигналов.
+#define MAX_HANDLED_FUNCTION_BLOCK 120 // определяется картой памяти программатора.
 
-#define ALARM_GROUP_QUANTITY 16 // РѕРїСЂРµРґРµР»СЏРµС‚СЃСЏ РєР°СЂС‚РѕР№ РїР°РјСЏС‚Рё РїСЂРѕРіСЂР°РјРјР°С‚РѕСЂР°.
+#define ALARM_GROUP_QUANTITY 16 // определяется картой памяти программатора.
 #define MAX_HANDLED_ANALOGUE_INPUT 6
 #define MAX_HANDLED_ANALOGUE_OUTPUT 2
-// HMI РїР°РЅРµР»СЊ.
+// HMI панель.
 #define DISPLAY_MODULE_TYPE 2
 //#define DISPLAY_MODULE_TYPE_12_CELLS_LCD_4x20 0x00
 //#define DISPLAY_MODULE_TYPE_24_CELLS_LCD_4x20 0x01
@@ -76,11 +76,11 @@
 #define DISPLAY_MODULE_QUANTITY 1
 #define DISPLAY_MODULE_CODE 1
 #define INTERNAL_MODULE_QUANTITY 8
-#define EXTERNAL_MODULE_FUNCTION_1234_QUANTITY 32  // РѕРїСЂРµРґРµР»СЏРµС‚СЃСЏ РєР°СЂС‚РѕР№ РїР°РјСЏС‚Рё РїСЂРѕРіСЂР°РјРјР°С‚РѕСЂР°.
+#define EXTERNAL_MODULE_FUNCTION_1234_QUANTITY 32  // определяется картой памяти программатора.
 #define EXTERNAL_MODULE_FUNCTION_15_QUANTITY 3
-// РґРѕ 32 РјРѕРґСѓР»РµР№ modbus function 1,2,3,4  Рё РґРѕ 3 РјРѕРґСѓР»РµР№ modbus function 15.
+// до 32 модулей modbus function 1,2,3,4  и до 3 модулей modbus function 15.
 #define EXTERNAL_MODULE_QUANTITY (EXTERNAL_MODULE_FUNCTION_1234_QUANTITY + EXTERNAL_MODULE_FUNCTION_15_QUANTITY)
-// С‚РёРїС‹ РІРЅРµС€РЅРёС… РјРѕРґСѓР»РµР№ РІ РѕРїРёСЃР°С‚РµР»СЏС… С„СѓРЅРєС†РёРѕРЅР°Р»СЊРЅС‹С… Р±Р»РѕРєРѕРІ В«РњР’РњВ».
+// типы внешних модулей в описателях функциональных блоков «МВМ».
 #define EXTERNAL_MODULE_TYPE_PAS_01 0
 #define EXTERNAL_MODULE_TYPE_MPGR 1
 #define EXTERNAL_MODULE_TYPE_PIT_TS 2
@@ -98,21 +98,21 @@
 #define EXTERNAL_MODULE_TYPE_RESERVED_1 14
 #define EXTERNAL_MODULE_TYPE_OTHER 7
 
-// С‚РёРїС‹ РјРѕРґСѓР»РµР№ РѕС‚ 0 РґРѕ 15 Р·Р°РЅСЏС‚С‹ РІРЅСѓС‚СЂРµРЅРЅРёРјРё РјРѕРґСѓР»СЏРјРё.
-// РІРЅРµС€РЅРёРµ РјРѕРґСѓР»Рё С‚РѕР¶Рµ РёРјРµСЋС‚ С‚РёРїС‹ РѕС‚ 0 РґРѕ 15.
-// С‡С‚РѕР±С‹ РІРЅСѓС‚СЂРµРЅРЅРёРµ Рё РІРЅРµС€РЅРёРµ РјРѕРґСѓР»Рё РЅРµ РїРµСЂРµСЃРµРєР°Р»РёСЃСЊ,
-// Рє С‚РёРїСѓ РІРЅРµС€РЅРёС… РјРѕРґСѓР»РµР№ Р±СѓРґРµРј РїСЂРёР±Р°РІР»СЏС‚СЊ СЃРјРµС‰РµРЅРёРµ
-// РЅР° РєРѕР»РёС‡РµСЃС‚РІРѕ С‚РёРїРѕРІ РІРЅСѓС‚СЂРµРЅРЅРёС… РјРѕРґСѓР»РµР№.
+// типы модулей от 0 до 15 заняты внутренними модулями.
+// внешние модули тоже имеют типы от 0 до 15.
+// чтобы внутренние и внешние модули не пересекались,
+// к типу внешних модулей будем прибавлять смещение
+// на количество типов внутренних модулей.
 #define INTERNAL_MODULE_TYPE_QUANTITY 0x10
-// СЃРјРµС‰РµРЅРёРµ РЅР° С‚РёРїС‹ РІРЅРµС€РЅРёС… РјРѕРґСѓР»РµР№ РїСЂРѕРёР·РІРѕРґСЃС‚РІР° Р—РђРћ РќРџРџ "Р¦РµРЅС‚СЂР°РІС‚РѕРјР°С‚РёРєР°".
+// смещение на типы внешних модулей производства ЗАО НПП "Центравтоматика".
 #define EXTERNAL_MODULE_TYPE_OFFSET INTERNAL_MODULE_TYPE_QUANTITY
-// РєРѕР»РёС‡РµСЃС‚РІРѕ С‚РёРїРѕРІ РІРЅРµС€РЅРёС… РјРѕРґСѓР»РµР№ РїСЂРѕРёР·РІРѕРґСЃС‚РІР° Р—РђРћ РќРџРџ "Р¦РµРЅС‚СЂР°РІС‚РѕРјР°С‚РёРєР°".
+// количество типов внешних модулей производства ЗАО НПП "Центравтоматика".
 #define EXTERNAL_MODULE_OWN_PRODUCTION_QUANTITY 0x10
-// СЃРјРµС‰РµРЅРёРµ РЅР° С‚РёРїС‹ РІРЅРµС€РЅРёС… РјРѕРґСѓР»РµР№ СЃС‚РѕСЂРѕРЅРЅРёС… РїСЂРѕРёР·РІРѕРґРёС‚РµР»РµР№.
+// смещение на типы внешних модулей сторонних производителей.
 #define EXTERNAL_MODULE_OTHER_TYPE_OFFSET (EXTERNAL_MODULE_TYPE_OFFSET + EXTERNAL_MODULE_OWN_PRODUCTION_QUANTITY)
-// РѕС‚ 0 РґРѕ 14 РёРґСѓС‚ С‚РёРїС‹ РјРѕРґСѓР»РµР№ РїСЂРѕРёР·РІРѕРґСЃС‚РІР° Р—РђРћ РќРџРџ "Р¦РµРЅС‚СЂР°РІС‚РѕРјР°С‚РёРєР°".
-// РѕРЅРё РѕР±СЂР°Р±Р°С‚С‹РІР°СЋС‚СЃСЏ РґСЂР°Р№РІРµСЂР°РјРё РѕРїСЂРµРґРµР»С‘РЅРЅС‹РјРё РґР»СЏ СЌС‚РёС… С‚РёРїРѕРІ.
-// С‚РёРїС‹ РІРЅРµС€РЅРёС… РјРѕРґСѓР»РµР№ РІ СЃРёСЃС‚РµРјРµ.
+// от 0 до 14 идут типы модулей производства ЗАО НПП "Центравтоматика".
+// они обрабатываются драйверами определёнными для этих типов.
+// типы внешних модулей в системе.
 #define OWN_MODULE_TYPE_PAS_01 (0 + EXTERNAL_MODULE_TYPE_OFFSET)
 #define OWN_MODULE_TYPE_MPGR (1 + EXTERNAL_MODULE_TYPE_OFFSET)
 #define OWN_MODULE_TYPE_PIT_TS (2 + EXTERNAL_MODULE_TYPE_OFFSET)
@@ -130,23 +130,23 @@
 #define OWN_MODULE_TYPE_RESERVED_8 (14 + EXTERNAL_MODULE_TYPE_OFFSET)
 #define OWN_MODULE_TYPE_OTHER (15 + EXTERNAL_MODULE_TYPE_OFFSET)
 
-// С‚РёРїС‹ РјРѕРґСѓР»РµР№ РїСЂРѕРёР·РІРѕРґСЃС‚РІР° Р—РђРћ РќРџРџ "Р¦РµРЅС‚СЂР°РІС‚РѕРјР°С‚РёРєР°".
-// РѕРЅРё РѕР±СЂР°Р±Р°С‚С‹РІР°СЋС‚СЃСЏ РґСЂР°Р№РІРµСЂР°РјРё РѕРїСЂРµРґРµР»С‘РЅРЅС‹РјРё РґР»СЏ С„СѓРЅРєС†РёР№ Modbus 1,2,3,4,15.
+// типы модулей производства ЗАО НПП "Центравтоматика".
+// они обрабатываются драйверами определёнными для функций Modbus 1,2,3,4,15.
 #define OWN_MODULE_TYPE_FUNCTION_1 (0 + EXTERNAL_MODULE_OTHER_TYPE_OFFSET)
 #define OWN_MODULE_TYPE_FUNCTION_2 (1 + EXTERNAL_MODULE_OTHER_TYPE_OFFSET)
 #define OWN_MODULE_TYPE_FUNCTION_3 (2 + EXTERNAL_MODULE_OTHER_TYPE_OFFSET)
 #define OWN_MODULE_TYPE_FUNCTION_4 (3 + EXTERNAL_MODULE_OTHER_TYPE_OFFSET)
 #define OWN_MODULE_TYPE_FUNCTION_15 (4 + EXTERNAL_MODULE_OTHER_TYPE_OFFSET)
 
-// РґСЂСѓРіРёРµ С‚РёРїС‹ РјРѕРґСѓР»РµР№(СЃС‚РѕСЂРѕРЅРЅРёС… РїСЂРѕРёР·РІРѕРґРёС‚РµР»РµР№).
-// РѕРЅРё РѕР±СЂР°Р±Р°С‚С‹РІР°СЋС‚СЃСЏ РґСЂР°Р№РІРµСЂР°РјРё РѕРїСЂРµРґРµР»С‘РЅРЅС‹РјРё РґР»СЏ С„СѓРЅРєС†РёР№ Modbus 1,2,3,4,15.
+// другие типы модулей(сторонних производителей).
+// они обрабатываются драйверами определёнными для функций Modbus 1,2,3,4,15.
 #define OTHER_MODULE_TYPE_FUNCTION_1 (5 + EXTERNAL_MODULE_OTHER_TYPE_OFFSET)
 #define OTHER_MODULE_TYPE_FUNCTION_2 (6 + EXTERNAL_MODULE_OTHER_TYPE_OFFSET)
 #define OTHER_MODULE_TYPE_FUNCTION_3 (7 + EXTERNAL_MODULE_OTHER_TYPE_OFFSET)
 #define OTHER_MODULE_TYPE_FUNCTION_4 (8 + EXTERNAL_MODULE_OTHER_TYPE_OFFSET)
 #define OTHER_MODULE_TYPE_FUNCTION_15 (9 + EXTERNAL_MODULE_OTHER_TYPE_OFFSET)
 
-// РєРѕРґС‹ РѕС€РёР±РѕРє РІРЅРµС€РЅРёС… РјРѕРґСѓР»РµР№ Р»РѕРєР°Р»СЊРЅРѕР№ СЃРµС‚Рё.
+// коды ошибок внешних модулей локальной сети.
 #define EXTERNAL_MODULE_ERROR_TIMEOUT 0x01
 #define EXTERNAL_MODULE_ERROR_FE_DOR 0x02
 #define EXTERNAL_MODULE_ERROR_CRC 0x03
@@ -154,7 +154,7 @@
 #define EXTERNAL_MODULE_ERROR_ILLEGAL_DATA_ADDRESS 0x12
 #define EXTERNAL_MODULE_ERROR_ILLEGAL_DATA_VALUE 0x13
 #define EXTERNAL_MODULE_ERROR_SLAVE_OR_SERVER_FAILURE 0x14
-// РєРѕРґС‹ РѕС€РёР±РѕРє РІРЅСѓС‚СЂРµРЅРЅРёС… РјРѕРґСѓР»РµР№.
+// коды ошибок внутренних модулей.
 #define INTERNAL_MODULE_ERROR_DATA_BASE 0x15
 #define INTERNAL_MODULE_ERROR_REPER_POINTS 0x16
 
@@ -167,41 +167,41 @@
 #define PLC_DATA_BASE_BLOCK_LENGTH 256
 #define DATA_BASE_BLOCK_NUMBER_DATA_LENGTH 1
 #define PLC_DATA_BASE_ERROR_LENGTH 4
-// РЎalc_cds:	РјР°СЃСЃРёРІ РІС‹С…РѕРґРЅС‹С… СЂР°СЃС‡РµС‚РЅС‹С… РїРµСЂРµРјРµРЅРЅС‹С… CoDesys 48*4 = 192 Р±Р°Р№С‚Р°
+// Сalc_cds:	массив выходных расчетных переменных CoDesys 48*4 = 192 байта
 #define CALC_CDS_QUANTITY 48
-// Sys_cds:	РјР°СЃСЃРёРІ РІС‹С…РѕРґРЅС‹С… СЃРёСЃС‚РµРјРЅС‹С… РїРµСЂРµРјРµРЅРЅС‹С… CoDesys 10*4 = 40 Р±Р°Р№С‚
+// Sys_cds:	массив выходных системных переменных CoDesys 10*4 = 40 байт
 #define SYS_CDS_QUANTITY 10
-// Hand_ust:	РјР°СЃСЃРёРІ СѓСЃС‚Р°РІРѕРє, РІРІРѕРґРёРјС‹С… РІСЂСѓС‡РЅСѓСЋ 64*4 = 256 Р±Р°Р№С‚РѕРІ
+// Hand_ust:	массив уставок, вводимых вручную 64*4 = 256 байтов
 #define HAND_UST_QUANTITY 64
-// Av_res		СЂРµР·РµСЂРІ 64 Р°РЅР°Р»РѕРіРѕРІС‹С… СЃРёРіРЅР°Р»Р° 64*4 = 256 Р±Р°Р№С‚РѕРІ
+// Av_res		резерв 64 аналоговых сигнала 64*4 = 256 байтов
 #define AV_RES_QUANTITY 64
 #define STAT_AI_BIT_QUANTITY 8
 #define CURRENT_TIME_BYTE_QUANTITY 7
 #define MODIFICATION_CODE_BYTE_QUANTITY 24
 
-// РєРѕР»РёС‡РµСЃС‚РІРѕ РґРёСЃРєСЂРµС‚РЅС‹С… РІС…РѕРґРѕРІ РІ РѕРґРЅРѕРј РјРѕРґСѓР»Рµ.
+// количество дискретных входов в одном модуле.
 #define DISCRETE_MODULE_INPUT_QUANTITY 12
-#define ANALOGUE_INPUT_DI_VALUE_QUANTITY 4 // РєРѕР»РёС‡РµСЃС‚РІРѕ РґРёСЃРєСЂРµС‚РЅС‹С… СЃРёРіРЅР°Р»РѕРІ РїРѕСЂРѕР¶РґР°РµРјРѕРµ РѕРґРЅРёРј Р°РЅР°Р»РѕРіРѕРІС‹Рј РІС…РѕРґРѕРј.
-#define DISCRETE_OUTPUT_MODULE_RELAY_OUTPUT_QUANTITY 64 // РєРѕР»РёС‡РµСЃС‚РІРѕ РґРёСЃРєСЂРµС‚РЅС‹С… РІС‹С…РѕРґРѕРІ СѓРїСЂР°РІР»РµРЅРёСЏ СЂРµР»Рµ.
-// РєРѕР»РёС‡РµСЃС‚РІРѕ Р°РЅР°Р»РѕРіРѕРІС‹С… РІС…РѕРґРѕРІ РІ РѕРґРЅРѕРј РјРѕРґСѓР»Рµ.
+#define ANALOGUE_INPUT_DI_VALUE_QUANTITY 4 // количество дискретных сигналов порождаемое одним аналоговым входом.
+#define DISCRETE_OUTPUT_MODULE_RELAY_OUTPUT_QUANTITY 64 // количество дискретных выходов управления реле.
+// количество аналоговых входов в одном модуле.
 #define ANALOG_MODULE_INPUT_QUANTITY 4
-// РґР»РёРЅР° СЃС‚СЂРѕРєРё С‚РµРєСЃС‚РѕРІРѕРіРѕ СЂРµРєРІРёР·РёС‚Р° Р°РЅР°Р»РѕРіРѕРІРѕРіРѕ РёР·РјРµСЂРµРЅРёСЏ.
+// длина строки текстового реквизита аналогового измерения.
 #define ANALOGUE_INPUT_NAME_LENGTH 8
-// РґР»РёРЅР° СЃС‚СЂРѕРєРё С‚РµРєСЃС‚РѕРІРѕРіРѕ СЂРµРєРІРёР·РёС‚Р° СЂР°Р·РјРµСЂРЅРѕСЃС‚Рё РёР·РјРµСЂСЏРµРјРѕРіРѕ РїР°СЂР°РјРµС‚СЂР° РљР Р—Рњ.
+// длина строки текстового реквизита размерности измеряемого параметра КРЗМ.
 #define DIMENSIONS_PARAMETERS_NAME_LENGTH 6
-// РґР»РёРЅР° СЃС‚СЂРѕРєРё С‚РµРєСЃС‚РѕРІРѕРіРѕ СЂРµРєРІРёР·РёС‚Р° РґРёСЃРєСЂРµС‚РЅРѕРіРѕ СЃРёРіРЅР°Р»Р°.
+// длина строки текстового реквизита дискретного сигнала.
 #define DISCRETE_SYGNAL_NAME_LENGTH 14
-// РєРѕР»РёС‡РµСЃС‚РІРѕ Р°РЅР°Р»РѕРіРѕРІС‹С… РІС‹С…РѕРґРѕРІ РІ РѕРґРЅРѕРј РјРѕРґСѓР»Рµ.
+// количество аналоговых выходов в одном модуле.
 #define ANALOG_OUTPUT_MODULE_REGULATORS_QUANTITY 2
-#define ONLINE_DATA_READ_ONE_INPUT_BYTE_QUANTITY 8 // 7 Р±Р°Р№С‚ ASCII СЃРёРјРІРѕР»С‹ РєРѕРЅРІРµСЂС‚РёСЂРѕРІР°РЅРЅС‹Рµ РёР· float AiValue, 1 Р±Р°Р№С‚ StatAi
-#define ONLINE_DATA_READ_ONE_INPUT_ASCII_BYTE_QUANTITY 7 // 7 Р±Р°Р№С‚ ASCII СЃРёРјРІРѕР»С‹ РєРѕРЅРІРµСЂС‚РёСЂРѕРІР°РЅРЅС‹Рµ РёР· float AiValue
-#define ONLINE_DATA_READ_ONE_INPUT_STAT_AI_BYTE_QUANTITY 1 // 1 Р±Р°Р№С‚ StatAi - СЃРѕСЃС‚РѕСЏРЅРёРµ Р°РЅР°Р»РѕРіРѕРІС‹С… РёР·РјРµСЂРёС‚РµР»СЊРЅС‹С… РєР°РЅР°Р»РѕРІ
-#define CALIBRATION_ANALOG_MODULE_NUMBER_MASK 0x00F0 // РјР°СЃРєР°. Р°РґСЂРµСЃ Modbus function 5 - 0x00X0, X - РЅРѕРјРµСЂ РјРѕРґСѓР»СЏ.
-#define CALIBRATION_INPUT_NUMBER_MASK 0x000F // РјР°СЃРєР°. Р°РґСЂРµСЃ Modbus function 5 - 0x000Y, Y - РЅРѕРјРµСЂ РєР°Р»РёР±СЂСѓРµРјРѕРіРѕ РІС…РѕРґР°.
-// С„СѓРЅРєС†РёСЏ Modbus 71 - _FC_ONLINE_DATA_READ modbus_reply() modbus.cpp.
-// РµСЃР»Рё РІ СЃС‚Р°СЂС€РµРј СЂРµРіРёСЃС‚СЂРµ Р°РґСЂРµСЃР° Modbus Р±РёС‚7 = 0, С‚Рѕ Р·Р°РїСЂР°С€РёРІР°СЋС‚СЃСЏ СЂРµРїРµСЂРЅС‹Рµ С‚РѕС‡РєРё - (Р±РёС‚0 - Р±РёС‚6) - Р°РґСЂРµСЃ Р°РЅР°Р»РѕРіРѕРІРѕРіРѕ РІС…РѕРґР°.
+#define ONLINE_DATA_READ_ONE_INPUT_BYTE_QUANTITY 8 // 7 байт ASCII символы конвертированные из float AiValue, 1 байт StatAi
+#define ONLINE_DATA_READ_ONE_INPUT_ASCII_BYTE_QUANTITY 7 // 7 байт ASCII символы конвертированные из float AiValue
+#define ONLINE_DATA_READ_ONE_INPUT_STAT_AI_BYTE_QUANTITY 1 // 1 байт StatAi - состояние аналоговых измерительных каналов
+#define CALIBRATION_ANALOG_MODULE_NUMBER_MASK 0x00F0 // маска. адрес Modbus function 5 - 0x00X0, X - номер модуля.
+#define CALIBRATION_INPUT_NUMBER_MASK 0x000F // маска. адрес Modbus function 5 - 0x000Y, Y - номер калибруемого входа.
+// функция Modbus 71 - _FC_ONLINE_DATA_READ modbus_reply() modbus.cpp.
+// если в старшем регистре адреса Modbus бит7 = 0, то запрашиваются реперные точки - (бит0 - бит6) - адрес аналогового входа.
 #define ANALOGUE_INPUT_ADDRESS_MASK 0x7F
-// РµСЃР»Рё РІ СЃС‚Р°СЂС€РµРј СЂРµРіРёСЃС‚СЂРµ Р°РґСЂРµСЃР° Modbus Р±РёС‚7 = 1, С‚Рѕ Р·Р°РїСЂР°С€РёРІР°РµС‚СЃСЏ РўРҐРЎ Рё (Р±РёС‚0 - Р±РёС‚2) - РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅС‹Р№ Р°РґСЂРµСЃ РјРѕРґСѓР»СЏ РњР’РЎРў3.
+// если в старшем регистре адреса Modbus бит7 = 1, то запрашивается ТХС и (бит0 - бит2) - относительный адрес модуля МВСТ3.
 #define ANALOGUE_MODULE_ADDRESS_MASK 0x07
 
 #define DEFAULT_SERVER_ID 1
@@ -214,7 +214,7 @@
 #define MODBUS_TCP_ENABLE
 #define MODBUS_HMI_ENABLE
 
-// РёРґРµРЅС‚РёС„РёС†РёСЂСѓСЋС‚ РёРЅС‚РµСЂС„РµР№СЃ - РёСЃС‚РѕС‡РЅРёРє РІС…РѕРґСЏС‰РµРіРѕ СЃРѕРѕР±С‰РµРЅРёСЏ Modbus.
+// идентифицируют интерфейс - источник входящего сообщения Modbus.
 #define MODBUS_MESSAGE_SOURCE_TCP 1
 #define MODBUS_MESSAGE_SOURCE_RTU_HIGH_LEVEL 2
 #define MODBUS_MESSAGE_SOURCE_RTU_HMI 3
@@ -222,49 +222,49 @@
 #define MODBUS_MESSAGE_SOURCE_TCP_MASTER 5
 
 //-----------------------------------------------------------------------------------------------------
-#define MAIN_CYCLE_TIME 100000000 // РІСЂРµРјСЏ РіР»Р°РІРЅРѕРіРѕ С†РёРєР»Р° - 100mc.
-//#define MAIN_CYCLE_TIME 100000 // РІСЂРµРјСЏ РіР»Р°РІРЅРѕРіРѕ С†РёРєР»Р° - 100mc.
-#define EXTERNAL_CYCLE_STOP_SLEEP_TIME 1000 // РґР»РёС‚РµР»СЊРЅРѕСЃС‚СЊ "СЃРЅР°", РІРѕ РІСЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ С„Р»Р°РіР° СЃРёРЅС…СЂРѕРЅРёР·Р°С†РёРё СЃ РіР»Р°РІРЅС‹Рј С†РёРєР»РѕРј.
+#define MAIN_CYCLE_TIME 100000000 // время главного цикла - 100mc.
+//#define MAIN_CYCLE_TIME 100000 // время главного цикла - 100mc.
+#define EXTERNAL_CYCLE_STOP_SLEEP_TIME 1000 // длительность "сна", во время ожидания флага синхронизации с главным циклом.
 
 //#define MAIN_DATA_ACCESS_SEMAPHORE_NAME "/MainDataAccessSemaphore"
 //#define MAIN_DATA_ACCESS_MUTEX_NAME "/MainDataAccessMutex"
 
-#define ONE_SECOND_TIME 10 // РєРѕР»РёС‡РµСЃС‚РІРѕ РїРµСЂРёРѕРґРѕРІ РіР»Р°РІРЅРѕРіРѕ С†РёРєР»Р° - MAIN_CYCLE_TIME.
+#define ONE_SECOND_TIME 10 // количество периодов главного цикла - MAIN_CYCLE_TIME.
 #define TWO_SECOND_TIME 20
 #define THREE_SECOND_TIME 30
 #define TEN_SECOND_TIME 100
 
-//#define MODULE_REQUEST_QUANTITY 5 // РєРѕР»РёС‡РµСЃС‚РІРѕ РїРѕРїС‹С‚РѕРє СЃРІСЏР·Р°С‚СЊСЃСЏ СЃ РјРѕРґСѓР»РµРј.
+//#define MODULE_REQUEST_QUANTITY 5 // количество попыток связаться с модулем.
 //#define MBM_1234_MODULE_BAD_BIT_ARRAY_LENGTH 1
 //#define BITS_IN_BYTE_QUANTITY 8
-//// РЅР°С‡Р°Р»СЊРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ СЃС‡С‘С‚С‡РёРєР° Р·Р°РїСЂРѕСЃРѕРІ РјРѕРґСѓР»СЏ Р±РµР· РѕС‚РІРµС‚Р°.
-//// РµСЃР»Рё СЂР°РІРЅРѕ РЅСѓР»СЋ - РјРѕРґСѓР»СЊ СЃС‡РёС‚Р°РµС‚СЃСЏ РЅРµРёСЃРїСЂР°РІРЅС‹Рј. РµРіРѕ РґР°РЅРЅС‹Рµ РїСЂРёР·РЅР°СЋС‚СЃСЏ РЅРµРґРѕСЃС‚РѕРІРµСЂРЅС‹РјРё.
-//// СѓСЃС‚Р°РЅР°РІР»РёРІР°РµС‚СЃСЏ С„Р»Р°Рі СЃРёРіРЅР°Р»РёР·Р°С†РёРё РІ СЂР°Р±РѕС‡РµРј РјР°СЃСЃРёРІРµ aucCoilsArray[BAD_MODULES_BIT_ARRAY_OFFSET + РёРЅРґРµРєСЃ РјРѕРґСѓР»СЏ].
+//// начальное значение счётчика запросов модуля без ответа.
+//// если равно нулю - модуль считается неисправным. его данные признаются недостоверными.
+//// устанавливается флаг сигнализации в рабочем массиве aucCoilsArray[BAD_MODULES_BIT_ARRAY_OFFSET + индекс модуля].
 //#define BAD_MODULE_CYCLE_COUNT_DEFAULT 10
-//// РЅР°С‡Р°Р»СЊРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ СЃС‡С‘С‚С‡РёРєР° Р·Р°РїСЂРѕСЃРѕРІ РјРѕРґСѓР»СЏ Р±РµР· РѕС‚РІРµС‚Р° РІ С‚РµС‡РµРЅРёРё 60 СЃРµРєСѓРЅРґ.
+//// начальное значение счётчика запросов модуля без ответа в течении 60 секунд.
 //#define BAD_MODULE_60_SECOND_CYCLE_COUNT_DEFAULT 600
 //#define BAD_MODULE_RESPONDED_OK 0
-//// РєРѕРґ РѕС€РёР±РєРё РєРѕРіРґР° РјРѕРґСѓР»СЊ РЅРµ РѕС‚РІРµС‡Р°РµС‚.
-//// РјРѕРґСѓР»СЊ РЅРµ РѕС‚РІРµС‡Р°РµС‚.
+//// код ошибки когда модуль не отвечает.
+//// модуль не отвечает.
 //#define BAD_MODULE_NOT_RESPONDED 1
-//// РјРѕРґСѓР»СЊ РЅРµ РѕС‚РІРµС‡Р°РµС‚ РїСЂРё СЃС‚Р°СЂС‚Рµ.
+//// модуль не отвечает при старте.
 //#define BAD_MODULE_NOT_RESPONDED_ON_START 2
-// СЃРёРіРЅР°С‚СѓСЂР° РѕС€РёР±РєРё. СѓСЃС‚Р°РЅР°РІР»РёРІР°РµС‚СЃСЏ РµСЃР»Рё РёР·РјРµСЂРµРЅРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ РЅРµРґРѕСЃС‚РѕРІРµСЂРЅРѕ.
+// сигнатура ошибки. устанавливается если измеренное значение недостоверно.
 //#define ANALOGUE_INPUT_ERROR 0xFF00
 
-// РѕС€РёР±РєРё РїСЂРѕРІРµСЂРєРё РєРѕРЅС„РёРіСѓСЂР°С†РёРё РїСЂРё СЃС‚Р°СЂС‚Рµ.
-//    1. РѕС€РёР±РєР° РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё - РєРѕРґ 01.
+// ошибки проверки конфигурации при старте.
+//    1. ошибка последовательности - код 01.
 #define CONFIGURATION_ERROR_SEQUENCE_ERROR 0x01
-//    2. РµСЃС‚СЊ РїСѓСЃС‚С‹Рµ СЃР»РѕС‚С‹ - "РґС‹СЂРєРё" - РєРѕРґ 02.
+//    2. есть пустые слоты - "дырки" - код 02.
 #define CONFIGURATION_ERROR_EMPTY_SLOT 0x02
-//    4. РЅРѕРІР°СЏ РєРѕРЅС„РёРіСѓСЂР°С†РёСЏ Рё Р±Р°Р·Р° РґР°РЅРЅС‹С… - РєРѕРґ 03.
+//    4. новая конфигурация и база данных - код 03.
 #define CONFIGURATION_ERROR_NEW_CONFIGURATION_AND_DATA_BASE 0x03
-//    4. РЅРѕРІР°СЏ РєРѕРЅС„РёРіСѓСЂР°С†РёСЏ - РєРѕРґ 04.
+//    4. новая конфигурация - код 04.
 #define CONFIGURATION_ERROR_NEW_CONFIGURATION 0x04
-//    3. РµСЃС‚СЊ СЃР»РѕС‚ СЃ РѕС‚СЃСѓС‚СЃС‚РІСѓСЋС‰РёРј РјРѕРґСѓР»РµРј СЃ Р·Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°РЅРЅС‹Рј РѕС‚РєР°Р·РѕРј - РєРѕРґ 05.
+//    3. есть слот с отсутствующим модулем с зарегистрированным отказом - код 05.
 #define CONFIGURATION_ERROR_BAD_MODULE_FINDED_AND_REGISTERED 0x05
 
-// РєРѕРЅС‚СЂРѕР»СЊ СЃРёСЃС‚РµРјРЅС‹С… РѕС€РёР±РѕРє.
+// контроль системных ошибок.
 #define SYSTEM_ERROR_GROUP_OFFSET (MAX_MODULE_QUANTITY - 1)
 #define SYSTEM_ERROR_BLOCK_MODE_OFFSET 0
 #define SYSTEM_ERROR_CODE_SYS_NOT_RESPONDED_OFFSET 1
@@ -278,77 +278,77 @@
 
 //#define ONE_BYTE_CRC_LENGTH 1
 //#define TWO_BYTE_CRC_LENGTH 2
-// СЃРјРµС‰РµРЅРёРµ РЅР° РєРѕРЅС‚СЂРѕР»СЊРЅСѓСЋ СЃСѓРјРјСѓ Р±Р»РѕРєР° Р±Р°Р·С‹ РґР°РЅРЅС‹С….
+// смещение на контрольную сумму блока базы данных.
 #define PLC_DATA_BASE_BLOCK_CRC_OFFSET (PLC_DATA_BASE_BLOCK_LENGTH - TWO_BYTE_CRC_LENGTH)
-//// 2 - СЃРјРµС‰РµРЅРёРµ РЅР° С‚РёРї РјРѕРґСѓР»СЏ РІ РјР°СЃСЃРёРІРµ RX SPI. 0 - РєРѕРјР°РЅРґР° Р·Р°РїСЂРѕСЃР°, 1 - "СЌС…Рѕ" РєРѕРјР°РЅРґС‹ Р·Р°РїСЂРѕСЃР°.
+//// 2 - смещение на тип модуля в массиве RX SPI. 0 - команда запроса, 1 - "эхо" команды запроса.
 //#define MODULE_TYPE_OFFSET 2
 //#define MODULE_COMMAND_LENGTH 1
-//// РєРѕР»РёС‡РµСЃС‚РІРѕ Р±Р°Р№С‚ РІ РѕС‚РІРµС‚Рµ РЅР° Р·Р°РїСЂРѕСЃ С‚РёРїР° РјРѕРґСѓР»СЏ.
+//// количество байт в ответе на запрос типа модуля.
 //#define MODULE_COMMAND_ANSWER_LENGTH 1
-//// РєРѕР»РёС‡РµСЃС‚РІРѕ Р±Р°Р№С‚ РІ "С…РІРѕСЃС‚Рµ" РѕС‚РІРµС‚Р° РјРѕРґСѓР»СЏ. 0x7E - OK, 0xE7 - error.
+//// количество байт в "хвосте" ответа модуля. 0x7E - OK, 0xE7 - error.
 //#define TAIL_ANSWER_LENGTH 1
 //#define DATA_EXCHANGE_OK 0x7E
 //#define DATA_EXCHANGE_ERROR 0xE7
 //#define DATA_EXCHANGE_CRC_ERROR 0x03
-// MVAI5_REPER_POINTS_ADC_CHANNEL_QUANTITY + MVAI5_ANALOG_INPUT_QUANTITY// 6С…7=42.
+// MVAI5_REPER_POINTS_ADC_CHANNEL_QUANTITY + MVAI5_ANALOG_INPUT_QUANTITY// 6х7=42.
 #define ANALOGUE_INPUT_MODULE_REPER_POINTS_ADC_DATA_BASE_BLOCK_LENGTH 42
 
-//// РјР°РєСЃРёРјР°Р»СЊРЅРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ Р°РґСЂРµСЃРѕРІ РЅР° С€РёРЅРµ SPI.
+//// максимальное количество адресов на шине SPI.
 //#define SPI_CHIP_SELECT_MAX_ADDRESS 16
-//// 2 - СЃРјРµС‰РµРЅРёРµ РЅР° РґР°РЅРЅС‹Рµ РІ РјР°СЃСЃРёРІРµ RX SPI. 0 - РєРѕРјР°РЅРґР° Р·Р°РїСЂРѕСЃР°, 1 - "СЌС…Рѕ" РєРѕРјР°РЅРґС‹ Р·Р°РїСЂРѕСЃР°.
+//// 2 - смещение на данные в массиве RX SPI. 0 - команда запроса, 1 - "эхо" команды запроса.
 //#define SPI_DATA_BYTE_OFFSET 2
-//// 1 - СЃРјРµС‰РµРЅРёРµ РЅР° РєРѕРјР°РЅРґСѓ РІ РјР°СЃСЃРёРІРµ RX SPI.
+//// 1 - смещение на команду в массиве RX SPI.
 //#define SPI_COMMAND_BYTE_OFFSET 1
 //#define SPI_COMMAND_BYTE_LENGTH 1
 //
 //#define SPI_LENGTH_BYTE_OFFSET 2
 //#define SPI_LENGTH_BYTE_LENGTH 1
-//// РїРµСЂРІС‹Р№ Р±Р°Р№С‚ - РєРѕРјР°РЅРґР°, РІС‚РѕСЂРѕР№ - РѕС‚РІРµС‚, РґР°Р»СЊС€Рµ РґР°РЅРЅС‹Рµ.
+//// первый байт - команда, второй - ответ, дальше данные.
 //#define SPI_PREAMBLE_LENGTH 2
 
-#define PERCENT_100 100 // СЃС‚Рѕ РїСЂРѕС†РµРЅС‚РѕРІ.
-#define MEASURE_ERROR_THRESHOLD 3 // РїРѕСЂРѕРі РѕС€РёР±РєРё РёР·РјРµСЂРµРЅРЅРѕРіРѕ Р·РЅР°С‡РµРЅРёСЏ.
+#define PERCENT_100 100 // сто процентов.
+#define MEASURE_ERROR_THRESHOLD 3 // порог ошибки измеренного значения.
 
-#define ANALOGUE_INPUT_SET_POINT_VIOLATION_L 0x03 // 3 вЂ“ РЅР°СЂСѓС€РµРЅРёРµ СѓСЃС‚Р°РІРєРё L.
-#define ANALOGUE_INPUT_SET_POINT_VIOLATION_LL_L 0x04 // 4 вЂ“ РЅР°СЂСѓС€РµРЅРёРµ СѓСЃС‚Р°РІРѕРє LL+L.
-#define ANALOGUE_INPUT_SET_POINT_VIOLATION_H 0x05 // 5 вЂ“ РЅР°СЂСѓС€РµРЅРёРµ СѓСЃС‚Р°РІРєРё H.
-#define ANALOGUE_INPUT_SET_POINT_VIOLATION_HH_H 0x06 // 6 вЂ“ РЅР°СЂСѓС€РµРЅРёРµ СѓСЃС‚Р°РІРѕРє Рќ+РќРќ.
+#define ANALOGUE_INPUT_SET_POINT_VIOLATION_L 0x03 // 3 – нарушение уставки L.
+#define ANALOGUE_INPUT_SET_POINT_VIOLATION_LL_L 0x04 // 4 – нарушение уставок LL+L.
+#define ANALOGUE_INPUT_SET_POINT_VIOLATION_H 0x05 // 5 – нарушение уставки H.
+#define ANALOGUE_INPUT_SET_POINT_VIOLATION_HH_H 0x06 // 6 – нарушение уставок Н+НН.
 #define ANALOGUE_INPUT_SET_POINT_VIOLATION_MASK 0x07
-#define ANALOGUE_INPUT_CHANNEL_CALIBRATION 0x20 // РєР°РЅР°Р» РЅР°С…РѕРґРёС‚СЃСЏ РІ СЂРµР¶РёРјРµ РєР°Р»РёР±СЂРѕРІРєРё.
-#define ANALOGUE_INPUT_LINE_BREAK 0x40 // РѕР±СЂС‹РІ Р»РёРЅРёРё РєР°РЅР°Р»Р°.
-#define ANALOGUE_INPUT_CALCULATION_OVERFLOW 0x80 // РїРµСЂРµРїРѕР»РЅРµРЅРёРµ РїСЂРё СЂР°СЃС‡РµС‚Р°С….
-// СЃРјРµС‰РµРЅРёСЏ РЅР° С„Р»Р°РіРё РЅР°СЂСѓС€РµРЅРёСЏ СѓСЃС‚Р°РІРѕРє РІ РјР°СЃСЃРёРІРµ DI_value РґР»СЏ РѕРґРЅРѕРіРѕ Р°РЅР°Р»РѕРіРѕРІРѕРіРѕ РІС…РѕРґР°.
-#define ANALOGUE_INPUT_SET_POINT_VIOLATION_LL_L_OFFSET 0 // СЃРјРµС‰РµРЅРёРµ СѓСЃС‚Р°РІРѕРє LL+L.
-#define ANALOGUE_INPUT_SET_POINT_VIOLATION_L_OFFSET 1 // СЃРјРµС‰РµРЅРёРµ СѓСЃС‚Р°РІРєРё L.
-#define ANALOGUE_INPUT_SET_POINT_VIOLATION_H_OFFSET 2 // СЃРјРµС‰РµРЅРёРµ СѓСЃС‚Р°РІРєРё H.
-#define ANALOGUE_INPUT_SET_POINT_VIOLATION_HH_H_OFFSET 3 // СЃРјРµС‰РµРЅРёРµ СѓСЃС‚Р°РІРѕРє Рќ+РќРќ.
+#define ANALOGUE_INPUT_CHANNEL_CALIBRATION 0x20 // канал находится в режиме калибровки.
+#define ANALOGUE_INPUT_LINE_BREAK 0x40 // обрыв линии канала.
+#define ANALOGUE_INPUT_CALCULATION_OVERFLOW 0x80 // переполнение при расчетах.
+// смещения на флаги нарушения уставок в массиве DI_value для одного аналогового входа.
+#define ANALOGUE_INPUT_SET_POINT_VIOLATION_LL_L_OFFSET 0 // смещение уставок LL+L.
+#define ANALOGUE_INPUT_SET_POINT_VIOLATION_L_OFFSET 1 // смещение уставки L.
+#define ANALOGUE_INPUT_SET_POINT_VIOLATION_H_OFFSET 2 // смещение уставки H.
+#define ANALOGUE_INPUT_SET_POINT_VIOLATION_HH_H_OFFSET 3 // смещение уставок Н+НН.
 
-// РєРѕРґС‹ СЃРѕСЃС‚РѕСЏРЅРёСЏ Р°РЅР°Р»РѕРіРѕРІРѕРіРѕ РёР·РјРµСЂРµРЅРёСЏ РґР»СЏ РїРµСЂРµРґР°С‡Рё Рё РёРЅС‚РµСЂРїСЂРµС‚Р°С†РёРё РІ РњРРќР”.
-#define HMI_ANALOGUE_INPUT_LINE_BREAK 1 // РѕР±СЂС‹РІ Р»РёРЅРёРё РєР°РЅР°Р»Р°.
-#define HMI_ANALOGUE_INPUT_CALCULATION_OVERFLOW 2 // РїРµСЂРµРїРѕР»РЅРµРЅРёРµ РїСЂРё СЂР°СЃС‡РµС‚Р°С….
-#define HMI_ANALOGUE_INPUT_CHANNEL_CALIBRATION 3 // РєР°РЅР°Р» РЅР°С…РѕРґРёС‚СЃСЏ РІ СЂРµР¶РёРјРµ РєР°Р»РёР±СЂРѕРІРєРё.
-#define HMI_ANALOGUE_INPUT_SET_POINT_VIOLATION_L 4 // 3 вЂ“ РЅР°СЂСѓС€РµРЅРёРµ СѓСЃС‚Р°РІРєРё L.
-#define HMI_ANALOGUE_INPUT_SET_POINT_VIOLATION_LL_L 5 // 4 вЂ“ РЅР°СЂСѓС€РµРЅРёРµ СѓСЃС‚Р°РІРѕРє LL+L.
-#define HMI_ANALOGUE_INPUT_SET_POINT_VIOLATION_H 6 // 5 вЂ“ РЅР°СЂСѓС€РµРЅРёРµ СѓСЃС‚Р°РІРєРё H.
-#define HMI_ANALOGUE_INPUT_SET_POINT_VIOLATION_HH_H 7 // 6 вЂ“ РЅР°СЂСѓС€РµРЅРёРµ СѓСЃС‚Р°РІРѕРє Рќ+РќРќ.
+// коды состояния аналогового измерения для передачи и интерпретации в МИНД.
+#define HMI_ANALOGUE_INPUT_LINE_BREAK 1 // обрыв линии канала.
+#define HMI_ANALOGUE_INPUT_CALCULATION_OVERFLOW 2 // переполнение при расчетах.
+#define HMI_ANALOGUE_INPUT_CHANNEL_CALIBRATION 3 // канал находится в режиме калибровки.
+#define HMI_ANALOGUE_INPUT_SET_POINT_VIOLATION_L 4 // 3 – нарушение уставки L.
+#define HMI_ANALOGUE_INPUT_SET_POINT_VIOLATION_LL_L 5 // 4 – нарушение уставок LL+L.
+#define HMI_ANALOGUE_INPUT_SET_POINT_VIOLATION_H 6 // 5 – нарушение уставки H.
+#define HMI_ANALOGUE_INPUT_SET_POINT_VIOLATION_HH_H 7 // 6 – нарушение уставок Н+НН.
 
-////РїСЂРё Р·Р°РіСЂСѓР·РєРµ РёР· eclipse.
-//#define CONFIG_FILE_NAME "PasConfig.dat" // РёРјСЏ С„Р°Р№Р»Р° РєРѕРЅС„РёРіСѓСЂР°С†РёРё.
-//#define RESERV_CONFIG_FILE_NAME "ReservPasConfig.dat" // РёРјСЏ СЂРµР·РµСЂРІРЅРѕРіРѕ С„Р°Р№Р»Р° РєРѕРЅС„РёРіСѓСЂР°С†РёРё.
-//#define DATA_BASE_FILE_NAME "PasDataBase.dat" // РёРјСЏ С„Р°Р№Р»Р° Р±Р°Р·С‹ РґР°РЅРЅС‹С….
-//#define RESERV_DATA_BASE_FILE_NAME "ReservPasDataBase.dat" // РёРјСЏ СЂРµР·РµСЂРІРЅРѕРіРѕ С„Р°Р№Р»Р° Р±Р°Р·С‹ РґР°РЅРЅС‹С….
-// РїСЂРё Р°РІС‚РѕР·Р°РіСЂСѓР·РєРµ linux.
-#define CONFIG_FILE_NAME "/home/debian/PasConfig.dat" // РёРјСЏ С„Р°Р№Р»Р° РєРѕРЅС„РёРіСѓСЂР°С†РёРё.
-#define RESERV_CONFIG_FILE_NAME "/home/debian/ReservPasConfig.dat" // РёРјСЏ СЂРµР·РµСЂРІРЅРѕРіРѕ С„Р°Р№Р»Р° РєРѕРЅС„РёРіСѓСЂР°С†РёРё.
-#define DATA_BASE_FILE_NAME "/home/debian/PasDataBase.dat" // РёРјСЏ С„Р°Р№Р»Р° Р±Р°Р·С‹ РґР°РЅРЅС‹С….
-#define RESERV_DATA_BASE_FILE_NAME "/home/debian/ReservPasDataBase.dat" // РёРјСЏ СЂРµР·РµСЂРІРЅРѕРіРѕ С„Р°Р№Р»Р° Р±Р°Р·С‹ РґР°РЅРЅС‹С….
+////при загрузке из eclipse.
+//#define CONFIG_FILE_NAME "PasConfig.dat" // имя файла конфигурации.
+//#define RESERV_CONFIG_FILE_NAME "ReservPasConfig.dat" // имя резервного файла конфигурации.
+//#define DATA_BASE_FILE_NAME "PasDataBase.dat" // имя файла базы данных.
+//#define RESERV_DATA_BASE_FILE_NAME "ReservPasDataBase.dat" // имя резервного файла базы данных.
+// при автозагрузке linux.
+#define CONFIG_FILE_NAME "/home/debian/PasConfig.dat" // имя файла конфигурации.
+#define RESERV_CONFIG_FILE_NAME "/home/debian/ReservPasConfig.dat" // имя резервного файла конфигурации.
+#define DATA_BASE_FILE_NAME "/home/debian/PasDataBase.dat" // имя файла базы данных.
+#define RESERV_DATA_BASE_FILE_NAME "/home/debian/ReservPasDataBase.dat" // имя резервного файла базы данных.
 
-// РѕР±СЂР°Р±РѕС‚РєР° РѕС€РёР±РѕРє. РёСЃС‚РѕС‡РЅРёРє - РґРѕРєСѓРјРµРЅС‚ pas05_iz_1, СЃС‚СЂ. 109.
-// СЃРѕСЃС‚РѕСЏРЅРёРµ.
+// обработка ошибок. источник - документ pas05_iz_1, стр. 109.
+// состояние.
 #define PREVIOUS_REQUES_WAS_NOT_A_BLOCK_TRANSFER 0x00
 #define PROGRAMMING_DATA_BASE_WRITE_OK 0x01
-// РєРѕРґС‹ РѕС€РёР±РѕРє.
-// РїСЂРµРґС‹РґСѓС‰РёР№ Р·Р°РїСЂРѕСЃ РЅРµ Р±С‹Р» РїРµСЂРµРґР°С‡РµР№ Р±Р»РѕРєР° Р‘Р” (РїСЂРё Р·Р°РїСЂРѕСЃРµ Рѕ СЂРµР·СѓР»СЊС‚Р°С‚Р°С… РїСЂРѕРіСЂР°РјРјРёСЂРѕРІР°РЅРёСЏ С„СѓРЅРєС†РёРµР№ 14).
+// коды ошибок.
+// предыдущий запрос не был передачей блока БД (при запросе о результатах программирования функцией 14).
 #define PREVIOUS_REQUES_WAS_NOT_A_BLOCK_TRANSFER_ERROR 0x01
 #define PROGRAMMING_DATA_BASE_REPER_POINTS_ADC_MODULE_NOT_RESPOND 0x02
 #define PROGRAMMING_DATA_BASE_BLOCK_CRC_ERROR 0x03
@@ -361,17 +361,17 @@
 #define PROGRAMMING_DATA_BASE_READ_WRITE_BLOCK_DIMENSIONS_TEXT_TITLES_EEPROM_ERROR 0x05
 #define PROGRAMMING_DATA_BASE_WRITE_BLOCK_BUSY 0x06
 #define PROGRAMMING_LOCAL_PROGRAMMER_IS_CONNECTED 0x07
-// РЅРµ РєРѕСЂСЂРµРєС‚РЅР°СЏ Р±Р°Р·Р° РґР°РЅРЅС‹С… РїСЂРё РїСЂРѕРіСЂР°РјРјРёСЂРѕРІР°РЅРёРё РњР .
-// РµСЃР»Рё РЅРµ Р·Р°РїСЂРѕРіСЂР°РјРјРёСЂРѕРІР°РЅ СЃР±СЂРѕСЃ РґР»СЏ СѓРїСЂР°РІР»СЏСЋС‰РµРіРѕ РІС‹С…РѕРґР° СЃ Р±Р»РѕРєРёСЂРѕРІРєРѕР№.
-// РµСЃР»Рё РЅРµ Р·Р°РїСЂРѕРіСЂР°РјРјРёСЂРѕРІР°РЅРѕ РєРІРёС‚РёСЂРѕРІР°РЅРёРµ РґР»СЏ СЃРёРіРЅР°Р»РёР·РёСЂСѓСЋС‰РµРіРѕ РІС‹С…РѕРґР° "Р·РІСѓРє".
-// РµСЃР»Рё РЅРµ Р·Р°РїСЂРѕРіСЂР°РјРјРёСЂРѕРІР°РЅРѕ РєРІРёС‚РёСЂРѕРІР°РЅРёРµ Рё СЃР±СЂРѕСЃ РґР»СЏ СЃРёРіРЅР°Р»РёР·РёСЂСѓСЋС‰РµРіРѕ РІС‹С…РѕРґР° "СЃРІРµС‚".
+// не корректная база данных при программировании МР.
+// если не запрограммирован сброс для управляющего выхода с блокировкой.
+// если не запрограммировано квитирование для сигнализирующего выхода "звук".
+// если не запрограммировано квитирование и сброс для сигнализирующего выхода "свет".
 #define PROGRAMMING_MR_DATA_BASE_NOT_CORRECT 0x0D
 #define PROGRAMMING_MR_DATA_BASE_ERROR 0x0E
 
 #define DATA_BASE_FLOW_CONTROL_OK 1
 #define DATA_BASE_FLOW_CONTROL_ERROR 2
 
-// РєРѕРЅСЃС‚Р°РЅС‚Р° - РїСЂРёР·РЅР°Рє РѕС€РёР±РєРё РєРѕРЅС„РёРіСѓСЂР°С†РёРё.
+// константа - признак ошибки конфигурации.
 #define CONFIGURATION_ERROR 0xE0
 
 #define CONFIGURATION_FLOW_CONTROL_EXIT 0
@@ -382,11 +382,11 @@
 #define CONFIGURATION_FLOW_CONTROL_NORMAL_FLOW 5
 #define CONFIGURATION_FLOW_CONTROL_ERROR_FLOW_STOP 6
 
-// РґР»СЏ РѕРїСЂРµРґРµР»РµРЅРёСЏ РєРѕСЂСЂРµРєС‚РЅРѕСЃС‚Рё РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё РјРѕРґСѓР»РµР№ РЅР° SPI Рё РІС‹С‡РјСЃР»РµРЅРёСЏ ucInsideTypeIndex -
-// РёРЅРґРµРєСЃР° СЃСЂРµРґРё РѕРґРЅРѕС‚РёРїРЅС‹С… РјРѕРґСѓР»РµР№ -
-// РґРёСЃРєСЂРµС‚РЅРѕРіРѕ РІРІРѕРґР°, Р°РЅР°Р»РѕРіРѕРІРѕ РІРІРѕРґР°,
-// РґРёСЃРєСЂРµС‚РЅРѕРіРѕ РІС‹РІРѕРґР°, Р°РЅР°Р»РѕРіРѕРІРѕ РІС‹РІРѕРґР° Рё С‚.Рґ.
-// ucInsideTypeIndex Р±СѓРґРµС‚ РЅРµРѕР±С…РѕРґРёРј РґР»СЏ РІС‹С‡РёСЃР»РµРЅРёСЏ РёРЅРґРµРєСЃР° РјРѕРґСѓР»СЏ, РґР»СЏ РґРѕСЃС‚СѓРїР° Рє РЅРµРјСѓ.
+// для определения корректности последовательности модулей на SPI и вычмсления ucInsideTypeIndex -
+// индекса среди однотипных модулей -
+// дискретного ввода, аналогово ввода,
+// дискретного вывода, аналогово вывода и т.д.
+// ucInsideTypeIndex будет необходим для вычисления индекса модуля, для доступа к нему.
 #define DISCRETE_INPUT_MODULE_GROUP 1
 #define ANOLOGUE_INPUT_MODULE_GROUP 2
 #define DISCRETE_OUTPUT_MODULE_GROUP 3
@@ -394,36 +394,36 @@
 #define EXTERNAL_1234_MODULE_GROUP 5
 #define EXTERNAL_15_MODULE_GROUP 6
 
-//#define GET_MODULE_TYPE_COMMAND 0x91 // РєРѕРјР°РЅРґР° - С‡С‚РµРЅРёРµ С‚РёРїР° РјРѕРґСѓР»СЏ.
-//#define CHANGE_PROTOCOL_COMMAND 0x92 // РєРѕРјР°РЅРґР° - РїРµСЂРµРєР»СЋС‡РёС‚СЊ РЅР° РЅРѕРІС‹Р№ РїСЂРѕС‚РѕРєРѕР».
+//#define GET_MODULE_TYPE_COMMAND 0x91 // команда - чтение типа модуля.
+//#define CHANGE_PROTOCOL_COMMAND 0x92 // команда - переключить на новый протокол.
 //#define GET_MODULE_TYPE_COMMAND_LENGTH 1
 //#define GET_MODULE_TYPE_COMMAND_ANSWER_LENGTH 1
-//// СЃРјРµС‰РµРЅРёРµ РІ РјР°СЃСЃРёРІРµ RX SPI. 0 - РєРѕРјР°РЅРґР° Р·Р°РїСЂРѕСЃР°, 1 - "СЌС…Рѕ" РєРѕРјР°РЅРґС‹ Р·Р°РїСЂРѕСЃР°.
+//// смещение в массиве RX SPI. 0 - команда запроса, 1 - "эхо" команды запроса.
 //#define GET_MODULE_TYPE_COMMAND_OFFSET 1
 
 
 
-// (sizeof(struct TAnalogueInputDescriptionDataBase) * ANALOG_MODULE_INPUT_QUANTITY)// 28С…6=168.
+// (sizeof(struct TAnalogueInputDescriptionDataBase) * ANALOG_MODULE_INPUT_QUANTITY)// 28х6=168.
 #define ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_LENGTH 168
-// (sizeof(struct TMrXXOneChannelDataBase) * DISCRETE_OUTPUT_MODULE_RELAY_OUTPUT_QUANTITY)// 3С…64=192.
+// (sizeof(struct TMrXXOneChannelDataBase) * DISCRETE_OUTPUT_MODULE_RELAY_OUTPUT_QUANTITY)// 3х64=192.
 #define DISCRETE_OUTPUT_MODULE_DATA_BASE_BLOCK_LENGTH 192
-// (sizeof(struct TMbmFunction1234PackOne) * EXTERNAL_MODULE_FUNCTION_1234_QUANTITY) + 1// 13С…16=208.
+// (sizeof(struct TMbmFunction1234PackOne) * EXTERNAL_MODULE_FUNCTION_1234_QUANTITY) + 1// 13х16=208.
 #define MBM_FUNCTION_1234_BLOCK_DATA_BASE_BLOCK_LENGTH (208 + 1)
-// (sizeof(struct TMbmFunction15Sourse) * EXTERNAL_MODULE_FUNCTION_15_QUANTITY)// 72С…3=216.
+// (sizeof(struct TMbmFunction15Sourse) * EXTERNAL_MODULE_FUNCTION_15_QUANTITY)// 72х3=216.
 #define MBM_FUNCTION_15_BLOCK_DATA_BASE_BLOCK_LENGTH 216
-// (sizeof(struct TDiscreteInputDescriptionWork) * DISCRETE_INPUT_SYGNALS_DATA_BASE_BLOCKS_IN_BLOCK_QUANTITY)// 11С…18=198.
+// (sizeof(struct TDiscreteInputDescriptionWork) * DISCRETE_INPUT_SYGNALS_DATA_BASE_BLOCKS_IN_BLOCK_QUANTITY)// 11х18=198.
 #define DISCRETE_INPUT_SYGNALS_DATA_BASE_BLOCK_LENGTH 192
-// (sizeof(struct TAnalogueOutputRegulatorDescriptionDataBase) * ANALOG_OUTPUT_MODULE_REGULATORS_QUANTITY)// 28С…6=168.
+// (sizeof(struct TAnalogueOutputRegulatorDescriptionDataBase) * ANALOG_OUTPUT_MODULE_REGULATORS_QUANTITY)// 28х6=168.
 #define CURRENT_OUTPUT_MODULE_REGULATOR_DATA_BASE_BLOCK_LENGTH 56
 #define CURRENT_OUTPUT_MODULE_PSP_DATA_BASE_BLOCK_LENGTH 56
-// DIMENSIONS_PARAMETERS_DATA_BLOCKS_IN_BLOCK_QUANTITY * 6// 6С…16=96.
+// DIMENSIONS_PARAMETERS_DATA_BLOCKS_IN_BLOCK_QUANTITY * 6// 6х16=96.
 #define DIMENSIONS_PARAMETERS_DATA_BASE_BLOCK_LENGTH 96
-// TEXT_TITLES_DATA_BASE_BLOCKS_IN_BLOCK_QUANTITY * TEXT_TITLES_DATA_LENGTH// (384 РўР , 24 Р±Р»РѕРєР°).
+// TEXT_TITLES_DATA_BASE_BLOCKS_IN_BLOCK_QUANTITY * TEXT_TITLES_DATA_LENGTH// (384 ТР, 24 блока).
 #define TEXT_TITLES_DATA_BASE_BLOCK_LENGTH 224
-// (sizeof(struct TFunctionBlockDescriptionWork) * FUNCTION_BLOCK_DATA_BASE_BLOCKS_IN_BLOCK_QUANTITY)// 19С…10=190.
-#define FUNCTION_BLOCK_DATA_BASE_BLOCK_LENGTH 160// 19С…10=190 (120 Р¤Р‘Р›, 12 Р±Р»РѕРєРѕРІ)
-#define MATHEMATICAL_BLOCK_DATA_BASE_BLOCK_LENGTH 208// 82 вЂ“ 84 (48 Р¤Р‘Рњ, 3 Р±Р»РѕРєР° 13*16=208 )
-#define DISCRETE_INPUT_MODULE_DATA_BASE_BLOCK_LENGTH 32// 2С…16=32.
+// (sizeof(struct TFunctionBlockDescriptionWork) * FUNCTION_BLOCK_DATA_BASE_BLOCKS_IN_BLOCK_QUANTITY)// 19х10=190.
+#define FUNCTION_BLOCK_DATA_BASE_BLOCK_LENGTH 160// 19х10=190 (120 ФБЛ, 12 блоков)
+#define MATHEMATICAL_BLOCK_DATA_BASE_BLOCK_LENGTH 208// 82 – 84 (48 ФБМ, 3 блока 13*16=208 )
+#define DISCRETE_INPUT_MODULE_DATA_BASE_BLOCK_LENGTH 32// 2х16=32.
 #define NETWORK_ADDRESS_DATA_BASE_BLOCK_LENGTH 1
 #define RESERVED_DATA_BASE_BLOCK_LENGTH 1
 #define REFERENCE_POINTS_ADC_CODES_DATA_BASE_BLOCK_LENGTH 42
@@ -440,8 +440,8 @@
 //#define DISCRETE_INPUT_SYGNALS_DATA_BASE_BLOCKS_IN_BLOCK_QUANTITY 18
 //#define CURRENT_OUTPUT_MODULE_REGULATOR_DATA_BASE_BLOCK_QUANTITY 2
 //#define CURRENT_OUTPUT_MODULE_REGULATOR_DATA_BASE_BLOCKS_IN_BLOCK_QUANTITY ANALOG_OUTPUT_MODULE_REGULATORS_QUANTITY
-//#define DIMENSIONS_PARAMETERS_DATA_BLOCKS_IN_BLOCK_QUANTITY 16
-//#define DIMENSIONS_PARAMETERS_DATA_BASE_BLOCK_QUANTITY 1
+#define DIMENSIONS_PARAMETERS_DATA_BLOCKS_IN_BLOCK_QUANTITY 16
+#define DIMENSIONS_PARAMETERS_DATA_BASE_BLOCK_QUANTITY 1
 //#define TEXT_TITLES_DATA_BASE_BLOCK_QUANTITY 24
 //#define TEXT_TITLES_DATA_BASE_BLOCKS_IN_BLOCK_QUANTITY 16
 //#define TEXT_TITLES_DATA_LENGTH 14
@@ -492,9 +492,9 @@ enum
 //    SPI_PREAMBLE_LENGTH = 2,
 //    SPI_BUFFER_LENGTH = 64,
     SPI_MAX_BUS_ADDRESS = 1,
-//// 2 - СЃРјРµС‰РµРЅРёРµ РЅР° РґР°РЅРЅС‹Рµ РІ РјР°СЃСЃРёРІРµ RX SPI. 0 - РєРѕРјР°РЅРґР° Р·Р°РїСЂРѕСЃР°, 1 - "СЌС…Рѕ" РєРѕРјР°РЅРґС‹ Р·Р°РїСЂРѕСЃР°.
+//// 2 - смещение на данные в массиве RX SPI. 0 - команда запроса, 1 - "эхо" команды запроса.
 //    SPI_DATA_BYTE_OFFSET = 2,
-//// 1 - СЃРјРµС‰РµРЅРёРµ РЅР° РєРѕРјР°РЅРґСѓ РІ РјР°СЃСЃРёРІРµ RX SPI.
+//// 1 - смещение на команду в массиве RX SPI.
 //    SPI_COMMAND_BYTE_OFFSET = 1,
 //    SPI_COMMAND_BYTE_LENGTH = 1,
 //    ONE_BYTE_CRC_LENGTH = 1,
@@ -505,9 +505,9 @@ enum
 //    GET_MODULE_TYPE_COMMAND_ANSWER_LENGTH = 1,
 //    MODULE_REQUEST_QUANTITY = 5,
 //    MODULE_TYPE_OFFSET = SPI_DATA_BYTE_OFFSET,
-//// РЅР°С‡Р°Р»СЊРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ СЃС‡С‘С‚С‡РёРєР° Р·Р°РїСЂРѕСЃРѕРІ РјРѕРґСѓР»СЏ Р±РµР· РѕС‚РІРµС‚Р°.
-//// РµСЃР»Рё СЂР°РІРЅРѕ РЅСѓР»СЋ - РјРѕРґСѓР»СЊ СЃС‡РёС‚Р°РµС‚СЃСЏ РЅРµРёСЃРїСЂР°РІРЅС‹Рј. РµРіРѕ РґР°РЅРЅС‹Рµ РїСЂРёР·РЅР°СЋС‚СЃСЏ РЅРµРґРѕСЃС‚РѕРІРµСЂРЅС‹РјРё.
-//// СѓСЃС‚Р°РЅР°РІР»РёРІР°РµС‚СЃСЏ С„Р»Р°Рі СЃРёРіРЅР°Р»РёР·Р°С†РёРё РІ СЂР°Р±РѕС‡РµРј РјР°СЃСЃРёРІРµ aucCoilsArray[BAD_MODULES_BIT_ARRAY_OFFSET + РёРЅРґРµРєСЃ РјРѕРґСѓР»СЏ].
+//// начальное значение счётчика запросов модуля без ответа.
+//// если равно нулю - модуль считается неисправным. его данные признаются недостоверными.
+//// устанавливается флаг сигнализации в рабочем массиве aucCoilsArray[BAD_MODULES_BIT_ARRAY_OFFSET + индекс модуля].
 //    BAD_MODULE_CYCLE_COUNT_DEFAULT = 10,
 };
 

@@ -1,4 +1,4 @@
-п»ї#ifndef CDEVICECONTROL_H
+#ifndef CDEVICECONTROL_H
 #define CDEVICECONTROL_H
 //-------------------------------------------------------------------------------
 //  Sourse      : FileName.cpp
@@ -43,73 +43,73 @@ public:
 
 //    size_t GetObjectLength(void);
 
-    // Р“РµС‚С‚РµСЂ РґР»СЏ m_sDataStoreName
+    // Геттер для m_sDataStoreName
     std::string GetDataStoreName() const
     {
         return m_sDataStoreName;
     }
 
-    // РЎРµС‚С‚РµСЂ РґР»СЏ m_sDataStoreName
+    // Сеттер для m_sDataStoreName
     void SetDataStoreName(const std::string& sName)
     {
         m_sDataStoreName = sName;
     }
 
-    // Р“РµС‚С‚РµСЂ РґР»СЏ m_pxDataStore
+    // Геттер для m_pxDataStore
     CDataStore* GetDataStore() const
     {
         return m_pxDataStore;
     }
 
-    // РЎРµС‚С‚РµСЂ РґР»СЏ m_pxDataStore
+    // Сеттер для m_pxDataStore
     void SetDataStore(CDataStore* pxDataStore)
     {
         m_pxDataStore = pxDataStore;
     }
 
-    // Р“РµС‚С‚РµСЂ РґР»СЏ m_sDataStoreLinkName
+    // Геттер для m_sDataStoreLinkName
     std::string GetDataStoreLinkName() const
     {
         return m_sDataStoreLinkName;
     }
 
-    // РЎРµС‚С‚РµСЂ РґР»СЏ m_sDataStoreLinkName
+    // Сеттер для m_sDataStoreLinkName
     void SetDataStoreLinkName(const std::string& sName)
     {
         m_sDataStoreLinkName = sName;
     }
 
-    // Р“РµС‚С‚РµСЂ РґР»СЏ m_pxDataStoreLink
+    // Геттер для m_pxDataStoreLink
     CLinkInterface* GetDataStoreLink() const
     {
         return m_pxDataStoreLink;
     }
 
-    // РЎРµС‚С‚РµСЂ РґР»СЏ m_pxDataStoreLink
+    // Сеттер для m_pxDataStoreLink
     void SetDataStoreLink(CLinkInterface* pxLink)
     {
         m_pxDataStoreLink = pxLink;
     }
 
-    // Р“РµС‚С‚РµСЂ РґР»СЏ m_pxCommandDataLink
+    // Геттер для m_pxCommandDataLink
     CLinkInterface* GetCommandDataLink() const
     {
         return m_pxCommandDataLink;
     }
 
-    // РЎРµС‚С‚РµСЂ РґР»СЏ m_pxCommandDataLink
+    // Сеттер для m_pxCommandDataLink
     void SetCommandDataLink(CLinkInterface* pxValue)
     {
         m_pxCommandDataLink = pxValue;
     }
 
-    // Р“РµС‚С‚РµСЂ РґР»СЏ m_pxOperatingDataLink
+    // Геттер для m_pxOperatingDataLink
     CLinkInterface* GetOperatingDataLink() const
     {
         return m_pxOperatingDataLink;
     }
 
-    // РЎРµС‚С‚РµСЂ РґР»СЏ m_pxOperatingDataLink
+    // Сеттер для m_pxOperatingDataLink
     void SetOperatingDataLink(CLinkInterface* pxValue)
     {
         m_pxOperatingDataLink = pxValue;

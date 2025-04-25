@@ -1,4 +1,4 @@
-п»ї#ifndef CTASKMANAGER_H
+#ifndef CTASKMANAGER_H
 #define CTASKMANAGER_H
 //-------------------------------------------------------------------------------
 //  Sourse      : FileName.cpp
@@ -28,7 +28,7 @@ public:
     CTaskManager();
     CTaskManager(CResources* pxResources);
     virtual ~CTaskManager();
-//    using CTask::CTask;  // РќР°СЃР»РµРґРѕРІР°РЅРёРµ РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂР° CTask
+//    using CTask::CTask;  // Наследование конструктора CTask
 
 protected:
 

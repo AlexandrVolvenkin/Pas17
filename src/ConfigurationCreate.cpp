@@ -1,4 +1,4 @@
-п»ї//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 //  Sourse      : FileName.cpp
 //  Created     : 01.06.2022
 //  Author      : Alexandr Volvenkin
@@ -49,7 +49,7 @@ uint8_t CConfigurationCreate::Init(void)
 }
 
 //-----------------------------------------------------------------------------------------------------
-// СЃРµСЂРёР°Р»РёР·СѓРµС‚, РїСЂРµРѕР±СЂР°Р·РѕРІС‹РІР°РµС‚ РѕР±СЉРµРєС‚ РєРѕРЅС„РёРіСѓСЂР°С†РёРё РёР· РІРЅСѓС‚СЂРµРЅРЅРµРіРѕ С„РѕСЂРјР°С‚Р° РІ С„РѕСЂРјР°С‚ РїРµСЂРµРґР°С‡Рё РїРѕ РёРЅС‚РµСЂС„РµР№СЃР°Рј СЃРІСЏР·Рё.
+// сериализует, преобразовывает объект конфигурации из внутреннего формата в формат передачи по интерфейсам связи.
 void CConfigurationCreate::
 ConfigurationToProgrammerFormat(TConfigDataProgrammerPackOne *pxDestination,
                                 TConfigDataPackOne *pxSourse)
@@ -148,7 +148,7 @@ uint8_t CConfigurationCreate::Fsm(void)
         else
         {
             std::cout << "CConfigurationCreate::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING 3"  << std::endl;
-            // Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РІС‹РїРѕР»РЅРµРЅРёСЏ Р·Р°РїСЂРѕСЃР° Р·Р°РєРѕРЅС‡РёР»РѕСЃСЊ?
+            // Время ожидания выполнения запроса закончилось?
             if (GetTimerPointer() -> IsOverflow())
             {
                 std::cout << "CConfigurationCreate::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING 4"  << std::endl;
@@ -179,7 +179,7 @@ uint8_t CConfigurationCreate::Fsm(void)
         else
         {
             std::cout << "CConfigurationCreate::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 3"  << std::endl;
-            // Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РІС‹РїРѕР»РЅРµРЅРёСЏ Р·Р°РїСЂРѕСЃР° Р·Р°РєРѕРЅС‡РёР»РѕСЃСЊ?
+            // Время ожидания выполнения запроса закончилось?
             if (GetTimerPointer() -> IsOverflow())
             {
                 std::cout << "CConfigurationCreate::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 4"  << std::endl;
@@ -221,7 +221,7 @@ uint8_t CConfigurationCreate::Fsm(void)
         }
         else
         {
-            // Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РІС‹РїРѕР»РЅРµРЅРёСЏ Р·Р°РїСЂРѕСЃР° Р·Р°РєРѕРЅС‡РёР»РѕСЃСЊ?
+            // Время ожидания выполнения запроса закончилось?
             if (GetTimerPointer() -> IsOverflow())
             {
                 std::cout << "CConfigurationCreate::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 4"  << std::endl;
@@ -384,7 +384,7 @@ uint8_t CConfigurationCreate::Fsm(void)
             SetFsmNextStateDoneWaitingDoneError(DONE_ERROR);
         }
 
-            SetFsmState(CONFIGURATION_REQUEST_EXECUTOR_ANSWER_PROCESSING);
+        SetFsmState(CONFIGURATION_REQUEST_EXECUTOR_ANSWER_PROCESSING);
         break;
 
     case CONFIGURATION_REQUEST_EXECUTOR_ANSWER_PROCESSING:

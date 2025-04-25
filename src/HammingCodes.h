@@ -1,4 +1,4 @@
-﻿
+
 //-------------------------------------------------------------------------------
 //  Based on    : https://github.com/Minho-Cha/8bit-Hamming-Code
 //  Source      : FileName.cpp

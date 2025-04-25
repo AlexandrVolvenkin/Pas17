@@ -1,4 +1,4 @@
-п»ї
+
 //-------------------------------------------------------------------------------
 //  Source      : FileName.cpp
 //  Created     : 01.06.2022
@@ -23,7 +23,7 @@
 CStorageDeviceFileSystem::CStorageDeviceFileSystem()
 {
     std::cout << "CStorageDeviceFileSystem constructor"  << std::endl;
-    // РїРѕР»СѓС‡РёРј РёРјСЏ РєР»Р°СЃСЃР°.
+    // получим имя класса.
     sprintf(GetTaskNamePointer(),
             "%s",
             typeid(*this).name());
@@ -37,7 +37,7 @@ CStorageDeviceFileSystem::~CStorageDeviceFileSystem()
 }
 
 //-------------------------------------------------------------------------------
-// РџРµСЂРµРґР°С‘С‚ РґР°РЅРЅС‹Рµ РєРѕРЅС‚РµРєСЃС‚Р° Р·Р°РїРёСЃРё Р±Р»РѕРєР° Р°РІС‚РѕРјР°С‚Сѓ СѓСЃС‚СЂРѕР№СЃС‚РІР° С…СЂР°РЅРµРЅРёСЏ Рё Р·Р°РїСѓСЃРєР°РµС‚ РїСЂРѕС†РµСЃСЃ Р·Р°РїРёСЃРё.
+// Передаёт данные контекста записи блока автомату устройства хранения и запускает процесс записи.
 bool CStorageDeviceFileSystem::WriteBlock(CDataContainerDataBase* pxDataContainer)
 {
     std::cout << "CStorageDeviceFileSystem WriteBlock 1"  << std::endl;
@@ -56,7 +56,7 @@ bool CStorageDeviceFileSystem::WriteBlock(CDataContainerDataBase* pxDataContaine
 }
 
 //-------------------------------------------------------------------------------
-// Р—Р°РїРёСЃС‹РІР°РµС‚ Р±Р»РѕРє РґР°РЅРЅС‹С… РІ СѓСЃС‚СЂРѕР№СЃС‚РІРѕ С…СЂР°РЅРµРЅРёСЏ.
+// Записывает блок данных в устройство хранения.
 uint8_t CStorageDeviceFileSystem::Write(void)
 {
     std::cout << "CStorageDeviceFileSystem Write"  << std::endl;
@@ -75,16 +75,16 @@ uint8_t CStorageDeviceFileSystem::Write(void)
     {
         std::cout << "CStorageDeviceFileSystem Write 1"  << std::endl;
         ofstream outdata;
-        // Р§С‚РѕР±С‹ РґРѕР±Р°РІРёС‚СЊ Рё РЅРµ СЃС‚РµСЂРµС‚СЊ СЃС‚Р°СЂС‹Рµ РґР°РЅРЅС‹Рµ РѕС‚РєСЂРѕРµРј С„Р°Р№Р» РЅР° С‡С‚РµРЅРёРµ Рё Р·Р°РїРёСЃСЊ.
+        // Чтобы добавить и не стереть старые данные откроем файл на чтение и запись.
         outdata.open(pccFileName, (ios::binary | ios::in | ios::out));
-        // Р¤Р°Р№Р» РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚?
+        // Файл не существует?
         if (!outdata)
         {
             std::cout << "CStorageDeviceFileSystem Write 2"  << std::endl;
             cerr << "CStorageDeviceFileSystem::Write Error: file could not be opened" << endl;
-            // С‡С‚РѕР±С‹ СЃРѕР·РґР°С‚СЊ С„Р°Р№Р» РѕС‚РєСЂРѕРµРј С‚РѕР»СЊРєРѕ РЅР° Р·Р°РїРёСЃСЊ.
+            // чтобы создать файл откроем только на запись.
             outdata.open(pccFileName, (ios::binary | ios::out));
-            // Р¤Р°Р№Р» РЅРµ СЃРѕР·РґР°РЅ?
+            // Файл не создан?
             if (!outdata)
             {
                 std::cout << "CStorageDeviceFileSystem Write 3"  << std::endl;
@@ -99,7 +99,7 @@ uint8_t CStorageDeviceFileSystem::Write(void)
         outdata.write((char*)puiDataPointer, uiLength);
 
         std::cout << "CStorageDeviceFileSystem Write 5"  << std::endl;
-        // Р·Р°РєСЂРѕРµРј С„Р°Р№Р».
+        // закроем файл.
         outdata.close();
 
         std::cout << "CStorageDeviceFileSystem Write 6"  << std::endl;
@@ -133,7 +133,7 @@ bool CStorageDeviceFileSystem::ReadBlock(CDataContainerDataBase* pxDataContainer
 }
 
 //-------------------------------------------------------------------------------
-// РЎС‡РёС‚С‹РІР°РµС‚ Р±Р»РѕРє РґР°РЅРЅС‹С… РёР· СѓСЃС‚СЂРѕР№СЃС‚РІР° С…СЂР°РЅРµРЅРёСЏ.
+// Считывает блок данных из устройства хранения.
 uint8_t CStorageDeviceFileSystem::Read(void)
 {
     std::cout << "CStorageDeviceFileSystem Read 1"  << std::endl;
@@ -150,7 +150,7 @@ uint8_t CStorageDeviceFileSystem::Read(void)
     {
         std::cout << "CStorageDeviceFileSystem Read 2"  << std::endl;
         ifstream indata;
-        // РѕС‚РєСЂРѕРµРј С„Р°Р№Р».
+        // откроем файл.
         indata.open(pccFileName, (ios::in | ios::binary));
         if (!indata)
         {
@@ -161,13 +161,13 @@ uint8_t CStorageDeviceFileSystem::Read(void)
         else
         {
             std::cout << "CStorageDeviceFileSystem Read 4"  << std::endl;
-            // СѓСЃС‚Р°РЅРѕРІРёРј СЃРјРµС‰РµРЅРёРµ РІ С„Р°Р№Р»Рµ.
+            // установим смещение в файле.
             indata.seekg(uiOffset, ios_base::beg);
-            // РїСЂРѕС‡РёС‚Р°РµРј С„Р°Р№Р».
+            // прочитаем файл.
             indata.read(reinterpret_cast<char*>(puiDataPointer),
                         uiLength);
         }
-        // Р·Р°РєСЂРѕРµРј С„Р°Р№Р».
+        // закроем файл.
         indata.close();
         return 1;
     }

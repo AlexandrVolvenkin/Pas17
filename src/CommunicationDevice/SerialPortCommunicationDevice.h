@@ -1,4 +1,4 @@
-п»ї
+
 #ifndef CSERIALPORTCOMMUNICATIONDEVICE_H
 #define CSERIALPORTCOMMUNICATIONDEVICE_H
 //-------------------------------------------------------------------------------
@@ -84,7 +84,7 @@ protected:
 ////    uint8_t m_uiParity;
 //    uint8_t m_uiDataBits;
 //    uint8_t m_uiStopBit;
-//    // Р¤Р»Р°Рі - РґР°РЅРЅС‹Рµ Р·Р°РїРёСЃР°РЅС‹.
+//    // Флаг - данные записаны.
 //    bool m_bDataIsWrited = false;
 //    uint8_t* m_puiTxBuffer;
 //    uint16_t m_nuiTxBuffByteCounter;

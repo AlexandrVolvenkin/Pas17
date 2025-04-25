@@ -1,4 +1,4 @@
-п»ї#ifndef DATABASECREATE_H
+#ifndef DATABASECREATE_H
 #define DATABASECREATE_H
 //-------------------------------------------------------------------------------
 //  Sourse      : FileName.cpp
@@ -29,6 +29,28 @@ class CDataContainerInterface;
 class CDataContainerDataBase;
 class CInternalModule;
 class CConfigurationCreate;
+class CDeviceControl;
+
+
+// структура описателя одной размерности.
+// для сериализации, разбора данных полученных по интерфейсам передачи данных.
+#pragma pack(push)
+#pragma pack(1)
+// структура описателя одной размерности.
+// после преобразования из общего формата базы данных.
+struct TDimentionParameterPackOne
+{
+    // Текстовый реквизит размерности – 6 символов ASCII.
+    char acDimentionParameterText[DIMENSIONS_PARAMETERS_NAME_LENGTH];
+};
+#pragma pack(pop)
+
+// структура описателя одной размерности.
+struct TDimentionParameter
+{
+    // Текстовый реквизит размерности – 6 символов ASCII, плюс нуль - признак конца строки.
+    char acDimentionParameterText[DIMENSIONS_PARAMETERS_NAME_LENGTH + END_OF_STRING_LENGTH];
+};
 
 //-------------------------------------------------------------------------------
 class CDataBaseCreate : public CTask
@@ -53,12 +75,16 @@ public:
 //        CONFIGURATION_REQUEST_EXECUTOR_DONE_CHECK_START,
 //        CONFIGURATION_REQUEST_EXECUTOR_DONE_CHECK_WAITING,
         CONFIGURATION_REQUEST_EXECUTOR_ANSWER_PROCESSING,
+
+        DIMENTIONS_PARAMETERS_CREATE_START,
+        DIMENTIONS_PARAMETERS_CREATE_EXECUTOR_ANSWER_PROCESSING,
     };
 
     CDataBaseCreate();
     virtual ~CDataBaseCreate();
 
     void SetInternalModuleName(std::string sName);
+    void SetDeviceControlName(std::string sName);
 
     uint8_t Init(void);
     uint8_t Fsm(void);
@@ -66,6 +92,9 @@ public:
 private:
     std::string m_sInternalModuleName;
     uint8_t m_uiInternalModuleId;
+
+    std::string m_sDeviceControlName;
+    uint8_t m_uiDeviceControlId;
 
     uint8_t* m_puiIntermediateBuff;
 

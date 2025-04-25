@@ -62,7 +62,7 @@ public:
 
     void SetDeviceControlName(std::string sName);
     void SetDeviceControl(CDeviceControl* pxDeviceControl);
-    CDeviceControl* GetDeviceContro(void);
+    CDeviceControl* GetDeviceControl(void);
 
     void WorkingArraysInit(void);
 
@@ -155,13 +155,13 @@ public:
     uint16_t m_uiAddress;
     uint16_t m_uiQuantity;
     uint16_t m_uiMessageLength;
-    // С‚Р°Р№РјРѕСѓС‚ РїРѕ РѕС‚СЃСѓС‚СЃС‚РІРёСЋ РїРѕРґС‚РІРµСЂР¶РґРµРЅРёСЏ.
+    // таймоут по отсутствию подтверждения.
     const static uint16_t m_uiConfirmationTimeout = 500;
     const static uint16_t m_uiTransmitDelayTimeout = 5;
 
     uint8_t *m_puiRxBuffer;
     uint8_t *m_puiTxBuffer;
-    // Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Р№ Р±СѓС„РµСЂ.
+    // Вспомогательный буфер.
     uint8_t* m_puiIntermediateBuff;
 
     uint8_t *m_puiCoils;

@@ -20,7 +20,7 @@ using namespace std;
 CSharedMemoryCommunicationDevice::CSharedMemoryCommunicationDevice()
 {
     std::cout << "CSharedMemoryCommunicationDevice constructor"  << std::endl;
-//    // Ð¿Ð¾Ð»ÑƒÑ‡Ð¸Ð¼ Ð¸Ð¼Ñ ÐºÐ»Ð°ÑÑÐ°.
+//    // ïîëó÷èì èìÿ êëàññà.
 //    sprintf(GetTaskNamePointer(),
 //            "%s",
 //            typeid(*this).name());

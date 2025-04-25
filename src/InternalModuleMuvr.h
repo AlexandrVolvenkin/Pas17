@@ -1,4 +1,4 @@
-п»ї#ifndef CINTERNALMODULEMUVR_H
+#ifndef CINTERNALMODULEMUVR_H
 #define CINTERNALMODULEMUVR_H
 //-------------------------------------------------------------------------------
 //  Sourse      : FileName.cpp
@@ -16,7 +16,7 @@
 #include "InternalModule.h"
 
 // MUVR
-//// РєРѕРґС‹ С‚РёРїР° РјРѕРґСѓР»СЏ.
+//// коды типа модуля.
 #define MODULE_TYPE_MVPS3 0x06
 #define MODULE_TYPE_MVAI5 0x07
 #define MODULE_TYPE_MVST3 0x08
@@ -26,19 +26,19 @@
 enum
 {
     MUVR_FSM_STATE_CHANGE_PROTOCOL = 0x00,
-// СЃРѕСЃС‚РѕСЏРЅРёРµ Р°РІС‚РѕРјР°С‚Р° - Р·Р°РїРёСЃСЊ Р±Р°Р·С‹ РґР°РЅРЅС‹С….
+// состояние автомата - запись базы данных.
     MUVR_FSM_STATE_WRITE_DATABASE = 0x01,
-// СЃРѕСЃС‚РѕСЏРЅРёРµ Р°РІС‚РѕРјР°С‚Р° - РЅРѕСЂРјР°Р»СЊРЅС‹Р№ РѕР±РјРµРЅ.
+// состояние автомата - нормальный обмен.
     MUVR_FSM_STATE_TRANSFER = 0x02,
 };
 
 #define MAX_MUVR_MODULES_QUANTITY 8
 #define MUVR_ANALOG_INPUT_QUANTITY 4
-// РєРѕР»РёС‡РµСЃС‚РІРѕ РґРёСЃРєСЂРµС‚РЅС‹С… СЃРёРіРЅР°Р»РѕРІ РїРѕСЂРѕР¶РґР°РµРјРѕРµ РѕРґРЅРёРј Р°РЅР°Р»РѕРіРѕРІС‹Рј РІС…РѕРґРѕРј.
+// количество дискретных сигналов порождаемое одним аналоговым входом.
 #define MUVR_DI_VALUE_ONE_CHANNEL_LENGTH 4
-// РєРѕР»РёС‡РµСЃС‚РІРѕ РґРёСЃРєСЂРµС‚РЅС‹С… СЃРёРіРЅР°Р»РѕРІ РѕРґРЅРѕРіРѕ РјРѕРґСѓР»СЏ.
+// количество дискретных сигналов одного модуля.
 #define MUVR_DISCRETE_INPUT_QUANTITY (MUVR_ANALOG_INPUT_QUANTITY * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH)
-// РєРѕР»РёС‡РµСЃС‚РІРѕ Р±Р°Р№С‚ Р·Р°РЅРёРјР°РµРјРѕРµ РѕРґРЅРёРј РјРѕРґСѓР»РµРј РІ СЂР°Р±РѕС‡РёС… РјР°СЃСЃРёРІР°С… Modbus.
+// количество байт занимаемое одним модулем в рабочих массивах Modbus.
 #define MUVR_AI_VALUE_BYTE_ARRAY_LENGTH (MUVR_ANALOG_INPUT_QUANTITY * sizeof(float))
 #define MUVR_DI_VALUE_BIT_ARRAY_LENGTH MUVR_DISCRETE_INPUT_QUANTITY
 #define MUVR_BAD_AI_BIT_ARRAY_LENGTH MUVR_ANALOG_INPUT_QUANTITY
@@ -48,102 +48,102 @@ enum
 #define MUVR_MODULE_BAD_BIT_ARRAY_LENGTH 1
 #define MUVR_AIN_OFF_BIT_ARRAY_LENGTH MUVR_ANALOG_INPUT_QUANTITY
 
-// Р°РґСЂРµСЃ Modbus function 5 - 0x11XY - РєР°Р»РёР±СЂРѕРІРєР° РЅР°С‡Р°Р»Р° С€РєР°Р»С‹ - РќРЁРљ.
-// X - РЅРѕРјРµСЂ РјРѕРґСѓР»СЏ, Y - РЅРѕРјРµСЂ РєР°Р»РёР±СЂСѓРµРјРѕРіРѕ РІС…РѕРґР°.
+// адрес Modbus function 5 - 0x11XY - калибровка начала шкалы - НШК.
+// X - номер модуля, Y - номер калибруемого входа.
 #define MUVR_COMMAND_CONTROL_SET_BOTTOM_OF_SCALE  0x11
-// РєРѕРјР°РЅРґР° РґР»СЏ РјРѕРґСѓР»СЏ. Р±РёС‚ D6 - РєР°Р»РёР±СЂРѕРІРєР° MIN (0-РЅРµС‚, 1-РµСЃС‚СЊ)
+// команда для модуля. бит D6 - калибровка MIN (0-нет, 1-есть)
 #define MUVR_SET_BOTTOM_OF_SCALE  0x40
-// Р°РґСЂРµСЃ Modbus function 5 - 0x12XY - РєР°Р»РёР±СЂРѕРІРєР° РєРѕРЅС†Р° С€РєР°Р»С‹ - Р’РЁРљ.
-// X - РЅРѕРјРµСЂ РјРѕРґСѓР»СЏ, Y - РЅРѕРјРµСЂ РєР°Р»РёР±СЂСѓРµРјРѕРіРѕ РІС…РѕРґР°.
+// адрес Modbus function 5 - 0x12XY - калибровка конца шкалы - ВШК.
+// X - номер модуля, Y - номер калибруемого входа.
 #define MUVR_COMMAND_CONTROL_SET_TOP_OF_SCALE  0x12
-// РєРѕРјР°РЅРґР° РґР»СЏ РјРѕРґСѓР»СЏ. Р±РёС‚ D7 - РєР°Р»РёР±СЂРѕРІРєР° MРђРҐ (0-РЅРµС‚, 1-РµСЃС‚СЊ).
+// команда для модуля. бит D7 - калибровка MАХ (0-нет, 1-есть).
 #define MUVR_SET_TOP_OF_SCALE  0x80
-// $43 - Р·Р°РїСЂРѕСЃ РўРҐРЎ
+// $43 - запрос ТХС
 #define MUVR_GET_TXS_DATA_COMMAND 0x43
 #define MUVR_GET_TXS_DATA_COMMAND_ANSWER_LENGTH 5
-// РЅРѕРјРµСЂ РІС…РѕРґР° С‚РµРјРїРµСЂР°С‚СѓСЂС‹ С…РѕР»РѕРґРЅРѕРіРѕ СЃРїР°СЏ РўРҐРЎ РњР’РЎРў3.
+// номер входа температуры холодного спая ТХС МВСТ3.
 #define MUVR_TXS_INPUT_NUMBER  0x07
 #define MUVR_TXS_INPUT_QUANTITY  1
-// РµСЃР»Рё РІ СЃС‚Р°СЂС€РµРј СЂРµРіРёСЃС‚СЂРµ Р°РґСЂРµСЃР° Modbus Р±РёС‚7 = 0, С‚Рѕ Р·Р°РїСЂР°С€РёРІР°СЋС‚СЃСЏ СЂРµРїРµСЂРЅС‹Рµ С‚РѕС‡РєРё - (Р±РёС‚0 - Р±РёС‚6) - Р°РґСЂРµСЃ Р°РЅР°Р»РѕРіРѕРІРѕРіРѕ РІС…РѕРґР°.
-// РµСЃР»Рё РІ СЃС‚Р°СЂС€РµРј СЂРµРіРёСЃС‚СЂРµ Р°РґСЂРµСЃР° Modbus Р±РёС‚7 = 1, С‚Рѕ Р·Р°РїСЂР°С€РёРІР°РµС‚СЃСЏ РўРҐРЎ Рё (Р±РёС‚0 - Р±РёС‚2) - РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅС‹Р№ Р°РґСЂРµСЃ РјРѕРґСѓР»СЏ РњР’РЎРў3.
+// если в старшем регистре адреса Modbus бит7 = 0, то запрашиваются реперные точки - (бит0 - бит6) - адрес аналогового входа.
+// если в старшем регистре адреса Modbus бит7 = 1, то запрашивается ТХС и (бит0 - бит2) - относительный адрес модуля МВСТ3.
 #define MUVR_TXS_REQUEST_MASK  0x80
-// (Р±РёС‚0 - Р±РёС‚2) - РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅС‹Р№ Р°РґСЂРµСЃ РјРѕРґСѓР»СЏ РњР’РЎРў3.
+// (бит0 - бит2) - относительный адрес модуля МВСТ3.
 #define TXS_MVST3_MODULE_NUMBER_MASK  0x07
-// РЅР° РјРµСЃС‚Рµ РїСЂРёС‘РјР° РѕС‚ РјРѕРґСѓР»СЏ РґРІСѓС… Р±Р°Р№С‚ РєРѕРЅС‚СЂРѕР»СЊРЅРѕР№ СЃСѓРјРјС‹.
+// на месте приёма от модуля двух байт контрольной суммы.
 #define MUVR_TXS_CALIBRATION_DATA_OFFSET 5
-// $44 - Р·Р°РїСЂРѕСЃ РЅР° РѕСЃРЅРѕРІРЅРѕР№ (С†РёРєР»РёС‡РµСЃРєРёР№) РѕР±РјРµРЅ РґР°РЅРЅС‹РјРё
+// $44 - запрос на основной (циклический) обмен данными
 #define MUVR_GET_MEASURE_DATA_COMMAND 0x44
 #define MUVR_ANSWER_DATA_NOT_READY 0x24
 #define MUVR_ANSWER_DATABASE_ERROR 0x25
 #define MUVR_ANSWER_REPER_POINTS_ADC_DATABASE_ERROR 0x26
-// $45 - Р·Р°РїСЂРѕСЃ СЂРµРїРµСЂРЅС‹С… С‚РѕС‡РµРє Рё РєРѕРґР° РђР¦Рџ
+// $45 - запрос реперных точек и кода АЦП
 #define MUVR_GET_REPER_POINTS_ADC_DATA_COMMAND 0x45
-// РєРѕРґ РѕС€РёР±РєРё - РјРѕРґСѓР»СЊ РЅРµ РѕС‚РІРµС‡Р°РµС‚. РїСЂРё Р·Р°РїСЂРѕСЃРµ Рѕ СЂРµР·СѓР»СЊС‚Р°С‚Рµ РїСЂРѕРіСЂР°РјРјРёСЂРѕРІР°РЅРЅРёСЏ С„СѓРЅРєС†РёРµР№ Modbus 14 РѕС‚ РїСЂРѕРіСЂР°РјРјР°С‚РѕСЂР°.
+// код ошибки - модуль не отвечает. при запросе о результате программированния функцией Modbus 14 от программатора.
 #define MUVR_GET_REPER_POINTS_ADC_DATA_COMMAND_ERROR 0x01
-// РєРѕРґ РѕС€РёР±РєРё - РѕС€РёР±РєР° РѕР±РјРµРЅР° РґР°РЅРЅС‹РјРё. РїСЂРё Р·Р°РїСЂРѕСЃРµ Рѕ СЂРµР·СѓР»СЊС‚Р°С‚Рµ РїСЂРѕРіСЂР°РјРјРёСЂРѕРІР°РЅРЅРёСЏ С„СѓРЅРєС†РёРµР№ Modbus 14 РѕС‚ РїСЂРѕРіСЂР°РјРјР°С‚РѕСЂР°.
+// код ошибки - ошибка обмена данными. при запросе о результате программированния функцией Modbus 14 от программатора.
 #define MUVR_GET_REPER_POINTS_ADC_DATA_COMMUNICATION_ERROR 0x02
 #define MUVR_REPER_POINTS_ADC_CHANNEL_QUANTITY 7
-// СЃРѕРіР»Р°СЃРЅРѕ РїСЂРѕС‚РѕРєРѕР»Р° РѕР±РјРµРЅР° РѕРїРёСЃР°РЅРЅРѕРіРѕ РІ С„Р°Р№Р»Рµ: СЃС‚СЂСѓРєС‚ Рё РїСЂРѕС‚ РџРђРЎ-17.txt
-// 3. РћР±РјРµРЅ РґР°РЅРЅС‹РјРё РјРµР¶РґСѓ РњР¦Рџ Рё РњРЈР’Р  РІ С†РёРєР»Рµ.
+// согласно протокола обмена описанного в файле: структ и прот ПАС-17.txt
+// 3. Обмен данными между МЦП и МУВР в цикле.
 #define MUVR_GET_MEASURE_DATA_COMMAND_ANSWER_LENGTH 24
-// $84 - Р·Р°РїСЂРѕСЃ РЅР° РїСЂРёРµРј Р‘Р”  (РѕС‚ РњР’Рђ Рє РњР¦Рџ)
+// $84 - запрос на прием БД  (от МВА к МЦП)
 #define MUVR_GET_DATA_BASE_COMMAND 0x84
-// $81 - Р·Р°РїСЂРѕСЃ РЅР° РїРµСЂРµРґР°С‡Сѓ Р‘Р” (РѕС‚ РњР¦Рџ Рє РњР’Рђ)
+// $81 - запрос на передачу БД (от МЦП к МВА)
 #define MUVR_SET_DATA_BASE_COMMAND 0x81
-// $82 - Р·Р°РїСЂРѕСЃ Рѕ СЂРµР·СѓР»СЊС‚Р°С‚Р°С… РїСЂРѕРіСЂР°РјРјРёСЂРѕРІР°РЅРёСЏ
+// $82 - запрос о результатах программирования
 #define MUVR_CHECK_DATA_BASE_WRITE_COMMAND 0x82
 #define MUVR_CHECK_DATA_BASE_WRITE_ANSWER_BUSY 0xF0
-// РѕРїСЂРµРґРµР»СЏСЋС‚ РІСЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РѕС‚РІРµС‚Р° РѕС‚ РјРѕРґСѓР»СЏ, СЃ СЂРµР·СѓР»СЊС‚Р°С‚РѕРј Р·Р°РїРёСЃРё Р±Р°Р·С‹ РґР°РЅРЅС‹С….
+// определяют время ожидания ответа от модуля, с результатом записи базы данных.
 #define MUVR_CHECK_DATA_BASE_WRITE_BUSY_WAITING_TIME 10
 #define MUVR_CHECK_DATA_BASE_WRITE_BUSY_DELAY_TIME 500000
 
-// СЃРјРµС‰РµРЅРёСЏ РЅР° РґР°РЅРЅС‹Рµ РІ Р±СѓС„РµСЂРµ auiSpiRxBuffer[], РїСЂРё РѕР±РјРµРЅРµ РїРѕ SPI.
+// смещения на данные в буфере auiSpiRxBuffer[], при обмене по SPI.
 #define MUVR_COMMAND_BYTE_OFFSET 1
 #define MUVR_COMMAND_BYTE_LENGTH 1
-// СЃРјРµС‰РµРЅРёРµ РЅР° РґР°РЅРЅС‹Рµ РёР·РјРµСЂРµРЅРЅС‹С… Р·РЅР°С‡РµРЅРёР№ Р°РЅР°Р»РѕРіРѕРІС‹С… СЃРёРіРЅР°Р»РѕРІ.
+// смещение на данные измеренных значений аналоговых сигналов.
 #define MUVR_MEASURE_DATA_OFFSET (MUVR_COMMAND_BYTE_OFFSET + 1)
 #define MUVR_DATA_OFFSET (MUVR_COMMAND_BYTE_OFFSET + 1)
-// РєРѕР»РёС‡РµСЃС‚РІРѕ Р±Р°Р№С‚ РґР°РЅРЅС‹С… СЃРѕСЃС‚РѕСЏРЅРёСЏ Р°РЅР°Р»РѕРіРѕРІС‹С… РІС…РѕРґРѕРІ.
+// количество байт данных состояния аналоговых входов.
 #define MUVR_ANALOG_INPUT_STATE_BYTE_QUANTITY MUVR_ANALOG_INPUT_QUANTITY
-// РєРѕР»РёС‡РµСЃС‚РІРѕ Р±Р°Р№С‚ РґР°РЅРЅС‹С… РѕРґРЅРѕРіРѕ РёР·РјРµСЂРµРЅРЅРѕРіРѕ Р·РЅР°С‡РµРЅРёСЏ Р°РЅР°Р»РѕРіРѕРІРѕРіРѕ СЃРёРіРЅР°Р»Р°(С„РѕСЂРјР°С‚ float STEP5).
+// количество байт данных одного измеренного значения аналогового сигнала(формат float STEP5).
 #define MUVR_ONE_ANALOG_INPUT_DATA_BYTE_QUANTITY 3
-// СЃРјРµС‰РµРЅРёРµ РЅР° РґР°РЅРЅС‹Рµ СЃРѕСЃС‚РѕСЏРЅРёСЏ РєР°РЅР°Р»РѕРІ Р°РЅР°Р»РѕРіРѕРІС‹С… РІС…РѕРґРѕРІ.
-// СЃРѕРіР»Р°СЃРЅРѕ РїСЂРѕС‚РѕРєРѕР»Р° РѕР±РјРµРЅР° РѕРїРёСЃР°РЅРЅРѕРіРѕ РІ С„Р°Р№Р»Рµ: СЃС‚СЂСѓРєС‚ Рё РїСЂРѕС‚ РџРђРЎ-17.txt
-// 3. РћР±РјРµРЅ РґР°РЅРЅС‹РјРё РјРµР¶РґСѓ РњР¦Рџ Рё РњРЈР’Р  РІ С†РёРєР»Рµ.
+// смещение на данные состояния каналов аналоговых входов.
+// согласно протокола обмена описанного в файле: структ и прот ПАС-17.txt
+// 3. Обмен данными между МЦП и МУВР в цикле.
 #define MUVR_STATE_DATA_OFFSET (MUVR_MEASURE_DATA_OFFSET + (MUVR_ANALOG_INPUT_QUANTITY * MUVR_ONE_ANALOG_INPUT_DATA_BYTE_QUANTITY) + 6)
-// СЃРјРµС‰РµРЅРёРµ РЅР° РґР°РЅРЅС‹Рµ С‚СЂРµР±РѕРІР°РЅРёСЏ РєР°Р»РёР±СЂРѕРІРєРё. РїРµСЂРµРґР°СЋС‚СЃСЏ РІ РјРѕРґСѓР»СЊ РґРІСѓРјСЏ Р±Р°Р№С‚Р°РјРё,
-// РЅР° РјРµСЃС‚Рµ РїСЂРёС‘РјР° РѕС‚ РјРѕРґСѓР»СЏ РґРІСѓС… Р±Р°Р№С‚ РєРѕРЅС‚СЂРѕР»СЊРЅРѕР№ СЃСѓРјРјС‹.
+// смещение на данные требования калибровки. передаются в модуль двумя байтами,
+// на месте приёма от модуля двух байт контрольной суммы.
 #define MUVR_CALIBRATION_DATA_OFFSET (MUVR_STATE_DATA_OFFSET + MUVR_ANALOG_INPUT_STATE_BYTE_QUANTITY)
 
-// (sizeof(struct TAnalogueInputDescriptionDataBase) * ANALOG_MODULE_INPUT_QUANTITY)// 28С…6=168.
+// (sizeof(struct TAnalogueInputDescriptionDataBase) * ANALOG_MODULE_INPUT_QUANTITY)// 28х6=168.
 #define ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_LENGTH 168
 #define ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_TEXT_DESCRIPTOR_OFFSET 120
 
-#define PERCENT_100 100 // СЃС‚Рѕ РїСЂРѕС†РµРЅС‚РѕРІ.
-#define MEASURE_ERROR_THRESHOLD 3 // РїРѕСЂРѕРі РѕС€РёР±РєРё РёР·РјРµСЂРµРЅРЅРѕРіРѕ Р·РЅР°С‡РµРЅРёСЏ.
+#define PERCENT_100 100 // сто процентов.
+#define MEASURE_ERROR_THRESHOLD 3 // порог ошибки измеренного значения.
 
-#define ANALOGUE_INPUT_SET_POINT_VIOLATION_L 0x03 // 3 вЂ“ РЅР°СЂСѓС€РµРЅРёРµ СѓСЃС‚Р°РІРєРё L.
-#define ANALOGUE_INPUT_SET_POINT_VIOLATION_LL_L 0x04 // 4 вЂ“ РЅР°СЂСѓС€РµРЅРёРµ СѓСЃС‚Р°РІРѕРє LL+L.
-#define ANALOGUE_INPUT_SET_POINT_VIOLATION_H 0x05 // 5 вЂ“ РЅР°СЂСѓС€РµРЅРёРµ СѓСЃС‚Р°РІРєРё H.
-#define ANALOGUE_INPUT_SET_POINT_VIOLATION_HH_H 0x06 // 6 вЂ“ РЅР°СЂСѓС€РµРЅРёРµ СѓСЃС‚Р°РІРѕРє Рќ+РќРќ.
+#define ANALOGUE_INPUT_SET_POINT_VIOLATION_L 0x03 // 3 – нарушение уставки L.
+#define ANALOGUE_INPUT_SET_POINT_VIOLATION_LL_L 0x04 // 4 – нарушение уставок LL+L.
+#define ANALOGUE_INPUT_SET_POINT_VIOLATION_H 0x05 // 5 – нарушение уставки H.
+#define ANALOGUE_INPUT_SET_POINT_VIOLATION_HH_H 0x06 // 6 – нарушение уставок Н+НН.
 #define ANALOGUE_INPUT_SET_POINT_VIOLATION_MASK 0x07
-#define ANALOGUE_INPUT_CHANNEL_CALIBRATION 0x20 // РєР°РЅР°Р» РЅР°С…РѕРґРёС‚СЃСЏ РІ СЂРµР¶РёРјРµ РєР°Р»РёР±СЂРѕРІРєРё.
-#define ANALOGUE_INPUT_LINE_BREAK 0x40 // РѕР±СЂС‹РІ Р»РёРЅРёРё РєР°РЅР°Р»Р°.
-#define ANALOGUE_INPUT_CALCULATION_OVERFLOW 0x80 // РїРµСЂРµРїРѕР»РЅРµРЅРёРµ РїСЂРё СЂР°СЃС‡РµС‚Р°С….
-// СЃРјРµС‰РµРЅРёСЏ РЅР° С„Р»Р°РіРё РЅР°СЂСѓС€РµРЅРёСЏ СѓСЃС‚Р°РІРѕРє РІ РјР°СЃСЃРёРІРµ DI_value РґР»СЏ РѕРґРЅРѕРіРѕ Р°РЅР°Р»РѕРіРѕРІРѕРіРѕ РІС…РѕРґР°.
-#define ANALOGUE_INPUT_SET_POINT_VIOLATION_LL_L_OFFSET 0 // СЃРјРµС‰РµРЅРёРµ СѓСЃС‚Р°РІРѕРє LL+L.
-#define ANALOGUE_INPUT_SET_POINT_VIOLATION_L_OFFSET 1 // СЃРјРµС‰РµРЅРёРµ СѓСЃС‚Р°РІРєРё L.
-#define ANALOGUE_INPUT_SET_POINT_VIOLATION_H_OFFSET 2 // СЃРјРµС‰РµРЅРёРµ СѓСЃС‚Р°РІРєРё H.
-#define ANALOGUE_INPUT_SET_POINT_VIOLATION_HH_H_OFFSET 3 // СЃРјРµС‰РµРЅРёРµ СѓСЃС‚Р°РІРѕРє Рќ+РќРќ.
+#define ANALOGUE_INPUT_CHANNEL_CALIBRATION 0x20 // канал находится в режиме калибровки.
+#define ANALOGUE_INPUT_LINE_BREAK 0x40 // обрыв линии канала.
+#define ANALOGUE_INPUT_CALCULATION_OVERFLOW 0x80 // переполнение при расчетах.
+// смещения на флаги нарушения уставок в массиве DI_value для одного аналогового входа.
+#define ANALOGUE_INPUT_SET_POINT_VIOLATION_LL_L_OFFSET 0 // смещение уставок LL+L.
+#define ANALOGUE_INPUT_SET_POINT_VIOLATION_L_OFFSET 1 // смещение уставки L.
+#define ANALOGUE_INPUT_SET_POINT_VIOLATION_H_OFFSET 2 // смещение уставки H.
+#define ANALOGUE_INPUT_SET_POINT_VIOLATION_HH_H_OFFSET 3 // смещение уставок Н+НН.
 
-// РєРѕРґС‹ СЃРѕСЃС‚РѕСЏРЅРёСЏ Р°РЅР°Р»РѕРіРѕРІРѕРіРѕ РёР·РјРµСЂРµРЅРёСЏ РґР»СЏ РїРµСЂРµРґР°С‡Рё Рё РёРЅС‚РµСЂРїСЂРµС‚Р°С†РёРё РІ РњРРќР”.
-#define HMI_ANALOGUE_INPUT_LINE_BREAK 1 // РѕР±СЂС‹РІ Р»РёРЅРёРё РєР°РЅР°Р»Р°.
-#define HMI_ANALOGUE_INPUT_CALCULATION_OVERFLOW 2 // РїРµСЂРµРїРѕР»РЅРµРЅРёРµ РїСЂРё СЂР°СЃС‡РµС‚Р°С….
-#define HMI_ANALOGUE_INPUT_CHANNEL_CALIBRATION 3 // РєР°РЅР°Р» РЅР°С…РѕРґРёС‚СЃСЏ РІ СЂРµР¶РёРјРµ РєР°Р»РёР±СЂРѕРІРєРё.
-#define HMI_ANALOGUE_INPUT_SET_POINT_VIOLATION_L 4 // 3 вЂ“ РЅР°СЂСѓС€РµРЅРёРµ СѓСЃС‚Р°РІРєРё L.
-#define HMI_ANALOGUE_INPUT_SET_POINT_VIOLATION_LL_L 5 // 4 вЂ“ РЅР°СЂСѓС€РµРЅРёРµ СѓСЃС‚Р°РІРѕРє LL+L.
-#define HMI_ANALOGUE_INPUT_SET_POINT_VIOLATION_H 6 // 5 вЂ“ РЅР°СЂСѓС€РµРЅРёРµ СѓСЃС‚Р°РІРєРё H.
-#define HMI_ANALOGUE_INPUT_SET_POINT_VIOLATION_HH_H 7 // 6 вЂ“ РЅР°СЂСѓС€РµРЅРёРµ СѓСЃС‚Р°РІРѕРє Рќ+РќРќ.
+// коды состояния аналогового измерения для передачи и интерпретации в МИНД.
+#define HMI_ANALOGUE_INPUT_LINE_BREAK 1 // обрыв линии канала.
+#define HMI_ANALOGUE_INPUT_CALCULATION_OVERFLOW 2 // переполнение при расчетах.
+#define HMI_ANALOGUE_INPUT_CHANNEL_CALIBRATION 3 // канал находится в режиме калибровки.
+#define HMI_ANALOGUE_INPUT_SET_POINT_VIOLATION_L 4 // 3 – нарушение уставки L.
+#define HMI_ANALOGUE_INPUT_SET_POINT_VIOLATION_LL_L 5 // 4 – нарушение уставок LL+L.
+#define HMI_ANALOGUE_INPUT_SET_POINT_VIOLATION_H 6 // 5 – нарушение уставки H.
+#define HMI_ANALOGUE_INPUT_SET_POINT_VIOLATION_HH_H 7 // 6 – нарушение уставок Н+НН.
 
 class CTimer;
 class CPlatform;

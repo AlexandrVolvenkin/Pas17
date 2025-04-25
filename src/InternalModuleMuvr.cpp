@@ -1,4 +1,4 @@
-п»ї//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 //  Sourse      : FileName.cpp
 //  Created     : 01.06.2022
 //  Author      : Alexandr Volvenkin
@@ -137,68 +137,68 @@ void CInternalModuleMuvr::Allocate(void)
 //    m_puiTxBuffer = xMemoryAllocationContext.puiTxBuffer;
 //    m_puiErrorCode = xMemoryAllocationContext.puiErrorCode;
 
-    // РџРѕР»СѓС‡РёРј СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РјРµСЃС‚Рѕ РІ РјР°СЃСЃРёРІРµ РґРёСЃРєСЂРµС‚РЅС‹С… РІС…РѕРґРѕРІ РґР»СЏ С‚РµРєСѓС‰РµРіРѕ РјРѕРґСѓР»СЏ.
+    // Получим указатель на место в массиве дискретных входов для текущего модуля.
     m_puiDiscreteInputsState =
         &(GetResources() ->
           m_puiDiscreteInputsState[GetResources() ->
                                                   m_uiUsedDiscreteInputsState]);
-    // РЈРІРµР»РёС‡РёРј РѕР±С‰РёР№ РѕР±СЉС‘Рј РІС‹РґРµР»РµРЅРЅРѕР№ РїР°РјСЏС‚Рё.
+    // Увеличим общий объём выделенной памяти.
     GetResources() ->
     m_uiUsedDiscreteInputsState +=
         MUVR_DISCRETE_INPUT_QUANTITY;
 
 
-    // РџРѕР»СѓС‡РёРј СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РјРµСЃС‚Рѕ РІ РјР°СЃСЃРёРІРµ РґРѕСЃС‚РѕРІРµСЂРЅРѕСЃС‚Рё РґРёСЃРєСЂРµС‚РЅС‹С… РІС…РѕРґРѕРІ РґР»СЏ С‚РµРєСѓС‰РµРіРѕ РјРѕРґСѓР»СЏ.
+    // Получим указатель на место в массиве достоверности дискретных входов для текущего модуля.
     m_puiDiscreteInputsBadState =
         &(GetResources() ->
           m_puiDiscreteInputsBadState[GetResources() ->
                                                      m_uiUsedDiscreteInputsBadState]);
-    // РЈРІРµР»РёС‡РёРј РѕР±С‰РёР№ РѕР±СЉС‘Рј РІС‹РґРµР»РµРЅРЅРѕР№ РїР°РјСЏС‚Рё.
+    // Увеличим общий объём выделенной памяти.
     GetResources() ->
     m_uiUsedDiscreteInputsBadState +=
         MUVR_DISCRETE_INPUT_QUANTITY;
 
 
-    // РџРѕР»СѓС‡РёРј СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РјРµСЃС‚Рѕ РІ РјР°СЃСЃРёРІРµ Р°РЅР°Р»РѕРіРѕРІС‹С… РІС…РѕРґРѕРІ РґР»СЏ С‚РµРєСѓС‰РµРіРѕ РјРѕРґСѓР»СЏ.
+    // Получим указатель на место в массиве аналоговых входов для текущего модуля.
     m_pfAnalogueInputsValue =
         &(GetResources() ->
           m_pfAnalogueInputsValue[GetResources() ->
                                                  m_uiUsedAnalogueInputsValue]);
-    // РЈРІРµР»РёС‡РёРј РѕР±С‰РёР№ РѕР±СЉС‘Рј РІС‹РґРµР»РµРЅРЅРѕР№ РїР°РјСЏС‚Рё.
+    // Увеличим общий объём выделенной памяти.
     GetResources() ->
     m_uiUsedAnalogueInputsValue +=
         MUVR_ANALOG_INPUT_QUANTITY;
 
 
-    // РџРѕР»СѓС‡РёРј СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РјРµСЃС‚Рѕ РІ РјР°СЃСЃРёРІРµ РґРѕСЃС‚РѕРІРµСЂРЅРѕСЃС‚Рё Р°РЅР°Р»РѕРіРѕРІС‹С… РІС…РѕРґРѕРІ РґР»СЏ С‚РµРєСѓС‰РµРіРѕ РјРѕРґСѓР»СЏ.
+    // Получим указатель на место в массиве достоверности аналоговых входов для текущего модуля.
     m_puiAnalogueInputsBadState =
         &(GetResources() ->
           m_puiAnalogueInputsBadState[GetResources() ->
                                                      m_uiUsedAnalogueInputsBadState]);
-    // РЈРІРµР»РёС‡РёРј РѕР±С‰РёР№ РѕР±СЉС‘Рј РІС‹РґРµР»РµРЅРЅРѕР№ РїР°РјСЏС‚Рё.
+    // Увеличим общий объём выделенной памяти.
     GetResources() ->
     m_uiUsedAnalogueInputsBadState +=
         MUVR_ANALOG_INPUT_QUANTITY;
 
 
-    // РџРѕР»СѓС‡РёРј СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РјРµСЃС‚Рѕ РІ РјР°СЃСЃРёРІРµ РѕС‚РєР»СЋС‡РµРЅРёСЏ Р°РЅР°Р»РѕРіРѕРІС‹С… РІС…РѕРґРѕРІ РґР»СЏ С‚РµРєСѓС‰РµРіРѕ РјРѕРґСѓР»СЏ.
+    // Получим указатель на место в массиве отключения аналоговых входов для текущего модуля.
     m_puiAnalogueInputsOff =
         &(GetResources() ->
           m_puiAnalogueInputsOff[GetResources() ->
                                                 m_uiUsedAnalogueInputsOff]);
-    // РЈРІРµР»РёС‡РёРј РѕР±С‰РёР№ РѕР±СЉС‘Рј РІС‹РґРµР»РµРЅРЅРѕР№ РїР°РјСЏС‚Рё.
+    // Увеличим общий объём выделенной памяти.
     GetResources() ->
     m_uiUsedAnalogueInputsOff +=
         MUVR_ANALOG_INPUT_QUANTITY;
 
 
-    // РџРѕР»СѓС‡РёРј СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РјРµСЃС‚Рѕ РІ РјР°СЃСЃРёРІРµ СЂР°СЃРїР°РєРѕРІР°РЅРЅРѕР№ РІРѕ РІРЅСѓС‚СЂРµРЅРЅРёР№ С„РѕСЂРјР°С‚ Р±Р°Р·С‹ РґР°РЅРЅС‹С…
-    // Р°РЅР°Р»РѕРіРѕРІС‹С… СЃРёРіРЅР°Р»РѕРІ.
+    // Получим указатель на место в массиве распакованной во внутренний формат базы данных
+    // аналоговых сигналов.
     m_pxAnalogueInputDescriptionWork =
         &(GetResources() ->
           m_pxAnalogueInputDescriptionWork[GetResources() ->
                                                           m_uiUsedAnalogueInputDescriptionWork]);
-    // РЈРІРµР»РёС‡РёРј РѕР±С‰РёР№ РѕР±СЉС‘Рј РІС‹РґРµР»РµРЅРЅРѕР№ РїР°РјСЏС‚Рё.
+    // Увеличим общий объём выделенной памяти.
     GetResources() ->
     m_uiUsedAnalogueInputDescriptionWork +=
         MUVR_ANALOG_INPUT_QUANTITY;
@@ -240,25 +240,25 @@ void CInternalModuleMuvr::Allocate(void)
 //        }
 //    }
 //
-//    // РјРѕРґСѓР»СЊ РѕС‚РІРµС‡Р°РµС‚?
+//    // модуль отвечает?
 //    if (auiSpiRxBuffer[GET_MODULE_TYPE_COMMAND_OFFSET] ==
 //            GET_MODULE_TYPE_COMMAND) // if echo answer is ok.
 //    {
 //        //std::cout << "CInternalModuleMuvr::GetModuleType 3"  << std::endl;
 ////                //std::cout << "CInternalModuleMuvr::GetModuleType ucSlaveAddress 1 "  << (int)ucSlaveAddress << std::endl;
-//        // РѕР±РјРµРЅ РґР°РЅРЅС‹РјРё РїСЂРѕС€С‘Р» Р±РµР· РѕС€РёР±РѕРє?
+//        // обмен данными прошёл без ошибок?
 //        if ((iCrcSummOneByteCompare(&auiSpiRxBuffer[GET_MODULE_TYPE_COMMAND_OFFSET],
 //                                    GET_MODULE_TYPE_COMMAND_LENGTH +
 //                                    GET_MODULE_TYPE_COMMAND_ANSWER_LENGTH) > 0))
 //        {
 //            //std::cout << "CInternalModuleMuvr::GetModuleType 4"  << std::endl;
-////            // РјРѕРґСѓР»СЊ РїСЂРёСЃСѓС‚СЃС‚РІСѓРµС‚. СѓРІРµР»РёС‡РёРј Р·РЅР°С‡РµРЅРёРµ РїРµСЂРµРјРµРЅРЅРѕР№ -
-////            // С„Р°РєС‚РёС‡РµСЃРєРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ РјРѕРґСѓР»РµР№ РІ СЃРёСЃС‚РµРјРµ.
+////            // модуль присутствует. увеличим значение переменной -
+////            // фактическое количество модулей в системе.
 ////            (xPlcConfigSearchTemp.ui8ModulesQuantity)++;
-////            // СЃРѕС…СЂР°РЅРёРј С‚РёРї РјРѕРґСѓР»СЏ РІ РјР°СЃСЃРёРІРµ РґР»СЏ СѓРїРѕСЂСЏРґРѕС‡РёРІР°РЅРёСЏ СЃР»РµРґРѕРІР°РЅРёСЏ РјРѕРґСѓР»РµР№ РїСЂРё РїРѕРёСЃРєРµ РЅР° SPI.
+////            // сохраним тип модуля в массиве для упорядочивания следования модулей при поиске на SPI.
 ////            xPlcConfigSearchTemp.axConfigSearch[ucSlaveAddress].ui8Type =
 ////                auiSpiRxBuffer[MODULE_TYPE_OFFSET];
-////            // СЃРѕС…СЂР°РЅРёРј Р°РґСЂРµСЃ РјРѕРґСѓР»СЏ РІ РјР°СЃСЃРёРІРµ РґР»СЏ СѓРїРѕСЂСЏРґРѕС‡РёРІР°РЅРёСЏ СЃР»РµРґРѕРІР°РЅРёСЏ РјРѕРґСѓР»РµР№ РїСЂРё РїРѕРёСЃРєРµ РЅР° SPI.
+////            // сохраним адрес модуля в массиве для упорядочивания следования модулей при поиске на SPI.
 ////            xPlcConfigSearchTemp.axConfigSearch[ucSlaveAddress].ui8Address =
 ////                ucSlaveAddress;
 ////
@@ -270,7 +270,7 @@ void CInternalModuleMuvr::Allocate(void)
 //        else
 //        {
 //            //std::cout << "CInternalModuleMuvr::GetModuleType 5"  << std::endl;
-////            // СЃРѕС…СЂР°РЅРёРј Р°РґСЂРµСЃ РјРѕРґСѓР»СЏ РІ РјР°СЃСЃРёРІРµ РґР»СЏ СѓРїРѕСЂСЏРґРѕС‡РёРІР°РЅРёСЏ СЃР»РµРґРѕРІР°РЅРёСЏ РјРѕРґСѓР»РµР№ РїСЂРё РїРѕРёСЃРєРµ РЅР° SPI.
+////            // сохраним адрес модуля в массиве для упорядочивания следования модулей при поиске на SPI.
 ////            xPlcConfigSearchTemp.axConfigSearch[ucSlaveAddress].ui8Address =
 ////                ucSlaveAddress;
 ////
@@ -297,31 +297,31 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
     ucCalibrMinus = 0;
     uint8_t uiCommonIndex = GetCommonIndex();
 
-    // РєР°Р»РёР±СЂСѓРµРј РІС…РѕРґ?(РµСЃР»Рё ucCommonIndex РЅРµ СЂР°РІРµРЅ 0, С‚Рѕ СЃРѕРґРµСЂР¶РёС‚ РЅРѕРјРµСЂ РєР°Р»РёР±СЂСѓРµРјРѕРіРѕ РІС…РѕРґР°)
+    // калибруем вход?(если ucCommonIndex не равен 0, то содержит номер калибруемого входа)
     if ((uiCommonIndex > 0) && (uiCommonIndex < (MUVR_TXS_INPUT_NUMBER + 1)))
     {
         //std::cout << "CInternalModuleMuvr::DataExchange 12"  << std::endl;
-        // РїРѕР»СѓС‡РёРј РЅРѕРјРµСЂ РєР°Р»РёР±СЂСѓРµРјРѕРіРѕ РІС…РѕРґР°.
+        // получим номер калибруемого входа.
         ucCalibrPlus = uiCommonIndex;
-        // СѓСЃС‚Р°РЅРѕРІРёРј РЅР°С‡Р°Р»Рѕ С€РєР°Р»С‹ РќРЁРљ?
+        // установим начало шкалы НШК?
         if (GetCommandControl() == MUVR_COMMAND_CONTROL_SET_BOTTOM_OF_SCALE)
         {
             //std::cout << "CInternalModuleMuvr::DataExchange 13"  << std::endl;
             SetCommandControl(0);
-            // РґРѕР±Р°РІРёРј РєРѕРјР°РЅРґСѓ РјРѕРґСѓР»СЋ.
+            // добавим команду модулю.
             ucCalibrPlus |= MUVR_SET_BOTTOM_OF_SCALE;
         }
-        // СѓСЃС‚Р°РЅРѕРІРёРј РєРѕРЅРµС† С€РєР°Р»С‹ Р’РЁРљ?
+        // установим конец шкалы ВШК?
         else if (GetCommandControl() == MUVR_COMMAND_CONTROL_SET_TOP_OF_SCALE)
         {
             //std::cout << "CInternalModuleMuvr::DataExchange 14"  << std::endl;
             SetCommandControl(0);
-            // РґРѕР±Р°РІРёРј РєРѕРјР°РЅРґСѓ РјРѕРґСѓР»СЋ.
+            // добавим команду модулю.
             ucCalibrPlus |= MUVR_SET_TOP_OF_SCALE;
         }
-        // РґР°РЅРЅС‹Рµ РєР°Р»РёР±СЂРѕРІРєРё РїРµСЂРµРґР°СЋС‚СЃСЏ РґРІР°Р¶РґС‹, РІ РЅРѕСЂРјР°Р»СЊРЅРѕРј РІРёРґРµ РІ Р±Р°Р№С‚Рµ(ucCalibrPlus) Рё
-        // РІ РёРЅРІРµСЂС‚РёСЂРѕРІР°РЅРЅРѕРј(!ucCalibrPlus + 1) РІ Р±Р°Р№С‚Рµ(ucCalibrMinus).
-        // РїСЂРё РєРѕРЅС‚СЂРѕР»Рµ, СЃСѓРјРјР° (ucCalibrPlus + ucCalibrMinus) РґРѕР»Р¶РЅР° Р±С‹С‚СЊ 0.
+        // данные калибровки передаются дважды, в нормальном виде в байте(ucCalibrPlus) и
+        // в инвертированном(!ucCalibrPlus + 1) в байте(ucCalibrMinus).
+        // при контроле, сумма (ucCalibrPlus + ucCalibrMinus) должна быть 0.
         ucCalibrMinus = 0x00 - ucCalibrPlus;
     }
     auiSpiTxBuffer[(SPI_PREAMBLE_LENGTH +
@@ -382,78 +382,78 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
 //        i += 8;
 //    }
 
-    // С‡С‚Рѕ РѕС‚РІРµС‚РёР» РјРѕРґСѓР»СЊ?
+    // что ответил модуль?
     switch(auiSpiRxBuffer[SPI_COMMAND_BYTE_OFFSET])
     {
     case MUVR_ANSWER_REPER_POINTS_ADC_DATABASE_ERROR:
     //std::cout << "CInternalModuleMuvr::DataExchange 15"  << std::endl;
-    // РѕС€РёР±РєР° Р‘Р” СЂРµРїРµСЂРЅС‹С… С‚РѕС‡РµРє, РЅРѕ Р±СѓРґРµС‚ РїСЂРѕРґРѕР»Р¶РµРЅРёРµ РѕР±РјРµРЅР°.
+    // ошибка БД реперных точек, но будет продолжение обмена.
     case MUVR_GET_MEASURE_DATA_COMMAND:
         //std::cout << "CInternalModuleMuvr::DataExchange 16"  << std::endl;
-        // РґР°РЅРЅС‹Рµ РЅРµ РїРѕРІСЂРµР¶РґРµРЅС‹?
+        // данные не повреждены?
         if (iCrcSummTwoByteCompare(&auiSpiRxBuffer[SPI_DATA_BYTE_OFFSET],
                                    MUVR_GET_MEASURE_DATA_COMMAND_ANSWER_LENGTH) > 0)
         {
             //std::cout << "CInternalModuleMuvr::DataExchange 17"  << std::endl;
-            // РјРѕРґСѓР»СЊ РёСЃРїСЂР°РІРµРЅ.
+            // модуль исправен.
             SetBadAnswerCounter(BAD_MODULE_CYCLE_COUNT_DEFAULT);
-//            // СЃР±СЂРѕСЃРёРј С„Р»Р°Рі РѕС‚РєР°Р·Р° РјРѕРґСѓР»СЏ.
+//            // сбросим флаг отказа модуля.
 //            *(m_puiModuleBadStateBuffer) = BAD_MODULE_RESPONDED_OK;
 
-//            // РїРѕР»СѓС‡РёРј РґР°РЅРЅС‹Рµ СЃРѕСЃС‚РѕСЏРЅРёСЏ РєР°РЅР°Р»РѕРІ Р°РЅР°Р»РѕРіРѕРІС‹С… РІС…РѕРґРѕРІ.
+//            // получим данные состояния каналов аналоговых входов.
 //            memcpy(m_puiAnalogueInputsState,
 //                   &auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET],
 //                   MUVR_ANALOG_INPUT_QUANTITY);
 
-            // РїРѕР»СѓС‡РёРј РёР·РјРµСЂРµРЅРЅС‹Рµ Р·РЅР°С‡РµРЅРёСЏ РІСЃРµС… Р°РЅР°Р»РѕРіРѕРІС‹С… РІС…РѕРґРѕРІ РјРѕРґСѓР»СЏ.
+            // получим измеренные значения всех аналоговых входов модуля.
             for (uint8_t i = 0; i < MUVR_ANALOG_INPUT_QUANTITY; i++)
             {
                 //std::cout << "CInternalModuleMuvr::DataExchange 2"  << std::endl;
-                // РµСЃС‚СЊ РѕР±СЂС‹РІ Р»РёРЅРёРё РёР»Рё РїРµСЂРµРїРѕР»РЅРµРЅРёРµ РїСЂРё СЂР°СЃС‡С‘С‚Р°С… С‚РµРєСѓС‰РµРіРѕ РІС…РѕРґР°?
+                // есть обрыв линии или переполнение при расчётах текущего входа?
                 if ((auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_LINE_BREAK) ||
                         (auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_CALCULATION_OVERFLOW))
                 {
                     //std::cout << "CInternalModuleMuvr::DataExchange 3"  << std::endl;
-                    // РґР°РЅРЅС‹Рµ РІС…РѕРґР° РЅРµРґРѕСЃС‚РѕРІРµСЂРЅС‹, РѕР±РЅСѓР»РёРј РёС….
+                    // данные входа недостоверны, обнулим их.
                     memset(&(m_pfAnalogueInputsValue[i]),
                            0,
                            sizeof(float));
                     //std::cout << "CInternalModuleMuvr::DataExchange 31"  << std::endl;
-                    // СѓСЃС‚Р°РЅРѕРІРёРј С„Р»Р°Рі РЅРµРґРѕСЃС‚РѕРІРµСЂРЅРѕСЃС‚Рё - РІС…РѕРґ РЅРµРґРѕСЃС‚РѕРІРµСЂРµРЅ.
+                    // установим флаг недостоверности - вход недостоверен.
                     m_puiAnalogueInputsBadState[i] = 1;
                     //std::cout << "CInternalModuleMuvr::DataExchange 32"  << std::endl;
-                    // РґРёСЃРєСЂРµС‚РЅС‹Рµ РґР°РЅРЅС‹Рµ РІС…РѕРґР° РЅРµРґРѕСЃС‚РѕРІРµСЂРЅС‹, РѕР±РЅСѓР»РёРј РёС….
+                    // дискретные данные входа недостоверны, обнулим их.
                     memset(&(m_puiDiscreteInputsState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
                            0,
                            MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
                     //std::cout << "CInternalModuleMuvr::DataExchange 33"  << std::endl;
-                    // СѓСЃС‚Р°РЅРѕРІРёРј С„Р»Р°РіРё РЅРµРґРѕСЃС‚РѕРІРµСЂРЅРѕСЃС‚Рё СѓСЃС‚Р°РІРѕРє LL, L, H, HH - РЅРµРґРѕСЃС‚РѕРІРµСЂРЅС‹.
+                    // установим флаги недостоверности уставок LL, L, H, HH - недостоверны.
                     memset(&(m_puiDiscreteInputsBadState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
                            1,
                            MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
                     //std::cout << "CInternalModuleMuvr::DataExchange 34"  << std::endl;
                 }
-                // РІРєР»СЋС‡РµРЅ СЂРµР¶РёРј РєР°Р»РёР±СЂРѕРІРєРё С‚РµРєСѓС‰РµРіРѕ РІС…РѕРґР°?
+                // включен режим калибровки текущего входа?
                 else if(
                     (((auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_LINE_BREAK) == 0) &&
                      ((auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_CALCULATION_OVERFLOW) == 0)) &&
                     ((auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_CHANNEL_CALIBRATION)))
                 {
                     //std::cout << "CInternalModuleMuvr::DataExchange 4"  << std::endl;
-                    // РїРѕР»СѓС‡РёРј РёР·РјРµСЂРµРЅРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ Рё РїСЂРµРѕР±СЂР°Р·СѓРµРј.
+                    // получим измеренное значение и преобразуем.
                     fData = fStep5ToFloat(&auiSpiRxBuffer[SPI_DATA_BYTE_OFFSET +
                                                                                (i * MUVR_ONE_ANALOG_INPUT_DATA_BYTE_QUANTITY)]);
-                    // РїРѕРјРµСЃС‚РёРј РµРіРѕ РІ СЂР°Р±РѕС‡РёР№ РјР°СЃСЃРёРІ.
+                    // поместим его в рабочий массив.
                     memcpy(&(m_pfAnalogueInputsValue[i]),
                            (unsigned char*)&fData,
                            sizeof(float));
-                    // СѓСЃС‚Р°РЅРѕРІРёРј С„Р»Р°Рі РЅРµРґРѕСЃС‚РѕРІРµСЂРЅРѕСЃС‚Рё - РІС…РѕРґ РЅРµРґРѕСЃС‚РѕРІРµСЂРµРЅ.
+                    // установим флаг недостоверности - вход недостоверен.
                     m_puiAnalogueInputsBadState[i] = 1;
-                    // РґРёСЃРєСЂРµС‚РЅС‹Рµ РґР°РЅРЅС‹Рµ РІС…РѕРґР° РЅРµРґРѕСЃС‚РѕРІРµСЂРЅС‹, РѕР±РЅСѓР»РёРј РёС….
+                    // дискретные данные входа недостоверны, обнулим их.
                     memset(&(m_puiDiscreteInputsState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
                            0,
                            MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
-                    // СѓСЃС‚Р°РЅРѕРІРёРј С„Р»Р°РіРё РЅРµРґРѕСЃС‚РѕРІРµСЂРЅРѕСЃС‚Рё СѓСЃС‚Р°РІРѕРє LL, L, H, HH - РЅРµРґРѕСЃС‚РѕРІРµСЂРЅС‹.
+                    // установим флаги недостоверности уставок LL, L, H, HH - недостоверны.
                     memset(&(m_puiDiscreteInputsBadState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
                            1,
                            MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
@@ -461,21 +461,21 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                 else
                 {
                     //std::cout << "CInternalModuleMuvr::DataExchange 5"  << std::endl;
-                    // Р°РЅР°Р»РѕРіРѕРІС‹Р№ РІС…РѕРґ РІС‹РІРµРґРµРЅ РёР· РѕР±СЂР°Р±РѕС‚РєРё?
+                    // аналоговый вход выведен из обработки?
                     if (m_puiAnalogueInputsOff[i])
                     {
                         //std::cout << "CInternalModuleMuvr::DataExchange 51"  << std::endl;
-                        // РґР°РЅРЅС‹Рµ РІС…РѕРґРѕРІ РјРѕРґСѓР»СЏ РІС‹РІРµРґРµРЅС‹ РёР· РѕР±СЂР°Р±РѕС‚РєРё, РѕР±РЅСѓР»РёРј РёС….
+                        // данные входов модуля выведены из обработки, обнулим их.
                         memset(&(m_pfAnalogueInputsValue[i]),
                                0,
                                sizeof(float));
-                        // СѓСЃС‚Р°РЅРѕРІРёРј С„Р»Р°Рі РЅРµРґРѕСЃС‚РѕРІРµСЂРЅРѕСЃС‚Рё - РІС…РѕРґ РЅРµРґРѕСЃС‚РѕРІРµСЂРµРЅ.
+                        // установим флаг недостоверности - вход недостоверен.
                         m_puiAnalogueInputsBadState[i] = 1;
-                        // РґРёСЃРєСЂРµС‚РЅС‹Рµ РґР°РЅРЅС‹Рµ РІС…РѕРґР° РЅРµРґРѕСЃС‚РѕРІРµСЂРЅС‹, РѕР±РЅСѓР»РёРј РёС….
+                        // дискретные данные входа недостоверны, обнулим их.
                         memset(&(m_puiDiscreteInputsState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
                                0,
                                MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
-                        // СѓСЃС‚Р°РЅРѕРІРёРј С„Р»Р°РіРё РЅРµРґРѕСЃС‚РѕРІРµСЂРЅРѕСЃС‚Рё СѓСЃС‚Р°РІРѕРє LL, L, H, HH - РЅРµРґРѕСЃС‚РѕРІРµСЂРЅС‹.
+                        // установим флаги недостоверности уставок LL, L, H, HH - недостоверны.
                         memset(&(m_puiDiscreteInputsBadState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
                                1,
                                MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
@@ -483,60 +483,60 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                     else
                     {
                         //std::cout << "CInternalModuleMuvr::DataExchange 6"  << std::endl;
-                        // РїРѕР»СѓС‡РёРј РёР·РјРµСЂРµРЅРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ Рё РїСЂРµРѕР±СЂР°Р·СѓРµРј.
+                        // получим измеренное значение и преобразуем.
                         fData = fStep5ToFloat(&auiSpiRxBuffer[SPI_DATA_BYTE_OFFSET +
                                                                                    (i * MUVR_ONE_ANALOG_INPUT_DATA_BYTE_QUANTITY)]);
-                        // РїРѕРјРµСЃС‚РёРј РµРіРѕ РІ СЂР°Р±РѕС‡РёР№ РјР°СЃСЃРёРІ.
+                        // поместим его в рабочий массив.
                         memcpy(&(m_pfAnalogueInputsValue[i]),
                                (unsigned char*)&fData,
                                sizeof(float));
-                        // СЃР±СЂРѕСЃРёРј С„Р»Р°Рі РЅРµРґРѕСЃС‚РѕРІРµСЂРЅРѕСЃС‚Рё - РІС…РѕРґ РґРѕСЃС‚РѕРІРµСЂРµРЅ.
+                        // сбросим флаг недостоверности - вход достоверен.
                         m_puiAnalogueInputsBadState[i] = 0;
-                        // СЃР±СЂРѕСЃРёРј С„Р»Р°РіРё СѓСЃС‚Р°РІРѕРє LL, L, H, HH.
+                        // сбросим флаги уставок LL, L, H, HH.
                         memset(&(m_puiDiscreteInputsState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
                                0,
                                MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
-                        // СЃР±СЂРѕСЃРёРј С„Р»Р°РіРё РЅРµРґРѕСЃС‚РѕРІРµСЂРЅРѕСЃС‚Рё СѓСЃС‚Р°РІРѕРє LL, L, H, HH - РґРѕСЃС‚РѕРІРµСЂРЅС‹.
+                        // сбросим флаги недостоверности уставок LL, L, H, HH - достоверны.
                         memset(&(m_puiDiscreteInputsBadState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
                                0,
                                MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
-                        // РЅР°СЂСѓС€РµРЅР° СѓСЃС‚Р°РІРєР° LL + L?
+                        // нарушена уставка LL + L?
                         if ((auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_SET_POINT_VIOLATION_MASK) ==
                                 ANALOGUE_INPUT_SET_POINT_VIOLATION_LL_L)
                         {
-                            // СѓСЃС‚Р°РЅРѕРІРёРј С„Р»Р°Рі РЅР°СЂСѓС€РµРЅРёСЏ СѓСЃС‚Р°РІРєРё LL.
+                            // установим флаг нарушения уставки LL.
                             (m_puiDiscreteInputsState[(i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH) +
                                                                                              ANALOGUE_INPUT_SET_POINT_VIOLATION_LL_L_OFFSET]) = 1;
 
-                            // СѓСЃС‚Р°РЅРѕРІРёРј С„Р»Р°Рі РЅР°СЂСѓС€РµРЅРёСЏ СѓСЃС‚Р°РІРєРё L.
+                            // установим флаг нарушения уставки L.
                             (m_puiDiscreteInputsState[(i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH) +
                                                                                              ANALOGUE_INPUT_SET_POINT_VIOLATION_L_OFFSET]) = 1;
                         }
-                        // РЅР°СЂСѓС€РµРЅР° СѓСЃС‚Р°РІРєР° L?
+                        // нарушена уставка L?
                         if ((auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_SET_POINT_VIOLATION_MASK) ==
                                 ANALOGUE_INPUT_SET_POINT_VIOLATION_L)
                         {
-                            // СѓСЃС‚Р°РЅРѕРІРёРј С„Р»Р°Рі РЅР°СЂСѓС€РµРЅРёСЏ СѓСЃС‚Р°РІРєРё L.
+                            // установим флаг нарушения уставки L.
                             (m_puiDiscreteInputsState[(i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH) +
                                                                                              ANALOGUE_INPUT_SET_POINT_VIOLATION_L_OFFSET]) = 1;
                         }
-                        // РЅР°СЂСѓС€РµРЅР° СѓСЃС‚Р°РІРєР° H?
+                        // нарушена уставка H?
                         if ((auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_SET_POINT_VIOLATION_MASK) ==
                                 ANALOGUE_INPUT_SET_POINT_VIOLATION_H)
                         {
-                            // СѓСЃС‚Р°РЅРѕРІРёРј С„Р»Р°Рі РЅР°СЂСѓС€РµРЅРёСЏ СѓСЃС‚Р°РІРєРё H.
+                            // установим флаг нарушения уставки H.
                             (m_puiDiscreteInputsState[(i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH) +
                                                                                              ANALOGUE_INPUT_SET_POINT_VIOLATION_H_OFFSET]) = 1;
                         }
-                        // РЅР°СЂСѓС€РµРЅР° СѓСЃС‚Р°РІРєР° HH + H?
+                        // нарушена уставка HH + H?
                         if ((auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_SET_POINT_VIOLATION_MASK) ==
                                 ANALOGUE_INPUT_SET_POINT_VIOLATION_HH_H)
                         {
-                            // СѓСЃС‚Р°РЅРѕРІРёРј С„Р»Р°Рі РЅР°СЂСѓС€РµРЅРёСЏ СѓСЃС‚Р°РІРєРё HH.
+                            // установим флаг нарушения уставки HH.
                             (m_puiDiscreteInputsState[(i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH) +
                                                                                              ANALOGUE_INPUT_SET_POINT_VIOLATION_HH_H_OFFSET]) = 1;
 
-                            // СѓСЃС‚Р°РЅРѕРІРёРј С„Р»Р°Рі РЅР°СЂСѓС€РµРЅРёСЏ СѓСЃС‚Р°РІРєРё H.
+                            // установим флаг нарушения уставки H.
                             (m_puiDiscreteInputsState[(i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH) +
                                                                                              ANALOGUE_INPUT_SET_POINT_VIOLATION_H_OFFSET]) = 1;
                         }
@@ -549,14 +549,14 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
 
     case MUVR_ANSWER_DATA_NOT_READY:
         //std::cout << "CInternalModuleMuvr::DataExchange 7"  << std::endl;
-        // РґР°РЅРЅС‹Рµ РЅРµ РіРѕС‚РѕРІС‹.
+        // данные не готовы.
         return 0;
         break;
 
     case MUVR_ANSWER_DATABASE_ERROR:
         //std::cout << "CInternalModuleMuvr::DataExchange 8"  << std::endl;
-//        // РѕС€РёР±РєР° Р‘Р” РѕР±СЂР°Р±РѕС‚РєРё, РєРѕРЅРµС† СЃРІСЏР·Рё.
-//        // РїРѕР»СѓС‡РёРј РєРѕРґ РѕС€РёР±РєРё;
+//        // ошибка БД обработки, конец связи.
+//        // получим код ошибки;
 //        SetErrorCode(INTERNAL_MODULE_ERROR_DATA_BASE);
         return 0;
         break;
@@ -567,26 +567,26 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
     };
 
 
-    // РјРѕРґСѓР»СЊ РїСЂРёР·РЅР°РЅ РЅРµРёСЃРїСЂР°РІРЅС‹Рј?
+    // модуль признан неисправным?
     if (GetBadAnswerCounter() == 0)
     {
         //std::cout << "CInternalModuleMuvr::DataExchange 10"  << std::endl;
-//        // РјРѕРґСѓР»СЊ РїСЂРёР·РЅР°РЅ РЅРµРёСЃРїСЂР°РІРЅС‹Рј.
+//        // модуль признан неисправным.
 //        *(m_puiModuleBadStateBuffer) = BAD_MODULE_NOT_RESPONDED;
 
-        // РґР°РЅРЅС‹Рµ РІС…РѕРґРѕРІ РјРѕРґСѓР»СЏ РЅРµРґРѕСЃС‚РѕРІРµСЂРЅС‹, РѕР±РЅСѓР»РёРј РёС….
+        // данные входов модуля недостоверны, обнулим их.
         memset(m_pfAnalogueInputsValue,
                0,
                MUVR_ANALOG_INPUT_QUANTITY * sizeof(float));
-        // СѓСЃС‚Р°РЅРѕРІРёРј С„Р»Р°РіРё РЅРµРґРѕСЃС‚РѕРІРµСЂРЅРѕСЃС‚Рё - РІС…РѕРґС‹ РЅРµРґРѕСЃС‚РѕРІРµСЂРЅС‹.
+        // установим флаги недостоверности - входы недостоверны.
         memset(m_puiAnalogueInputsBadState,
                1,
                MUVR_ANALOG_INPUT_QUANTITY);
-        // РґРёСЃРєСЂРµС‚РЅС‹Рµ РґР°РЅРЅС‹Рµ РІС…РѕРґРѕРІ РјРѕРґСѓР»СЏ РЅРµРґРѕСЃС‚РѕРІРµСЂРЅС‹, РѕР±РЅСѓР»РёРј РёС….
+        // дискретные данные входов модуля недостоверны, обнулим их.
         memset(m_puiDiscreteInputsState,
                0,
                MUVR_ANALOG_INPUT_QUANTITY * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
-        // СѓСЃС‚Р°РЅРѕРІРёРј С„Р»Р°РіРё РЅРµРґРѕСЃС‚РѕРІРµСЂРЅРѕСЃС‚Рё РІСЃРµС… РґРёСЃРєСЂРµС‚РЅС‹С… СЃРёРіРЅР°Р»РѕРІ РјРѕРґСѓР»СЏ.
+        // установим флаги недостоверности всех дискретных сигналов модуля.
         memset(m_puiDiscreteInputsBadState,
                1,
                MUVR_ANALOG_INPUT_QUANTITY * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
@@ -595,7 +595,7 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
     else
     {
         //std::cout << "CInternalModuleMuvr::DataExchange 11"  << std::endl;
-        // СѓРјРµРЅСЊС€РёРј Р·РЅР°С‡РµРЅРёРµ СЃС‡С‘С‚С‡РёРєР° - "РєРѕР»РёС‡РµСЃС‚РІРѕ СЃРµР°РЅСЃРѕРІ СЃРІСЏР·Рё СЃ РјРѕРґСѓР»РµРј Р±РµР· РѕС‚РІРµС‚Р°".
+        // уменьшим значение счётчика - "количество сеансов связи с модулем без ответа".
         SetBadAnswerCounter(GetBadAnswerCounter() - 1);
     }
     return 0;
@@ -641,27 +641,27 @@ uint8_t CInternalModuleMuvr::DataBaseRead(void)
         }
     }
 
-    // РјРѕРґСѓР»СЊ РѕС‚РІРµС‡Р°РµС‚?
+    // модуль отвечает?
     if (auiSpiRxBuffer[SPI_COMMAND_BYTE_OFFSET] == MUVR_GET_DATA_BASE_COMMAND) // if echo answer is ok.
     {
         //std::cout << "CInternalModuleMuvr::DataBaseRead 2"  << std::endl;
-        // РґР°РЅРЅС‹Рµ РЅРµ РїРѕРІСЂРµР¶РґРµРЅС‹?
+        // данные не повреждены?
         if (iCrcSummTwoByteCompare(&auiSpiRxBuffer[SPI_DATA_BYTE_OFFSET],
                                    ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_LENGTH) > 0)
         {
             //std::cout << "CInternalModuleMuvr::DataBaseRead 3"  << std::endl;
-// РІ РјРѕРґСѓР»СЏС… Р°РЅР°Р»РѕРіРѕРІРѕРіРѕ РІРІРѕРґР° Рё РІ РїР°РјСЏС‚Рё РїСЂРёР±РѕСЂР°, Р±Р°Р·С‹ РґР°РЅРЅС‹С… С…СЂР°РЅСЏС‚СЃСЏ РІ СЂР°Р·РЅС‹С… С„РѕСЂРјР°С‚Р°С….
-//  РІ РјРѕРґСѓР»СЏС… Р°РЅР°Р»РѕРіРѕРІРѕРіРѕ РІРІРѕРґР° СЃРЅР°С‡Р°Р»Р° РёРґСѓС‚ РґР°РЅРЅС‹Рµ РїСЂРѕРіСЂР°РјРјРёСЂРѕРІР°РЅРёСЏ РІС…РѕРґРѕРІ(6 РІС…РѕРґРѕРІ, РїРѕ 20 Р±Р°Р№С‚) 120 Р±Р°Р№С‚, РїРѕС‚РѕРј
-// С‚РµРєСЃС‚РѕРІС‹Рµ СЂРµРєРІРёР·РёС‚С‹ РІС…РѕРґРѕРІ(6 РІС…РѕРґРѕРІ, РїРѕ 8 Р±Р°Р№С‚) 48 Р±Р°Р№С‚. 6 РІС…РѕРґРѕРІ(120 + 48 = 168) Р±Р°Р№С‚.
-//  РІ РїР°РјСЏС‚Рё РїСЂРёР±РѕСЂР° РґР°РЅРЅС‹Рµ РїСЂРѕРіСЂР°РјРјРёСЂРѕРІР°РЅРёСЏ Рё С‚РµРєСЃС‚РѕРІС‹Рµ СЂРµРєРІРёР·РёС‚С‹ РёРґСѓС‚ РѕС‚РґРµР»СЊРЅС‹РјРё Р±Р»РѕРєР°РјРё РґР»СЏ РєР°Р¶РґРѕРіРѕ РІС…РѕРґР°
-// (РѕРґРёРЅ РІС…РѕРґ: 20 Р±Р°Р№С‚ - РґР°РЅРЅС‹Рµ РїСЂРѕРіСЂР°РјРјРёСЂРѕРІР°РЅРёСЏ Рё 8 Р±Р°Р№С‚ - С‚РµРєСЃС‚РѕРІС‹Рµ СЂРµРєРІРёР·РёС‚С‹). РѕРґРёРЅ Р±Р»РѕРє - 28 Р±Р°Р№С‚. 6 РІС…РѕРґРѕРІ(6 * 28 = 168) Р±Р°Р№С‚.
-// Р·РґРµСЃСЊ РїСЂРѕРёР·РІРѕРґРёС‚СЃСЏ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ С„РѕСЂРјР°С‚Р° Р±Р°Р·С‹ РґР°РЅРЅС‹С…, РѕС‚ РјРѕРґСѓР»СЏ Рє РїСЂРёР±РѕСЂСѓ.
-            // РїРѕР»СѓС‡РёРј СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РґР°РЅРЅС‹Рµ РїСЂРѕРіСЂР°РјРјРёСЂРѕРІР°РЅРёСЏ РїРµСЂРІРѕРіРѕ РІС…РѕРґР°, РїСЂРёРЅСЏС‚С‹Рµ РёР· РјРѕРґСѓР»СЏ.
+// в модулях аналогового ввода и в памяти прибора, базы данных хранятся в разных форматах.
+//  в модулях аналогового ввода сначала идут данные программирования входов(6 входов, по 20 байт) 120 байт, потом
+// текстовые реквизиты входов(6 входов, по 8 байт) 48 байт. 6 входов(120 + 48 = 168) байт.
+//  в памяти прибора данные программирования и текстовые реквизиты идут отдельными блоками для каждого входа
+// (один вход: 20 байт - данные программирования и 8 байт - текстовые реквизиты). один блок - 28 байт. 6 входов(6 * 28 = 168) байт.
+// здесь производится преобразование формата базы данных, от модуля к прибору.
+            // получим указатель на данные программирования первого входа, принятые из модуля.
             pucSource = &auiSpiRxBuffer[SPI_DATA_BYTE_OFFSET];
             pucDestination = &aucTempArray[0];
-// РІ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёРё СЃ РґРѕРєСѓРјРµРЅС‚РѕРј: СЃС‚СЂСѓРєС‚ Рё РїСЂРѕС‚ РџРђРЎ-17.txt
-//РџРµСЂРµРґ РїРµСЂРµС„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµРј РїРµСЂРµРЅРѕСЃРёРј Р’87-Р’89 РІ РјР°СЃСЃРёРІ Р‘Р” RAM B119 - B121, С‚.Рє.
-//РїРµСЂРµС„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРЅР°СЏ Р‘Р” Р·Р°Р№РјРµС‚ Р’0-Р’79 + 32 = 112 Р±Р°Р№С‚РѕРІ
+// в соответствии с документом: структ и прот ПАС-17.txt
+//Перед переформатированием переносим В87-В89 в массив БД RAM B119 - B121, т.к.
+//переформатированная БД займет В0-В79 + 32 = 112 байтов
             pucDestination[119] = pucSource[87];
             pucDestination[120] = pucSource[88];
             pucDestination[121] = pucSource[89];
@@ -671,24 +671,24 @@ uint8_t CInternalModuleMuvr::DataBaseRead(void)
 
             for (uint8_t i = 0; i < MUVR_ANALOG_INPUT_QUANTITY; i++)
             {
-                // СЃРєРѕРїРёСЂСѓРµРј РІРѕ РІСЂРµРјРµРЅРЅС‹Р№ Р±СѓС„РµСЂ С‡Р°СЃС‚СЊ Р±Р»РѕРєР° - РґР°РЅРЅС‹Рµ РїСЂРѕРіСЂР°РјРјРёСЂРѕРІР°РЅРёСЏ РѕРґРЅРѕРіРѕ РІС…РѕРґР°(20 Р±Р°Р№С‚).
+                // скопируем во временный буфер часть блока - данные программирования одного входа(20 байт).
                 memcpy(pucDestination, pucSource, 20);
-                // РїРµСЂРµР№РґС‘Рј Рє РґР°РЅРЅС‹Рј РїСЂРѕРіСЂР°РјРјРёСЂРѕРІР°РЅРёСЏ СЃР»РµРґСѓСЋС‰РµРіРѕ РІС…РѕРґР° РІ РјРѕРґСѓР»Рµ(+20 Р±Р°Р№С‚).
+                // перейдём к данным программирования следующего входа в модуле(+20 байт).
                 pucSource += 20;
-                // РїРµСЂРµР№РґС‘Рј Рє СЃР»РµРґСѓСЋС‰РµРјСѓ Р±Р»РѕРєСѓ РґР°РЅРЅС‹С… РѕРґРЅРѕРіРѕ РІС…РѕРґР° РІ РїСЂРёР±РѕСЂРµ(+28 Р±Р°Р№С‚).
+                // перейдём к следующему блоку данных одного входа в приборе(+28 байт).
                 pucDestination += 28;
             }
-            // РїРѕР»СѓС‡РёРј СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РґР°РЅРЅС‹Рµ С‚РµРєСЃС‚РѕРІРѕРіРѕ СЂРµРєРІРёР·РёС‚Р° РїРµСЂРІРѕРіРѕ РІС…РѕРґР°, РїСЂРёРЅСЏС‚С‹Рµ РёР· РјРѕРґСѓР»СЏ.
+            // получим указатель на данные текстового реквизита первого входа, принятые из модуля.
             pucSource = &auiSpiRxBuffer[SPI_DATA_BYTE_OFFSET +
                                                              ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_TEXT_DESCRIPTOR_OFFSET];
             pucDestination = &aucTempArray[20];
             for (uint8_t i = 0; i < MUVR_ANALOG_INPUT_QUANTITY; i++)
             {
-                // СЃРєРѕРїРёСЂСѓРµРј РІРѕ РІСЂРµРјРµРЅРЅС‹Р№ Р±СѓС„РµСЂ С‡Р°СЃС‚СЊ Р±Р»РѕРєР° - С‚РµРєСЃС‚РѕРІС‹Рµ СЂРµРєРІРёР·РёС‚С‹ РѕРґРЅРѕРіРѕ РІС…РѕРґР°(8 Р±Р°Р№С‚).
+                // скопируем во временный буфер часть блока - текстовые реквизиты одного входа(8 байт).
                 memcpy(pucDestination, pucSource, 8);
-                // РїРµСЂРµР№РґС‘Рј Рє РґР°РЅРЅС‹Рј С‚РµРєСЃС‚РѕРІРѕРіРѕ СЂРµРєРІРёР·РёС‚Р° СЃР»РµРґСѓСЋС‰РµРіРѕ РІС…РѕРґР° РІ РјРѕРґСѓР»Рµ(+8 Р±Р°Р№С‚).
+                // перейдём к данным текстового реквизита следующего входа в модуле(+8 байт).
                 pucSource += 8;
-                // РїРµСЂРµР№РґС‘Рј Рє СЃР»РµРґСѓСЋС‰РµРјСѓ Р±Р»РѕРєСѓ РґР°РЅРЅС‹С… РѕРґРЅРѕРіРѕ РІС…РѕРґР° РІ РїСЂРёР±РѕСЂРµ(+28 Р±Р°Р№С‚).
+                // перейдём к следующему блоку данных одного входа в приборе(+28 байт).
                 pucDestination += 28;
             }
 
@@ -702,20 +702,20 @@ uint8_t CInternalModuleMuvr::DataBaseRead(void)
         }
         else
         {
-            // РѕС€РёР±РєР° РѕР±РјРµРЅР° РґР°РЅРЅС‹РјРё.
+            // ошибка обмена данными.
             cout << "CInternalModuleMuvr::DataBaseRead 5" << endl;
         }
     }
     else
     {
-        // РјРѕРґСѓР»СЊ РЅРµ РѕС‚РІРµС‡Р°РµС‚.
+        // модуль не отвечает.
         cout << "iCInternalModuleMuvr::DataBaseRead 6" << endl;
     }
     return 0;
 }
 
 //-----------------------------------------------------------------------------------------------------
-// Р·Р°РїРёСЃС‹РІР°РµС‚ Р±Р°Р·Сѓ РґР°РЅРЅС‹С… РёР· RAM РїСЂРёР±РѕСЂР° РІ EEPROM РјРѕРґСѓР»СЏ.
+// записывает базу данных из RAM прибора в EEPROM модуля.
 uint8_t CInternalModuleMuvr::DataBaseBlockWrite(void)
 {
     unsigned short usData;
@@ -726,71 +726,71 @@ uint8_t CInternalModuleMuvr::DataBaseBlockWrite(void)
     uint8_t auiSpiTxBuffer[TX_RX_BUFF_SIZE];
     uint8_t auiSpiRxBuffer[TX_RX_BUFF_SIZE];
 
-// РІ РјРѕРґСѓР»СЏС… Р°РЅР°Р»РѕРіРѕРІРѕРіРѕ РІРІРѕРґР° Рё РІ РїР°РјСЏС‚Рё РїСЂРёР±РѕСЂР°, Р±Р°Р·С‹ РґР°РЅРЅС‹С… С…СЂР°РЅСЏС‚СЃСЏ РІ СЂР°Р·РЅС‹С… С„РѕСЂРјР°С‚Р°С….
-//  РІ РјРѕРґСѓР»СЏС… Р°РЅР°Р»РѕРіРѕРІРѕРіРѕ РІРІРѕРґР° СЃРЅР°С‡Р°Р»Р° РёРґСѓС‚ РґР°РЅРЅС‹Рµ РїСЂРѕРіСЂР°РјРјРёСЂРѕРІР°РЅРёСЏ РІС…РѕРґРѕРІ(6 РІС…РѕРґРѕРІ, РїРѕ 20 Р±Р°Р№С‚) 120 Р±Р°Р№С‚, РїРѕС‚РѕРј
-// С‚РµРєСЃС‚РѕРІС‹Рµ СЂРµРєРІРёР·РёС‚С‹ РІС…РѕРґРѕРІ(6 РІС…РѕРґРѕРІ, РїРѕ 8 Р±Р°Р№С‚) 48 Р±Р°Р№С‚. 6 РІС…РѕРґРѕРІ(120 + 48 = 168) Р±Р°Р№С‚.
-//  РІ РїР°РјСЏС‚Рё РїСЂРёР±РѕСЂР° РґР°РЅРЅС‹Рµ РїСЂРѕРіСЂР°РјРјРёСЂРѕРІР°РЅРёСЏ Рё С‚РµРєСЃС‚РѕРІС‹Рµ СЂРµРєРІРёР·РёС‚С‹ РёРґСѓС‚ РѕС‚РґРµР»СЊРЅС‹РјРё Р±Р»РѕРєР°РјРё РґР»СЏ РєР°Р¶РґРѕРіРѕ РІС…РѕРґР°
-// (РѕРґРёРЅ РІС…РѕРґ: 20 Р±Р°Р№С‚ - РґР°РЅРЅС‹Рµ РїСЂРѕРіСЂР°РјРјРёСЂРѕРІР°РЅРёСЏ Рё 8 Р±Р°Р№С‚ - С‚РµРєСЃС‚РѕРІС‹Рµ СЂРµРєРІРёР·РёС‚С‹). РѕРґРёРЅ Р±Р»РѕРє - 28 Р±Р°Р№С‚. 6 РІС…РѕРґРѕРІ(6 * 28 = 168) Р±Р°Р№С‚.
-// Р·РґРµСЃСЊ РїСЂРѕРёР·РІРѕРґРёС‚СЃСЏ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ С„РѕСЂРјР°С‚Р° Р±Р°Р·С‹ РґР°РЅРЅС‹С…, РѕС‚ РїСЂРёР±РѕСЂР° Рє РјРѕРґСѓР»СЋ.
+// в модулях аналогового ввода и в памяти прибора, базы данных хранятся в разных форматах.
+//  в модулях аналогового ввода сначала идут данные программирования входов(6 входов, по 20 байт) 120 байт, потом
+// текстовые реквизиты входов(6 входов, по 8 байт) 48 байт. 6 входов(120 + 48 = 168) байт.
+//  в памяти прибора данные программирования и текстовые реквизиты идут отдельными блоками для каждого входа
+// (один вход: 20 байт - данные программирования и 8 байт - текстовые реквизиты). один блок - 28 байт. 6 входов(6 * 28 = 168) байт.
+// здесь производится преобразование формата базы данных, от прибора к модулю.
     memset(&aucTempArray[0],
            0,
            sizeof(aucTempArray));
-    // РїРѕР»СѓС‡РёРј СѓРєР°Р·Р°С‚РµР»СЊ РЅР° Р±Р»РѕРє Р±Р°Р·С‹ РґР°РЅРЅС‹С…, РїСЂРёРЅСЏС‚С‹Р№ РїРѕ Modbus РІРѕ РІСЂРµРјРµРЅРЅС‹Р№ Р±СѓС„РµСЂ.
+    // получим указатель на блок базы данных, принятый по Modbus во временный буфер.
 
     pucSource = m_pxOperatingDataContainer -> m_puiDataPointer;
 
-    // РїРѕР»СѓС‡РёРј СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РґР°РЅРЅС‹Рµ РїСЂРѕРіСЂР°РјРјРёСЂРѕРІР°РЅРёСЏ РїРµСЂРІРѕРіРѕ РІС…РѕРґР°, РґР»СЏ Р·Р°РїРёСЃРё РІ РјРѕРґСѓР»СЊ.
+    // получим указатель на данные программирования первого входа, для записи в модуль.
     pucDestination = &aucTempArray[SPI_DATA_BYTE_OFFSET];
 
-// РІ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёРё СЃ РґРѕРєСѓРјРµРЅС‚РѕРј: СЃС‚СЂСѓРєС‚ Рё РїСЂРѕС‚ РџРђРЎ-17.txt
-//РџРµСЂРµРґ РїРµСЂРµС„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµРј РїРµСЂРµРЅРѕСЃРёРј Р’87-Р’89 РІ РјР°СЃСЃРёРІ Р‘Р” RAM B119 - B121, С‚.Рє.
-//РїРµСЂРµС„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРЅР°СЏ Р‘Р” Р·Р°Р№РјРµС‚ Р’0-Р’79 + 32 = 112 Р±Р°Р№С‚РѕРІ
+// в соответствии с документом: структ и прот ПАС-17.txt
+//Перед переформатированием переносим В87-В89 в массив БД RAM B119 - B121, т.к.
+//переформатированная БД займет В0-В79 + 32 = 112 байтов
     pucDestination[87] = pucSource[119];
     pucDestination[88] = pucSource[120];
     pucDestination[89] = pucSource[121];
 
     for (uint8_t i = 0; i < MUVR_ANALOG_INPUT_QUANTITY; i++)
     {
-        // СЃРєРѕРїРёСЂСѓРµРј РІРѕ РІСЂРµРјРµРЅРЅС‹Р№ Р±СѓС„РµСЂ С‡Р°СЃС‚СЊ Р±Р»РѕРєР° - РґР°РЅРЅС‹Рµ РїСЂРѕРіСЂР°РјРјРёСЂРѕРІР°РЅРёСЏ РѕРґРЅРѕРіРѕ РІС…РѕРґР°(20 Р±Р°Р№С‚).
+        // скопируем во временный буфер часть блока - данные программирования одного входа(20 байт).
         memcpy(pucDestination, pucSource, 20);
-        // РїРµСЂРµР№РґС‘Рј Рє РґР°РЅРЅС‹Рј РїСЂРѕРіСЂР°РјРјРёСЂРѕРІР°РЅРёСЏ СЃР»РµРґСѓСЋС‰РµРіРѕ РІС…РѕРґР° РІ РјРѕРґСѓР»Рµ(+20 Р±Р°Р№С‚).
+        // перейдём к данным программирования следующего входа в модуле(+20 байт).
         pucDestination += 20;
-        // РїРµСЂРµР№РґС‘Рј Рє СЃР»РµРґСѓСЋС‰РµРјСѓ Р±Р»РѕРєСѓ РґР°РЅРЅС‹С… РѕРґРЅРѕРіРѕ РІС…РѕРґР° РІ РїСЂРёР±РѕСЂРµ(+28 Р±Р°Р№С‚).
+        // перейдём к следующему блоку данных одного входа в приборе(+28 байт).
         pucSource += 28;
     }
-    // РїРѕР»СѓС‡РёРј СѓРєР°Р·Р°С‚РµР»СЊ РЅР° Р±Р»РѕРє Р±Р°Р·С‹ РґР°РЅРЅС‹С…, РїСЂРёРЅСЏС‚С‹Р№ РїРѕ Modbus РІРѕ РІСЂРµРјРµРЅРЅС‹Р№ Р±СѓС„РµСЂ.
+    // получим указатель на блок базы данных, принятый по Modbus во временный буфер.
 
     pucSource = m_pxOperatingDataContainer -> m_puiDataPointer;
 
-    // РїРµСЂРµР№РґС‘Рј Рє РґР°РЅРЅС‹Рј С‚РµРєСЃС‚РѕРІРѕРіРѕ СЂРµРєРІРёР·РёС‚Р° РїРµСЂРІРѕРіРѕ РІС…РѕРґР°(+20 Р±Р°Р№С‚).
+    // перейдём к данным текстового реквизита первого входа(+20 байт).
     pucSource += 20;
-    // РїРѕР»СѓС‡РёРј СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РґР°РЅРЅС‹Рµ С‚РµРєСЃС‚РѕРІРѕРіРѕ СЂРµРєРІРёР·РёС‚Р° РїРµСЂРІРѕРіРѕ РІС…РѕРґР°, РґР»СЏ Р·Р°РїРёСЃРё РІ РјРѕРґСѓР»СЊ.
+    // получим указатель на данные текстового реквизита первого входа, для записи в модуль.
     pucDestination = &aucTempArray[SPI_DATA_BYTE_OFFSET + (120)];
     for (uint8_t i = 0; i < MUVR_ANALOG_INPUT_QUANTITY; i++)
     {
-        // СЃРєРѕРїРёСЂСѓРµРј РІРѕ РІСЂРµРјРµРЅРЅС‹Р№ Р±СѓС„РµСЂ С‡Р°СЃС‚СЊ Р±Р»РѕРєР° - С‚РµРєСЃС‚РѕРІС‹Рµ СЂРµРєРІРёР·РёС‚С‹ РѕРґРЅРѕРіРѕ РІС…РѕРґР°(8 Р±Р°Р№С‚).
+        // скопируем во временный буфер часть блока - текстовые реквизиты одного входа(8 байт).
         memcpy(pucDestination, pucSource, 8);
-        // РїРµСЂРµР№РґС‘Рј Рє РґР°РЅРЅС‹Рј С‚РµРєСЃС‚РѕРІРѕРіРѕ СЂРµРєРІРёР·РёС‚Р° СЃР»РµРґСѓСЋС‰РµРіРѕ РІС…РѕРґР° РІ РјРѕРґСѓР»Рµ(+8 Р±Р°Р№С‚).
+        // перейдём к данным текстового реквизита следующего входа в модуле(+8 байт).
         pucDestination += 8;
-        // РїРµСЂРµР№РґС‘Рј Рє СЃР»РµРґСѓСЋС‰РµРјСѓ Р±Р»РѕРєСѓ РґР°РЅРЅС‹С… РѕРґРЅРѕРіРѕ РІС…РѕРґР° РІ РїСЂРёР±РѕСЂРµ(+28 Р±Р°Р№С‚).
+        // перейдём к следующему блоку данных одного входа в приборе(+28 байт).
         pucSource += 28;
     }
 
-    // РїРѕР»СѓС‡РёРј СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРЅСѓСЋ Р±Р°Р·Сѓ РґР°РЅРЅС‹С… РѕС‚ РїСЂРёР±РѕСЂР° Рє РјРѕРґСѓР»СЋ.
+    // получим указатель на преобразованную базу данных от прибора к модулю.
     pucSource = &aucTempArray[SPI_DATA_BYTE_OFFSET];
     usData = usCrcSummTwoByteCalculation(pucSource,
                                          ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_LENGTH);
-    // РїРѕР»СѓС‡РёРј СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РјРµСЃС‚Рѕ CRC РІ РїР°РєРµС‚Рµ.
+    // получим указатель на место CRC в пакете.
     pucDestination = &aucTempArray[SPI_DATA_BYTE_OFFSET +
                                                         ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_LENGTH];
     *pucDestination++ = (unsigned char)usData;
     *pucDestination = (unsigned char)(usData >> 8);
-    // СЃРєРѕРїРёСЂСѓРµРј РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРЅСѓСЋ Р±Р°Р·Сѓ РґР°РЅРЅС‹С… РёР· РІСЂРµРјРµРЅРЅРѕРіРѕ РІ Р±СѓС„РµСЂ TX SPI.
+    // скопируем преобразованную базу данных из временного в буфер TX SPI.
     memcpy(&auiSpiTxBuffer[SPI_DATA_BYTE_OFFSET],
            pucSource,
            ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_LENGTH +
            TWO_BYTE_CRC_LENGTH);
-    // РѕС‚РїСЂР°РІРёРј РґР°РЅРЅС‹Рµ РІ РјРѕРґСѓР»СЊ.
+    // отправим данные в модуль.
     usleep(10000);
     auiSpiTxBuffer[0] = MUVR_SET_DATA_BASE_COMMAND;
     m_pxCommunicationDevice -> Exchange(GetAddress(),
@@ -811,26 +811,26 @@ uint8_t CInternalModuleMuvr::DataBaseBlockWrite(void)
 ////-----------------------------------------------------------------------------------------------------
 //int CInternalModuleMuvr::DataBaseBlockWriteError(TModuleContext *pxModuleContext)
 //{
-//    // Р‘Р°Р·Р° РґР°РЅРЅС‹С… РЅРµ Р·Р°РїРёСЃР°РЅР°?
+//    // База данных не записана?
 //    if ((pxModuleContext ->
 //            xModuleContextDinamic.
 //            usAuxiliaryCounter) >= 20)
 //    {
-//        // РѕС€РёР±РєР° Р‘Р” РѕР±СЂР°Р±РѕС‚РєРё, РєРѕРЅРµС† СЃРІСЏР·Рё.
+//        // ошибка БД обработки, конец связи.
 //        fbAnalogueInputModuleDataBaseError = 1;
-//        // РїРѕР»СѓС‡РёРј РєРѕРґ РѕС€РёР±РєРё;
+//        // получим код ошибки;
 //        (pxModuleContext ->
 //         xModuleContextDinamic.
 //         ucErrorCode) = INTERNAL_MODULE_ERROR_DATA_BASE;
 //
-//        // Р°РєС‚РёРІРЅРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ СЃРѕР±С‹С‚РёСЏ РµС‰С‘ РЅРµ Р·Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°РЅРѕ?
+//        // активное состояние события ещё не зарегистрировано?
 //        if(xCInternalModuleErrorEvent.EventOnIsNotRegistered(
 //                    pxModuleContext ->
 //                    xModuleContextStatic.
 //                    ucModuleContextIndex,
 //                    MTVI5_DATA_BASE_ERROR_OFFSET))
 //        {
-//            // Р·Р°СЂРµРіРёСЃС‚СЂРёСЂСѓРµРј Р°РєС‚РёРІРЅРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ СЃРѕР±С‹С‚РёСЏ.
+//            // зарегистрируем активное состояние события.
 //            CEvents::EventRegistration(
 //                pxModuleContext ->
 //                xModuleContextStatic.
@@ -840,14 +840,14 @@ uint8_t CInternalModuleMuvr::DataBaseBlockWrite(void)
 //                 CEvents::HANDLED_EVENTS_IS_SOUND |
 //                 CEvents::HANDLED_EVENTS_IS_ARCHIVE),
 //                MTVI5_DATA_BASE_ERROR_OFFSET,
-//                "РћС€РёР±. Р±. РњР’Рђ");
+//                "Ошиб. б. МВА");
 //        }
 //
 //        return -1;
 //    }
 //    else
 //    {
-//        // РЈРІРµР»РёС‡РёРј Р·РЅР°С‡РµРЅРёРµ СЃС‡С‘С‚С‡РёРєР° - "РєРѕР»РёС‡РµСЃС‚РІРѕ СЃРµР°РЅСЃРѕРІ СЃРІСЏР·Рё СЃ РјРѕРґСѓР»РµРј Р±РµР· РѕС‚РІРµС‚Р°".
+//        // Увеличим значение счётчика - "количество сеансов связи с модулем без ответа".
 //        (pxModuleContext ->
 //         xModuleContextDinamic.
 //         usAuxiliaryCounter)++;
@@ -857,7 +857,7 @@ uint8_t CInternalModuleMuvr::DataBaseBlockWrite(void)
 //}
 
 //-----------------------------------------------------------------------------------------------------
-// Р·Р°РїРёСЃС‹РІР°РµС‚ Р±Р°Р·Сѓ РґР°РЅРЅС‹С… РёР· RAM РїСЂРёР±РѕСЂР° РІ EEPROM РјРѕРґСѓР»СЏ.
+// записывает базу данных из RAM прибора в EEPROM модуля.
 uint8_t CInternalModuleMuvr::DataBaseBlockWriteCheck(void)
 {
     unsigned short usData;
@@ -868,7 +868,7 @@ uint8_t CInternalModuleMuvr::DataBaseBlockWriteCheck(void)
     uint8_t auiSpiTxBuffer[TX_RX_BUFF_SIZE];
     uint8_t auiSpiRxBuffer[TX_RX_BUFF_SIZE];
 
-    // РїСЂРёРјРµРј РґР°РЅРЅС‹Рµ СЃ СЂРµР·СѓР»СЊС‚Р°С‚РѕРј РїСЂРѕРіСЂР°РјРјРёСЂРѕРІР°РЅРёСЏ.
+    // примем данные с результатом программирования.
     auiSpiTxBuffer[0] = MUVR_CHECK_DATA_BASE_WRITE_COMMAND;
     m_pxCommunicationDevice -> Exchange(GetAddress(),
                                         auiSpiTxBuffer,
@@ -879,30 +879,30 @@ uint8_t CInternalModuleMuvr::DataBaseBlockWriteCheck(void)
 
     return 0;
 
-    // РµСЃС‚СЊ РїРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ Р·Р°РїРёСЃРё Р±Р°Р·С‹ РґР°РЅРЅС‹С… РІ EEPROM РјРѕРґСѓР»СЏ?
+    // есть подтверждение записи базы данных в EEPROM модуля?
     if((auiSpiRxBuffer[SPI_DATA_BYTE_OFFSET]) == DATA_EXCHANGE_OK)
     {
-        // РµСЃС‚СЊ РїРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ Р·Р°РїРёСЃРё Р±Р°Р·С‹ РґР°РЅРЅС‹С… РІ EEPROM РјРѕРґСѓР»СЏ.
+        // есть подтверждение записи базы данных в EEPROM модуля.
         cout << "CInternalModuleMuvr::DataBaseBlockWriteCheck OK" << endl;
         return DATA_EXCHANGE_OK;
     }
-    // РјРѕРґСѓР»СЊ Р·Р°РЅСЏС‚ Р·Р°РїРёСЃСЊСЋ РґР°РЅРЅС‹С… РІ EEPROM?
+    // модуль занят записью данных в EEPROM?
     else if ((auiSpiRxBuffer[SPI_DATA_BYTE_OFFSET]) == MUVR_CHECK_DATA_BASE_WRITE_ANSWER_BUSY)
     {
-        // РјРѕРґСѓР»СЊ Р·Р°РЅСЏС‚ Р·Р°РїРёСЃСЊСЋ РґР°РЅРЅС‹С… РІ EEPROM.
+        // модуль занят записью данных в EEPROM.
         cout << "CInternalModuleMuvr::DataBaseBlockWriteCheck BUSY" << endl;
         return MUVR_CHECK_DATA_BASE_WRITE_ANSWER_BUSY;
     }
-    // РїСЂРѕРёР·РѕС€Р»Р° РѕС€РёР±РєР° РїСЂРё Р·Р°РїРёСЃРё Р±Р°Р·С‹ РґР°РЅРЅС‹С… РІ EEPROM РјРѕРґСѓР»СЏ?
+    // произошла ошибка при записи базы данных в EEPROM модуля?
     else if ((auiSpiRxBuffer[SPI_DATA_BYTE_OFFSET]) == DATA_EXCHANGE_ERROR)
     {
-        // РїСЂРѕРёР·РѕС€Р»Р° РѕС€РёР±РєР° РїСЂРё Р·Р°РїРёСЃРё Р±Р°Р·С‹ РґР°РЅРЅС‹С… РІ EEPROM РјРѕРґСѓР»СЏ.
+        // произошла ошибка при записи базы данных в EEPROM модуля.
         cout << "CInternalModuleMuvr::DataBaseBlockWriteCheck ERROR" << endl;
         return DATA_EXCHANGE_ERROR;
     }
     else
     {
-        // РїСЂРѕРёР·РѕС€Р»Р° РѕС€РёР±РєР° РїСЂРё Р·Р°РїРёСЃРё Р±Р°Р·С‹ РґР°РЅРЅС‹С… РІ EEPROM РјРѕРґСѓР»СЏ.
+        // произошла ошибка при записи базы данных в EEPROM модуля.
         cout << "CInternalModuleMuvr::DataBaseBlockWriteCheck ERROR" << endl;
         return MUVR_CHECK_DATA_BASE_WRITE_ANSWER_BUSY;
     }
@@ -1033,7 +1033,7 @@ uint8_t CInternalModuleMuvr::Fsm(void)
             }
             else
             {
-                // Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РІС‹РїРѕР»РЅРµРЅРёСЏ Р·Р°РїСЂРѕСЃР° Р·Р°РєРѕРЅС‡РёР»РѕСЃСЊ?
+                // Время ожидания выполнения запроса закончилось?
                 if (GetTimerPointer() -> IsOverflow())
                 {
                     //std::cout << "CInternalModuleMuvr::Fsm MUVR_WRITE_DATA_BASE_CHECK 4"  << std::endl;

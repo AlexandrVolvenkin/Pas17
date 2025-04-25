@@ -1,4 +1,4 @@
-﻿#ifndef CTCPCOMMUNICATIONDEVICE_H
+#ifndef CTCPCOMMUNICATIONDEVICE_H
 #define CTCPCOMMUNICATIONDEVICE_H
 //-------------------------------------------------------------------------------
 //  Source      : FileName.cpp

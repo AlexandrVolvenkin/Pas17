@@ -26,7 +26,7 @@ CModbusSmSlave::CModbusSmSlave()
     std::cout << "CModbusSmSlave constructor"  << std::endl;
     m_pxModbusSlaveLinkLayer = 0;
 //    m_pxDeviceControlLink = 0;
-    // РїРѕР»СѓС‡РёРј РёРјСЏ РєР»Р°СЃСЃР°.
+    // получим имя класса.
     sprintf(GetTaskNamePointer(),
             "%s",
             typeid(*this).name());
@@ -73,7 +73,7 @@ void CModbusSmSlave::SetDeviceControl(CDeviceControl* pxDeviceControl)
 }
 
 //-------------------------------------------------------------------------------
-CDeviceControl* CModbusSmSlave::GetDeviceContro(void)
+CDeviceControl* CModbusSmSlave::GetDeviceControl(void)
 {
     return m_pxDeviceControl;
 }
@@ -205,7 +205,7 @@ uint16_t CModbusSmSlave::ReportSlaveID(void)
 //    memcpy(&puiResponse[uiPduOffset + 2], auiTempData, sizeof(auiTempData));
 //    uiLength += sizeof(auiTempData);
 
-    // РєРѕР»РёС‡РµСЃС‚РІРѕ Р±Р°Р№С‚ РІ РїСЂРёРєР»Р°РґРЅРѕРј СЃРѕРѕР±С‰РµРЅРёРё РјР°СЃСЃРёРІРµ РєРѕРЅС„РёРіСѓСЂР°С†РёРё, РЅРµ РІРєР»СЋС‡Р°СЏ РѕСЃС‚Р°Р»СЊРЅС‹Рµ.
+    // количество байт в прикладном сообщении массиве конфигурации, не включая остальные.
     puiResponse[uiPduOffset + 1] = uiLength;//sizeof(auiTempData);// + 1;
     uiLength ++;
     uiLength += m_pxModbusSlaveLinkLayer ->
@@ -238,7 +238,7 @@ uint16_t CModbusSmSlave::RequestProcessing(void)
         return 0;
     }
 
-    // РЅРµ РѕР¶РёРґР°РµРј РѕС‚РІРµС‚Р°
+    // не ожидаем ответа
     m_uiLength = 0;
 
     switch (uiFunctionCode)
@@ -319,7 +319,7 @@ uint16_t CModbusSmSlave::ReportSlaveIDAnswer(void)
 //    memcpy(&puiResponse[uiPduOffset + 2], auiTempData, sizeof(auiTempData));
 //    uiLength += sizeof(auiTempData);
 
-    // РєРѕР»РёС‡РµСЃС‚РІРѕ Р±Р°Р№С‚ РІ РїСЂРёРєР»Р°РґРЅРѕРј СЃРѕРѕР±С‰РµРЅРёРё РјР°СЃСЃРёРІРµ РєРѕРЅС„РёРіСѓСЂР°С†РёРё, РЅРµ РІРєР»СЋС‡Р°СЏ РѕСЃС‚Р°Р»СЊРЅС‹Рµ.
+    // количество байт в прикладном сообщении массиве конфигурации, не включая остальные.
     puiResponse[uiPduOffset + 1] = uiLength;//sizeof(auiTempData);// + 1;
     uiLength ++;
     uiLength += m_pxModbusSlaveLinkLayer ->
@@ -352,7 +352,7 @@ uint16_t CModbusSmSlave::AnswerProcessing(void)
         return 0;
     }
 
-    // РїСЂРѕРІРµСЂСЏРµРј СЃРѕС…СЂР°РЅС‘РЅРЅС‹Р№ Р»РѕРєР°Р»СЊРЅРѕ С‚РµРєСѓС‰РёР№ РєРѕРґ С„СѓРЅРєС†РёРё.
+    // проверяем сохранённый локально текущий код функции.
     switch (m_uiFunctionCode)
     {
         std::cout << "CModbusSmSlave::AnswerProcessing 3" << std::endl;
@@ -656,7 +656,7 @@ uint8_t CModbusSmSlave::Fsm(void)
         }
         else
         {
-            // Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РІС‹РїРѕР»РЅРµРЅРёСЏ Р·Р°РїСЂРѕСЃР° Р·Р°РєРѕРЅС‡РёР»РѕСЃСЊ?
+            // Время ожидания выполнения запроса закончилось?
             if (GetTimerPointer() -> IsOverflow())
             {
                 std::cout << "CModbusSmSlave::Fsm EXECUTOR_ANSWER_PROCESSING_WAITING 4"  << std::endl;
@@ -695,7 +695,7 @@ uint8_t CModbusSmSlave::Fsm(void)
             memcpy(&puiResponse[uiPduOffset + 2], auiTempData, sizeof(auiTempData));
             uiLength += sizeof(auiTempData);
 
-            // РєРѕР»РёС‡РµСЃС‚РІРѕ Р±Р°Р№С‚ РІ РїСЂРёРєР»Р°РґРЅРѕРј СЃРѕРѕР±С‰РµРЅРёРё РјР°СЃСЃРёРІРµ РєРѕРЅС„РёРіСѓСЂР°С†РёРё, РЅРµ РІРєР»СЋС‡Р°СЏ РѕСЃС‚Р°Р»СЊРЅС‹Рµ.
+            // количество байт в прикладном сообщении массиве конфигурации, не включая остальные.
             puiResponse[uiPduOffset + 1] = uiLength;//sizeof(auiTempData);// + 1;
             uiLength ++;
             uiLength += m_pxModbusSlaveLinkLayer ->
@@ -711,7 +711,7 @@ uint8_t CModbusSmSlave::Fsm(void)
 
     case BEFORE_ANSWERING_WAITING:
 //        std::cout << "CModbusSmSlave::Fsm BEFORE_ANSWERING_WAITING"  << std::endl;
-        // Р—Р°РєРѕРЅС‡РёР»РѕСЃСЊ РІСЂРµРјСЏ РїР°СѓР·С‹ РјРµР¶РґСѓ РїСЂРёС‘РјРѕРј Рё РїРµСЂРµРґР°С‡РµР№(5 РјРёР»РёСЃРµРєСѓРЅРґ)?
+        // Закончилось время паузы между приёмом и передачей(5 милисекунд)?
         if (GetTimerPointer() -> IsOverflow())
         {
             std::cout << "CModbusSmSlave::Fsm BEFORE_ANSWERING_WAITING 2"  << std::endl;
@@ -745,7 +745,7 @@ uint8_t CModbusSmSlave::Fsm(void)
         }
         else
         {
-            // Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РІС‹РїРѕР»РЅРµРЅРёСЏ Р·Р°РїСЂРѕСЃР° Р·Р°РєРѕРЅС‡РёР»РѕСЃСЊ?
+            // Время ожидания выполнения запроса закончилось?
             if (GetTimerPointer() -> IsOverflow())
             {
                 std::cout << "CModbusSmSlave::Fsm AFTER_ANSWERING_WAITING 4"  << std::endl;

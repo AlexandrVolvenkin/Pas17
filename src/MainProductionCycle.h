@@ -1,4 +1,4 @@
-п»ї//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 //  Source      : FileName.cpp
 //  Created     : 01.06.2022
 //  Author      : Alexandr Volvenkin
@@ -38,8 +38,8 @@ class CDataStoreCheck;
 class CDataContainerInterface;
 class CDataContainerDataBase;
 class CConfigurationCreate;
+class CDataBaseCreate;
 class CSystemComponentsCreate;
-
 
 //-------------------------------------------------------------------------------
 class CMainProductionCycle : public CTask
@@ -165,8 +165,8 @@ private:
     CServiceMarket* m_pxServiceMarket;
 
     CLedBlinker* m_pxLedBlinker;
-    // СЃРѕР·РґР°РґРёРј СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РѕР±СЉРµРєС‚
-    // "РїСЂРѕРёР·РІРѕРґСЃС‚РІРµРЅРЅР°СЏ РїР»РѕС‰Р°РґРєР° Р·Р°РґР°С‡Рё РѕР¶РёРґР°РЅРёСЏ СЃРѕР±С‹С‚РёР№"
+    // создадим указатель на объект
+    // "производственная площадка задачи ожидания событий"
 //    CProductionInterface* m_pxFileDescriptorEventsWaitingProduction;
 //    CModbusTcpSlaveTopLevelProduction* m_pxModusTcpSlaveTopLevelProduction;
     CModbusTcpSlaveLinkLayer* m_pxModbusTcpSlaveLinkLayerUpperLevel;

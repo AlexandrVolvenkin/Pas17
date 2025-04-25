@@ -1,4 +1,4 @@
-п»ї//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 //  Sourse      : FileName.cpp
 //  Created     : 01.06.2022
 //  Author      : Alexandr Volvenkin
@@ -62,7 +62,7 @@ CInternalModule::~CInternalModule()
     }
     m_vpxDevices.clear();
 
-    // СѓРґР°Р»СЏС‚СЊ РЅРµ РЅСѓР¶РЅРѕСЂ. СЌС‚Рѕ РЅРµ СѓРєР°Р·Р°С‚РµР»Рё РЅР° РІС‹РґРµР»РµРЅРЅСѓСЋ РїР°РјСЏС‚СЊ.
+    // удалять не нужнор. это не указатели на выделенную память.
 //    for (auto it = m_vuiDevicesId.begin(); it != m_vuiDevicesId.end(); ++it)
 //    {
 //        delete *it;
@@ -269,25 +269,25 @@ void CInternalModule::Allocate(void)
 //    m_puiRxBuffer = xMemoryAllocationContext.puiRxBuffer;
 //    m_puiTxBuffer = xMemoryAllocationContext.puiTxBuffer;
 //    m_puiErrorCode = xMemoryAllocationContext.puiErrorCode;
-//    // РџРѕР»СѓС‡РёРј СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РјРµСЃС‚Рѕ РІ РјР°СЃСЃРёРІРµ РґРёСЃРєСЂРµС‚РЅС‹С… РІС…РѕРґРѕРІ РґР»СЏ С‚РµРєСѓС‰РµРіРѕ РјРѕРґСѓР»СЏ.
+//    // Получим указатель на место в массиве дискретных входов для текущего модуля.
 //    m_puiDiscreteInputs =
 //        &xMemoryAllocationContext.
 //        puiDiscreteInputs[xMemoryAllocationContext.uiUsedDiscreteInputs];
-//    // РЈРІРµР»РёС‡РёРј РѕР±С‰РёР№ РѕР±СЉС‘Рј РІС‹РґРµР»РµРЅРЅРѕР№ РїР°РјСЏС‚Рё.
+//    // Увеличим общий объём выделенной памяти.
 //    xMemoryAllocationContext.
 //    uiUsedDiscreteInputs +=
 //        MVSN21_DISCRETE_INPUTS_NUMBER;
 //
-//    // РџРѕР»СѓС‡РёРј СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РјРµСЃС‚Рѕ РІ РјР°СЃСЃРёРІРµ РґРѕСЃС‚РѕРІРµСЂРЅРѕСЃС‚Рё РґРёСЃРєСЂРµС‚РЅС‹С… РІС…РѕРґРѕРІ РґР»СЏ С‚РµРєСѓС‰РµРіРѕ РјРѕРґСѓР»СЏ.
+//    // Получим указатель на место в массиве достоверности дискретных входов для текущего модуля.
 //    m_puiDiscreteInputsBadState =
 //        &xMemoryAllocationContext.
 //        puiDiscreteInputsBadState[xMemoryAllocationContext.uiUsedDiscreteInputsBadState];
-//    // РЈРІРµР»РёС‡РёРј РѕР±С‰РёР№ РѕР±СЉС‘Рј РІС‹РґРµР»РµРЅРЅРѕР№ РїР°РјСЏС‚Рё.
+//    // Увеличим общий объём выделенной памяти.
 //    xMemoryAllocationContext.
 //    uiUsedDiscreteInputsBadState +=
 //        MVSN21_DISCRETE_INPUTS_NUMBER;
 //
-//    // РџРѕР»СѓС‡РёРј СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РјРµСЃС‚Рѕ РІ РјР°СЃСЃРёРІРµ СЃРѕСЃС‚РѕСЏРЅРёР№ РѕС€РёР±РѕРє РґР»СЏ С‚РµРєСѓС‰РµРіРѕ РјРѕРґСѓР»СЏ.
+//    // Получим указатель на место в массиве состояний ошибок для текущего модуля.
 //    m_puiErrorAlarmDataArray =
 //        &xMemoryAllocationContext.
 //        puiErrorAlarmDataArray[DISCRETE_INPUT_MODULE_FAILURE];
@@ -328,18 +328,18 @@ uint8_t CInternalModule::GetModuleType(uint8_t uiAddress)
         }
     }
 
-    // РјРѕРґСѓР»СЊ РѕС‚РІРµС‡Р°РµС‚?
+    // модуль отвечает?
     if (auiSpiRxBuffer[GET_MODULE_TYPE_COMMAND_OFFSET] ==
             GET_MODULE_TYPE_COMMAND) // if echo answer is ok.
     {
 //        std::cout << "CInternalModule::GetModuleType 3"  << std::endl;
-        // РѕР±РјРµРЅ РґР°РЅРЅС‹РјРё РїСЂРѕС€С‘Р» Р±РµР· РѕС€РёР±РѕРє?
+        // обмен данными прошёл без ошибок?
         if ((iCrcSummOneByteCompare(&auiSpiRxBuffer[GET_MODULE_TYPE_COMMAND_OFFSET],
                                     GET_MODULE_TYPE_COMMAND_LENGTH +
                                     GET_MODULE_TYPE_COMMAND_ANSWER_LENGTH) > 0))
         {
 //            std::cout << "CInternalModule::GetModuleType 4"  << std::endl;
-            // РјРѕРґСѓР»СЊ РїСЂРёСЃСѓС‚СЃС‚РІСѓРµС‚.
+            // модуль присутствует.
             return auiSpiRxBuffer[MODULE_TYPE_OFFSET];
         }
         else
@@ -360,11 +360,11 @@ void CInternalModule::SearchModules(void)
 {
 //    std::cout << "CInternalModule::SearchModules 1"  << std::endl;
 
-    // РѕРїСЂРѕСЃРёРј РёРЅС‚РµСЂС„РµР№СЃ SPI. РєР°РєРёРµ РјРѕРґСѓР»Рё РїСЂРёСЃСѓС‚СЃС‚РІСѓСЋС‚?
+    // опросим интерфейс SPI. какие модули присутствуют?
     for (uint8_t i = 0; i < SPI_MAX_BUS_ADDRESS; i++)
     {
-        // РµСЃР»Рё РјРѕРґСѓР»СЊ РЅРµ РѕС‚РІРµС‚РёР» MODULE_REQUEST_QUANTITY СЂР°Р·,
-        // С‚Рѕ РµРіРѕ РЅРµС‚ РёР»Рё РѕРЅ РЅРµРёСЃРїСЂР°РІРµРЅ.
+        // если модуль не ответил MODULE_REQUEST_QUANTITY раз,
+        // то его нет или он неисправен.
         for (uint8_t j = 0; j < MODULE_REQUEST_QUANTITY; j++)
         {
             uint8_t uiType = GetModuleType(i);
@@ -376,10 +376,10 @@ void CInternalModule::SearchModules(void)
                 CConfigurationCreate::TConfigDataPackOne* pxDeviceConfigSearch =
                     (CConfigurationCreate::TConfigDataPackOne*)
                     (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer);
-                // СЃРѕС…СЂР°РЅРёРј С‚РёРї РјРѕРґСѓР»СЏ РІ РјР°СЃСЃРёРІРµ РґР»СЏ СѓРїРѕСЂСЏРґРѕС‡РёРІР°РЅРёСЏ СЃР»РµРґРѕРІР°РЅРёСЏ РјРѕРґСѓР»РµР№ РїСЂРё РїРѕРёСЃРєРµ РЅР° SPI.
+                // сохраним тип модуля в массиве для упорядочивания следования модулей при поиске на SPI.
                 pxDeviceConfigSearch ->
                 axModulesContext[pxDeviceConfigSearch -> uiModulesQuantity].uiType = uiType;
-                // СЃРѕС…СЂР°РЅРёРј Р°РґСЂРµСЃ РјРѕРґСѓР»СЏ РІ РјР°СЃСЃРёРІРµ РґР»СЏ СѓРїРѕСЂСЏРґРѕС‡РёРІР°РЅРёСЏ СЃР»РµРґРѕРІР°РЅРёСЏ РјРѕРґСѓР»РµР№ РїСЂРё РїРѕРёСЃРєРµ РЅР° SPI.
+                // сохраним адрес модуля в массиве для упорядочивания следования модулей при поиске на SPI.
                 pxDeviceConfigSearch ->
                 axModulesContext[pxDeviceConfigSearch -> uiModulesQuantity].uiAddress = i;
 
@@ -387,8 +387,8 @@ void CInternalModule::SearchModules(void)
                           axModulesContext[pxDeviceConfigSearch -> uiModulesQuantity].uiAddress << std::endl;
                 std::cout << "CInternalModule::SearchModules uiType "  << (int)pxDeviceConfigSearch ->
                           axModulesContext[pxDeviceConfigSearch -> uiModulesQuantity].uiType << std::endl;
-                // РјРѕРґСѓР»СЊ РїСЂРёСЃСѓС‚СЃС‚РІСѓРµС‚. СѓРІРµР»РёС‡РёРј Р·РЅР°С‡РµРЅРёРµ РїРµСЂРµРјРµРЅРЅРѕР№ -
-                // С„Р°РєС‚РёС‡РµСЃРєРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ РјРѕРґСѓР»РµР№ РІ СЃРёСЃС‚РµРјРµ.
+                // модуль присутствует. увеличим значение переменной -
+                // фактическое количество модулей в системе.
                 (pxDeviceConfigSearch -> uiModulesQuantity)++;
                 (pxDeviceConfigSearch -> uiInternalModulesQuantity)++;
 
@@ -398,7 +398,7 @@ void CInternalModule::SearchModules(void)
                     return;
                 }
 
-                // РїРµСЂРµР№РґС‘Рј Рє РѕРїСЂРѕСЃСѓ СЃР»РµРґСѓСЋС‰РµРіРѕ Р°РґСЂРµСЃР°.
+                // перейдём к опросу следующего адреса.
                 break;
             }
         }
@@ -410,12 +410,12 @@ void CInternalModule::ServiceDataCreate(void)
 {
 //    std::cout << "CInternalModule::ServiceDataCreate 1"  << std::endl;
 
-    // РїРѕР»СѓС‡РёРј СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РѕР±СЉРµРєС‚ РєРѕРЅС„РёРіСѓСЂР°С†РёРё.
+    // получим указатель на объект конфигурации.
     CConfigurationCreate::TConfigDataPackOne* pxDeviceConfigSearch =
         (CConfigurationCreate::TConfigDataPackOne*)
         (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer);
 
-    // РІС‹С‡РёСЃР»РµРЅРёРµ СЃР»СѓР¶РµР±РЅС‹С… РїРµСЂРµРјРµРЅРЅС‹С… РґР»СЏ РІРЅСѓС‚СЂРµРЅРЅРёС… РјРѕРґСѓР»РµР№.
+    // вычисление служебных переменных для внутренних модулей.
     for (uint8_t i = 0;
             i < INTERNAL_MODULE_QUANTITY;
             i++)
@@ -453,7 +453,7 @@ void CInternalModule::CreateDevices(void)
 {
     std::cout << "CInternalModule::CreateDevices 1"  << std::endl;
 
-    // РїРѕР»СѓС‡РёРј СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РѕР±СЉРµРєС‚ РєРѕРЅС„РёРіСѓСЂР°С†РёРё.
+    // получим указатель на объект конфигурации.
     CConfigurationCreate::TConfigDataPackOne* pxDeviceConfigSearch =
         (CConfigurationCreate::TConfigDataPackOne*)
         (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer);
@@ -640,7 +640,7 @@ uint8_t CInternalModule::Fsm(void)
         else
         {
 //            std::cout << "CInternalModule::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING 3"  << std::endl;
-            // Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РІС‹РїРѕР»РЅРµРЅРёСЏ Р·Р°РїСЂРѕСЃР° Р·Р°РєРѕРЅС‡РёР»РѕСЃСЊ?
+            // Время ожидания выполнения запроса закончилось?
             if (GetTimerPointer() -> IsOverflow())
             {
                 std::cout << "CInternalModule::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING 4"  << std::endl;
@@ -671,7 +671,7 @@ uint8_t CInternalModule::Fsm(void)
         else
         {
 //            std::cout << "CInternalModule::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 3"  << std::endl;
-            // Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РІС‹РїРѕР»РЅРµРЅРёСЏ Р·Р°РїСЂРѕСЃР° Р·Р°РєРѕРЅС‡РёР»РѕСЃСЊ?
+            // Время ожидания выполнения запроса закончилось?
             if (GetTimerPointer() -> IsOverflow())
             {
                 std::cout << "CInternalModule::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 4"  << std::endl;
@@ -713,7 +713,7 @@ uint8_t CInternalModule::Fsm(void)
         }
         else
         {
-            // Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РІС‹РїРѕР»РЅРµРЅРёСЏ Р·Р°РїСЂРѕСЃР° Р·Р°РєРѕРЅС‡РёР»РѕСЃСЊ?
+            // Время ожидания выполнения запроса закончилось?
             if (GetTimerPointer() -> IsOverflow())
             {
                 std::cout << "CInternalModule::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 4"  << std::endl;

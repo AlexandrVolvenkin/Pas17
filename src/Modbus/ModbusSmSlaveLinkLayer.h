@@ -133,11 +133,11 @@ private:
 
     uint16_t m_uiRequestTransactionId = 0;
     uint16_t m_uiResponseTransactionId = 0;
-    // С‚Р°Р№РјРѕСѓС‚ РїРѕ РѕС‚СЃСѓС‚СЃС‚РІРёСЋ СЃР»РµРґСѓСЋС‰РµРіРѕ Р±Р°Р№С‚Р° 3.5 Р±РѕРґР°.
+    // таймоут по отсутствию следующего байта 3.5 бода.
     uint16_t m_uiGuardTimeout = 10;
-    // С‚Р°Р№РјРѕСѓС‚ РїРѕ РѕС‚СЃСѓС‚СЃС‚РІРёСЋ Р·Р°РїСЂРѕСЃР°.
+    // таймоут по отсутствию запроса.
     const static uint16_t m_uiReceiveTimeout = 15000;
-    // С‚Р°Р№РјРѕСѓС‚ РїРѕ РѕС‚СЃСѓС‚СЃС‚РІРёСЋ РїРѕРґС‚РІРµСЂР¶РґРµРЅРёСЏ.
+    // таймоут по отсутствию подтверждения.
     const static uint16_t m_uiConfirmationTimeout = 500;
     const static uint16_t m_uiTransmitDelayTimeout = 5;
 

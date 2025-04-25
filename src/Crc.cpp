@@ -1,4 +1,4 @@
-п»ї#include <stdint.h>
+#include <stdint.h>
 #include "Crc.h"
 
 //-------------------------------------------------------------------------------
@@ -106,7 +106,7 @@ uint16_t usCrc16(const unsigned char *puiSource, uint16_t uiLength)
 //}
 
 //-------------------------------------------------------------------------------
-// РІС‹С‡РёСЃР»СЏРµС‚ РґРІСѓС…Р±Р°Р№С‚РѕРІСѓСЋ РєРѕРЅС‚СЂРѕР»СЊРЅСѓСЋ СЃСѓРјРјСѓ.
+// вычисляет двухбайтовую контрольную сумму.
 unsigned short usCrcSummTwoByteCalculation(
     unsigned char *puiSource,
     unsigned int nuiNbyte)
@@ -125,7 +125,7 @@ unsigned short usCrcSummTwoByteCalculation(
 }
 
 //-------------------------------------------------------------------------------
-// СЃСЂР°РІРЅРёРІР°РµС‚ РґРІСѓС…Р±Р°Р№С‚РѕРІСѓСЋ РєРѕРЅС‚СЂРѕР»СЊРЅСѓСЋ СЃСѓРјРјСѓ.
+// сравнивает двухбайтовую контрольную сумму.
 int iCrcSummTwoByteCompare(unsigned char *puiSource,
                            unsigned int nuiNbyte)
 {
@@ -151,7 +151,7 @@ int iCrcSummTwoByteCompare(unsigned char *puiSource,
 }
 
 //-------------------------------------------------------------------------------
-// РІС‹С‡РёСЃР»СЏРµС‚ РѕРґРЅРѕР±Р°Р№С‚РѕРІСѓСЋ РєРѕРЅС‚СЂРѕР»СЊРЅСѓСЋ СЃСѓРјРјСѓ.
+// вычисляет однобайтовую контрольную сумму.
 uint8_t usCrcSummOneByteCalculation(
     uint8_t *puiSource,
     uint16_t nuiNbyte)
@@ -167,7 +167,7 @@ uint8_t usCrcSummOneByteCalculation(
 }
 
 //-------------------------------------------------------------------------------
-// СЃСЂР°РІРЅРёРІР°РµС‚ РѕРґРЅРѕР±Р°Р№С‚РѕРІСѓСЋ РєРѕРЅС‚СЂРѕР»СЊРЅСѓСЋ СЃСѓРјРјСѓ.
+// сравнивает однобайтовую контрольную сумму.
 int iCrcSummOneByteCompare(unsigned char *puiSource,
                            unsigned int nuiNbyte)
 {

@@ -1,4 +1,4 @@
-п»ї//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 //  Sourse      : FileName.cpp
 //  Created     : 01.06.2022
 //  Author      : Alexandr Volvenkin
@@ -28,7 +28,7 @@ CModbusSlave::CModbusSlave()
     std::cout << "CModbusSlave constructor"  << std::endl;
     m_pxModbusSlaveLinkLayer = 0;
     m_pxDeviceControl = 0;
-    // РїРѕР»СѓС‡РёРј РёРјСЏ РєР»Р°СЃСЃР°.
+    // получим имя класса.
     sprintf(GetTaskNamePointer(),
             "%s",
             typeid(*this).name());
@@ -87,7 +87,7 @@ void CModbusSlave::SetDeviceControl(CDeviceControl* pxDeviceControl)
 }
 
 //-------------------------------------------------------------------------------
-CDeviceControl* CModbusSlave::GetDeviceContro(void)
+CDeviceControl* CModbusSlave::GetDeviceControl(void)
 {
     return m_pxDeviceControl;
 }
@@ -647,8 +647,8 @@ uint16_t CModbusSlave::PollProgramming(void)
 
     uint8_t uiFsmState = pxDataContainer -> m_uiFsmCommandState;
 
-    // РћР¶РёРґР°РµРј РѕРєРѕРЅС‡Р°РЅРёСЏ Р·Р°РїРёСЃРё Р°РІС‚РѕРјР°С‚РѕРј СѓСЃС‚СЂРѕР№СЃС‚РІР° С…СЂР°РЅРµРЅРёСЏ.
-    // РЈСЃС‚СЂРѕР№СЃС‚РІРѕ С…СЂР°РЅРµРЅРёСЏ Р·Р°РєРѕРЅС‡РёР»Рѕ Р·Р°РїРёСЃСЊ СѓСЃРїРµС€РЅРѕ?
+    // Ожидаем окончания записи автоматом устройства хранения.
+    // Устройство хранения закончило запись успешно?
     if (uiFsmState == DONE_OK)
     {
         std::cout << "CModbusSlave::PollProgramming 2" << std::endl;
@@ -658,14 +658,14 @@ uint16_t CModbusSlave::PollProgramming(void)
 
         SetFsmState(MESSAGE_TRANSMIT_START);
     }
-//    // РЈСЃС‚СЂРѕР№СЃС‚РІРѕ С…СЂР°РЅРµРЅРёСЏ Р·Р°РєРѕРЅС‡РёР»Рѕ Р·Р°РїРёСЃСЊ РЅРµ СѓСЃРїРµС€РЅРѕ?
+//    // Устройство хранения закончило запись не успешно?
 //    else if (pxDataStoreFileSystem -> IsDoneError())
 //    {
 //        SetFsmState(RESPONSE_EXCEPTION_SLAVE_OR_SERVER_BUSY);
 //    }
     else
     {
-        // РЈСЃС‚СЂРѕР№СЃС‚РІРѕ С…СЂР°РЅРµРЅРёСЏ РµС‰С‘ РЅРµ Р·Р°РєРѕРЅС‡РёР»Рѕ Р·Р°РїРёСЃСЊ.
+        // Устройство хранения ещё не закончило запись.
         std::cout << "CModbusSlave::PollProgramming 3" << std::endl;
         SetFsmState(RESPONSE_EXCEPTION_SLAVE_OR_SERVER_BUSY);
     }
@@ -725,11 +725,11 @@ uint16_t CModbusSlave::DataBaseRead(void)
 //-------------------------------------------------------------------------------
 uint16_t CModbusSlave::DataBaseWrite(void)
 {
-//    rsp_length == 2. Р°РґСЂРµСЃ slave + С„СѓРЅРєС†РёСЏ
-    // (rsp_length - 2) - Р°РґСЂРµСЃ slave.
-    // (rsp_length - 1) - С„СѓРЅРєС†РёСЏ.
-//        // (rsp_length) - РЅРѕРјРµСЂ Р±Р»РѕРєР°.
-    // (rsp_length + 1) - РЅР°С‡Р°Р»Рѕ РґР°РЅРЅС‹С….
+//    rsp_length == 2. адрес slave + функция
+    // (rsp_length - 2) - адрес slave.
+    // (rsp_length - 1) - функция.
+//        // (rsp_length) - номер блока.
+    // (rsp_length + 1) - начало данных.
 
     std::cout << "CModbusSlave::DataBaseWrite 1" << std::endl;
 
@@ -779,7 +779,7 @@ uint16_t CModbusSlave::DataBaseWrite(void)
         uiLength = m_pxModbusSlaveLinkLayer ->
                    ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
 
-        // РЅРѕРјРµСЂ Р±Р»РѕРєР° Р±Р°Р·С‹ РґР°РЅРЅС‹С…
+        // номер блока базы данных
         puiResponse[uiPduOffset + 1] = 1;
         uiLength ++;
         puiResponse[uiPduOffset + 2] = puiRequest[uiPduOffset + 1];
@@ -1363,7 +1363,7 @@ uint16_t CModbusSlave::ReportSlaveIDAnswer(void)
            (pxDataContainer -> m_puiDataPointer),
            uiLength);
 
-    // РєРѕР»РёС‡РµСЃС‚РІРѕ Р±Р°Р№С‚ РІ РїСЂРёРєР»Р°РґРЅРѕРј СЃРѕРѕР±С‰РµРЅРёРё РјР°СЃСЃРёРІРµ РєРѕРЅС„РёРіСѓСЂР°С†РёРё, РЅРµ РІРєР»СЋС‡Р°СЏ РѕСЃС‚Р°Р»СЊРЅС‹Рµ.
+    // количество байт в прикладном сообщении массиве конфигурации, не включая остальные.
     puiResponse[uiPduOffset + 1] = uiLength;
     uiLength ++;
     uiLength += m_pxModbusSlaveLinkLayer ->
@@ -1397,7 +1397,7 @@ uint16_t CModbusSlave::PollProgrammingAnswer(void)
         GetTaskPointerByNameFromMap("DataStoreFileSystem");
 
 
-//    // РЈСЃС‚СЂРѕР№СЃС‚РІРѕ С…СЂР°РЅРµРЅРёСЏ РІ РїСЂС†РµСЃСЃРµ Р·Р°РїРёСЃРё?
+//    // Устройство хранения в прцессе записи?
 //    if (m_pxDeviceControl ->
 //            GetFsmOperationStatus() == CDfa::IN_PROGRESS)
 //    {
@@ -1409,7 +1409,7 @@ uint16_t CModbusSlave::PollProgrammingAnswer(void)
 //                                     MODBUS_EXCEPTION_SLAVE_OR_SERVER_BUSY,
 //                                     puiResponse);
 //    }
-//    // РЈСЃС‚СЂРѕР№СЃС‚РІРѕ С…СЂР°РЅРµРЅРёСЏ Р·Р°РєРѕРЅС‡РёР»Рѕ Р·Р°РїРёСЃСЊ СѓСЃРїРµС€РЅРѕ?
+//    // Устройство хранения закончило запись успешно?
 //    else if (m_pxDeviceControl ->
 //             GetFsmOperationStatus() == CDfa::DONE_SUCCESSFULLY)
 //    {
@@ -1419,7 +1419,7 @@ uint16_t CModbusSlave::PollProgrammingAnswer(void)
 //                   ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
 //
 //    }
-//    // РЈСЃС‚СЂРѕР№СЃС‚РІРѕ С…СЂР°РЅРµРЅРёСЏ Р·Р°РєРѕРЅС‡РёР»Рѕ Р·Р°РїРёСЃСЊ РЅРµ СѓСЃРїРµС€РЅРѕ?
+//    // Устройство хранения закончило запись не успешно?
 //    else if (m_pxDeviceControl ->
 //             GetFsmOperationStatus() == CDfa::ERROR_OCCURED)
 //    {
@@ -1432,8 +1432,8 @@ uint16_t CModbusSlave::PollProgrammingAnswer(void)
 //                                     puiResponse);
 //    }
 
-    // РћР¶РёРґР°РµРј РѕРєРѕРЅС‡Р°РЅРёСЏ Р·Р°РїРёСЃРё Р°РІС‚РѕРјР°С‚РѕРј СѓСЃС‚СЂРѕР№СЃС‚РІР° С…СЂР°РЅРµРЅРёСЏ.
-    // РЈСЃС‚СЂРѕР№СЃС‚РІРѕ С…СЂР°РЅРµРЅРёСЏ Р·Р°РєРѕРЅС‡РёР»Рѕ Р·Р°РїРёСЃСЊ СѓСЃРїРµС€РЅРѕ?
+    // Ожидаем окончания записи автоматом устройства хранения.
+    // Устройство хранения закончило запись успешно?
     if (pxDataStoreFileSystem -> IsDoneOk())
     {
         std::cout << "CModbusSlave::PollProgrammingAnswer 2" << std::endl;
@@ -1441,7 +1441,7 @@ uint16_t CModbusSlave::PollProgrammingAnswer(void)
         uiLength = m_pxModbusSlaveLinkLayer ->
                    ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
 
-//        // РЅРѕРјРµСЂ Р±Р»РѕРєР° Р±Р°Р·С‹ РґР°РЅРЅС‹С…
+//        // номер блока базы данных
 //        puiResponse[uiPduOffset + 2] = puiRequest[uiPduOffset + 1];
 //        uiLength ++;
 
@@ -1451,7 +1451,7 @@ uint16_t CModbusSlave::PollProgrammingAnswer(void)
 //                                     MODBUS_EXCEPTION_ACKNOWLEDGE,
 //                                     puiResponse);
     }
-//    // РЈСЃС‚СЂРѕР№СЃС‚РІРѕ С…СЂР°РЅРµРЅРёСЏ Р·Р°РєРѕРЅС‡РёР»Рѕ Р·Р°РїРёСЃСЊ РЅРµ СѓСЃРїРµС€РЅРѕ?
+//    // Устройство хранения закончило запись не успешно?
 //    else if (pxDataStoreFileSystem -> IsDoneError())
 //    {
 //        uiLength = m_pxModbusSlaveLinkLayer ->
@@ -1519,7 +1519,7 @@ uint16_t CModbusSlave::DataBaseReadAnswer(void)
         uiLength += m_pxModbusSlaveLinkLayer ->
                     ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
 
-        // РЅРѕРјРµСЂ Р±Р»РѕРєР° Р±Р°Р·С‹ РґР°РЅРЅС‹С…
+        // номер блока базы данных
         puiResponse[uiPduOffset + 2] = puiRequest[uiPduOffset + 1];
         uiLength ++;
 
@@ -1562,7 +1562,7 @@ uint16_t CModbusSlave::DataBaseWriteAnswer(void)
         uiLength = m_pxModbusSlaveLinkLayer ->
                    ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
 
-        // РЅРѕРјРµСЂ Р±Р»РѕРєР° Р±Р°Р·С‹ РґР°РЅРЅС‹С…
+        // номер блока базы данных
         puiResponse[uiPduOffset + 1] = 1;
         uiLength ++;
         puiResponse[uiPduOffset + 2] = puiRequest[uiPduOffset + 1];
@@ -1598,7 +1598,7 @@ uint16_t CModbusSlave::AnswerProcessing(void)
         return 0;
     }
 
-    // РїСЂРѕРІРµСЂСЏРµРј СЃРѕС…СЂР°РЅС‘РЅРЅС‹Р№ Р»РѕРєР°Р»СЊРЅРѕ С‚РµРєСѓС‰РёР№ РєРѕРґ С„СѓРЅРєС†РёРё.
+    // проверяем сохранённый локально текущий код функции.
     switch (m_uiFunctionCode)
     {
         std::cout << "CModbusSlave::AnswerProcessing 3" << std::endl;
@@ -1827,7 +1827,7 @@ uint8_t CModbusSlave::Fsm(void)
         else
         {
             std::cout << "CModbusSlave::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING 3"  << std::endl;
-            // Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РІС‹РїРѕР»РЅРµРЅРёСЏ Р·Р°РїСЂРѕСЃР° Р·Р°РєРѕРЅС‡РёР»РѕСЃСЊ?
+            // Время ожидания выполнения запроса закончилось?
             if (GetTimerPointer() -> IsOverflow())
             {
                 std::cout << "CModbusSlave::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING 4"  << std::endl;
@@ -1858,7 +1858,7 @@ uint8_t CModbusSlave::Fsm(void)
         else
         {
             std::cout << "CModbusSlave::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 3"  << std::endl;
-            // Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РІС‹РїРѕР»РЅРµРЅРёСЏ Р·Р°РїСЂРѕСЃР° Р·Р°РєРѕРЅС‡РёР»РѕСЃСЊ?
+            // Время ожидания выполнения запроса закончилось?
             if (GetTimerPointer() -> IsOverflow())
             {
                 std::cout << "CModbusSlave::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 4"  << std::endl;
@@ -1900,7 +1900,7 @@ uint8_t CModbusSlave::Fsm(void)
         }
         else
         {
-            // Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РІС‹РїРѕР»РЅРµРЅРёСЏ Р·Р°РїСЂРѕСЃР° Р·Р°РєРѕРЅС‡РёР»РѕСЃСЊ?
+            // Время ожидания выполнения запроса закончилось?
             if (GetTimerPointer() -> IsOverflow())
             {
                 std::cout << "CModbusSlave::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 4"  << std::endl;
@@ -2027,7 +2027,7 @@ uint8_t CModbusSlave::Fsm(void)
 
     case MESSAGE_TRANSMIT_BEFORE_WAITING:
 //        std::cout << "CModbusSlave::Fsm MESSAGE_TRANSMIT_BEFORE_WAITING"  << std::endl;
-        // Р—Р°РєРѕРЅС‡РёР»РѕСЃСЊ РІСЂРµРјСЏ РїР°СѓР·С‹ РјРµР¶РґСѓ РїСЂРёС‘РјРѕРј Рё РїРµСЂРµРґР°С‡РµР№(5 РјРёР»РёСЃРµРєСѓРЅРґ)?
+        // Закончилось время паузы между приёмом и передачей(5 милисекунд)?
         if (GetTimerPointer() -> IsOverflow())
         {
             GetTimerPointer() -> Set(m_uiConfirmationTimeout);
@@ -2059,7 +2059,7 @@ uint8_t CModbusSlave::Fsm(void)
         }
         else
         {
-            // Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РІС‹РїРѕР»РЅРµРЅРёСЏ Р·Р°РїСЂРѕСЃР° Р·Р°РєРѕРЅС‡РёР»РѕСЃСЊ?
+            // Время ожидания выполнения запроса закончилось?
             if (GetTimerPointer() -> IsOverflow())
             {
                 std::cout << "CModbusSlave::Fsm MESSAGE_TRANSMIT_AFTER_WAITING 4"  << std::endl;

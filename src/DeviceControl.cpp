@@ -1,4 +1,4 @@
-п»ї//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 //  Sourse      : FileName.cpp
 //  Created     : 01.06.2022
 //  Author      : Alexandr Volvenkin
@@ -149,7 +149,7 @@ uint16_t CDeviceControl::DataBaseBlockReadAnswer(void)
 }
 
 //-------------------------------------------------------------------------------
-// РѕР±СЂР°Р±Р°С‚С‹РІР°РµС‚ РІС…РѕРґСЏС‰РёРµ СЃРѕРѕР±С‰РµРЅРёСЏ РѕС‚ Modbus РёРЅС‚РµСЂС„РµР№СЃРѕРІ РїРѕ 69 С„СѓРЅРєС†РёРё - Р·Р°РїРёСЃСЊ Р±Р»РѕРєР° Р±Р°Р·С‹ РґР°РЅРЅС‹С….
+// обрабатывает входящие сообщения от Modbus интерфейсов по 69 функции - запись блока базы данных.
 uint16_t CDeviceControl::DataBaseBlockWrite(void)
 {
     std::cout << "CDeviceControl::DataBaseWrite 1" << std::endl;
@@ -171,9 +171,9 @@ uint16_t CDeviceControl::DataBaseBlockWrite(void)
         std::cout << "CDeviceControl::DataBaseBlockWrite  3"  << std::endl;
     }
 
-    // РїРѕР»СѓС‡РёРј СѓРєР°Р·Р°С‚РµР»СЊ РЅР° Р±Р»РѕРє Р±Р°Р·С‹ РґР°РЅРЅС‹С….
+    // получим указатель на блок базы данных.
 
-    // РЅРѕРјРµСЂ РїСЂРёРЅСЏС‚РѕРіРѕ РґР»СЏ Р·Р°РїРёСЃРё Р±Р»РѕРєР° Р±Р°Р·С‹ РґР°РЅРЅС‹С….
+    // номер принятого для записи блока базы данных.
     switch(uiBlockIndex)
     {
     case ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_OFFSET:
@@ -358,7 +358,7 @@ uint8_t CDeviceControl::Fsm(void)
         else
         {
             std::cout << "CDeviceControl::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING 3"  << std::endl;
-            // Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РІС‹РїРѕР»РЅРµРЅРёСЏ Р·Р°РїСЂРѕСЃР° Р·Р°РєРѕРЅС‡РёР»РѕСЃСЊ?
+            // Время ожидания выполнения запроса закончилось?
             if (GetTimerPointer() -> IsOverflow())
             {
                 std::cout << "CDeviceControl::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING 4"  << std::endl;
@@ -389,7 +389,7 @@ uint8_t CDeviceControl::Fsm(void)
         else
         {
             std::cout << "CDeviceControl::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 3"  << std::endl;
-            // Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РІС‹РїРѕР»РЅРµРЅРёСЏ Р·Р°РїСЂРѕСЃР° Р·Р°РєРѕРЅС‡РёР»РѕСЃСЊ?
+            // Время ожидания выполнения запроса закончилось?
             if (GetTimerPointer() -> IsOverflow())
             {
                 std::cout << "CDeviceControl::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 4"  << std::endl;
@@ -431,7 +431,7 @@ uint8_t CDeviceControl::Fsm(void)
         }
         else
         {
-            // Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РІС‹РїРѕР»РЅРµРЅРёСЏ Р·Р°РїСЂРѕСЃР° Р·Р°РєРѕРЅС‡РёР»РѕСЃСЊ?
+            // Время ожидания выполнения запроса закончилось?
             if (GetTimerPointer() -> IsOverflow())
             {
                 std::cout << "CDeviceControl::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 4"  << std::endl;
@@ -517,7 +517,7 @@ uint8_t CDeviceControl::Fsm(void)
                                ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiDataIndex))
             {
                 std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_START_WRITE 2"  << std::endl;
-                // РЈСЃС‚Р°РЅРѕРІРёРј РІСЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РѕРєРѕРЅС‡Р°РЅРёСЏ Р·Р°РїРёСЃРё.
+                // Установим время ожидания окончания записи.
                 GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
                 SetFsmState(DATA_BASE_BLOCK_WRITE_END_WAITING);
             }
@@ -532,8 +532,8 @@ uint8_t CDeviceControl::Fsm(void)
 
     case DATA_BASE_BLOCK_WRITE_END_WAITING:
         std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_WRITE_END_WAITING"  << std::endl;
-        // РћР¶РёРґР°РµРј РѕРєРѕРЅС‡Р°РЅРёСЏ Р·Р°РїРёСЃРё Р°РІС‚РѕРјР°С‚РѕРј СѓСЃС‚СЂРѕР№СЃС‚РІР° С…СЂР°РЅРµРЅРёСЏ.
-        // РЈСЃС‚СЂРѕР№СЃС‚РІРѕ С…СЂР°РЅРµРЅРёСЏ Р·Р°РєРѕРЅС‡РёР»Рѕ Р·Р°РїРёСЃСЊ СѓСЃРїРµС€РЅРѕ?
+        // Ожидаем окончания записи автоматом устройства хранения.
+        // Устройство хранения закончило запись успешно?
         if (m_pxDataStore ->
                 IsDoneOk())
         {
@@ -541,7 +541,7 @@ uint8_t CDeviceControl::Fsm(void)
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(DONE_OK);
         }
-        // РЈСЃС‚СЂРѕР№СЃС‚РІРѕ С…СЂР°РЅРµРЅРёСЏ Р·Р°РєРѕРЅС‡РёР»Рѕ Р·Р°РїРёСЃСЊ РЅРµ СѓСЃРїРµС€РЅРѕ?
+        // Устройство хранения закончило запись не успешно?
         else if (m_pxDataStore ->
                  IsDoneError())
         {
@@ -551,7 +551,7 @@ uint8_t CDeviceControl::Fsm(void)
         }
         else
         {
-            // Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РѕРєРѕРЅС‡Р°РЅРёСЏ Р·Р°РїРёСЃРё Р·Р°РєРѕРЅС‡РёР»РѕСЃСЊ?
+            // Время ожидания окончания записи закончилось?
             if (GetTimerPointer() -> IsOverflow())
             {
                 std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_WRITE_END_WAITING 3"  << std::endl;

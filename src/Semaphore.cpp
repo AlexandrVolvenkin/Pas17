@@ -10,11 +10,11 @@
 #include <stdio.h>
 #include <fstream>
 #include <iostream>
-#include <cstdlib>   // РґР»СЏ С„СѓРЅРєС†РёР№ exit()
-#include <string>   // РґР»СЏ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ std::to_string()
-#include <cerrno>  // РґР»СЏ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ errno
-#include <unistd.h>  // РґР»СЏ С„СѓРЅРєС†РёРё sleep()
-#include <sys/types.h> // РґР»СЏ С‚РёРїРѕРІ РґР°РЅРЅС‹С… С‚РёРїР° РїСЂРѕС†РµСЃСЃР° Рё СЂР°Р·РјРµСЂР°
+#include <cstdlib>   // для функций exit()
+#include <string>   // для использования std::to_string()
+#include <cerrno>  // для использования errno
+#include <unistd.h>  // для функции sleep()
+#include <sys/types.h> // для типов данных типа процесса и размера
 #include <sys/ipc.h>
 #include <sys/sem.h>
 #include <sys/stat.h>
@@ -52,7 +52,7 @@ CSemaphore::CSemaphore(const char* key, int value)
         }
     }
 
-    semctl(semId, 0, SETVAL, value); // РЈСЃС‚Р°РЅРѕРІРєР° РЅР°С‡Р°Р»СЊРЅРѕРіРѕ Р·РЅР°С‡РµРЅРёСЏ СЃРµРјР°С„РѕСЂР°
+    semctl(semId, 0, SETVAL, value); // Установка начального значения семафора
 }
 
 //-------------------------------------------------------------------------------
@@ -96,7 +96,7 @@ CSemaphore::CSemaphore(key_t keyVal, int value)
             else
             {
                 std::cout << "CSemaphore::CSemaphore 34"  << std::endl;
-                semctl(semId, 0, SETVAL, value); // РЈСЃС‚Р°РЅРѕРІРєР° РЅР°С‡Р°Р»СЊРЅРѕРіРѕ Р·РЅР°С‡РµРЅРёСЏ СЃРµРјР°С„РѕСЂР°
+                semctl(semId, 0, SETVAL, value); // Установка начального значения семафора
             }
         }
         else
@@ -107,7 +107,7 @@ CSemaphore::CSemaphore(key_t keyVal, int value)
     else
     {
         std::cout << "CSemaphore::CSemaphore 5"  << std::endl;
-        semctl(semId, 0, SETVAL, value); // РЈСЃС‚Р°РЅРѕРІРєР° РЅР°С‡Р°Р»СЊРЅРѕРіРѕ Р·РЅР°С‡РµРЅРёСЏ СЃРµРјР°С„РѕСЂР°
+        semctl(semId, 0, SETVAL, value); // Установка начального значения семафора
     }
 }
 
@@ -115,7 +115,7 @@ CSemaphore::CSemaphore(key_t keyVal, int value)
 CSemaphore::~CSemaphore()
 {
     std::cout << "CSemaphore::~CSemaphore 1"  << std::endl;
-    semctl(semId, 0, IPC_RMID); // РЈРґР°Р»РµРЅРёРµ СЃРµРјР°С„РѕСЂР°
+    semctl(semId, 0, IPC_RMID); // Удаление семафора
 }
 
 //-------------------------------------------------------------------------------
@@ -124,7 +124,7 @@ bool CSemaphore::Acquire()
 //    std::cout << "CSemaphore::Acquire 1"  << std::endl;
     struct sembuf sops;
     sops.sem_num = 0;
-    sops.sem_op = -1; // РЈРјРµРЅСЊС€РµРЅРёРµ Р·РЅР°С‡РµРЅРёСЏ СЃРµРјР°С„РѕСЂР° РЅР° 1
+    sops.sem_op = -1; // Уменьшение значения семафора на 1
     sops.sem_flg = SEM_UNDO;
 
     int result = semop(semId, &sops, 1);
@@ -147,7 +147,7 @@ bool CSemaphore::Release()
 //    std::cout << "CSemaphore::Release 1"  << std::endl;
     struct sembuf sops;
     sops.sem_num = 0;
-    sops.sem_op = 1; // РЈРІРµР»РёС‡РµРЅРёРµ Р·РЅР°С‡РµРЅРёСЏ СЃРµРјР°С„РѕСЂР° РЅР° 1
+    sops.sem_op = 1; // Увеличение значения семафора на 1
     sops.sem_flg = SEM_UNDO;
 
     int result = semop(semId, &sops, 1);

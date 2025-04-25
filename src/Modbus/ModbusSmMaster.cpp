@@ -28,7 +28,7 @@ CModbusSmMaster::CModbusSmMaster()
     std::cout << "CModbusSmMaster constructor"  << std::endl;
     m_pxModbusMasterLinkLayer = 0;
     m_pxDeviceControl = 0;
-    // РїРѕР»СѓС‡РёРј РёРјСЏ РєР»Р°СЃСЃР°.
+    // получим имя класса.
     sprintf(GetTaskNamePointer(),
             "%s",
             typeid(*this).name());
@@ -75,7 +75,7 @@ void CModbusSmMaster::SetDeviceControl(CDeviceControl* pxDeviceControl)
 }
 
 //-------------------------------------------------------------------------------
-CDeviceControl* CModbusSmMaster::GetDeviceContro(void)
+CDeviceControl* CModbusSmMaster::GetDeviceControl(void)
 {
     return m_pxDeviceControl;
 }
@@ -297,7 +297,7 @@ uint16_t CModbusSmMaster::ReportSlaveID(void)
 //    memcpy(&puiResponse[uiPduOffset + 2], auiTempData, sizeof(auiTempData));
 //    uiLength += sizeof(auiTempData);
 
-    // РєРѕР»РёС‡РµСЃС‚РІРѕ Р±Р°Р№С‚ РІ РїСЂРёРєР»Р°РґРЅРѕРј СЃРѕРѕР±С‰РµРЅРёРё РјР°СЃСЃРёРІРµ РєРѕРЅС„РёРіСѓСЂР°С†РёРё, РЅРµ РІРєР»СЋС‡Р°СЏ РѕСЃС‚Р°Р»СЊРЅС‹Рµ.
+    // количество байт в прикладном сообщении массиве конфигурации, не включая остальные.
     puiResponse[uiPduOffset + 1] = uiLength;//sizeof(auiTempData);// + 1;
     uiLength ++;
     uiLength += m_pxModbusMasterLinkLayer ->
@@ -321,7 +321,7 @@ uint16_t CModbusSmMaster::ReportSlaveID(void)
 //            memcpy(&puiResponse[uiPduOffset + 2], auiTempData, sizeof(auiTempData));
 //            uiLength += sizeof(auiTempData);
 //
-//            // РєРѕР»РёС‡РµСЃС‚РІРѕ Р±Р°Р№С‚ РІ РїСЂРёРєР»Р°РґРЅРѕРј СЃРѕРѕР±С‰РµРЅРёРё РјР°СЃСЃРёРІРµ РєРѕРЅС„РёРіСѓСЂР°С†РёРё, РЅРµ РІРєР»СЋС‡Р°СЏ РѕСЃС‚Р°Р»СЊРЅС‹Рµ.
+//            // количество байт в прикладном сообщении массиве конфигурации, не включая остальные.
 //            puiResponse[uiPduOffset + 1] = uiLength;//sizeof(auiTempData);// + 1;
 //            uiLength ++;
 //            uiLength += m_pxModbusMasterLinkLayer ->
@@ -385,7 +385,7 @@ uint16_t CModbusSmMaster::ReportSlaveIDAnswer(void)
 //    memcpy(&puiResponse[uiPduOffset + 2], auiTempData, sizeof(auiTempData));
 //    uiLength += sizeof(auiTempData);
 
-    // РєРѕР»РёС‡РµСЃС‚РІРѕ Р±Р°Р№С‚ РІ РїСЂРёРєР»Р°РґРЅРѕРј СЃРѕРѕР±С‰РµРЅРёРё РјР°СЃСЃРёРІРµ РєРѕРЅС„РёРіСѓСЂР°С†РёРё, РЅРµ РІРєР»СЋС‡Р°СЏ РѕСЃС‚Р°Р»СЊРЅС‹Рµ.
+    // количество байт в прикладном сообщении массиве конфигурации, не включая остальные.
     puiResponse[uiPduOffset + 1] = uiLength;//sizeof(auiTempData);// + 1;
     uiLength ++;
     uiLength += m_pxModbusMasterLinkLayer ->
@@ -418,7 +418,7 @@ uint16_t CModbusSmMaster::AnswerProcessing(void)
         return 0;
     }
 
-    // РїСЂРѕРІРµСЂСЏРµРј СЃРѕС…СЂР°РЅС‘РЅРЅС‹Р№ Р»РѕРєР°Р»СЊРЅРѕ С‚РµРєСѓС‰РёР№ РєРѕРґ С„СѓРЅРєС†РёРё.
+    // проверяем сохранённый локально текущий код функции.
     switch (m_uiFunctionCode)
     {
         std::cout << "CModbusSmMaster::AnswerProcessing 3" << std::endl;
@@ -679,7 +679,7 @@ uint8_t CModbusSmMaster::Fsm(void)
 
     case BEFORE_REQUEST_WAITING:
 //        std::cout << "CModbusSmMaster::Fsm BEFORE_REQUEST_WAITING"  << std::endl;
-        // Р—Р°РєРѕРЅС‡РёР»РѕСЃСЊ РІСЂРµРјСЏ РїР°СѓР·С‹ РјРµР¶РґСѓ РїСЂРёС‘РјРѕРј Рё РїРµСЂРµРґР°С‡РµР№(5 РјРёР»РёСЃРµРєСѓРЅРґ)?
+        // Закончилось время паузы между приёмом и передачей(5 милисекунд)?
         if (GetTimerPointer() -> IsOverflow())
         {
             std::cout << "CModbusSmMaster::Fsm BEFORE_REQUEST_WAITING 2"  << std::endl;
@@ -712,7 +712,7 @@ uint8_t CModbusSmMaster::Fsm(void)
         }
         else
         {
-            // Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РІС‹РїРѕР»РЅРµРЅРёСЏ Р·Р°РїСЂРѕСЃР° Р·Р°РєРѕРЅС‡РёР»РѕСЃСЊ?
+            // Время ожидания выполнения запроса закончилось?
             if (GetTimerPointer() -> IsOverflow())
             {
                 std::cout << "CModbusSmMaster::Fsm AFTER_REQUEST_WAITING 4"  << std::endl;
