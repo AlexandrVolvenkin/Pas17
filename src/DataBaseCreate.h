@@ -102,7 +102,10 @@ public:
         TEXT_TITLES_CREATE_START,
         TEXT_TITLES_CREATE_DISCRETE_INPUT_MODULE_SIGNALS,
         TEXT_TITLES_CREATE_ANALOGUE_INPUT_MODULE_SIGNALS,
-        TEXT_TITLES_CREATE_DATA_BASE_BLOCKS_WRITE_START,
+        TEXT_TITLES_CREATE_DISCRETE_SIGNALS_DATA_BASE_BLOCKS_WRITE_START,
+        TEXT_TITLES_CREATE_DISCRETE_SIGNALS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING,
+        TEXT_TITLES_CREATE_ANALOGUE_SIGNALS_DATA_BASE_BLOCKS_WRITE_START,
+        TEXT_TITLES_CREATE_ANALOGUE_SIGNALS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING,
         TEXT_TITLES_CREATE_EXECUTOR_ANSWER_PROCESSING,
     };
 
@@ -119,6 +122,7 @@ private:
     void DiscreteSignalsTextTitlesCreateStart(void);
     void DiscreteInputModuleDiscreteSignalsTextTitlesCreate(void);
     void AnalogoueInputModuleDiscreteSignalsTextTitlesCreate(void);
+    void DiscreteSignalsTextTitlesWorkToCommonFormat(uint8_t* puiBlockDataPointer);
 
 private:
     std::string m_sInternalModuleName;

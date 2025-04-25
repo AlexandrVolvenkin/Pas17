@@ -160,14 +160,10 @@ void CDataBaseCreate::DiscreteInputModuleDiscreteSignalsTextTitlesCreate(void)
     unsigned char nucDiscreteInputCounter;
     unsigned char nucModuleCounter;
     TDiscreteSygnalTextDescriptor *pxDiscreteSygnalTextDescriptor;
-
-    // получим указатель на буфер для нормализованной стартовой базы данных прибора.
-    pxDiscreteSygnalTextDescriptor =
-        (GetResources() -> GetDiscreteSygnalTextDescriptorsWorkPointer());
     // начнём с первого входа.
     nucDiscreteInputCounter = 0;
     // начнём с первого модуля.
-    nucModuleCounter = 0;
+    nucModuleCounter = 1;
 
     CConfigurationCreate::TConfigDataPackOne* pxDeviceConfigSearch =
         (GetResources() -> GetDeviceConfigSearchPointer());
@@ -176,6 +172,10 @@ void CDataBaseCreate::DiscreteInputModuleDiscreteSignalsTextTitlesCreate(void)
         ((pxDeviceConfigSearch ->
           uiServiceDiscreteInputModuleQuantity) *
          DISCRETE_MODULE_INPUT_QUANTITY);
+
+    // получим указатель на буфер для нормализованной стартовой базы данных прибора.
+    pxDiscreteSygnalTextDescriptor =
+        (GetResources() -> GetDiscreteSygnalTextDescriptorsWorkPointer());
 
     // создадим первую часть стартовой базы данных текстовых реквизитов дискретных сигналов.
     // для сигналов пораждаемых модулями дискретного ввода.
@@ -187,7 +187,7 @@ void CDataBaseCreate::DiscreteInputModuleDiscreteSignalsTextTitlesCreate(void)
         sprintf((char*)(pxDiscreteSygnalTextDescriptor[i].acTextDescriptor),
                 "%s_%02d_%02d  ",
                 "Вх. DI",
-                nucModuleCounter + CONVERT_INTEGER_TO_NATURAL_NUMBER,
+                nucModuleCounter,
                 nucDiscreteInputCounter + CONVERT_INTEGER_TO_NATURAL_NUMBER);
         // следующий вход модуля дискретного ввода.
         nucDiscreteInputCounter++;
@@ -208,205 +208,356 @@ void CDataBaseCreate::DiscreteInputModuleDiscreteSignalsTextTitlesCreate(void)
 // создаёт стартовую базу текстовых реквизитов модулей аналогового ввода.
 void CDataBaseCreate::AnalogoueInputModuleDiscreteSignalsTextTitlesCreate(void)
 {
+    unsigned char nucModuleCounter;
+    unsigned char nucModuleInputCounter;
+    TDiscreteSygnalTextDescriptor *pxDiscreteSygnalTextDescriptor;
+    unsigned char ucFlowControl;
+    // начнём с первого модуля.
+    nucModuleCounter = 1;
+    // начнём с первого входа.
+    nucModuleInputCounter = 0;
 
+    CConfigurationCreate::TConfigDataPackOne* pxDeviceConfigSearch =
+        (GetResources() -> GetDeviceConfigSearchPointer());
+
+    // получим количество дискретных сигналов порождаемых модулями дискретного ввода.
+    // чтобы получить смещение в рабочем массиве на место текстовых реквизитов
+    // аналоговых сигналов.
+    uint16_t uiDiscreteSignalsNumber =
+        ((pxDeviceConfigSearch ->
+          uiServiceDiscreteInputModuleQuantity) *
+         DISCRETE_MODULE_INPUT_QUANTITY);
+
+    // получим указатель на буфер для нормализованной стартовой базы данных прибора.
+    // в конце текстовых реквизитов для модулей дискретного ввода.
+    pxDiscreteSygnalTextDescriptor =
+        ((GetResources() -> GetDiscreteSygnalTextDescriptorsWorkPointer()) +
+         (sizeof(struct TDiscreteSygnalTextDescriptor) *
+          uiDiscreteSignalsNumber));
+
+    // получим количество дискретных сигналов порождаемых аналоговыми сигналами.
+    // один аналоговый сигнал порождает ANALOGUE_INPUT_DI_VALUE_QUANTITY дискретных.
+    uiDiscreteSignalsNumber =
+        ((pxDeviceConfigSearch ->
+          uiServiceAnalogueInputQuantity) *
+         ANALOGUE_INPUT_DI_VALUE_QUANTITY);
+
+    // создадим вторую часть стартовой базы данных текстовых реквизитов дискретных сигналов.
+    // для сигналов пораждаемых модулями аналогового ввода.
+    // один аналоговый вход пораждает четыре дискретных сигнала - уставки: LL, L, H, HH.
+    // начнём с создания описателя для уставки LL+L.
+    ucFlowControl = ANALOGUE_INPUT_SET_POINT_VIOLATION_LL_L;
+    // цикл по всем дискретным сигналам порождённым модулями аналогового ввода.
+    for (uint16_t i = 0;
+            i < uiDiscreteSignalsNumber;
+        )
+    {
+        // цикл по одному модулю аналогового ввода мувр.
+        for (uint8_t j = 0;
+                j < ANALOG_MODULE_INPUT_QUANTITY;
+                j++)
+        {
+            // цикл по одному аналоговому сигналу порождающему 4 дискретных.
+            // количество уставок по одному входу(4 - LL, L, H, HH).
+            for (uint8_t k = 0;
+                    k < ANALOGUE_INPUT_DI_VALUE_QUANTITY;
+                    k++)
+            {
+                switch(ucFlowControl)
+                {
+                case ANALOGUE_INPUT_SET_POINT_VIOLATION_LL_L:
+                    // создадим строку текстового реквизита дискретного сигнала.
+                    sprintf((char*)(pxDiscreteSygnalTextDescriptor[i].acTextDescriptor),
+                            "%s_%02d_%01d_LL",
+                            "Вх. AI",
+                            nucModuleCounter,
+                            nucModuleInputCounter + CONVERT_INTEGER_TO_NATURAL_NUMBER);
+                    // перейдём к заполнению описателя следующей уставки.
+                    ucFlowControl = ANALOGUE_INPUT_SET_POINT_VIOLATION_L;
+                    break;
+
+                case ANALOGUE_INPUT_SET_POINT_VIOLATION_L:
+                    // создадим строку текстового реквизита дискретного сигнала.
+                    sprintf((char*)(pxDiscreteSygnalTextDescriptor[i].acTextDescriptor),
+                            "%s_%02d_%01d_L ",
+                            "Вх. AI",
+                            nucModuleCounter,
+                            nucModuleInputCounter + CONVERT_INTEGER_TO_NATURAL_NUMBER);
+
+                    // перейдём к заполнению описателя следующей уставки.
+                    ucFlowControl = ANALOGUE_INPUT_SET_POINT_VIOLATION_H;
+                    break;
+
+                case ANALOGUE_INPUT_SET_POINT_VIOLATION_H:
+                    // создадим строку текстового реквизита дискретного сигнала.
+                    sprintf((char*)(pxDiscreteSygnalTextDescriptor[i].acTextDescriptor),
+                            "%s_%02d_%01d_H ",
+                            "Вх. AI",
+                            nucModuleCounter,
+                            nucModuleInputCounter + CONVERT_INTEGER_TO_NATURAL_NUMBER);
+
+                    // перейдём к заполнению описателя следующей уставки.
+                    ucFlowControl = ANALOGUE_INPUT_SET_POINT_VIOLATION_HH_H;
+                    break;
+
+                case ANALOGUE_INPUT_SET_POINT_VIOLATION_HH_H:
+                    // создадим строку текстового реквизита дискретного сигнала.
+                    sprintf((char*)(pxDiscreteSygnalTextDescriptor[i].acTextDescriptor),
+                            "%s_%02d_%01d_HH",
+                            "Вх. AI",
+                            nucModuleCounter,
+                            nucModuleInputCounter + CONVERT_INTEGER_TO_NATURAL_NUMBER);
+
+                    // перейдём к заполнению описателя следующей уставки.
+                    ucFlowControl = ANALOGUE_INPUT_SET_POINT_VIOLATION_LL_L;
+                    break;
+
+                default:
+                    break;
+                };
+
+                // следующий описатель.
+                i++;
+            }
+
+            // следующий вход.
+            nucModuleInputCounter++;
+        }
+
+        // начнём с первого входа.
+        nucModuleInputCounter = 0;
+        // следующий модуль.
+        nucModuleCounter++;
+    }
 }
 
 //-----------------------------------------------------------------------------------------------------
-// создаёт стартовую базу данных текстовых реквизитов дискретных сигналов.
-int iDiscreteSygnalTextDescriptorStartDataBaseCreate(void)
+// преобразует блок базы данных текстовых реквизитов дискретных сигналов из рабочего формата в общий,
+// в котором он приходит от программатора и хранится.
+void CDataBaseCreate::DiscreteSignalsTextTitlesWorkToCommonFormat(uint8_t* puiBlockDataPointer)
 {
-    int i;
-    unsigned char nucBlockCounter;
-    unsigned char nucBlocksInBlockCounter; // один описатель - один блок, в общем блоке.
-    unsigned char nucDiscreteInputCounter;
-    unsigned char nucModuleInputCounter;
-    // количество уставок по одному входу(4 - LL, L, H, HH).
-    unsigned char nucInputSetPointCounter;
-    unsigned char nucModuleCounter;
-    unsigned char ucFlowControl;
     TDiscreteSygnalTextDescriptorPackOne *pxDiscreteSygnalTextDescriptorPackOne;
-    TDiscreteSygnalTextDescriptorPackOne xDiscreteSygnalTextDescriptorPackOne;
     TDiscreteSygnalTextDescriptor *pxDiscreteSygnalTextDescriptor;
-    TDiscreteSygnalTextDescriptor axDiscreteSygnalTextDescriptor[MAX_HANDLED_DISCRETE_INPUT];
-
 
     // получим указатель на буфер для нормализованной стартовой базы данных прибора.
-    pxDiscreteSygnalTextDescriptor = axDiscreteSygnalTextDescriptor;
-    // начнём с первого входа.
-    nucDiscreteInputCounter = 0;
-    nucModuleInputCounter = 0;
-    // начнём с первого модуля.
-    nucModuleCounter = 1;
-    i = 0;
+    pxDiscreteSygnalTextDescriptor =
+        (GetResources() -> GetDiscreteSygnalTextDescriptorsWorkPointer());
+    // получим указатель на временный буфер в котором сформируем блок базы данных
+    // в общем формате хранения
+    pxDiscreteSygnalTextDescriptorPackOne = (TDiscreteSygnalTextDescriptorPackOne*)puiBlockDataPointer;
 
-    memset((unsigned char*)pxDiscreteSygnalTextDescriptor,
-           0,
-           (sizeof(struct TDiscreteSygnalTextDescriptor)));
-
-//    // создадим первую часть стартовой базы данных текстовых реквизитов дискретных сигналов.
-//    // для сигналов пораждаемых модулями дискретного ввода.
-//    while (i < (xPlcConfigService.xPlcConfigServiceData.ucServiceDiscreteInputModuleQuantity *
-//                DISCRETE_MODULE_INPUT_QUANTITY))
-//    {
-//        // создадим строку текстового реквизита дискретного сигнала.
-//        sprintf((char*)(pxDiscreteSygnalTextDescriptor[i].acTextDescriptor),
-//                "%s_%02d_%02d  ",
-//                "Вх. DI",
-//                nucModuleCounter,
-//                nucDiscreteInputCounter + CONVERT_INTEGER_TO_NATURAL_NUMBER);
-//        // следующий вход модуля дискретного ввода.
-//        nucDiscreteInputCounter++;
-//        // следующий описатель.
-//        i++;
-//        // обработаны все входы модуля дискретного ввода?
-//        if (nucDiscreteInputCounter == DISCRETE_MODULE_INPUT_QUANTITY)
-//        {
-//            // начнём с первого входа.
-//            nucDiscreteInputCounter = 0;
-//            // следующий модуль.
-//            nucModuleCounter++;
-//        }
-//    }
-
-    // начнём с первого входа.
-    nucDiscreteInputCounter = 0;
-    nucModuleInputCounter = 0;
-    // начнём с первой уставки - LL+L.
-    nucInputSetPointCounter = 0;
-    // начнём с первого модуля.
-    nucModuleCounter = 1;
-
-//    // создадим вторую часть стартовой базы данных текстовых реквизитов дискретных сигналов.
-//    // для сигналов пораждаемых модулями аналогового ввода.
-//    // один аналоговый вход пораждает четыре дискретных сигнала - уставки: LL, L, H, HH.
-//    // начнём с создания описателя для уставки LL+L.
-//    ucFlowControl = ANALOGUE_INPUT_SET_POINT_VIOLATION_LL_L;
-//    while (i < ((xPlcConfigService.xPlcConfigServiceData.ucServiceDiscreteInputModuleQuantity *
-//                 DISCRETE_MODULE_INPUT_QUANTITY) +
-//                (xPlcConfigService.xPlcConfigServiceData.ucServiceAnalogueInputModuleQuantity *
-//                 ANALOG_MODULE_INPUT_QUANTITY *
-//                 ANALOGUE_INPUT_DI_VALUE_QUANTITY)))
-//    {
-//        switch(ucFlowControl)
-//        {
-//        case ANALOGUE_INPUT_SET_POINT_VIOLATION_LL_L:
-//            // создадим строку текстового реквизита дискретного сигнала.
-//            sprintf((char*)(pxDiscreteSygnalTextDescriptor[i].acTextDescriptor),
-//                    "%s_%02d_%01d_LL",
-//                    "Вх. AI",
-//                    nucModuleCounter,
-//                    nucModuleInputCounter + CONVERT_INTEGER_TO_NATURAL_NUMBER);
-//            // перейдём к заполнению описателя следующей уставки.
-//            ucFlowControl = ANALOGUE_INPUT_SET_POINT_VIOLATION_L;
-//            break;
-//
-//        case ANALOGUE_INPUT_SET_POINT_VIOLATION_L:
-//            // создадим строку текстового реквизита дискретного сигнала.
-//            sprintf((char*)(pxDiscreteSygnalTextDescriptor[i].acTextDescriptor),
-//                    "%s_%02d_%01d_L ",
-//                    "Вх. AI",
-//                    nucModuleCounter,
-//                    nucModuleInputCounter + CONVERT_INTEGER_TO_NATURAL_NUMBER);
-//
-//            // перейдём к заполнению описателя следующей уставки.
-//            ucFlowControl = ANALOGUE_INPUT_SET_POINT_VIOLATION_H;
-//            break;
-//
-//        case ANALOGUE_INPUT_SET_POINT_VIOLATION_H:
-//            // создадим строку текстового реквизита дискретного сигнала.
-//            sprintf((char*)(pxDiscreteSygnalTextDescriptor[i].acTextDescriptor),
-//                    "%s_%02d_%01d_H ",
-//                    "Вх. AI",
-//                    nucModuleCounter,
-//                    nucModuleInputCounter + CONVERT_INTEGER_TO_NATURAL_NUMBER);
-//
-//            // перейдём к заполнению описателя следующей уставки.
-//            ucFlowControl = ANALOGUE_INPUT_SET_POINT_VIOLATION_HH_H;
-//            break;
-//
-//        case ANALOGUE_INPUT_SET_POINT_VIOLATION_HH_H:
-//            // создадим строку текстового реквизита дискретного сигнала.
-//            sprintf((char*)(pxDiscreteSygnalTextDescriptor[i].acTextDescriptor),
-//                    "%s_%02d_%01d_HH",
-//                    "Вх. AI",
-//                    nucModuleCounter,
-//                    nucModuleInputCounter + CONVERT_INTEGER_TO_NATURAL_NUMBER);
-//
-//            // перейдём к заполнению описателя следующей уставки.
-//            ucFlowControl = ANALOGUE_INPUT_SET_POINT_VIOLATION_LL_L;
-//            break;
-//
-//        default:
-//            break;
-//        };
-//
-//        nucDiscreteInputCounter++;
-//        nucInputSetPointCounter++;
-//        // количество уставок по одному входу(4 - LL, L, H, HH).
-//        // прошли по всем уставкам одного входа?
-//        if (nucInputSetPointCounter >= 4)
-//        {
-//            nucInputSetPointCounter = 0;
-//            // следующий вход.
-//            nucModuleInputCounter++;
-//        }
-//        // следующий описатель.
-//        i++;
-//
-//        // обработаны все дискретные сигналы пораждённые входами модуля аналогового ввода?
-//        if (nucDiscreteInputCounter == (ANALOG_MODULE_INPUT_QUANTITY *
-//                                        ANALOGUE_INPUT_DI_VALUE_QUANTITY))
-//        {
-//            // начнём с первого входа.
-//            nucDiscreteInputCounter = 0;
-//            nucModuleInputCounter = 0;
-//            // начнём с первой уставки - LL+L.
-//            nucInputSetPointCounter = 0;
-//            // следующий модуль.
-//            nucModuleCounter++;
-//        }
-//    }
-
-    // получим указатель на буфер с вновь созданной нормализованной стартовой базой данных прибора.
-    pxDiscreteSygnalTextDescriptor = axDiscreteSygnalTextDescriptor;
-//    // получим указатель на базу данных прибора в общем формате.
-//    pxDiscreteSygnalTextDescriptorPackOne = (TDiscreteSygnalTextDescriptorPackOne*)&(xPlcDataBase.
-//                                            axPlcDataBaseBlocks[TEXT_TITLES_DATA_BASE_BLOCK_OFFSET].
-//                                            aucPlcDataBaseBlockData[0]);
-    nucBlockCounter = 0;
-    nucBlocksInBlockCounter = 0;
+    CConfigurationCreate::TConfigDataPackOne* pxDeviceConfigSearch =
+        (GetResources() -> GetDeviceConfigSearchPointer());
 
     // преобразуем созданную базу данных в общий формат.
     for (int i = 0;
-            i < MAX_HANDLED_DISCRETE_INPUT;
+            i < (pxDeviceConfigSearch ->
+                 uiDiscreteInputSignalsQuantity);
             i++)
     {
-        // обработан весь блок базы данных?
-        if (nucBlocksInBlockCounter == TEXT_TITLES_DATA_BASE_BLOCKS_IN_BLOCK_QUANTITY)
-        {
-            // следующий блок базы данных.
-            nucBlockCounter++;
-//            // получим указатель на следующий блок в общей базе данных прибора.
-//            pxDiscreteSygnalTextDescriptorPackOne = (TDiscreteSygnalTextDescriptorPackOne*)&(xPlcDataBase.
-//                                                    axPlcDataBaseBlocks[TEXT_TITLES_DATA_BASE_BLOCK_OFFSET + nucBlockCounter].
-//                                                    aucPlcDataBaseBlockData[0]);
-            nucBlocksInBlockCounter = 0;
-        }
-
-        // скопируем один описатель текстовых реквизитов дискретного сигнала, в буфер общего формата.
-        memcpy((&xDiscreteSygnalTextDescriptorPackOne.
-                acTextDescriptor),
-               (&pxDiscreteSygnalTextDescriptor[i].acTextDescriptor),
+        // скопируем один описатель, в буфер общей базы данных прибора.
+        memcpy(pxDiscreteSygnalTextDescriptorPackOne[i].acTextDescriptor,
+               pxDiscreteSygnalTextDescriptor[i].acTextDescriptor,
                DISCRETE_SYGNAL_NAME_LENGTH);
-
-        memcpy((uint8_t*)&pxDiscreteSygnalTextDescriptorPackOne[nucBlocksInBlockCounter],
-               (uint8_t*)&xDiscreteSygnalTextDescriptorPackOne,
-               sizeof(struct TDiscreteSygnalTextDescriptorPackOne));
-
-        // следующий описатель.
-        nucBlocksInBlockCounter++;
     }
 }
+
+////-----------------------------------------------------------------------------------------------------
+//// создаёт стартовую базу данных текстовых реквизитов дискретных сигналов.
+//int iDiscreteSygnalTextDescriptorStartDataBaseCreate(void)
+//{
+//    int i;
+//    unsigned char nucBlockCounter;
+//    unsigned char nucBlocksInBlockCounter; // один описатель - один блок, в общем блоке.
+//    unsigned char nucDiscreteInputCounter;
+//    unsigned char nucModuleInputCounter;
+//    // количество уставок по одному входу(4 - LL, L, H, HH).
+//    unsigned char nucInputSetPointCounter;
+//    unsigned char nucModuleCounter;
+//    unsigned char ucFlowControl;
+//    TDiscreteSygnalTextDescriptorPackOne *pxDiscreteSygnalTextDescriptorPackOne;
+//    TDiscreteSygnalTextDescriptorPackOne xDiscreteSygnalTextDescriptorPackOne;
+//    TDiscreteSygnalTextDescriptor *pxDiscreteSygnalTextDescriptor;
+//    TDiscreteSygnalTextDescriptor axDiscreteSygnalTextDescriptor[MAX_HANDLED_DISCRETE_INPUT];
+//
+//
+//    // получим указатель на буфер для нормализованной стартовой базы данных прибора.
+//    pxDiscreteSygnalTextDescriptor = axDiscreteSygnalTextDescriptor;
+//    // начнём с первого входа.
+//    nucDiscreteInputCounter = 0;
+//    nucModuleInputCounter = 0;
+//    // начнём с первого модуля.
+//    nucModuleCounter = 1;
+//    i = 0;
+//
+//    memset((unsigned char*)pxDiscreteSygnalTextDescriptor,
+//           0,
+//           (sizeof(struct TDiscreteSygnalTextDescriptor)));
+//
+////    // создадим первую часть стартовой базы данных текстовых реквизитов дискретных сигналов.
+////    // для сигналов пораждаемых модулями дискретного ввода.
+////    while (i < (xPlcConfigService.xPlcConfigServiceData.ucServiceDiscreteInputModuleQuantity *
+////                DISCRETE_MODULE_INPUT_QUANTITY))
+////    {
+////        // создадим строку текстового реквизита дискретного сигнала.
+////        sprintf((char*)(pxDiscreteSygnalTextDescriptor[i].acTextDescriptor),
+////                "%s_%02d_%02d  ",
+////                "Вх. DI",
+////                nucModuleCounter,
+////                nucDiscreteInputCounter + CONVERT_INTEGER_TO_NATURAL_NUMBER);
+////        // следующий вход модуля дискретного ввода.
+////        nucDiscreteInputCounter++;
+////        // следующий описатель.
+////        i++;
+////        // обработаны все входы модуля дискретного ввода?
+////        if (nucDiscreteInputCounter == DISCRETE_MODULE_INPUT_QUANTITY)
+////        {
+////            // начнём с первого входа.
+////            nucDiscreteInputCounter = 0;
+////            // следующий модуль.
+////            nucModuleCounter++;
+////        }
+////    }
+//
+//    // начнём с первого входа.
+//    nucDiscreteInputCounter = 0;
+//    nucModuleInputCounter = 0;
+//    // начнём с первой уставки - LL+L.
+//    nucInputSetPointCounter = 0;
+//    // начнём с первого модуля.
+//    nucModuleCounter = 1;
+//
+////    // создадим вторую часть стартовой базы данных текстовых реквизитов дискретных сигналов.
+////    // для сигналов пораждаемых модулями аналогового ввода.
+////    // один аналоговый вход пораждает четыре дискретных сигнала - уставки: LL, L, H, HH.
+////    // начнём с создания описателя для уставки LL+L.
+////    ucFlowControl = ANALOGUE_INPUT_SET_POINT_VIOLATION_LL_L;
+////    while (i < ((xPlcConfigService.xPlcConfigServiceData.ucServiceDiscreteInputModuleQuantity *
+////                 DISCRETE_MODULE_INPUT_QUANTITY) +
+////                (xPlcConfigService.xPlcConfigServiceData.ucServiceAnalogueInputModuleQuantity *
+////                 ANALOG_MODULE_INPUT_QUANTITY *
+////                 ANALOGUE_INPUT_DI_VALUE_QUANTITY)))
+////    {
+////        switch(ucFlowControl)
+////        {
+////        case ANALOGUE_INPUT_SET_POINT_VIOLATION_LL_L:
+////            // создадим строку текстового реквизита дискретного сигнала.
+////            sprintf((char*)(pxDiscreteSygnalTextDescriptor[i].acTextDescriptor),
+////                    "%s_%02d_%01d_LL",
+////                    "Вх. AI",
+////                    nucModuleCounter,
+////                    nucModuleInputCounter + CONVERT_INTEGER_TO_NATURAL_NUMBER);
+////            // перейдём к заполнению описателя следующей уставки.
+////            ucFlowControl = ANALOGUE_INPUT_SET_POINT_VIOLATION_L;
+////            break;
+////
+////        case ANALOGUE_INPUT_SET_POINT_VIOLATION_L:
+////            // создадим строку текстового реквизита дискретного сигнала.
+////            sprintf((char*)(pxDiscreteSygnalTextDescriptor[i].acTextDescriptor),
+////                    "%s_%02d_%01d_L ",
+////                    "Вх. AI",
+////                    nucModuleCounter,
+////                    nucModuleInputCounter + CONVERT_INTEGER_TO_NATURAL_NUMBER);
+////
+////            // перейдём к заполнению описателя следующей уставки.
+////            ucFlowControl = ANALOGUE_INPUT_SET_POINT_VIOLATION_H;
+////            break;
+////
+////        case ANALOGUE_INPUT_SET_POINT_VIOLATION_H:
+////            // создадим строку текстового реквизита дискретного сигнала.
+////            sprintf((char*)(pxDiscreteSygnalTextDescriptor[i].acTextDescriptor),
+////                    "%s_%02d_%01d_H ",
+////                    "Вх. AI",
+////                    nucModuleCounter,
+////                    nucModuleInputCounter + CONVERT_INTEGER_TO_NATURAL_NUMBER);
+////
+////            // перейдём к заполнению описателя следующей уставки.
+////            ucFlowControl = ANALOGUE_INPUT_SET_POINT_VIOLATION_HH_H;
+////            break;
+////
+////        case ANALOGUE_INPUT_SET_POINT_VIOLATION_HH_H:
+////            // создадим строку текстового реквизита дискретного сигнала.
+////            sprintf((char*)(pxDiscreteSygnalTextDescriptor[i].acTextDescriptor),
+////                    "%s_%02d_%01d_HH",
+////                    "Вх. AI",
+////                    nucModuleCounter,
+////                    nucModuleInputCounter + CONVERT_INTEGER_TO_NATURAL_NUMBER);
+////
+////            // перейдём к заполнению описателя следующей уставки.
+////            ucFlowControl = ANALOGUE_INPUT_SET_POINT_VIOLATION_LL_L;
+////            break;
+////
+////        default:
+////            break;
+////        };
+////
+////        nucDiscreteInputCounter++;
+////        nucInputSetPointCounter++;
+////        // количество уставок по одному входу(4 - LL, L, H, HH).
+////        // прошли по всем уставкам одного входа?
+////        if (nucInputSetPointCounter >= 4)
+////        {
+////            nucInputSetPointCounter = 0;
+////            // следующий вход.
+////            nucModuleInputCounter++;
+////        }
+////        // следующий описатель.
+////        i++;
+////
+////        // обработаны все дискретные сигналы пораждённые входами модуля аналогового ввода?
+////        if (nucDiscreteInputCounter == (ANALOG_MODULE_INPUT_QUANTITY *
+////                                        ANALOGUE_INPUT_DI_VALUE_QUANTITY))
+////        {
+////            // начнём с первого входа.
+////            nucDiscreteInputCounter = 0;
+////            nucModuleInputCounter = 0;
+////            // начнём с первой уставки - LL+L.
+////            nucInputSetPointCounter = 0;
+////            // следующий модуль.
+////            nucModuleCounter++;
+////        }
+////    }
+//
+//    // получим указатель на буфер с вновь созданной нормализованной стартовой базой данных прибора.
+//    pxDiscreteSygnalTextDescriptor = axDiscreteSygnalTextDescriptor;
+////    // получим указатель на базу данных прибора в общем формате.
+////    pxDiscreteSygnalTextDescriptorPackOne = (TDiscreteSygnalTextDescriptorPackOne*)&(xPlcDataBase.
+////                                            axPlcDataBaseBlocks[TEXT_TITLES_DATA_BASE_BLOCK_OFFSET].
+////                                            aucPlcDataBaseBlockData[0]);
+//    nucBlockCounter = 0;
+//    nucBlocksInBlockCounter = 0;
+//
+//    // преобразуем созданную базу данных в общий формат.
+//    for (int i = 0;
+//            i < MAX_HANDLED_DISCRETE_INPUT;
+//            i++)
+//    {
+//        // обработан весь блок базы данных?
+//        if (nucBlocksInBlockCounter == TEXT_TITLES_DATA_BASE_BLOCKS_IN_BLOCK_QUANTITY)
+//        {
+//            // следующий блок базы данных.
+//            nucBlockCounter++;
+////            // получим указатель на следующий блок в общей базе данных прибора.
+////            pxDiscreteSygnalTextDescriptorPackOne = (TDiscreteSygnalTextDescriptorPackOne*)&(xPlcDataBase.
+////                                                    axPlcDataBaseBlocks[TEXT_TITLES_DATA_BASE_BLOCK_OFFSET + nucBlockCounter].
+////                                                    aucPlcDataBaseBlockData[0]);
+//            nucBlocksInBlockCounter = 0;
+//        }
+//
+//        // скопируем один описатель текстовых реквизитов дискретного сигнала, в буфер общего формата.
+//        memcpy((&xDiscreteSygnalTextDescriptorPackOne.
+//                acTextDescriptor),
+//               (&pxDiscreteSygnalTextDescriptor[i].acTextDescriptor),
+//               DISCRETE_SYGNAL_NAME_LENGTH);
+//
+//        memcpy((uint8_t*)&pxDiscreteSygnalTextDescriptorPackOne[nucBlocksInBlockCounter],
+//               (uint8_t*)&xDiscreteSygnalTextDescriptorPackOne,
+//               sizeof(struct TDiscreteSygnalTextDescriptorPackOne));
+//
+//        // следующий описатель.
+//        nucBlocksInBlockCounter++;
+//    }
+//}
 
 //-------------------------------------------------------------------------------
 uint8_t CDataBaseCreate::Fsm(void)
@@ -803,14 +954,52 @@ uint8_t CDataBaseCreate::Fsm(void)
         std::cout << "CDataBaseCreate::Fsm TEXT_TITLES_CREATE_ANALOGUE_INPUT_MODULE_SIGNALS"  << std::endl;
         {
             AnalogoueInputModuleDiscreteSignalsTextTitlesCreate();
-            SetFsmState(TEXT_TITLES_CREATE_DATA_BASE_BLOCKS_WRITE_START);
+            SetFsmState(TEXT_TITLES_CREATE_DISCRETE_SIGNALS_DATA_BASE_BLOCKS_WRITE_START);
         }
         break;
 
-    case TEXT_TITLES_CREATE_DATA_BASE_BLOCKS_WRITE_START:
-        std::cout << "CDataBaseCreate::Fsm TEXT_TITLES_CREATE_DATA_BASE_BLOCKS_WRITE_START"  << std::endl;
+    case TEXT_TITLES_CREATE_DISCRETE_SIGNALS_DATA_BASE_BLOCKS_WRITE_START:
+        std::cout << "CDataBaseCreate::Fsm TEXT_TITLES_CREATE_DISCRETE_SIGNALS_DATA_BASE_BLOCKS_WRITE_START"  << std::endl;
+        {
+            DiscreteSignalsTextTitlesWorkToCommonFormat(m_puiIntermediateBuff);
+//            memcpy(m_puiIntermediateBuff,
+//                   (GetResources() -> GetDiscreteSygnalTextDescriptorsWorkPointer()),
+//                   TEXT_TITLES_DATA_BASE_BLOCK_LENGTH);
+
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            pxDataContainer -> m_uiTaskId = m_uiDeviceControlId;
+            pxDataContainer -> m_uiFsmCommandState =
+                CDeviceControl::DATA_BASE_BLOCK_START_WRITE;
+            pxDataContainer -> m_uiDataIndex = TEXT_TITLES_DATA_BASE_BLOCK_OFFSET;
+            pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_START);
+            SetFsmNextStateDoneOk(TEXT_TITLES_CREATE_DISCRETE_SIGNALS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING);
+            SetFsmNextStateReadyWaitingError(DONE_ERROR);
+            SetFsmNextStateDoneWaitingError(DONE_ERROR);
+            SetFsmNextStateDoneWaitingDoneError(DONE_ERROR);
+        }
+        break;
+
+    case TEXT_TITLES_CREATE_DISCRETE_SIGNALS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING:
+        std::cout << "CDataBaseCreate::Fsm TEXT_TITLES_CREATE_DISCRETE_SIGNALS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
+        {
+            SetFsmState(TEXT_TITLES_CREATE_ANALOGUE_SIGNALS_DATA_BASE_BLOCKS_WRITE_START);
+        }
+        break;
+
+    case TEXT_TITLES_CREATE_ANALOGUE_SIGNALS_DATA_BASE_BLOCKS_WRITE_START:
+        std::cout << "CDataBaseCreate::Fsm TEXT_TITLES_CREATE_ANALOGUE_SIGNALS_DATA_BASE_BLOCKS_WRITE_START"  << std::endl;
         {
 
+        }
+        break;
+
+    case TEXT_TITLES_CREATE_ANALOGUE_SIGNALS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING:
+        std::cout << "CDataBaseCreate::Fsm TEXT_TITLES_CREATE_ANALOGUE_SIGNALS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
+        {
+            SetFsmState(DONE_OK);
         }
         break;
 
