@@ -157,63 +157,51 @@ void CDataBaseCreate::DiscreteSignalsTextTitlesCreateStart(void)
 // создаёт стартовую базу текстовых реквизитов модулей дискретного ввода.
 void CDataBaseCreate::DiscreteInputModuleDiscreteSignalsTextTitlesCreate(void)
 {
+    unsigned char nucDiscreteInputCounter;
+    unsigned char nucModuleCounter;
+    TDiscreteSygnalTextDescriptor *pxDiscreteSygnalTextDescriptor;
+
+    // получим указатель на буфер для нормализованной стартовой базы данных прибора.
+    pxDiscreteSygnalTextDescriptor =
+        (GetResources() -> GetDiscreteSygnalTextDescriptorsWorkPointer());
+    // начнём с первого входа.
+    nucDiscreteInputCounter = 0;
+    // начнём с первого модуля.
+    nucModuleCounter = 0;
 
     CConfigurationCreate::TConfigDataPackOne* pxDeviceConfigSearch =
         (GetResources() -> GetDeviceConfigSearchPointer());
 
+    uint16_t uiDiscreteSignalsNumber =
+        ((pxDeviceConfigSearch ->
+          uiServiceDiscreteInputModuleQuantity) *
+         DISCRETE_MODULE_INPUT_QUANTITY);
 
-    int i;
-    unsigned char nucBlockCounter;
-    unsigned char nucBlocksInBlockCounter; // один описатель - один блок, в общем блоке.
-    unsigned char nucDiscreteInputCounter;
-    unsigned char nucModuleInputCounter;
-    // количество уставок по одному входу(4 - LL, L, H, HH).
-    unsigned char nucInputSetPointCounter;
-    unsigned char nucModuleCounter;
-    unsigned char ucFlowControl;
-    TDiscreteSygnalTextDescriptorPackOne *pxDiscreteSygnalTextDescriptorPackOne;
-    TDiscreteSygnalTextDescriptorPackOne xDiscreteSygnalTextDescriptorPackOne;
-    TDiscreteSygnalTextDescriptor *pxDiscreteSygnalTextDescriptor;
-    TDiscreteSygnalTextDescriptor axDiscreteSygnalTextDescriptor[MAX_HANDLED_DISCRETE_INPUT];
-
-
-    // получим указатель на буфер для нормализованной стартовой базы данных прибора.
-    pxDiscreteSygnalTextDescriptor = axDiscreteSygnalTextDescriptor;
-    // начнём с первого входа.
-    nucDiscreteInputCounter = 0;
-    nucModuleInputCounter = 0;
-    // начнём с первого модуля.
-    nucModuleCounter = 1;
-    i = 0;
-
-    memset((unsigned char*)pxDiscreteSygnalTextDescriptor,
-           0,
-           (sizeof(struct TDiscreteSygnalTextDescriptor)));
-
-//    // создадим первую часть стартовой базы данных текстовых реквизитов дискретных сигналов.
-//    // для сигналов пораждаемых модулями дискретного ввода.
-//    while (i < (xPlcConfigService.xPlcConfigServiceData.ucServiceDiscreteInputModuleQuantity *
-//                DISCRETE_MODULE_INPUT_QUANTITY))
-//    {
-//        // создадим строку текстового реквизита дискретного сигнала.
-//        sprintf((char*)(pxDiscreteSygnalTextDescriptor[i].acTextDescriptor),
-//                "%s_%02d_%02d  ",
-//                "Вх. DI",
-//                nucModuleCounter,
-//                nucDiscreteInputCounter + CONVERT_INTEGER_TO_NATURAL_NUMBER);
-//        // следующий вход модуля дискретного ввода.
-//        nucDiscreteInputCounter++;
-//        // следующий описатель.
-//        i++;
-//        // обработаны все входы модуля дискретного ввода?
-//        if (nucDiscreteInputCounter == DISCRETE_MODULE_INPUT_QUANTITY)
-//        {
-//            // начнём с первого входа.
-//            nucDiscreteInputCounter = 0;
-//            // следующий модуль.
-//            nucModuleCounter++;
-//        }
-//    }
+    // создадим первую часть стартовой базы данных текстовых реквизитов дискретных сигналов.
+    // для сигналов пораждаемых модулями дискретного ввода.
+    for (uint16_t i = 0;
+            i < uiDiscreteSignalsNumber;
+            i++)
+    {
+        // создадим строку текстового реквизита дискретного сигнала.
+        sprintf((char*)(pxDiscreteSygnalTextDescriptor[i].acTextDescriptor),
+                "%s_%02d_%02d  ",
+                "Вх. DI",
+                nucModuleCounter + CONVERT_INTEGER_TO_NATURAL_NUMBER,
+                nucDiscreteInputCounter + CONVERT_INTEGER_TO_NATURAL_NUMBER);
+        // следующий вход модуля дискретного ввода.
+        nucDiscreteInputCounter++;
+        // следующий описатель.
+        i++;
+        // обработаны все входы модуля дискретного ввода?
+        if (nucDiscreteInputCounter == DISCRETE_MODULE_INPUT_QUANTITY)
+        {
+            // начнём с первого входа.
+            nucDiscreteInputCounter = 0;
+            // следующий модуль.
+            nucModuleCounter++;
+        }
+    }
 }
 
 //-----------------------------------------------------------------------------------------------------
