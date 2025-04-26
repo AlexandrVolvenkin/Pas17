@@ -58,7 +58,7 @@ struct TDimentionParameter
 // дл€ сериализации, разбора данных полученных по интерфейсам передачи данных.
 #pragma pack(push)
 #pragma pack(1)
-struct TDiscreteSygnalTextDescriptorPackOne
+struct TDiscreteSygnalTextTitlePackOne
 {
     // “екстовый реквизит дискретного сигнала Ц 14 символов ASCII.
     char acTextDescriptor[DISCRETE_SYGNAL_NAME_LENGTH];
@@ -66,10 +66,29 @@ struct TDiscreteSygnalTextDescriptorPackOne
 #pragma pack(pop)
 
 // —труктура описателей - "“екстовый реквизит дискретного сигнала", в базе данных.
-struct TDiscreteSygnalTextDescriptor
+struct TDiscreteSygnalTextTitle
 {
 // “екстовый реквизит дискретного сигнала Ц 14 символов ASCII, плюс нуль - признак конца строки.
     char acTextDescriptor[DISCRETE_SYGNAL_NAME_LENGTH + END_OF_STRING_LENGTH];
+};
+
+//-------------------------------------------------------------------------------
+// —труктура описателей - "“екстовый реквизит аналогового сигнала", в базе данных.
+// дл€ сериализации, разбора данных полученных по интерфейсам передачи данных.
+#pragma pack(push)
+#pragma pack(1)
+struct TAnalogoueSignalsTextTitlePackOne
+{
+    // “екстовый реквизит аналогового сигнала Ц 35 символов ASCII.
+    char acTextDescriptor[ANALOGUE_SYGNAL_NAME_LENGTH];
+};
+#pragma pack(pop)
+
+// —труктура описателей - "“екстовый реквизит аналогового сигнала", в базе данных.
+struct TAnalogoueSignalsTextTitle
+{
+// “екстовый реквизит аналогового сигнала Ц 35 символов ASCII, плюс нуль - признак конца строки.
+    char acTextDescriptor[ANALOGUE_SYGNAL_NAME_LENGTH + END_OF_STRING_LENGTH];
 };
 
 //-------------------------------------------------------------------------------
@@ -123,6 +142,8 @@ private:
     void DiscreteInputModuleDiscreteSignalsTextTitlesCreate(void);
     void AnalogoueInputModuleDiscreteSignalsTextTitlesCreate(void);
     void DiscreteSignalsTextTitlesWorkToCommonFormat(uint8_t* puiBlockDataPointer);
+    void AnalogoueInputModuleAnalogoueSignalsTextTitlesCreate(void);
+    void AnalogoueSignalsTextTitlesWorkToCommonFormat(uint8_t* puiBlockDataPointer);
 
 private:
     std::string m_sInternalModuleName;

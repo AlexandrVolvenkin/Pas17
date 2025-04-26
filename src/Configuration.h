@@ -191,6 +191,8 @@
 #define DIMENSIONS_PARAMETERS_NAME_LENGTH 6
 // длина строки текстового реквизита дискретного сигнала.
 #define DISCRETE_SYGNAL_NAME_LENGTH 14
+// длина строки текстового реквизита аналогового сигнала.
+#define ANALOGUE_SYGNAL_NAME_LENGTH 35
 // количество аналоговых выходов в одном модуле.
 #define ANALOG_OUTPUT_MODULE_REGULATORS_QUANTITY 2
 #define ONLINE_DATA_READ_ONE_INPUT_BYTE_QUANTITY 8 // 7 байт ASCII символы конвертированные из float AiValue, 1 байт StatAi
