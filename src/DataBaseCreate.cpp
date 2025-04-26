@@ -78,6 +78,10 @@ void DimentionsParametersDataBaseCreate(uint8_t* puiBlockDataPointer)
     TDimentionParameter *pxDimentionParameter;
     TDimentionParameter axDimentionsParametersDescriptionWork[DIMENSIONS_PARAMETERS_DATA_BLOCKS_IN_BLOCK_QUANTITY];
 
+    memset(puiBlockDataPointer,
+           0,
+           256);
+
     memset(axDimentionsParametersDescriptionWork,
            0,
            sizeof(axDimentionsParametersDescriptionWork));
@@ -147,6 +151,8 @@ void DimentionsParametersDataBaseCreate(uint8_t* puiBlockDataPointer)
         memcpy(pxDimentionParameterPackOne[i].acDimentionParameterText,
                pxDimentionParameter[i].acDimentionParameterText,
                DIMENSIONS_PARAMETERS_NAME_LENGTH);
+
+        std::cout << "Dimention "  << i << " " << pxDimentionParameterPackOne[i].acDimentionParameterText << std::endl;
     }
 }
 
@@ -157,6 +163,10 @@ void CDataBaseCreate::AnalogoueInputModuleDiscreteSignalsTextTitlesCreate(uint8_
 //-----------------------------------------------------------------------------------------------------
     TDiscreteSygnalTextTitlePackOne *pxDiscreteSygnalTextTitlePackOne;
     TDiscreteSygnalTextTitle *pxDiscreteSygnalTextTitle;
+
+    memset(puiBlockDataPointer,
+           0,
+           256);
 
     TDiscreteSygnalTextTitle axDiscreteSygnalTextTitles[] =
     {
@@ -198,6 +208,8 @@ void CDataBaseCreate::AnalogoueInputModuleDiscreteSignalsTextTitlesCreate(uint8_
         memcpy(pxDiscreteSygnalTextTitlePackOne[i].acTextDescriptor,
                pxDiscreteSygnalTextTitle[i].acTextDescriptor,
                DISCRETE_SYGNAL_NAME_LENGTH);
+
+        std::cout << "TextDescriptor "  << i << " " << pxDiscreteSygnalTextTitlePackOne[i].acTextDescriptor << std::endl;
     }
 }
 
@@ -208,6 +220,10 @@ void CDataBaseCreate::AnalogoueInputModuleAnalogoueSignalsTextTitlesCreate(uint8
 //-----------------------------------------------------------------------------------------------------
     TDiscreteSygnalTextTitlePackOne *pxDiscreteSygnalTextTitlePackOne;
     TDiscreteSygnalTextTitle *pxDiscreteSygnalTextTitle;
+
+    memset(puiBlockDataPointer,
+           0,
+           256);
 
     TDiscreteSygnalTextTitle axDiscreteSygnalTextTitles[] =
     {
@@ -236,6 +252,8 @@ void CDataBaseCreate::AnalogoueInputModuleAnalogoueSignalsTextTitlesCreate(uint8
         memcpy(pxDiscreteSygnalTextTitlePackOne[i].acTextDescriptor,
                pxDiscreteSygnalTextTitle[i].acTextDescriptor,
                DISCRETE_SYGNAL_NAME_LENGTH);
+
+        std::cout << "TextDescriptor "  << i << " " << pxDiscreteSygnalTextTitlePackOne[i].acTextDescriptor << std::endl;
     }
 
 //-----------------------------------------------------------------------------------------------------
@@ -269,7 +287,9 @@ void CDataBaseCreate::AnalogoueInputModuleAnalogoueSignalsTextTitlesCreate(uint8
         // скопируем один описатель, в буфер общей базы данных прибора.
         memcpy(pxAnalogoueSignalsTextTitlePackOne[i].acTextDescriptor,
                pxAnalogoueSignalsTextTitle[i].acTextDescriptor,
-               DISCRETE_SYGNAL_NAME_LENGTH);
+               ANALOGUE_SYGNAL_NAME_LENGTH);
+
+        std::cout << "TextDescriptor "  << i << " " << pxAnalogoueSignalsTextTitlePackOne[i].acTextDescriptor << std::endl;
     }
 }
 
@@ -432,195 +452,13 @@ uint8_t CDataBaseCreate::Fsm(void)
     case DATA_BASE_CREATE_START:
         std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_START"  << std::endl;
         {
-            *(GetResources() -> GetDeviceConfigSearchPointer()) = {0};
-        }
-        SetFsmState(DATA_BASE_CREATE_INTERNAL_MODULES_SEARCH_MODULES_START);
-        break;
-
-//    case DATA_BASE_CREATE_EXECUTOR_ANSWER_PROCESSING:
-//        std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
-//        {
-//            CDataContainerDataBase* pxExecutorDataContainer =
-//                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-//            CDataContainerDataBase* pxCustomerDataContainer =
-//                (CDataContainerDataBase*)GetCustomerDataContainerPointer();
-//
-//            uint8_t auiTempData[] = {1, 15, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 22, 4, 0,};
-//            uint16_t  uiLength = sizeof(auiTempData);
-//            memcpy(pxExecutorDataContainer -> m_puiDataPointer,
-//                   auiTempData,
-//                   uiLength);
-//
-//            pxExecutorDataContainer -> m_uiDataLength = uiLength;
-//
-//            memcpy(pxCustomerDataContainer -> m_puiDataPointer,
-//                   (pxExecutorDataContainer -> m_puiDataPointer),
-//                   pxExecutorDataContainer -> m_uiDataLength);
-//            pxCustomerDataContainer -> m_uiDataLength =
-//                pxExecutorDataContainer -> m_uiDataLength;
-//
-//            std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_EXECUTOR_DONE_CHECK_WAITING uiLength "  << (int)uiLength << std::endl;
-//            std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_EXECUTOR_DONE_CHECK_WAITING pxCustomerDataContainer -> m_uiDataLength "  << (int)pxCustomerDataContainer -> m_uiDataLength << std::endl;
-//
-//            SetFsmState(DONE_OK);
-//        }
-//        break;
-
-//-------------------------------------------------------------------------------
-    case DATA_BASE_CREATE_INTERNAL_MODULES_SEARCH_MODULES_START:
-        std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_INTERNAL_MODULES_SEARCH_MODULES_START"  << std::endl;
-        {
-            CDataContainerDataBase* pxDataContainer =
-                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-            pxDataContainer -> m_uiTaskId = m_uiInternalModuleId;
-            pxDataContainer -> m_uiFsmCommandState =
-                CInternalModule::SEARCH_MODULES_START;
-            pxDataContainer -> m_puiDataPointer =
-                (uint8_t*)(GetResources() -> GetDeviceConfigSearchPointer());
-
-            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
-            SetFsmNextStateDoneOk(DATA_BASE_CREATE_INTERNAL_MODULES_SEARCH_MODULES_EXECUTOR_ANSWER_PROCESSING);
-            SetFsmNextStateReadyWaitingError(DONE_ERROR);
-            SetFsmNextStateDoneWaitingError(DONE_ERROR);
-            SetFsmNextStateDoneWaitingDoneError(DONE_ERROR);
-        }
-        break;
-
-    case DATA_BASE_CREATE_INTERNAL_MODULES_SEARCH_MODULES_EXECUTOR_ANSWER_PROCESSING:
-        std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_INTERNAL_MODULES_SEARCH_MODULES_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
-        {
-//            CDataContainerDataBase* pxExecutorDataContainer =
-//                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-//            CDataContainerDataBase* pxCustomerDataContainer =
-//                (CDataContainerDataBase*)GetCustomerDataContainerPointer();
-//
-//            uint8_t auiTempData[] = {1, 15, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 22, 4, 0,};
-//            uint16_t  uiLength = sizeof(auiTempData);
-////            memcpy(pxExecutorDataContainer -> m_puiDataPointer,
-////                   auiTempData,
-////                   uiLength);
-//
-//            pxExecutorDataContainer -> m_uiDataLength = uiLength;
-//
-//            memcpy(pxCustomerDataContainer -> m_puiDataPointer,
-//                   (pxExecutorDataContainer -> m_puiDataPointer),
-//                   pxExecutorDataContainer -> m_uiDataLength);
-//            pxCustomerDataContainer -> m_uiDataLength =
-//                pxExecutorDataContainer -> m_uiDataLength;
-//
-//            std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_INTERNAL_MODULES_SEARCH_MODULES_EXECUTOR_ANSWER_PROCESSING uiLength "  << (int)uiLength << std::endl;
-//            std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_INTERNAL_MODULES_SEARCH_MODULES_EXECUTOR_ANSWER_PROCESSING pxCustomerDataContainer -> m_uiDataLength "  << (int)pxCustomerDataContainer -> m_uiDataLength << std::endl;
-
-            SetFsmState(DATA_BASE_CREATE_INTERNAL_MODULES_SERVICE_DATA_CREATE_START);
+            SetFsmState(DATA_BASE_CREATE_DIMENTIONS_PARAMETERS_CREATE_START);
         }
         break;
 
 //-------------------------------------------------------------------------------
-    case DATA_BASE_CREATE_INTERNAL_MODULES_SERVICE_DATA_CREATE_START:
-        std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_INTERNAL_MODULES_SERVICE_DATA_CREATE_START"  << std::endl;
-        {
-            CDataContainerDataBase* pxDataContainer =
-                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-            pxDataContainer -> m_uiTaskId = m_uiInternalModuleId;
-            pxDataContainer -> m_uiFsmCommandState =
-                CInternalModule::SERVICE_DATA_CREATE_START;
-            pxDataContainer -> m_puiDataPointer =
-                (uint8_t*)(GetResources() -> GetDeviceConfigSearchPointer());
-
-            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
-            SetFsmNextStateDoneOk(DATA_BASE_CREATE_INTERNAL_MODULES_SERVICE_DATA_CREATE_EXECUTOR_ANSWER_PROCESSING);
-            SetFsmNextStateReadyWaitingError(DONE_ERROR);
-            SetFsmNextStateDoneWaitingError(DONE_ERROR);
-            SetFsmNextStateDoneWaitingDoneError(DONE_ERROR);
-        }
-        break;
-
-    case DATA_BASE_CREATE_INTERNAL_MODULES_SERVICE_DATA_CREATE_EXECUTOR_ANSWER_PROCESSING:
-        std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_INTERNAL_MODULES_SERVICE_DATA_CREATE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
-        {
-//            CDataContainerDataBase* pxExecutorDataContainer =
-//                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-//            CDataContainerDataBase* pxCustomerDataContainer =
-//                (CDataContainerDataBase*)GetCustomerDataContainerPointer();
-//
-////            uint8_t auiTempData[] = {1, 15, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 22, 4, 0,};
-////            uint16_t  uiLength = sizeof(auiTempData);
-////            memcpy(pxExecutorDataContainer -> m_puiDataPointer,
-////                   auiTempData,
-////                   uiLength);
-//            uint16_t  uiLength = sizeof(struct TConfigDataPackOne);
-//            memcpy(pxExecutorDataContainer -> m_puiDataPointer,
-//                   (uint8_t*)(GetResources() -> GetDeviceConfigSearchPointer()),
-//                   uiLength);
-//
-//            pxExecutorDataContainer -> m_uiDataLength = uiLength;
-//
-//            memcpy(pxCustomerDataContainer -> m_puiDataPointer,
-//                   (pxExecutorDataContainer -> m_puiDataPointer),
-//                   pxExecutorDataContainer -> m_uiDataLength);
-//            pxCustomerDataContainer -> m_uiDataLength =
-//                pxExecutorDataContainer -> m_uiDataLength;
-//
-//            std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_INTERNAL_MODULES_SERVICE_DATA_CREATE_EXECUTOR_ANSWER_PROCESSING uiLength "  << (int)uiLength << std::endl;
-//            std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_INTERNAL_MODULES_SERVICE_DATA_CREATE_EXECUTOR_ANSWER_PROCESSING pxCustomerDataContainer -> m_uiDataLength "  << (int)pxCustomerDataContainer -> m_uiDataLength << std::endl;
-//
-//            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-//            SetFsmState(DONE_OK);
-        }
-        break;
-
-//-------------------------------------------------------------------------------
-    case CONFIGURATION_REQUEST_START:
-        std::cout << "CDataBaseCreate::Fsm CONFIGURATION_REQUEST_START"  << std::endl;
-        {
-            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
-            SetFsmNextStateDoneOk(CONFIGURATION_REQUEST_EXECUTOR_ANSWER_PROCESSING);
-            SetFsmNextStateReadyWaitingError(DONE_ERROR);
-            SetFsmNextStateDoneWaitingError(DONE_ERROR);
-            SetFsmNextStateDoneWaitingDoneError(DONE_ERROR);
-        }
-
-        SetFsmState(CONFIGURATION_REQUEST_EXECUTOR_ANSWER_PROCESSING);
-        break;
-
-    case CONFIGURATION_REQUEST_EXECUTOR_ANSWER_PROCESSING:
-        std::cout << "CDataBaseCreate::Fsm CONFIGURATION_REQUEST_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
-        {
-//            CDataContainerDataBase* pxExecutorDataContainer =
-//                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-//            CDataContainerDataBase* pxCustomerDataContainer =
-//                (CDataContainerDataBase*)GetCustomerDataContainerPointer();
-//
-////            uint8_t auiTempData[] = {1, 15, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 22, 4, 0,};
-////            uint16_t  uiLength = sizeof(auiTempData);
-////            memcpy(pxExecutorDataContainer -> m_puiDataPointer,
-////                   auiTempData,
-////                   uiLength);
-//            uint16_t  uiLength = sizeof(struct TConfigDataPackOne);
-//            memcpy(pxExecutorDataContainer -> m_puiDataPointer,
-//                   (uint8_t*)(GetResources() -> GetDeviceConfigSearchPointer()),
-//                   uiLength);
-//
-//            pxExecutorDataContainer -> m_uiDataLength = uiLength;
-//
-//            memcpy(pxCustomerDataContainer -> m_puiDataPointer,
-//                   (pxExecutorDataContainer -> m_puiDataPointer),
-//                   pxExecutorDataContainer -> m_uiDataLength);
-//            pxCustomerDataContainer -> m_uiDataLength =
-//                pxExecutorDataContainer -> m_uiDataLength;
-//
-//            std::cout << "CDataBaseCreate::Fsm CONFIGURATION_REQUEST_EXECUTOR_DONE_CHECK_WAITING uiLength "  << (int)uiLength << std::endl;
-//            std::cout << "CDataBaseCreate::Fsm CONFIGURATION_REQUEST_EXECUTOR_DONE_CHECK_WAITING pxCustomerDataContainer -> m_uiDataLength "  << (int)pxCustomerDataContainer -> m_uiDataLength << std::endl;
-//            std::cout << "CDataBaseCreate::Fsm CONFIGURATION_REQUEST_EXECUTOR_DONE_CHECK_WAITING pxExecutorDataContainer -> m_uiDataLength "  << (int)pxExecutorDataContainer -> m_uiDataLength << std::endl;
-//
-//            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-//            SetFsmState(DONE_OK);
-        }
-        break;
-
-//-------------------------------------------------------------------------------
-    case DIMENTIONS_PARAMETERS_CREATE_START:
-        std::cout << "CDataBaseCreate::Fsm DIMENTIONS_PARAMETERS_CREATE_START"  << std::endl;
+    case DATA_BASE_CREATE_DIMENTIONS_PARAMETERS_CREATE_START:
+        std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_DIMENTIONS_PARAMETERS_CREATE_START"  << std::endl;
         {
             DimentionsParametersDataBaseCreate(m_puiIntermediateBuff);
 
@@ -632,25 +470,25 @@ uint8_t CDataBaseCreate::Fsm(void)
             pxDataContainer -> m_uiDataIndex = DIMENSIONS_PARAMETERS_DATA_BASE_BLOCK_OFFSET;
             pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
 
-            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_START);
-            SetFsmNextStateDoneOk(DIMENTIONS_PARAMETERS_CREATE_EXECUTOR_ANSWER_PROCESSING);
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+            SetFsmNextStateDoneOk(DATA_BASE_CREATE_DIMENTIONS_PARAMETERS_CREATE_EXECUTOR_ANSWER_PROCESSING);
             SetFsmNextStateReadyWaitingError(DONE_ERROR);
             SetFsmNextStateDoneWaitingError(DONE_ERROR);
             SetFsmNextStateDoneWaitingDoneError(DONE_ERROR);
         }
         break;
 
-    case DIMENTIONS_PARAMETERS_CREATE_EXECUTOR_ANSWER_PROCESSING:
-        std::cout << "CDataBaseCreate::Fsm DIMENTIONS_PARAMETERS_CREATE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
+    case DATA_BASE_CREATE_DIMENTIONS_PARAMETERS_CREATE_EXECUTOR_ANSWER_PROCESSING:
+        std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_DIMENTIONS_PARAMETERS_CREATE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
         {
-            SetFsmState(TEXT_TITLES_CREATE_DISCRETE_SIGNALS_DATA_BASE_BLOCKS_WRITE_START);
+            SetFsmState(DATA_BASE_CREATE_TEXT_TITLES_CREATE_DISCRETE_SIGNALS_DATA_BASE_BLOCKS_WRITE_START);
+//            SetFsmState(DONE_OK);
         }
         break;
 
 //-------------------------------------------------------------------------------
-
-    case TEXT_TITLES_CREATE_DISCRETE_SIGNALS_DATA_BASE_BLOCKS_WRITE_START:
-        std::cout << "CDataBaseCreate::Fsm TEXT_TITLES_CREATE_DISCRETE_SIGNALS_DATA_BASE_BLOCKS_WRITE_START"  << std::endl;
+    case DATA_BASE_CREATE_TEXT_TITLES_CREATE_DISCRETE_SIGNALS_DATA_BASE_BLOCKS_WRITE_START:
+        std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_TEXT_TITLES_CREATE_DISCRETE_SIGNALS_DATA_BASE_BLOCKS_WRITE_START"  << std::endl;
         {
             AnalogoueInputModuleDiscreteSignalsTextTitlesCreate(m_puiIntermediateBuff);
 
@@ -663,23 +501,24 @@ uint8_t CDataBaseCreate::Fsm(void)
             pxDataContainer -> m_uiDataIndex = TEXT_TITLES_DATA_BASE_BLOCK_OFFSET;
             pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
 
-            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_START);
-            SetFsmNextStateDoneOk(TEXT_TITLES_CREATE_DISCRETE_SIGNALS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING);
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+            SetFsmNextStateDoneOk(DATA_BASE_CREATE_TEXT_TITLES_CREATE_DISCRETE_SIGNALS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING);
             SetFsmNextStateReadyWaitingError(DONE_ERROR);
             SetFsmNextStateDoneWaitingError(DONE_ERROR);
             SetFsmNextStateDoneWaitingDoneError(DONE_ERROR);
         }
         break;
 
-    case TEXT_TITLES_CREATE_DISCRETE_SIGNALS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING:
-        std::cout << "CDataBaseCreate::Fsm TEXT_TITLES_CREATE_DISCRETE_SIGNALS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
+    case DATA_BASE_CREATE_TEXT_TITLES_CREATE_DISCRETE_SIGNALS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING:
+        std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_TEXT_TITLES_CREATE_DISCRETE_SIGNALS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
         {
-            SetFsmState(TEXT_TITLES_CREATE_ANALOGUE_SIGNALS_DATA_BASE_BLOCKS_WRITE_START);
+            SetFsmState(DATA_BASE_CREATE_TEXT_TITLES_CREATE_ANALOGUE_SIGNALS_DATA_BASE_BLOCKS_WRITE_START);
         }
         break;
 
-    case TEXT_TITLES_CREATE_ANALOGUE_SIGNALS_DATA_BASE_BLOCKS_WRITE_START:
-        std::cout << "CDataBaseCreate::Fsm TEXT_TITLES_CREATE_ANALOGUE_SIGNALS_DATA_BASE_BLOCKS_WRITE_START"  << std::endl;
+//-------------------------------------------------------------------------------
+    case DATA_BASE_CREATE_TEXT_TITLES_CREATE_ANALOGUE_SIGNALS_DATA_BASE_BLOCKS_WRITE_START:
+        std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_TEXT_TITLES_CREATE_ANALOGUE_SIGNALS_DATA_BASE_BLOCKS_WRITE_START"  << std::endl;
         {
             AnalogoueInputModuleAnalogoueSignalsTextTitlesCreate(m_puiIntermediateBuff);
 
@@ -692,17 +531,18 @@ uint8_t CDataBaseCreate::Fsm(void)
             pxDataContainer -> m_uiDataIndex = (TEXT_TITLES_DATA_BASE_BLOCK_OFFSET + 1);
             pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
 
-            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_START);
-            SetFsmNextStateDoneOk(TEXT_TITLES_CREATE_ANALOGUE_SIGNALS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING);
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+            SetFsmNextStateDoneOk(DATA_BASE_CREATE_TEXT_TITLES_CREATE_ANALOGUE_SIGNALS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING);
             SetFsmNextStateReadyWaitingError(DONE_ERROR);
             SetFsmNextStateDoneWaitingError(DONE_ERROR);
             SetFsmNextStateDoneWaitingDoneError(DONE_ERROR);
         }
         break;
 
-    case TEXT_TITLES_CREATE_ANALOGUE_SIGNALS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING:
-        std::cout << "CDataBaseCreate::Fsm TEXT_TITLES_CREATE_ANALOGUE_SIGNALS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
+    case DATA_BASE_CREATE_TEXT_TITLES_CREATE_ANALOGUE_SIGNALS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING:
+        std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_TEXT_TITLES_CREATE_ANALOGUE_SIGNALS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
         {
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(DONE_OK);
         }
         break;

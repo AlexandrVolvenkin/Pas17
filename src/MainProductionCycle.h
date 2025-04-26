@@ -75,6 +75,9 @@ public:
         INTERNAL_MODULES_DATA_EXCHANGE_EXECUTOR_ANSWER_PROCESSING,
         INTERNAL_MODULES_DATA_EXCHANGE_MAIN_CYCLE_START_WAITING,
 
+        DATA_BASE_CREATE_START,
+        DATA_BASE_CREATE_EXECUTOR_ANSWER_PROCESSING,
+
         MAIN_CYCLE_MODULES_INIT,
         MAIN_CYCLE_MODULES_INIT_END_WAITING,
         MAIN_CYCLE_MODBUS_SLAVE,
@@ -157,6 +160,9 @@ private:
 
     std::string m_sDataStoreCheckName;
     uint8_t m_uiDataStoreCheckId;
+
+    std::string m_sDataBaseCreateName;
+    uint8_t m_uiDataBaseCreateId;
 
     CSpiCommunicationDevice* m_pxSpiCommunicationDevice;
     CInternalModuleInterface* m_pxInternalModule;

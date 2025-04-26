@@ -590,6 +590,10 @@ uint8_t CMainProductionCycle::Fsm(void)
                 GetResources() ->
                 GetTaskIdByNameFromMap("InternalModuleMuvr");
 
+            m_uiDataBaseCreateId =
+                GetResources() ->
+                GetTaskIdByNameFromMap("DataBaseCreate");
+
             SetFsmState(READY);
         }
         else
@@ -962,6 +966,36 @@ uint8_t CMainProductionCycle::Fsm(void)
 
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
 //            SetFsmState(MAIN_CYCLE_MODBUS_SLAVE);
+            SetFsmState(DATA_BASE_CREATE_START);
+        }
+        break;
+
+//-------------------------------------------------------------------------------
+    case DATA_BASE_CREATE_START:
+        std::cout << "CMainProductionCycle::Fsm DATA_BASE_CREATE_START"  << std::endl;
+        {
+            CurrentlyRunningTasksExecution();
+
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            pxDataContainer -> m_uiTaskId = m_uiDataBaseCreateId;
+            pxDataContainer -> m_uiFsmCommandState =
+                CDataBaseCreate::DATA_BASE_CREATE_START;
+
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+            SetFsmNextStateDoneOk(DATA_BASE_CREATE_EXECUTOR_ANSWER_PROCESSING);
+            SetFsmNextStateReadyWaitingError(DONE_ERROR);
+            SetFsmNextStateDoneWaitingError(DONE_ERROR);
+            SetFsmNextStateDoneWaitingDoneError(DONE_ERROR);
+        }
+        break;
+
+    case DATA_BASE_CREATE_EXECUTOR_ANSWER_PROCESSING:
+//        std::cout << "CMainProductionCycle::Fsm DATA_BASE_CREATE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
+        {
+            CurrentlyRunningTasksExecution();
+
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(INTERNAL_MODULES_DATA_EXCHANGE_START);
         }
         break;
