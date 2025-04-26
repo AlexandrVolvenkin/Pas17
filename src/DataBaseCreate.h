@@ -118,14 +118,10 @@ public:
         DIMENTIONS_PARAMETERS_CREATE_START,
         DIMENTIONS_PARAMETERS_CREATE_EXECUTOR_ANSWER_PROCESSING,
 
-        TEXT_TITLES_CREATE_START,
-        TEXT_TITLES_CREATE_DISCRETE_INPUT_MODULE_SIGNALS,
-        TEXT_TITLES_CREATE_ANALOGUE_INPUT_MODULE_SIGNALS,
         TEXT_TITLES_CREATE_DISCRETE_SIGNALS_DATA_BASE_BLOCKS_WRITE_START,
         TEXT_TITLES_CREATE_DISCRETE_SIGNALS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING,
         TEXT_TITLES_CREATE_ANALOGUE_SIGNALS_DATA_BASE_BLOCKS_WRITE_START,
         TEXT_TITLES_CREATE_ANALOGUE_SIGNALS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING,
-        TEXT_TITLES_CREATE_EXECUTOR_ANSWER_PROCESSING,
     };
 
     CDataBaseCreate();
@@ -138,12 +134,8 @@ public:
     uint8_t Fsm(void);
 
 private:
-    void DiscreteSignalsTextTitlesCreateStart(void);
-    void DiscreteInputModuleDiscreteSignalsTextTitlesCreate(void);
-    void AnalogoueInputModuleDiscreteSignalsTextTitlesCreate(void);
-    void DiscreteSignalsTextTitlesWorkToCommonFormat(uint8_t* puiBlockDataPointer);
-    void AnalogoueInputModuleAnalogoueSignalsTextTitlesCreate(void);
-    void AnalogoueSignalsTextTitlesWorkToCommonFormat(uint8_t* puiBlockDataPointer);
+    void AnalogoueInputModuleDiscreteSignalsTextTitlesCreate(uint8_t* puiBlockDataPointer);
+    void AnalogoueInputModuleAnalogoueSignalsTextTitlesCreate(uint8_t* puiBlockDataPointer);
 
 private:
     std::string m_sInternalModuleName;
