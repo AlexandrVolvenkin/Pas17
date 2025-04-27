@@ -354,7 +354,7 @@ uint8_t CDataStoreCheck::Fsm(void)
             break;
 
             default:
-                std::cout << "CDataStoreCheck::Fsm TEMPORARY_SERVICE_SECTION_LINKED_BLOCKS_CHECK 6"  << std::endl;
+                std::cout << "CDataStoreCheck::Fsm TEMPORARY_SERVICE_SECTION_LINKED_BLOCKS_CHECK 7"  << std::endl;
                 break;
             }
 
@@ -439,7 +439,7 @@ uint8_t CDataStoreCheck::Fsm(void)
 //            SetFsmState(SERVICE_SECTION_DATA_WRITE_START);
         }
 
-        std::cout << "CDataStoreCheck::Fsm TEMPORARY_SERVICE_SECTION_LINKED_BLOCKS_CHECK 7"  << std::endl;
+        std::cout << "CDataStoreCheck::Fsm TEMPORARY_SERVICE_SECTION_LINKED_BLOCKS_CHECK 8"  << std::endl;
         // Авансом.
         SetFsmState(SERVICE_SECTION_DATA_WRITE_START);
         break;
@@ -573,6 +573,7 @@ uint8_t CDataStoreCheck::Fsm(void)
     case DATA_STORE_NEW_VERSION_ACCEPTED:
         // Хранилище обновлено.
         cerr << "CDataStoreCheck::Fsm DATA_STORE_NEW_VERSION_ACCEPTED" << endl;
+//        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
         SetFsmOperationStatus(DATA_STORE_NEW_VERSION_ACCEPTED);
         SetFsmState(READY);
         break;
@@ -580,12 +581,14 @@ uint8_t CDataStoreCheck::Fsm(void)
     case DATA_STORE_OLD_VERSION_ACCEPTED:
         // Хранилище не обновлено.
         cerr << "CDataStoreCheck::Fsm DATA_STORE_OLD_VERSION_ACCEPTED" << endl;
+//        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
         SetFsmOperationStatus(DATA_STORE_OLD_VERSION_ACCEPTED);
         SetFsmState(READY);
         break;
 
     case DATA_STORE_CHECK_OK:
         cerr << "CDataStoreCheck::Fsm DATA_STORE_CHECK_OK" << endl;
+//        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
         SetFsmOperationStatus(DATA_STORE_CHECK_OK);
         SetFsmState(READY);
         break;
@@ -593,6 +596,7 @@ uint8_t CDataStoreCheck::Fsm(void)
     case DATA_STORE_CHECK_ERROR:
         // Хранилище повреждено.
         cerr << "CDataStoreCheck::Fsm DATA_STORE_CHECK_ERROR" << endl;
+//        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
         SetFsmOperationStatus(DATA_STORE_CHECK_ERROR);
         SetFsmState(STOP);
         break;

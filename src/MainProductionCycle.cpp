@@ -431,7 +431,7 @@ uint8_t CMainProductionCycle::CreateTasks(void)
     CConfigurationCheck* pxConfigurationCheck = 0;
     pxConfigurationCheck =
         static_cast<CConfigurationCheck*>(m_xResources.AddCommonTaskToMap("ConfigurationCheck",
-                                      std::make_shared<CConfigurationCheck>()));
+                                          std::make_shared<CConfigurationCheck>()));
     pxConfigurationCheck ->
     SetResources(&m_xResources);
     pxConfigurationCheck ->
@@ -623,8 +623,9 @@ uint8_t CMainProductionCycle::Fsm(void)
 
     case READY:
         std::cout << "CMainProductionCycle::Fsm READY"  << std::endl;
-//        SetFsmState(DATA_STORE_CHECK_TASK_READY_CHECK);
-        SetFsmState(CONFIGURATION_CREATE_START);
+        SetFsmState(DATA_STORE_CHECK_TASK_READY_CHECK);
+//        SetFsmState(CONFIGURATION_CREATE_START);
+//        SetFsmState(DATA_STORE_CHECK_START);
 
         break;
 
@@ -772,7 +773,24 @@ uint8_t CMainProductionCycle::Fsm(void)
 //            SetCurrentExecutorDataContainer(pxDataContainer);
 
             SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
-            SetFsmNextSubTaskState(CONFIGURATION_CREATE_START);
+            SetFsmNextStateDoneOk(DATA_STORE_CHECK_EXECUTOR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingDoneOk(DATA_STORE_CHECK_EXECUTOR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneError(DONE_ERROR);
+            SetFsmNextStateReadyWaitingError(DONE_ERROR);
+            SetFsmNextStateDoneWaitingError(DONE_ERROR);
+            SetFsmNextStateDoneWaitingDoneError(DONE_ERROR);
+        }
+        break;
+
+    case DATA_STORE_CHECK_EXECUTOR_ANSWER_PROCESSING:
+        std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
+        {
+            CurrentlyRunningTasksExecution();
+
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            CurrentlyRunningTasksExecution();
+            m_pxDataStoreFileSystem -> ReadServiceSection();
+            SetFsmState(CONFIGURATION_CREATE_START);
         }
         break;
 
@@ -859,7 +877,13 @@ uint8_t CMainProductionCycle::Fsm(void)
         {
             std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_END_WAITING 1"  << std::endl;
             m_pxDataStoreFileSystem -> CreateServiceSection();
-            m_pxDataStoreFileSystem -> WriteBlock(auiTempBlock, sizeof(auiTempBlock), 0);
+            memset(m_puiIntermediateBuff,
+                   0,
+                   CDataStore::MAX_BLOCK_LENGTH);
+            m_pxDataStoreFileSystem -> WriteBlock(m_puiIntermediateBuff,
+                                                  RESERVED_DATA_BASE_BLOCK_LENGTH,
+                                                  0);
+
             GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
             SetFsmState(DATA_STORE_CHECK_RECAVERY_END_WAITING);
 //            std::cout << "CDataStore::Fsm DATA_STORE_CHECK_END_ERROR"  << std::endl;
@@ -889,14 +913,12 @@ uint8_t CMainProductionCycle::Fsm(void)
         std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_RECAVERY_END_WAITING"  << std::endl;
         CurrentlyRunningTasksExecution();
 
-        if ((m_pxDataStoreCheck -> GetFsmOperationStatus()) == CDataStoreCheck::DATA_STORE_CHECK_ERROR)
+        if ((m_pxDataStoreFileSystem -> GetFsmOperationStatus()) == CDataStore::DONE_ERROR)
         {
             SetFsmState(DATA_STORE_CHECK_END_ERROR);
             std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_RECAVERY_END_WAITING 1"  << std::endl;
         }
-        else if (((m_pxDataStoreCheck -> GetFsmOperationStatus()) == CDataStoreCheck::DATA_STORE_NEW_VERSION_ACCEPTED) ||
-                 ((m_pxDataStoreCheck -> GetFsmOperationStatus()) == CDataStoreCheck::DATA_STORE_OLD_VERSION_ACCEPTED) ||
-                 ((m_pxDataStoreCheck -> GetFsmOperationStatus()) == CDataStoreCheck::DATA_STORE_CHECK_OK))
+        else if ((m_pxDataStoreFileSystem -> GetFsmOperationStatus()) == CDataStore::DONE_OK)
         {
             SetFsmState(DATA_STORE_CHECK_END_OK);
             std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_RECAVERY_END_WAITING 2"  << std::endl;
@@ -1013,13 +1035,13 @@ uint8_t CMainProductionCycle::Fsm(void)
 
     case DATA_BASE_CREATE_EXECUTOR_ANSWER_PROCESSING:
 //        std::cout << "CMainProductionCycle::Fsm DATA_BASE_CREATE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
-        {
-            CurrentlyRunningTasksExecution();
+    {
+        CurrentlyRunningTasksExecution();
 
-            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-            SetFsmState(INTERNAL_MODULES_DATA_EXCHANGE_START);
-        }
-        break;
+        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+        SetFsmState(INTERNAL_MODULES_DATA_EXCHANGE_START);
+    }
+    break;
 
 //-------------------------------------------------------------------------------
     case INTERNAL_MODULES_DATA_EXCHANGE_START:

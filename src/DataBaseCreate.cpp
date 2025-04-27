@@ -34,7 +34,7 @@ using namespace std;
 CDataBaseCreate::CDataBaseCreate()
 {
     std::cout << "CDataBaseCreate constructor"  << std::endl;
-    m_puiIntermediateBuff = new uint8_t[256];
+    m_puiIntermediateBuff = new uint8_t[CDataStore::MAX_BLOCK_LENGTH];
     SetFsmState(START);
 }
 
@@ -80,7 +80,7 @@ void CDataBaseCreate::DimentionsParametersDataBaseCreate(uint8_t* puiBlockDataPo
 
     memset(puiBlockDataPointer,
            0,
-           256);
+           CDataStore::MAX_BLOCK_LENGTH);
 
     memset(axDimentionsParametersDescriptionWork,
            0,
@@ -166,7 +166,7 @@ void CDataBaseCreate::AnalogoueInputModuleDiscreteSignalsTextTitlesCreate(uint8_
 
     memset(puiBlockDataPointer,
            0,
-           256);
+           CDataStore::MAX_BLOCK_LENGTH);
 
     TDiscreteSygnalTextTitle axDiscreteSygnalTextTitles[] =
     {
@@ -223,7 +223,7 @@ void CDataBaseCreate::AnalogoueInputModuleAnalogoueSignalsTextTitlesCreate(uint8
 
     memset(puiBlockDataPointer,
            0,
-           256);
+           CDataStore::MAX_BLOCK_LENGTH);
 
     TDiscreteSygnalTextTitle axDiscreteSygnalTextTitles[] =
     {
@@ -452,7 +452,49 @@ uint8_t CDataBaseCreate::Fsm(void)
     case DATA_BASE_CREATE_START:
         std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_START"  << std::endl;
         {
-            SetFsmState(DATA_BASE_CREATE_DIMENTIONS_PARAMETERS_CREATE_START);
+            m_uiBlocksCounter = 0;
+            SetFsmState(DATA_BASE_CREATE_DEFAULT_ALL_DATA_BASE_BLOCKS_WRITE_START);
+//            SetFsmState(DATA_BASE_CREATE_DIMENTIONS_PARAMETERS_CREATE_START);
+        }
+        break;
+
+//-------------------------------------------------------------------------------
+    case DATA_BASE_CREATE_DEFAULT_ALL_DATA_BASE_BLOCKS_WRITE_START:
+        std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_DEFAULT_ALL_DATA_BASE_BLOCKS_WRITE_START"  << std::endl;
+        {
+            memset(m_puiIntermediateBuff,
+                   0,
+                   CDataStore::MAX_BLOCK_LENGTH);
+
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            pxDataContainer -> m_uiTaskId = m_uiDeviceControlId;
+            pxDataContainer -> m_uiFsmCommandState =
+                CDeviceControl::DATA_BASE_BLOCK_START_WRITE;
+            pxDataContainer -> m_uiDataIndex = m_uiBlocksCounter;
+            pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+            SetFsmNextStateDoneOk(DATA_BASE_CREATE_DEFAULT_ALL_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING);
+            SetFsmNextStateReadyWaitingError(DONE_ERROR);
+            SetFsmNextStateDoneWaitingError(DONE_ERROR);
+            SetFsmNextStateDoneWaitingDoneError(DONE_ERROR);
+        }
+        break;
+
+    case DATA_BASE_CREATE_DEFAULT_ALL_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING:
+        std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_DEFAULT_ALL_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
+        {
+            m_uiBlocksCounter++;
+
+            if (m_uiBlocksCounter >= CDataStore::MAX_BLOCKS_NUMBER)
+            {
+                SetFsmState(DATA_BASE_CREATE_DIMENTIONS_PARAMETERS_CREATE_START);
+            }
+            else
+            {
+                SetFsmState(DATA_BASE_CREATE_DEFAULT_ALL_DATA_BASE_BLOCKS_WRITE_START);
+            }
         }
         break;
 
