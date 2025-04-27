@@ -1,5 +1,5 @@
-#ifndef DATABASECREATE_H
-#define DATABASECREATE_H
+#ifndef CCONFIGURATIONCHECK_H
+#define CCONFIGURATIONCHECK_H
 //-------------------------------------------------------------------------------
 //  Sourse      : FileName.cpp
 //  Created     : 01.06.2022
@@ -39,7 +39,7 @@ class CConfigurationCheck : public CTask
 public:
     enum
     {
-        CONFIGURATION_CHECK__START = NEXT_STEP,
+        CONFIGURATION_CHECK_START = NEXT_STEP,
 
         CONFIGURATION_CHECK_DIMENTIONS_PARAMETERS_CREATE_START,
         CONFIGURATION_CHECK_DIMENTIONS_PARAMETERS_CREATE_EXECUTOR_ANSWER_PROCESSING,
@@ -60,8 +60,6 @@ public:
     uint8_t Fsm(void);
 
 private:
-    void AnalogoueInputModuleDiscreteSignalsTextTitlesCreate(uint8_t* puiBlockDataPointer);
-    void AnalogoueInputModuleAnalogoueSignalsTextTitlesCreate(uint8_t* puiBlockDataPointer);
 
 private:
     std::string m_sInternalModuleName;
@@ -74,5 +72,5 @@ private:
 
 };
 
-#endif // DATABASECREATE_H
+#endif // CCONFIGURATIONCHECK_H
 //-------------------------------------------------------------------------------

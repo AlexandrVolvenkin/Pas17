@@ -40,6 +40,7 @@ class CDataContainerDataBase;
 class CConfigurationCreate;
 class CDataBaseCreate;
 class CSystemComponentsCreate;
+class CConfigurationCheck;
 
 //-------------------------------------------------------------------------------
 class CMainProductionCycle : public CTask
@@ -163,6 +164,9 @@ private:
 
     std::string m_sDataBaseCreateName;
     uint8_t m_uiDataBaseCreateId;
+
+    std::string m_sConfigurationCheckName;
+    uint8_t m_uiConfigurationCheckId;
 
     CSpiCommunicationDevice* m_pxSpiCommunicationDevice;
     CInternalModuleInterface* m_pxInternalModule;

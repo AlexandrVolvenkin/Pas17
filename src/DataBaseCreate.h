@@ -118,6 +118,7 @@ public:
     uint8_t Fsm(void);
 
 private:
+    void DimentionsParametersDataBaseCreate(uint8_t* puiBlockDataPointer);
     void AnalogoueInputModuleDiscreteSignalsTextTitlesCreate(uint8_t* puiBlockDataPointer);
     void AnalogoueInputModuleAnalogoueSignalsTextTitlesCreate(uint8_t* puiBlockDataPointer);
 

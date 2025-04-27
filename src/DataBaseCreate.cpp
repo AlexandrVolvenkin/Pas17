@@ -72,7 +72,7 @@ uint8_t CDataBaseCreate::Init(void)
 
 //-----------------------------------------------------------------------------------------------------
 // создаёт стартовую базу данных размерностей.
-void DimentionsParametersDataBaseCreate(uint8_t* puiBlockDataPointer)
+void CDataBaseCreate::DimentionsParametersDataBaseCreate(uint8_t* puiBlockDataPointer)
 {
     TDimentionParameterPackOne *pxDimentionParameterPackOne;
     TDimentionParameter *pxDimentionParameter;

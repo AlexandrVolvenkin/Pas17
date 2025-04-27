@@ -34,6 +34,7 @@
 #include "DataContainer.h"
 #include "AnalogueSignals.h"
 #include "SystemComponentsCreate.h"
+#include "ConfigurationCheck.h"
 
 #include "MainProductionCycle.h"
 
@@ -426,6 +427,20 @@ uint8_t CMainProductionCycle::CreateTasks(void)
     m_xResources.AddCurrentlyRunningTasksList(pxDataBaseCreate);
 //    m_pxDataBaseCreate = pxDataBaseCreate;
 
+//-------------------------------------------------------------------------------
+    CConfigurationCheck* pxConfigurationCheck = 0;
+    pxConfigurationCheck =
+        static_cast<CConfigurationCheck*>(m_xResources.AddCommonTaskToMap("ConfigurationCheck",
+                                      std::make_shared<CConfigurationCheck>()));
+    pxConfigurationCheck ->
+    SetResources(&m_xResources);
+    pxConfigurationCheck ->
+    SetInternalModuleName("InternalModuleCommon");
+    pxConfigurationCheck ->
+    SetDeviceControlName("DeviceControlRtuUpperLevel");
+    m_xResources.AddCurrentlyRunningTasksList(pxConfigurationCheck);
+//    m_pxConfigurationCheck = pxConfigurationCheck;
+
 }
 
 //-------------------------------------------------------------------------------
@@ -593,6 +608,10 @@ uint8_t CMainProductionCycle::Fsm(void)
             m_uiDataBaseCreateId =
                 GetResources() ->
                 GetTaskIdByNameFromMap("DataBaseCreate");
+
+            m_uiConfigurationCheckId =
+                GetResources() ->
+                GetTaskIdByNameFromMap("ConfigurationCheck");
 
             SetFsmState(READY);
         }
