@@ -145,7 +145,7 @@ void CInternalModuleMuvr::Allocate(void)
     // Увеличим общий объём выделенной памяти.
     GetResources() ->
     m_uiUsedDiscreteInputsState +=
-        MUVR_DISCRETE_INPUT_QUANTITY;
+        MUVR_DISCRETE_SIGNALS_QUANTITY;
 
 
     // Получим указатель на место в массиве достоверности дискретных входов для текущего модуля.
@@ -156,7 +156,7 @@ void CInternalModuleMuvr::Allocate(void)
     // Увеличим общий объём выделенной памяти.
     GetResources() ->
     m_uiUsedDiscreteInputsBadState +=
-        MUVR_DISCRETE_INPUT_QUANTITY;
+        MUVR_DISCRETE_SIGNALS_QUANTITY;
 
 
     // Получим указатель на место в массиве аналоговых входов для текущего модуля.

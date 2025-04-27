@@ -237,38 +237,9 @@ uint8_t CConfigurationCreate::Fsm(void)
         std::cout << "CConfigurationCreate::Fsm CONFIGURATION_CREATE_START"  << std::endl;
         {
             *(GetResources() -> GetDeviceConfigSearchPointer()) = {0};
+            SetFsmState(CONFIGURATION_CREATE_INTERNAL_MODULES_SEARCH_MODULES_START);
         }
-        SetFsmState(CONFIGURATION_CREATE_INTERNAL_MODULES_SEARCH_MODULES_START);
         break;
-
-//    case CONFIGURATION_CREATE_EXECUTOR_ANSWER_PROCESSING:
-//        std::cout << "CConfigurationCreate::Fsm CONFIGURATION_CREATE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
-//        {
-//            CDataContainerDataBase* pxExecutorDataContainer =
-//                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-//            CDataContainerDataBase* pxCustomerDataContainer =
-//                (CDataContainerDataBase*)GetCustomerDataContainerPointer();
-//
-//            uint8_t auiTempData[] = {1, 15, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 22, 4, 0,};
-//            uint16_t  uiLength = sizeof(auiTempData);
-//            memcpy(pxExecutorDataContainer -> m_puiDataPointer,
-//                   auiTempData,
-//                   uiLength);
-//
-//            pxExecutorDataContainer -> m_uiDataLength = uiLength;
-//
-//            memcpy(pxCustomerDataContainer -> m_puiDataPointer,
-//                   (pxExecutorDataContainer -> m_puiDataPointer),
-//                   pxExecutorDataContainer -> m_uiDataLength);
-//            pxCustomerDataContainer -> m_uiDataLength =
-//                pxExecutorDataContainer -> m_uiDataLength;
-//
-//            std::cout << "CConfigurationCreate::Fsm CONFIGURATION_CREATE_EXECUTOR_DONE_CHECK_WAITING uiLength "  << (int)uiLength << std::endl;
-//            std::cout << "CConfigurationCreate::Fsm CONFIGURATION_CREATE_EXECUTOR_DONE_CHECK_WAITING pxCustomerDataContainer -> m_uiDataLength "  << (int)pxCustomerDataContainer -> m_uiDataLength << std::endl;
-//
-//            SetFsmState(DONE_OK);
-//        }
-//        break;
 
 //-------------------------------------------------------------------------------
     case CONFIGURATION_CREATE_INTERNAL_MODULES_SEARCH_MODULES_START:
@@ -293,28 +264,6 @@ uint8_t CConfigurationCreate::Fsm(void)
     case CONFIGURATION_CREATE_INTERNAL_MODULES_SEARCH_MODULES_EXECUTOR_ANSWER_PROCESSING:
         std::cout << "CConfigurationCreate::Fsm CONFIGURATION_CREATE_INTERNAL_MODULES_SEARCH_MODULES_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
         {
-//            CDataContainerDataBase* pxExecutorDataContainer =
-//                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-//            CDataContainerDataBase* pxCustomerDataContainer =
-//                (CDataContainerDataBase*)GetCustomerDataContainerPointer();
-//
-//            uint8_t auiTempData[] = {1, 15, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 22, 4, 0,};
-//            uint16_t  uiLength = sizeof(auiTempData);
-////            memcpy(pxExecutorDataContainer -> m_puiDataPointer,
-////                   auiTempData,
-////                   uiLength);
-//
-//            pxExecutorDataContainer -> m_uiDataLength = uiLength;
-//
-//            memcpy(pxCustomerDataContainer -> m_puiDataPointer,
-//                   (pxExecutorDataContainer -> m_puiDataPointer),
-//                   pxExecutorDataContainer -> m_uiDataLength);
-//            pxCustomerDataContainer -> m_uiDataLength =
-//                pxExecutorDataContainer -> m_uiDataLength;
-//
-//            std::cout << "CConfigurationCreate::Fsm CONFIGURATION_CREATE_INTERNAL_MODULES_SEARCH_MODULES_EXECUTOR_ANSWER_PROCESSING uiLength "  << (int)uiLength << std::endl;
-//            std::cout << "CConfigurationCreate::Fsm CONFIGURATION_CREATE_INTERNAL_MODULES_SEARCH_MODULES_EXECUTOR_ANSWER_PROCESSING pxCustomerDataContainer -> m_uiDataLength "  << (int)pxCustomerDataContainer -> m_uiDataLength << std::endl;
-
             SetFsmState(CONFIGURATION_CREATE_INTERNAL_MODULES_SERVICE_DATA_CREATE_START);
         }
         break;
@@ -347,11 +296,6 @@ uint8_t CConfigurationCreate::Fsm(void)
             CDataContainerDataBase* pxCustomerDataContainer =
                 (CDataContainerDataBase*)GetCustomerDataContainerPointer();
 
-//            uint8_t auiTempData[] = {1, 15, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 22, 4, 0,};
-//            uint16_t  uiLength = sizeof(auiTempData);
-//            memcpy(pxExecutorDataContainer -> m_puiDataPointer,
-//                   auiTempData,
-//                   uiLength);
             uint16_t  uiLength = sizeof(struct TConfigDataPackOne);
             memcpy(pxExecutorDataContainer -> m_puiDataPointer,
                    (uint8_t*)(GetResources() -> GetDeviceConfigSearchPointer()),
@@ -364,9 +308,6 @@ uint8_t CConfigurationCreate::Fsm(void)
                    pxExecutorDataContainer -> m_uiDataLength);
             pxCustomerDataContainer -> m_uiDataLength =
                 pxExecutorDataContainer -> m_uiDataLength;
-
-            std::cout << "CConfigurationCreate::Fsm CONFIGURATION_CREATE_INTERNAL_MODULES_SERVICE_DATA_CREATE_EXECUTOR_ANSWER_PROCESSING uiLength "  << (int)uiLength << std::endl;
-            std::cout << "CConfigurationCreate::Fsm CONFIGURATION_CREATE_INTERNAL_MODULES_SERVICE_DATA_CREATE_EXECUTOR_ANSWER_PROCESSING pxCustomerDataContainer -> m_uiDataLength "  << (int)pxCustomerDataContainer -> m_uiDataLength << std::endl;
 
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(DONE_OK);
@@ -395,15 +336,10 @@ uint8_t CConfigurationCreate::Fsm(void)
             CDataContainerDataBase* pxCustomerDataContainer =
                 (CDataContainerDataBase*)GetCustomerDataContainerPointer();
 
-//            uint8_t auiTempData[] = {1, 15, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 22, 4, 0,};
-//            uint16_t  uiLength = sizeof(auiTempData);
-//            memcpy(pxExecutorDataContainer -> m_puiDataPointer,
-//                   auiTempData,
-//                   uiLength);
             uint16_t  uiLength = sizeof(struct TConfigDataPackOne);
-            memcpy(pxExecutorDataContainer -> m_puiDataPointer,
-                   (uint8_t*)(GetResources() -> GetDeviceConfigSearchPointer()),
-                   uiLength);
+
+            ConfigurationToProgrammerFormat((TConfigDataProgrammerPackOne*)(pxExecutorDataContainer -> m_puiDataPointer),
+                                            (GetResources() -> GetDeviceConfigSearchPointer()));
 
             pxExecutorDataContainer -> m_uiDataLength = uiLength;
 
@@ -412,10 +348,6 @@ uint8_t CConfigurationCreate::Fsm(void)
                    pxExecutorDataContainer -> m_uiDataLength);
             pxCustomerDataContainer -> m_uiDataLength =
                 pxExecutorDataContainer -> m_uiDataLength;
-
-            std::cout << "CConfigurationCreate::Fsm CONFIGURATION_REQUEST_EXECUTOR_DONE_CHECK_WAITING uiLength "  << (int)uiLength << std::endl;
-            std::cout << "CConfigurationCreate::Fsm CONFIGURATION_REQUEST_EXECUTOR_DONE_CHECK_WAITING pxCustomerDataContainer -> m_uiDataLength "  << (int)pxCustomerDataContainer -> m_uiDataLength << std::endl;
-            std::cout << "CConfigurationCreate::Fsm CONFIGURATION_REQUEST_EXECUTOR_DONE_CHECK_WAITING pxExecutorDataContainer -> m_uiDataLength "  << (int)pxExecutorDataContainer -> m_uiDataLength << std::endl;
 
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(DONE_OK);

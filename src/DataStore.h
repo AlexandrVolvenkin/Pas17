@@ -45,7 +45,7 @@ public:
         MAX_BLOCK_LENGTH = 256,
         MAX_ENCODED_BLOCK_LENGTH =
             ((MAX_BLOCK_LENGTH + TAIL_LENGTH) + ((MAX_BLOCK_LENGTH + TAIL_LENGTH) / 2)),
-        MAX_BLOCKS_NUMBER = 100,
+        MAX_BLOCKS_NUMBER = 110,
     };
 
     enum

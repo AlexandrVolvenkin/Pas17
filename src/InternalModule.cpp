@@ -433,11 +433,13 @@ void CInternalModule::ServiceDataCreate(void)
             pxDeviceConfigSearch ->
             uiLastAnalogueInputModuleIndex = i;
             pxDeviceConfigSearch ->
-            uiDiscreteInputSignalsQuantity += MUVR_DISCRETE_INPUT_QUANTITY;
+            uiDiscreteOutputQuantity += MUVR_DISCRETE_OUTPUT_QUANTITY;
+            pxDeviceConfigSearch ->
+            uiDiscreteInputSignalsQuantity += MUVR_DISCRETE_SIGNALS_QUANTITY;
             pxDeviceConfigSearch ->
             uiAnalogueInputSignalsQuantity += MUVR_ANALOG_INPUT_QUANTITY;
             pxDeviceConfigSearch ->
-            uiServiceDiscreteInputQuantity += MUVR_DISCRETE_INPUT_QUANTITY;
+            uiServiceDiscreteInputQuantity += MUVR_DISCRETE_SIGNALS_QUANTITY;
             pxDeviceConfigSearch ->
             uiServiceAnalogueInputQuantity += MUVR_ANALOG_INPUT_QUANTITY;
             break;

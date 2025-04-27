@@ -623,7 +623,9 @@ uint8_t CMainProductionCycle::Fsm(void)
 
     case READY:
         std::cout << "CMainProductionCycle::Fsm READY"  << std::endl;
-        SetFsmState(DATA_STORE_CHECK_TASK_READY_CHECK);
+//        SetFsmState(DATA_STORE_CHECK_TASK_READY_CHECK);
+        SetFsmState(CONFIGURATION_CREATE_START);
+
         break;
 
     case DONE_OK:

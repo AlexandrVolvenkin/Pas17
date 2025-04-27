@@ -63,8 +63,8 @@ public:
     };
 #pragma pack(pop)
 
-#pragma pack(push)
-#pragma pack(1)
+//#pragma pack(push)
+//#pragma pack(1)
     struct TConfigDataPackOne
     {
         // фактическое количество модулей.
@@ -101,7 +101,7 @@ public:
         uint8_t uiServiceDiscreteOutputQuantity;
         uint8_t uiServiceAnalogueOutputQuantity;
     };
-#pragma pack(pop)
+//#pragma pack(pop)
 
 #pragma pack(push)
 #pragma pack(1)
@@ -123,8 +123,8 @@ public:
     virtual ~CConfigurationCreate();
 
     void SetInternalModuleName(std::string sName);
-    void ConfigurationToProgrammerFormat(TConfigDataProgrammerPackOne *pxDestination,
-                                         TConfigDataPackOne *pxSourse);
+    void ConfigurationToProgrammerFormat(TConfigDataProgrammerPackOne* pxDestination,
+                                         TConfigDataPackOne* pxSourse);
     uint8_t Init(void);
     uint8_t Fsm(void);
 
