@@ -50,6 +50,7 @@
 		</Compiler>
 		<Unit filename="../Декомпозиция проекта/База данных.txt" />
 		<Unit filename="../Декомпозиция проекта/Декомпозиция проекта.txt" />
+		<Unit filename="../Декомпозиция проекта/Конфигурация.txt" />
 		<Unit filename="../Текущие задачиPas17.txt" />
 		<Unit filename="../протокол МВА.txt" />
 		<Unit filename="../структ и протоколы/структ и прот ПАС-17.txt" />
@@ -66,6 +67,8 @@
 		<Unit filename="src/CommunicationDevice/TcpCommunicationDevice.cpp" />
 		<Unit filename="src/CommunicationDevice/TcpCommunicationDevice.h" />
 		<Unit filename="src/Configuration.h" />
+		<Unit filename="src/ConfigurationCheck.cpp" />
+		<Unit filename="src/ConfigurationCheck.h" />
 		<Unit filename="src/ConfigurationCreate.cpp" />
 		<Unit filename="src/ConfigurationCreate.h" />
 		<Unit filename="src/Crc.cpp" />

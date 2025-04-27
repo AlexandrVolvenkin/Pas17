@@ -699,19 +699,21 @@ uint8_t CInternalModuleMuvr::DataBaseRead(void)
             m_pxOperatingDataContainer -> m_uiDataLength = MUVR_ANALOG_INPUT_QUANTITY;
 
             cout << "CInternalModuleMuvr::DataBaseRead 4" << endl;
+            return 1;
         }
         else
         {
             // ошибка обмена данными.
             cout << "CInternalModuleMuvr::DataBaseRead 5" << endl;
+            return 0;
         }
     }
     else
     {
         // модуль не отвечает.
         cout << "iCInternalModuleMuvr::DataBaseRead 6" << endl;
+        return 0;
     }
-    return 0;
 }
 
 //-----------------------------------------------------------------------------------------------------
@@ -1018,29 +1020,29 @@ uint8_t CInternalModuleMuvr::Fsm(void)
 
     case MUVR_WRITE_DATA_BASE_CHECK:
         //std::cout << "CInternalModuleMuvr::Fsm MUVR_WRITE_DATA_BASE_CHECK 1"  << std::endl;
-        {
-            uint8_t uiFsmState = DataBaseBlockWriteCheck();
+    {
+        uint8_t uiFsmState = DataBaseBlockWriteCheck();
 
-            if (uiFsmState == DATA_EXCHANGE_OK)
+        if (uiFsmState == DATA_EXCHANGE_OK)
+        {
+            //std::cout << "CInternalModuleMuvr::Fsm MUVR_WRITE_DATA_BASE_CHECK 2"  << std::endl;
+            SetFsmState(DONE_OK);
+        }
+        else if (uiFsmState == DATA_EXCHANGE_ERROR)
+        {
+            //std::cout << "CInternalModuleMuvr::Fsm MUVR_WRITE_DATA_BASE_CHECK 3"  << std::endl;
+            SetFsmState(DONE_ERROR);
+        }
+        else
+        {
+            // Время ожидания выполнения запроса закончилось?
+            if (GetTimerPointer() -> IsOverflow())
             {
-                //std::cout << "CInternalModuleMuvr::Fsm MUVR_WRITE_DATA_BASE_CHECK 2"  << std::endl;
-                SetFsmState(DONE_OK);
-            }
-            else if (uiFsmState == DATA_EXCHANGE_ERROR)
-            {
-                //std::cout << "CInternalModuleMuvr::Fsm MUVR_WRITE_DATA_BASE_CHECK 3"  << std::endl;
+                //std::cout << "CInternalModuleMuvr::Fsm MUVR_WRITE_DATA_BASE_CHECK 4"  << std::endl;
                 SetFsmState(DONE_ERROR);
             }
-            else
-            {
-                // Время ожидания выполнения запроса закончилось?
-                if (GetTimerPointer() -> IsOverflow())
-                {
-                    //std::cout << "CInternalModuleMuvr::Fsm MUVR_WRITE_DATA_BASE_CHECK 4"  << std::endl;
-                    SetFsmState(DONE_ERROR);
-                }
-            }
         }
+    }
 
 //        switch (DataBaseBlockWriteCheck())
 //        {
@@ -1060,7 +1062,7 @@ uint8_t CInternalModuleMuvr::Fsm(void)
 //            break;
 //        }
 
-        break;
+    break;
 
     case MUVR_DATA_EXCHANGE:
         //std::cout << "CInternalModuleMuvr::Fsm MUVR_DATA_EXCHANGE"  << std::endl;
