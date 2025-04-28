@@ -626,20 +626,20 @@ uint8_t CInternalModuleMuvr::DataBaseRead(void)
                                         TWO_BYTE_CRC_LENGTH,
                                         LOW_SPEED_IN_HZ);
 
-    {
-        //std::cout << "CInternalModuleMuvr::DataBaseRead auiSpiRxBuffer"  << std::endl;
-        unsigned char *pucSourceTemp;
-        pucSourceTemp = (unsigned char*)auiSpiRxBuffer;
-        for(int i=0; i<64; )
-        {
-            for(int j=0; j<8; j++)
-            {
-                cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
-            }
-            cout << endl;
-            i += 8;
-        }
-    }
+//    {
+//        std::cout << "CInternalModuleMuvr::DataBaseRead auiSpiRxBuffer"  << std::endl;
+//        unsigned char *pucSourceTemp;
+//        pucSourceTemp = (unsigned char*)auiSpiRxBuffer;
+//        for(int i=0; i<256; )
+//        {
+//            for(int j=0; j<8; j++)
+//            {
+//                cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+//            }
+//            cout << endl;
+//            i += 8;
+//        }
+//    }
 
     // модуль отвечает?
     if (auiSpiRxBuffer[SPI_COMMAND_BYTE_OFFSET] == MUVR_GET_DATA_BASE_COMMAND) // if echo answer is ok.
@@ -692,11 +692,38 @@ uint8_t CInternalModuleMuvr::DataBaseRead(void)
                 pucDestination += 28;
             }
 
-            pucSource = &aucTempArray[0];
-            memcpy(m_pxOperatingDataContainer -> m_puiDataPointer,
-                   pucSource,
+            CDataContainerDataBase* pxExecutorDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            CDataContainerDataBase* pxCustomerDataContainer =
+                (CDataContainerDataBase*)GetCustomerDataContainerPointer();
+
+//            pucSource = &aucTempArray[0];
+//            memcpy(m_pxOperatingDataContainer -> m_puiDataPointer,
+//                   pucSource,
+//                   ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_LENGTH);
+//            m_pxOperatingDataContainer -> m_uiDataLength = MUVR_ANALOG_INPUT_QUANTITY;
+
+            pucDestination = &aucTempArray[0];
+
+            memcpy(pxCustomerDataContainer -> m_puiDataPointer,
+                   pucDestination,
                    ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_LENGTH);
-            m_pxOperatingDataContainer -> m_uiDataLength = MUVR_ANALOG_INPUT_QUANTITY;
+            pxCustomerDataContainer -> m_uiDataLength = ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_LENGTH;
+
+//            {
+//                std::cout << "CInternalModuleMuvr::DataBaseRead m_puiDataPointer"  << std::endl;
+//                unsigned char *pucSourceTemp;
+//                pucSourceTemp = (unsigned char*)pucDestination;//pxCustomerDataContainer -> m_puiDataPointer;
+//                for(int i=0; i<256; )
+//                {
+//                    for(int j=0; j<8; j++)
+//                    {
+//                        cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+//                    }
+//                    cout << endl;
+//                    i += 8;
+//                }
+//            }
 
             cout << "CInternalModuleMuvr::DataBaseRead 4" << endl;
             return 1;
@@ -1008,6 +1035,7 @@ uint8_t CInternalModuleMuvr::Fsm(void)
     case MUVR_DATA_BASE_READ:
         //std::cout << "CInternalModuleMuvr::Fsm MUVR_DATA_BASE_READ"  << std::endl;
         DataBaseRead();
+        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
         SetFsmState(DONE_OK);
         break;
 

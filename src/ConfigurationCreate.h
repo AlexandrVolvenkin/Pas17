@@ -123,8 +123,8 @@ public:
     virtual ~CConfigurationCreate();
 
     void SetInternalModuleName(std::string sName);
-    void ConfigurationToProgrammerFormat(TConfigDataProgrammerPackOne* pxDestination,
-                                         TConfigDataPackOne* pxSourse);
+    static void ConfigurationToProgrammerFormat(TConfigDataProgrammerPackOne* pxDestination,
+            TConfigDataPackOne* pxSourse);
     uint8_t Init(void);
     uint8_t Fsm(void);
 

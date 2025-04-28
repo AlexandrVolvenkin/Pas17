@@ -16,6 +16,7 @@
 #include "DeviceControl.h"
 #include "DataContainer.h"
 #include "InternalModule.h"
+#include "InternalModuleMuvr.h"
 #include "ConfigurationCreate.h"
 #include "DataBaseCreate.h"
 
@@ -50,6 +51,12 @@ CDataBaseCreate::~CDataBaseCreate()
 void CDataBaseCreate::SetInternalModuleName(std::string sName)
 {
     m_sInternalModuleName = sName;
+}
+
+//-------------------------------------------------------------------------------
+void CDataBaseCreate::SetInternalModuleMuvrName(std::string sName)
+{
+    m_sInternalModuleMuvrName = sName;
 }
 
 //-------------------------------------------------------------------------------
@@ -319,6 +326,10 @@ uint8_t CDataBaseCreate::Fsm(void)
             GetResources() ->
             GetTaskIdByNameFromMap(m_sInternalModuleName);
 
+//        m_uiInternalModuleMuvrId =
+//            GetResources() ->
+//            GetTaskIdByNameFromMap(m_sInternalModuleMuvrName);
+
         m_uiDeviceControlId =
             GetResources() ->
             GetTaskIdByNameFromMap(m_sDeviceControlName);
@@ -453,8 +464,8 @@ uint8_t CDataBaseCreate::Fsm(void)
         std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_START"  << std::endl;
         {
             m_uiBlocksCounter = 0;
-            SetFsmState(DATA_BASE_CREATE_DEFAULT_ALL_DATA_BASE_BLOCKS_WRITE_START);
-//            SetFsmState(DATA_BASE_CREATE_DIMENTIONS_PARAMETERS_CREATE_START);
+//            SetFsmState(DATA_BASE_CREATE_DEFAULT_ALL_DATA_BASE_BLOCKS_WRITE_START);
+            SetFsmState(DATA_BASE_CREATE_DIMENTIONS_PARAMETERS_CREATE_START);
         }
         break;
 
@@ -509,6 +520,7 @@ uint8_t CDataBaseCreate::Fsm(void)
             pxDataContainer -> m_uiTaskId = m_uiDeviceControlId;
             pxDataContainer -> m_uiFsmCommandState =
                 CDeviceControl::DATA_BASE_BLOCK_START_WRITE;
+            // стартовые текстовые реквизиты размерностей блок 35
             pxDataContainer -> m_uiDataIndex = DIMENSIONS_PARAMETERS_DATA_BASE_BLOCK_OFFSET;
             pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
 
@@ -583,6 +595,94 @@ uint8_t CDataBaseCreate::Fsm(void)
 
     case DATA_BASE_CREATE_TEXT_TITLES_CREATE_ANALOGUE_SIGNALS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING:
         std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_TEXT_TITLES_CREATE_ANALOGUE_SIGNALS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
+        {
+            SetFsmState(DATA_BASE_CREATE_CONFIGURATION_DATA_BASE_BLOCKS_WRITE_START);
+        }
+        break;
+
+//-------------------------------------------------------------------------------
+    case DATA_BASE_CREATE_CONFIGURATION_DATA_BASE_BLOCKS_WRITE_START:
+        std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_CONFIGURATION_DATA_BASE_BLOCKS_WRITE_START"  << std::endl;
+        {
+            CConfigurationCreate::ConfigurationToProgrammerFormat((CConfigurationCreate::TConfigDataProgrammerPackOne*)(m_puiIntermediateBuff),
+                    (GetResources() -> GetDeviceConfigSearchPointer()));
+
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            pxDataContainer -> m_uiTaskId = m_uiDeviceControlId;
+            pxDataContainer -> m_uiFsmCommandState =
+                CDeviceControl::DATA_BASE_BLOCK_START_WRITE;
+            // конфигурация блок 100
+            pxDataContainer -> m_uiDataIndex = CONFIGURATION_DATA_BASE_BLOCK_OFFSET;
+            pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+            SetFsmNextStateDoneOk(DATA_BASE_CREATE_CONFIGURATION_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING);
+            SetFsmNextStateReadyWaitingError(DONE_ERROR);
+            SetFsmNextStateDoneWaitingError(DONE_ERROR);
+            SetFsmNextStateDoneWaitingDoneError(DONE_ERROR);
+        }
+        break;
+
+    case DATA_BASE_CREATE_CONFIGURATION_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING:
+        std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_CONFIGURATION_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
+        {
+            SetFsmState(DATA_BASE_CREATE_MODULE_MUVR_DATA_BASE_READ_START);
+        }
+        break;
+
+//-------------------------------------------------------------------------------
+    case DATA_BASE_CREATE_MODULE_MUVR_DATA_BASE_READ_START:
+        std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_MODULE_MUVR_DATA_BASE_READ_START"  << std::endl;
+        {
+            m_uiInternalModuleMuvrId =
+                GetResources() ->
+                GetTaskIdByNameFromMap(m_sInternalModuleMuvrName);
+
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            pxDataContainer -> m_uiTaskId = m_uiInternalModuleMuvrId;
+            pxDataContainer -> m_uiFsmCommandState =
+                CInternalModuleMuvr::MUVR_DATA_BASE_READ;
+            pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+            SetFsmNextStateDoneOk(DATA_BASE_CREATE_MODULE_MUVR_DATA_BASE_READ_EXECUTOR_ANSWER_PROCESSING);
+            SetFsmNextStateReadyWaitingError(DONE_ERROR);
+            SetFsmNextStateDoneWaitingError(DONE_ERROR);
+            SetFsmNextStateDoneWaitingDoneError(DONE_ERROR);
+        }
+        break;
+
+    case DATA_BASE_CREATE_MODULE_MUVR_DATA_BASE_READ_EXECUTOR_ANSWER_PROCESSING:
+        std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_MODULE_MUVR_DATA_BASE_READ_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
+        {
+            SetFsmState(DATA_BASE_CREATE_MODULE_MUVR_DATA_BASE_BLOCKS_WRITE_START);
+        }
+        break;
+
+    case DATA_BASE_CREATE_MODULE_MUVR_DATA_BASE_BLOCKS_WRITE_START:
+        std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_MODULE_MUVR_DATA_BASE_BLOCKS_WRITE_START"  << std::endl;
+        {
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            pxDataContainer -> m_uiTaskId = m_uiDeviceControlId;
+            pxDataContainer -> m_uiFsmCommandState =
+                CDeviceControl::DATA_BASE_BLOCK_START_WRITE;
+            // модуль аналоговых сигналов мувр блок 1
+            pxDataContainer -> m_uiDataIndex = ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_OFFSET;
+            pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+            SetFsmNextStateDoneOk(DATA_BASE_CREATE_MODULE_MUVR_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING);
+            SetFsmNextStateReadyWaitingError(DONE_ERROR);
+            SetFsmNextStateDoneWaitingError(DONE_ERROR);
+            SetFsmNextStateDoneWaitingDoneError(DONE_ERROR);
+        }
+        break;
+
+    case DATA_BASE_CREATE_MODULE_MUVR_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING:
+        std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_MODULE_MUVR_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
         {
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(DONE_OK);

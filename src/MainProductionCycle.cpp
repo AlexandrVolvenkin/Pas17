@@ -423,6 +423,8 @@ uint8_t CMainProductionCycle::CreateTasks(void)
     pxDataBaseCreate ->
     SetInternalModuleName("InternalModuleCommon");
     pxDataBaseCreate ->
+    SetInternalModuleMuvrName("InternalModuleMuvr0");
+    pxDataBaseCreate ->
     SetDeviceControlName("DeviceControlRtuUpperLevel");
     m_xResources.AddCurrentlyRunningTasksList(pxDataBaseCreate);
 //    m_pxDataBaseCreate = pxDataBaseCreate;
@@ -794,6 +796,7 @@ uint8_t CMainProductionCycle::Fsm(void)
         }
         break;
 
+//-------------------------------------------------------------------------------
     case DATA_STORE_CHECK_TASK_READY_CHECK:
 //        std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_TASK_READY_CHECK"  << std::endl;
         CurrentlyRunningTasksExecution();
@@ -801,18 +804,6 @@ uint8_t CMainProductionCycle::Fsm(void)
         GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
         SetFsmState(DATA_STORE_CHECK_TASK_READY_WAITING);
         std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_TASK_READY_CHECK 1"  << std::endl;
-
-//        if ((m_pxDataStoreCheck -> GetFsmState()) == READY)
-//        {
-//            SetFsmState(DATA_STORE_CHECK_BEGIN);
-//            std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_TASK_READY_CHECK 1"  << std::endl;
-//        }
-//        else
-//        {
-//            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
-//            SetFsmState(DATA_STORE_CHECK_TASK_READY_WAITING);
-//            std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_TASK_READY_CHECK 2"  << std::endl;
-//        }
         break;
 
     case DATA_STORE_CHECK_TASK_READY_WAITING:
@@ -841,32 +832,7 @@ uint8_t CMainProductionCycle::Fsm(void)
         m_pxDataStoreCheck -> Check();
         GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
 
-//        m_pxDataStoreFileSystem -> CreateServiceSection();
-//        m_pxDataStoreFileSystem -> WriteBlock(auiTempBlock, sizeof(auiTempBlock), 0);
-
         SetFsmState(DATA_STORE_CHECK_END_WAITING);
-//
-//        if (!(m_pxDataStoreCheck -> Check()))
-//        {
-//            cout << "DataStore check error" << endl;
-//            cout << "CreateServiceSection" << endl;
-//            m_pxDataStoreFileSystem -> CreateServiceSection();
-//
-//            m_pxDataStoreFileSystem -> WriteBlock(auiTempBlock, sizeof(auiTempBlock), 0);
-//            do
-//            {
-//                m_pxDataStoreFileSystem -> Fsm();
-//            }
-//            while (m_pxDataStoreFileSystem -> GetFsmState() != READY);
-//
-//
-//            cout << "DataStore initialized ok" << endl;
-//        }
-//        else
-//        {
-//            cout << "DataStore check ok" << endl;
-//        }
-//        usleep(1000);
         break;
 
     case DATA_STORE_CHECK_END_WAITING:
@@ -881,8 +847,11 @@ uint8_t CMainProductionCycle::Fsm(void)
                    0,
                    CDataStore::MAX_BLOCK_LENGTH);
             m_pxDataStoreFileSystem -> WriteBlock(m_puiIntermediateBuff,
-                                                  RESERVED_DATA_BASE_BLOCK_LENGTH,
+                                                  (m_pxDataStoreFileSystem ->
+                                                   GetBlockLength(0)),
                                                   0);
+
+
 
             GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
             SetFsmState(DATA_STORE_CHECK_RECAVERY_END_WAITING);
@@ -927,6 +896,8 @@ uint8_t CMainProductionCycle::Fsm(void)
         {
             if (GetTimerPointer() -> IsOverflow())
             {
+                m_pxDataStoreFileSystem ->
+                SetFsmCommandState(0);
                 SetFsmState(DATA_STORE_CHECK_END_ERROR);
                 std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_RECAVERY_END_WAITING 3"  << std::endl;
             }
@@ -937,8 +908,6 @@ uint8_t CMainProductionCycle::Fsm(void)
 //        std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_END_OK"  << std::endl;
         CurrentlyRunningTasksExecution();
         m_pxDataStoreFileSystem -> ReadServiceSection();
-//        SetFsmState(MAIN_CYCLE_MODULES_INIT);
-//        SetFsmState(MAIN_CYCLE_MODBUS_SLAVE);
         SetFsmState(CONFIGURATION_CREATE_START);
         break;
 
@@ -959,7 +928,6 @@ uint8_t CMainProductionCycle::Fsm(void)
             pxDataContainer -> m_uiFsmCommandState =
                 CConfigurationCreate::CONFIGURATION_CREATE_START;
             pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
-//            SetCurrentExecutorDataContainer(pxDataContainer);
 
             SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
             SetFsmNextStateDoneOk(CONFIGURATION_CREATE_EXECUTOR_ANSWER_PROCESSING);
@@ -1092,164 +1060,6 @@ uint8_t CMainProductionCycle::Fsm(void)
     break;
 
 //-------------------------------------------------------------------------------
-    case MAIN_CYCLE_MODULES_INIT:
-//        std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_MODULES_INIT 1"  << std::endl;
-        CurrentlyRunningTasksExecution();
-
-//        CDataContainerDataBase* pxDataContainer =
-//            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-//        pxDataContainer -> m_uiTaskId = m_uiDeviceControlId;
-//        pxDataContainer -> m_uiFsmCommandState =
-//            CDeviceControl::DATA_BASE_BLOCK_READ;
-//        pxDataContainer -> m_uiDataIndex = uiBlockIndex;
-//        pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
-//
-//        if (SetTaskData(GetExecutorDataContainerPointer()))
-//        {
-//            std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_MODULES_INIT 2" << std::endl;
-//            SetFsmState(REQUEST_PROCESSING_EXECUTOR_DONE_CHECK_START);
-//        }
-//        else
-//        {
-//            std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_MODULES_INIT 3" << std::endl;
-//            SetFsmState(REQUEST_PROCESSING_EXECUTOR_READY_CHECK_START);
-//        }
-
-//        m_pxOperatingDataContainer -> m_uiFsmCommandState =
-//            CAnalogueSignals::DATA_BASE_BLOCK_START_READ;
-        m_pxOperatingDataContainer -> m_uiFsmCommandState =
-            CAnalogueSignals::DATA_BASE_BLOCK_CHECK_START;
-        m_pxAnalogueSignals ->
-        SetTaskData(m_pxOperatingDataContainer);
-
-        GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
-        SetFsmState(MAIN_CYCLE_MODULES_INIT_END_WAITING);
-        break;
-
-    case MAIN_CYCLE_MODULES_INIT_END_WAITING:
-//        std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_MODULES_INIT_END_WAITING"  << std::endl;
-    {
-        CurrentlyRunningTasksExecution();
-
-        m_pxAnalogueSignals ->
-        GetTaskData(m_pxOperatingDataContainer);
-
-        uint8_t uiFsmState = m_pxOperatingDataContainer -> m_uiFsmCommandState;
-
-        if (uiFsmState == DONE_OK)
-        {
-            std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_MODULES_INIT_END_WAITING 2"  << std::endl;
-            SetFsmState(MAIN_CYCLE_MODBUS_SLAVE);
-        }
-        else if (uiFsmState == DONE_ERROR)
-        {
-            std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_MODULES_INIT_END_WAITING 3"  << std::endl;
-            SetFsmState(DONE_ERROR);
-        }
-        else
-        {
-            // ¬рем€ ожидани€ выполнени€ запроса закончилось?
-            if (GetTimerPointer() -> IsOverflow())
-            {
-                std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_MODULES_INIT_END_WAITING 4"  << std::endl;
-                SetFsmState(DONE_ERROR);
-            }
-        }
-    }
-    break;
-
-    case MAIN_CYCLE_MODBUS_SLAVE:
-        std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_MODBUS_SLAVE"  << std::endl;
-//        m_pxModbusTcpSlaveUpperLevel -> Fsm();
-//        m_pxModbusRtuSlaveUpperLevel -> Fsm();
-        CurrentlyRunningTasksExecution();
-
-        GetTimerPointer() -> Set(100);
-
-//        usleep(1000);
-        SetFsmState(MAIN_CYCLE_START_WAITING);
-        break;
-
-    case MAIN_CYCLE_START_WAITING:
-//        std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_START_WAITING 1"  << std::endl;
-        CurrentlyRunningTasksExecution();
-
-        if (GetTimerPointer() -> IsOverflow())
-        {
-//            std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_START_WAITING 2"  << std::endl;
-            GetTimerPointer() -> Set(100);
-            SetFsmState(MAIN_CYCLE_MODULES_INTERACTION);
-        }
-
-        break;
-
-    case MAIN_CYCLE_MODULES_INTERACTION:
-//        std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_MODULES_INTERACTION"  << std::endl;
-    {
-        CurrentlyRunningTasksExecution();
-
-        //        m_pxInternalModule ->
-        //        GetModuleType(0);
-        //        {
-        //
-        ////            CInternalModuleMuvr xInternalModuleMuvr;
-        //////            CInternalModule xInternalModuleMuvr;
-        ////            xInternalModuleMuvr.
-        ////            GetModuleType(0);
-        //
-        ////            CInternalModuleMuvr xInternalModuleMuvr;
-        //////            CInternalModule xInternalModuleMuvr;
-        ////            xInternalModuleMuvr.
-        ////            DataBaseRead(0);
-        ////            m_pxInternalModuleMuvr ->
-        ////            DataBaseRead(0);
-        //            m_pxInternalModuleMuvr ->
-        //            GetModuleType(0);
-        //
-        //        }
-
-//            CDataContainerDataBase xOperatingDataContainer;
-//            xOperatingDataContainer.m_uiFsmCommandState =
-//                CInternalModuleMuvr::MUVR_GET_MODULE_TYPE;
-//            m_pxInternalModuleMuvr ->
-//            SetTaskData(&xOperatingDataContainer);
-
-//            CDataContainerDataBase xOperatingDataContainer;
-//            xOperatingDataContainer.m_uiFsmCommandState =
-//                CInternalModuleMuvr::MUVR_DATA_BASE_READ;
-//            xOperatingDataContainer.m_puiDataPointer =
-//                m_puiIntermediateBuff;
-//            m_pxInternalModuleMuvr ->
-//            SetTaskData(&xOperatingDataContainer);
-
-//        CDataContainerDataBase xOperatingDataContainer;
-//        xOperatingDataContainer.m_uiFsmCommandState =
-//            CInternalModuleMuvr::MUVR_DATA_EXCHANGE;
-//        m_pxInternalModuleMuvr ->
-//        SetTaskData(&xOperatingDataContainer);
-
-//        CInternalModuleMuvr* pxInternalModuleMuvr =
-//            (CInternalModuleMuvr*)(GetResources() ->
-//                                   GetTaskPointerByNameFromMap("InternalModuleMuvr"));
-
-
-        CDataContainerDataBase* pxDataContainer =
-            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-        pxDataContainer -> m_uiTaskId = m_uiInternalModuleMuvrId;
-        pxDataContainer -> m_uiFsmCommandState =
-            CInternalModuleMuvr::MUVR_DATA_EXCHANGE;
-        SetTaskData(pxDataContainer);
-
-//        m_pxOperatingDataContainer -> m_uiFsmCommandState =
-//            CInternalModuleMuvr::MUVR_DATA_EXCHANGE;
-//        pxInternalModuleMuvr ->
-//        SetTaskData(m_pxOperatingDataContainer);
-
-        SetFsmState(MAIN_CYCLE_DISCRETE_SIGNALS_PROCESSING);
-
-    }
-    break;
-
     case MAIN_CYCLE_DISCRETE_SIGNALS_PROCESSING:
 //        std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_DISCRETE_SIGNALS_PROCESSING"  << std::endl;
         CurrentlyRunningTasksExecution();

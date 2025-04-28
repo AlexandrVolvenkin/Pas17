@@ -107,14 +107,24 @@ public:
 
         DATA_BASE_CREATE_TEXT_TITLES_CREATE_DISCRETE_SIGNALS_DATA_BASE_BLOCKS_WRITE_START,
         DATA_BASE_CREATE_TEXT_TITLES_CREATE_DISCRETE_SIGNALS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING,
+
         DATA_BASE_CREATE_TEXT_TITLES_CREATE_ANALOGUE_SIGNALS_DATA_BASE_BLOCKS_WRITE_START,
         DATA_BASE_CREATE_TEXT_TITLES_CREATE_ANALOGUE_SIGNALS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING,
+
+        DATA_BASE_CREATE_CONFIGURATION_DATA_BASE_BLOCKS_WRITE_START,
+        DATA_BASE_CREATE_CONFIGURATION_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING,
+
+        DATA_BASE_CREATE_MODULE_MUVR_DATA_BASE_READ_START,
+        DATA_BASE_CREATE_MODULE_MUVR_DATA_BASE_READ_EXECUTOR_ANSWER_PROCESSING,
+        DATA_BASE_CREATE_MODULE_MUVR_DATA_BASE_BLOCKS_WRITE_START,
+        DATA_BASE_CREATE_MODULE_MUVR_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING,
     };
 
     CDataBaseCreate();
     virtual ~CDataBaseCreate();
 
     void SetInternalModuleName(std::string sName);
+    void SetInternalModuleMuvrName(std::string sName);
     void SetDeviceControlName(std::string sName);
 
     uint8_t Init(void);
@@ -128,6 +138,9 @@ private:
 private:
     std::string m_sInternalModuleName;
     uint8_t m_uiInternalModuleId;
+
+    std::string m_sInternalModuleMuvrName;
+    uint8_t m_uiInternalModuleMuvrId;
 
     std::string m_sDeviceControlName;
     uint8_t m_uiDeviceControlId;
