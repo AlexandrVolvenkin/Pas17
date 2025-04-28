@@ -34,8 +34,11 @@ public:
         CONFIGURATION_REQUEST_EXECUTOR_ANSWER_PROCESSING,
 
         DATA_BASE_BLOCK_READ,
+
         DATA_BASE_BLOCK_START_WRITE,
         DATA_BASE_BLOCK_WRITE_END_WAITING,
+        DATA_BASE_BLOCK_MODULE_MUVR_WRITE_START,
+        DATA_BASE_BLOCK_MODULE_MUVR_WRITE_EXECUTOR_ANSWER_PROCESSING,
     };
 
     CDeviceControl();
@@ -119,6 +122,7 @@ public:
     {
         m_sConfigurationCreateName = sName;
     }
+    void SetInternalModuleMuvrName(std::string sName);
 
     uint8_t Init(void);
 //    bool SetTaskData(CDataContainerDataBase* pxDataContainer);
@@ -139,6 +143,9 @@ protected:
 
     std::string m_sConfigurationCreateName;
     uint8_t m_uiConfigurationCreateId;
+
+    std::string m_sInternalModuleMuvrName;
+    uint8_t m_uiInternalModuleMuvrId;
 
     std::string m_sDataStoreLinkName;
     CLinkInterface* m_pxDataStoreLink;

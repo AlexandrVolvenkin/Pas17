@@ -197,6 +197,8 @@ uint8_t CMainProductionCycle::CreateTasks(void)
     SetDataStoreName("DataStoreFileSystem");
     pxDeviceControl ->
     SetConfigurationCreateName("ConfigurationCreate");
+    pxDeviceControl ->
+    SetInternalModuleMuvrName("InternalModuleMuvr0");
     m_xResources.AddCurrentlyRunningTasksList(pxDeviceControl);
 
 //-------------------------------------------------------------------------------
@@ -605,7 +607,7 @@ uint8_t CMainProductionCycle::Fsm(void)
 
             m_uiInternalModuleMuvrId =
                 GetResources() ->
-                GetTaskIdByNameFromMap("InternalModuleMuvr");
+                GetTaskIdByNameFromMap("InternalModuleMuvr0");
 
             m_uiDataBaseCreateId =
                 GetResources() ->

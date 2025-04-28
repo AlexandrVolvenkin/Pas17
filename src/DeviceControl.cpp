@@ -17,6 +17,7 @@
 #include "Link.h"
 #include "AnalogueSignals.h"
 #include "ConfigurationCreate.h"
+#include "InternalModuleMuvr.h"
 #include "DeviceControl.h"
 
 using namespace std;
@@ -98,6 +99,12 @@ uint8_t CDeviceControl::Init(void)
 //    std::cout << "CDeviceControl GetObjectLength"  << std::endl;
 //    return sizeof(*this);
 //}
+
+//-------------------------------------------------------------------------------
+void CDeviceControl::SetInternalModuleMuvrName(std::string sName)
+{
+    m_sInternalModuleMuvrName = sName;
+}
 
 //-------------------------------------------------------------------------------
 uint16_t CDeviceControl::ConfigurationRead(uint8_t *puiDestination)
@@ -540,6 +547,7 @@ uint8_t CDeviceControl::Fsm(void)
             std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_WRITE_END_WAITING 1"  << std::endl;
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(DONE_OK);
+//            SetFsmState(DATA_BASE_BLOCK_MODULE_MUVR_WRITE_START);
         }
         // ”стройство хранени€ закончило запись не успешно?
         else if (m_pxDataStore ->
@@ -558,6 +566,38 @@ uint8_t CDeviceControl::Fsm(void)
                 ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
                 SetFsmState(DONE_ERROR);
             }
+        }
+        break;
+
+//-------------------------------------------------------------------------------
+    case DATA_BASE_BLOCK_MODULE_MUVR_WRITE_START:
+        std::cout << "CDataBaseCreate::Fsm DATA_BASE_BLOCK_MODULE_MUVR_WRITE_START"  << std::endl;
+        {
+            m_uiInternalModuleMuvrId =
+                GetResources() ->
+                GetTaskIdByNameFromMap(m_sInternalModuleMuvrName);
+
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            pxDataContainer -> m_uiTaskId = m_uiInternalModuleMuvrId;
+            pxDataContainer -> m_uiFsmCommandState =
+                CInternalModuleMuvr::MUVR_WRITE_DATA_BASE;
+            pxDataContainer -> m_puiDataPointer =
+                (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer);
+
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+            SetFsmNextStateDoneOk(DATA_BASE_BLOCK_MODULE_MUVR_WRITE_EXECUTOR_ANSWER_PROCESSING);
+            SetFsmNextStateReadyWaitingError(DONE_ERROR);
+            SetFsmNextStateDoneWaitingError(DONE_ERROR);
+            SetFsmNextStateDoneWaitingDoneError(DONE_ERROR);
+        }
+        break;
+
+    case DATA_BASE_BLOCK_MODULE_MUVR_WRITE_EXECUTOR_ANSWER_PROCESSING:
+        std::cout << "CDataBaseCreate::Fsm DATA_BASE_BLOCK_MODULE_MUVR_WRITE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
+        {
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(DONE_OK);
         }
         break;
 
