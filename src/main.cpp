@@ -207,7 +207,7 @@ int main()
 //
 //    struct spi_ioc_transfer Transfer;
 //
-//    memset(&Transfer, 0x00, sizeof(Transfer));
+//    memset(&Transfer, 0x00, sizeof(struct ransfer));
 //
 //    Transfer.tx_buf = (unsigned long) TXPtr;
 //    Transfer.rx_buf = (unsigned long) RXPtr;
@@ -544,7 +544,7 @@ int main()
 //
 //    struct spi_ioc_transfer Transfer;
 //
-//    memset(&Transfer, 0x00, sizeof(Transfer));
+//    memset(&Transfer, 0x00, sizeof(struct ransfer));
 //
 //    Transfer.tx_buf = (unsigned long) TXPtr;
 //    Transfer.rx_buf = (unsigned long) RXPtr;

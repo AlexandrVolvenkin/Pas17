@@ -851,8 +851,6 @@ uint8_t CMainProductionCycle::Fsm(void)
                                                    GetBlockLength(0)),
                                                   0);
 
-
-
             GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
             SetFsmState(DATA_STORE_CHECK_RECAVERY_END_WAITING);
 //            std::cout << "CDataStore::Fsm DATA_STORE_CHECK_END_ERROR"  << std::endl;
@@ -977,6 +975,49 @@ uint8_t CMainProductionCycle::Fsm(void)
 
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
 //            SetFsmState(MAIN_CYCLE_MODBUS_SLAVE);
+            SetFsmState(CONFIGURATION_CHECK_START);
+        }
+        break;
+
+//-------------------------------------------------------------------------------
+    case CONFIGURATION_CHECK_START:
+        std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CHECK_START"  << std::endl;
+        {
+            SetFsmState(CONFIGURATION_CHECK_CONFIGURATION_DATA_BASE_BLOCKS_READ_START);
+        }
+        break;
+
+    case CONFIGURATION_CHECK_CONFIGURATION_DATA_BASE_BLOCKS_READ_START:
+        std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CHECK_CONFIGURATION_DATA_BASE_BLOCKS_READ_START"  << std::endl;
+        {
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            pxDataContainer -> m_uiTaskId = m_uiConfigurationCheckId;
+            pxDataContainer -> m_uiFsmCommandState =
+                CConfigurationCheck::CONFIGURATION_CHECK_START;
+
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+            SetFsmNextStateDoneOk(CONFIGURATION_CHECK_CONFIGURATION_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+            SetFsmNextStateReadyWaitingError(CONFIGURATION_CHECK_CONFIGURATION_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingError(CONFIGURATION_CHECK_CONFIGURATION_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingDoneError(CONFIGURATION_CHECK_CONFIGURATION_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+        }
+        break;
+
+    case CONFIGURATION_CHECK_CONFIGURATION_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+        std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CHECK_CONFIGURATION_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        {
+            // текущая конфигурация и сохранённая в базе данных совпадают.
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(INTERNAL_MODULES_DATA_EXCHANGE_START);
+        }
+        break;
+
+    case CONFIGURATION_CHECK_CONFIGURATION_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+        std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CHECK_CONFIGURATION_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        {
+            // текущая конфигурация и сохранённая в базе данных не совпадают.
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
             SetFsmState(DATA_BASE_CREATE_START);
         }
         break;

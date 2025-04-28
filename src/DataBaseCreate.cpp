@@ -200,7 +200,7 @@ void CDataBaseCreate::AnalogoueInputModuleDiscreteSignalsTextTitlesCreate(uint8_
 
     // Вычисляем количество элементов в массиве
     uint8_t uiElementNumber = (sizeof(axDiscreteSygnalTextTitles) /
-                               sizeof(TDiscreteSygnalTextTitle));
+                               sizeof(struct TDiscreteSygnalTextTitle));
     pxDiscreteSygnalTextTitle = axDiscreteSygnalTextTitles;
     // получим указатель на место во временном буфере, в котором сформируем блок
     // базы данных текстовых реквизитов дискрктных сигналов поорождаемых аналоговыми входами,
@@ -245,7 +245,7 @@ void CDataBaseCreate::AnalogoueInputModuleAnalogoueSignalsTextTitlesCreate(uint8
 
     // Вычисляем количество элементов в массиве
     uint8_t uiElementNumber = (sizeof(axDiscreteSygnalTextTitles) /
-                               sizeof(TDiscreteSygnalTextTitle));
+                               sizeof(struct TDiscreteSygnalTextTitle));
     pxDiscreteSygnalTextTitle = axDiscreteSygnalTextTitles;
     // получим указатель на место во временном буфере, в котором сформируем первую часть блока
     // базы данных текстовых реквизитов аналоговых сигналов, в общем формате хранения.
@@ -279,12 +279,12 @@ void CDataBaseCreate::AnalogoueInputModuleAnalogoueSignalsTextTitlesCreate(uint8
     // базы данных текстовых реквизитов аналоговых сигналов, в общем формате хранения.
     pxAnalogoueSignalsTextTitlePackOne =
         (TAnalogoueSignalsTextTitlePackOne*)(puiBlockDataPointer +
-                (sizeof(TDiscreteSygnalTextTitle) *
+                (sizeof(struct TDiscreteSygnalTextTitle) *
                  uiElementNumber));
 
     // Вычисляем количество элементов в массиве
     uiElementNumber = (sizeof(axAnalogoueSignalsTextTitles) /
-                       sizeof(TAnalogoueSignalsTextTitle));
+                       sizeof(struct TAnalogoueSignalsTextTitle));
     pxAnalogoueSignalsTextTitle = axAnalogoueSignalsTextTitles;
     // преобразуем созданную базу данных в общий формат.
     for (int i = 0;

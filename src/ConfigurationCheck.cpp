@@ -34,8 +34,6 @@ CConfigurationCheck::CConfigurationCheck()
 CConfigurationCheck::~CConfigurationCheck()
 {
     delete[] m_puiIntermediateBuff;
-    delete[] GetResources() ->
-    m_pxDiscreteSygnalTextTitlesWork;
 }
 
 //-------------------------------------------------------------------------------
@@ -57,9 +55,6 @@ uint8_t CConfigurationCheck::Init(void)
     SetExecutorDataContainer(static_cast<CDataContainerDataBase*>(GetResources() ->
                              AddDataContainer(std::make_shared<CDataContainerDataBase>())));
     SetCustomerDataContainer(GetExecutorDataContainerPointer());
-
-    GetResources() ->
-    m_pxDiscreteSygnalTextTitlesWork = new TDiscreteSygnalTextTitle[MAX_HANDLED_DISCRETE_INPUT];
 }
 
 //-------------------------------------------------------------------------------
@@ -168,7 +163,7 @@ uint8_t CConfigurationCheck::Fsm(void)
             if (GetTimerPointer() -> IsOverflow())
             {
                 std::cout << "CConfigurationCheck::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 4"  << std::endl;
-                ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+//                ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
                 SetFsmState(GetFsmNextStateReadyWaitingError());
             }
         }
@@ -201,7 +196,7 @@ uint8_t CConfigurationCheck::Fsm(void)
         else if (uiFsmState == DONE_ERROR)
         {
             std::cout << "CConfigurationCheck::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 3"  << std::endl;
-            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+//            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
             SetFsmState(GetFsmNextStateDoneWaitingDoneError());
         }
         else
@@ -210,7 +205,7 @@ uint8_t CConfigurationCheck::Fsm(void)
             if (GetTimerPointer() -> IsOverflow())
             {
                 std::cout << "CConfigurationCheck::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 4"  << std::endl;
-                ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+//                ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
                 SetFsmState(GetFsmNextStateDoneWaitingError());
             }
         }
@@ -221,98 +216,100 @@ uint8_t CConfigurationCheck::Fsm(void)
     case CONFIGURATION_CHECK_START:
         std::cout << "CConfigurationCheck::Fsm CONFIGURATION_CHECK_START"  << std::endl;
         {
-            SetFsmState(CONFIGURATION_CHECK_DIMENTIONS_PARAMETERS_CREATE_START);
+            SetFsmState(CONFIGURATION_CHECK_CONFIGURATION_DATA_BASE_BLOCKS_READ_START);
         }
         break;
 
-//-------------------------------------------------------------------------------
-    case CONFIGURATION_CHECK_DIMENTIONS_PARAMETERS_CREATE_START:
-        std::cout << "CConfigurationCheck::Fsm CONFIGURATION_CHECK_DIMENTIONS_PARAMETERS_CREATE_START"  << std::endl;
+    case CONFIGURATION_CHECK_CONFIGURATION_DATA_BASE_BLOCKS_READ_START:
+        std::cout << "CConfigurationCheck::Fsm CONFIGURATION_CHECK_CONFIGURATION_DATA_BASE_BLOCKS_READ_START"  << std::endl;
         {
-//            DimentionsParametersDataBaseCreate(m_puiIntermediateBuff);
-
             CDataContainerDataBase* pxDataContainer =
                 (CDataContainerDataBase*)GetExecutorDataContainerPointer();
             pxDataContainer -> m_uiTaskId = m_uiDeviceControlId;
             pxDataContainer -> m_uiFsmCommandState =
-                CDeviceControl::DATA_BASE_BLOCK_START_WRITE;
-            pxDataContainer -> m_uiDataIndex = DIMENSIONS_PARAMETERS_DATA_BASE_BLOCK_OFFSET;
+                CDeviceControl::DATA_BASE_BLOCK_READ;
+            // конфигурация блок 100
+            pxDataContainer -> m_uiDataIndex = CONFIGURATION_DATA_BASE_BLOCK_OFFSET;
             pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
 
             SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
-            SetFsmNextStateDoneOk(CONFIGURATION_CHECK_DIMENTIONS_PARAMETERS_CREATE_EXECUTOR_ANSWER_PROCESSING);
-            SetFsmNextStateReadyWaitingError(DONE_ERROR);
-            SetFsmNextStateDoneWaitingError(DONE_ERROR);
-            SetFsmNextStateDoneWaitingDoneError(DONE_ERROR);
+            SetFsmNextStateDoneOk(CONFIGURATION_CHECK_CONFIGURATION_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+            SetFsmNextStateReadyWaitingError(CONFIGURATION_CHECK_CONFIGURATION_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingError(CONFIGURATION_CHECK_CONFIGURATION_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingDoneError(CONFIGURATION_CHECK_CONFIGURATION_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
         }
         break;
 
-    case CONFIGURATION_CHECK_DIMENTIONS_PARAMETERS_CREATE_EXECUTOR_ANSWER_PROCESSING:
-        std::cout << "CConfigurationCheck::Fsm CONFIGURATION_CHECK_DIMENTIONS_PARAMETERS_CREATE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
+    case CONFIGURATION_CHECK_CONFIGURATION_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+        std::cout << "CConfigurationCheck::Fsm CONFIGURATION_CHECK_CONFIGURATION_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
         {
-            SetFsmState(CONFIGURATION_CHECK_TEXT_TITLES_CREATE_DISCRETE_SIGNALS_DATA_BASE_BLOCKS_WRITE_START);
-//            SetFsmState(DONE_OK);
+            SetFsmState(CONFIGURATION_CHECK_CONFIGURATION_COMPARE_START);
         }
         break;
 
-//-------------------------------------------------------------------------------
-    case CONFIGURATION_CHECK_TEXT_TITLES_CREATE_DISCRETE_SIGNALS_DATA_BASE_BLOCKS_WRITE_START:
-        std::cout << "CConfigurationCheck::Fsm CONFIGURATION_CHECK_TEXT_TITLES_CREATE_DISCRETE_SIGNALS_DATA_BASE_BLOCKS_WRITE_START"  << std::endl;
+    case CONFIGURATION_CHECK_CONFIGURATION_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+        std::cout << "CConfigurationCheck::Fsm CONFIGURATION_CHECK_CONFIGURATION_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
         {
-//            AnalogoueInputModuleDiscreteSignalsTextTitlesCreate(m_puiIntermediateBuff);
-
-            CDataContainerDataBase* pxDataContainer =
-                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-            pxDataContainer -> m_uiTaskId = m_uiDeviceControlId;
-            pxDataContainer -> m_uiFsmCommandState =
-                CDeviceControl::DATA_BASE_BLOCK_START_WRITE;
-            // стартовые текстовые реквизиты дискретных сигналов блок 40
-            pxDataContainer -> m_uiDataIndex = TEXT_TITLES_DATA_BASE_BLOCK_OFFSET;
-            pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
-
-            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
-            SetFsmNextStateDoneOk(CONFIGURATION_CHECK_TEXT_TITLES_CREATE_DISCRETE_SIGNALS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING);
-            SetFsmNextStateReadyWaitingError(DONE_ERROR);
-            SetFsmNextStateDoneWaitingError(DONE_ERROR);
-            SetFsmNextStateDoneWaitingDoneError(DONE_ERROR);
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+            SetFsmState(DONE_ERROR);
         }
         break;
 
-    case CONFIGURATION_CHECK_TEXT_TITLES_CREATE_DISCRETE_SIGNALS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING:
-        std::cout << "CConfigurationCheck::Fsm CONFIGURATION_CHECK_TEXT_TITLES_CREATE_DISCRETE_SIGNALS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
+    case CONFIGURATION_CHECK_CONFIGURATION_COMPARE_START:
+        std::cout << "CConfigurationCheck::Fsm CONFIGURATION_CHECK_CONFIGURATION_COMPARE_START"  << std::endl;
         {
-            SetFsmState(CONFIGURATION_CHECK_TEXT_TITLES_CREATE_ANALOGUE_SIGNALS_DATA_BASE_BLOCKS_WRITE_START);
-        }
-        break;
+            uint8_t auiTempArray[256];
+            // преобразуем текущую конфигурацию в общий формат хранения совместимый с программатором.
+            CConfigurationCreate::ConfigurationToProgrammerFormat((CConfigurationCreate::TConfigDataProgrammerPackOne*)(auiTempArray),
+                    (GetResources() -> GetDeviceConfigSearchPointer()));
 
-//-------------------------------------------------------------------------------
-    case CONFIGURATION_CHECK_TEXT_TITLES_CREATE_ANALOGUE_SIGNALS_DATA_BASE_BLOCKS_WRITE_START:
-        std::cout << "CConfigurationCheck::Fsm CONFIGURATION_CHECK_TEXT_TITLES_CREATE_ANALOGUE_SIGNALS_DATA_BASE_BLOCKS_WRITE_START"  << std::endl;
-        {
-//            AnalogoueInputModuleAnalogoueSignalsTextTitlesCreate(m_puiIntermediateBuff);
+            {
+                std::cout << "CConfigurationCheck::Fsm auiTempArray"  << std::endl;
+                unsigned char *pucSourceTemp;
+                pucSourceTemp = (unsigned char*)auiTempArray;
+                for(int i=0; i<32; )
+                {
+                    for(int j=0; j<8; j++)
+                    {
+                        cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+                    }
+                    cout << endl;
+                    i += 8;
+                }
+            }
 
-            CDataContainerDataBase* pxDataContainer =
-                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-            pxDataContainer -> m_uiTaskId = m_uiDeviceControlId;
-            pxDataContainer -> m_uiFsmCommandState =
-                CDeviceControl::DATA_BASE_BLOCK_START_WRITE;
-            // стартовые текстовые реквизиты аналоговых сигналов блок 41
-            pxDataContainer -> m_uiDataIndex = (TEXT_TITLES_DATA_BASE_BLOCK_OFFSET + 1);
-            pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
 
-            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
-            SetFsmNextStateDoneOk(CONFIGURATION_CHECK_TEXT_TITLES_CREATE_ANALOGUE_SIGNALS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING);
-            SetFsmNextStateReadyWaitingError(DONE_ERROR);
-            SetFsmNextStateDoneWaitingError(DONE_ERROR);
-            SetFsmNextStateDoneWaitingDoneError(DONE_ERROR);
-        }
-        break;
+            {
+                std::cout << "CConfigurationCheck::Fsm m_puiIntermediateBuff " << (sizeof(struct CConfigurationCreate::TConfigDataProgrammerPackOne))  << std::endl;
+                unsigned char *pucSourceTemp;
+                pucSourceTemp = (unsigned char*)m_puiIntermediateBuff;
+                for(int i=0; i<32; )
+                {
+                    for(int j=0; j<8; j++)
+                    {
+                        cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+                    }
+                    cout << endl;
+                    i += 8;
+                }
+            }
 
-    case CONFIGURATION_CHECK_TEXT_TITLES_CREATE_ANALOGUE_SIGNALS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING:
-        std::cout << "CConfigurationCheck::Fsm CONFIGURATION_CHECK_TEXT_TITLES_CREATE_ANALOGUE_SIGNALS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
-        {
-            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-            SetFsmState(DONE_OK);
+            // текущая конфигурация и сохранённая в базе данных совпадают?
+            if (memcmp(auiTempArray,
+                       m_puiIntermediateBuff,
+                       (sizeof(struct CConfigurationCreate::TConfigDataProgrammerPackOne))) == 0)
+            {
+                std::cout << "CConfigurationCheck::Fsm CONFIGURATION_CHECK_CONFIGURATION_COMPARE_START 2"  << std::endl;
+                // текущая конфигурация и сохранённая в базе данных совпадают.
+                ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+                SetFsmState(DONE_OK);
+            }
+            else
+            {
+                std::cout << "CConfigurationCheck::Fsm CONFIGURATION_CHECK_CONFIGURATION_COMPARE_START 3"  << std::endl;
+                ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+                SetFsmState(DONE_ERROR);
+            }
         }
         break;
 
