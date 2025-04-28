@@ -625,8 +625,8 @@ uint8_t CMainProductionCycle::Fsm(void)
 
     case READY:
         std::cout << "CMainProductionCycle::Fsm READY"  << std::endl;
-        SetFsmState(DATA_STORE_CHECK_TASK_READY_CHECK);
-//        SetFsmState(CONFIGURATION_CREATE_START);
+//        SetFsmState(DATA_STORE_CHECK_TASK_READY_CHECK);
+        SetFsmState(CONFIGURATION_CREATE_START);
 //        SetFsmState(DATA_STORE_CHECK_START);
 
         break;
@@ -983,6 +983,8 @@ uint8_t CMainProductionCycle::Fsm(void)
     case CONFIGURATION_CHECK_START:
         std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CHECK_START"  << std::endl;
         {
+            // при старте нужно прочитать из хранилища в поле класса сервиный блок.
+            m_pxDataStoreFileSystem -> ReadServiceSection();
             SetFsmState(CONFIGURATION_CHECK_CONFIGURATION_DATA_BASE_BLOCKS_READ_START);
         }
         break;
@@ -1027,6 +1029,9 @@ uint8_t CMainProductionCycle::Fsm(void)
         std::cout << "CMainProductionCycle::Fsm DATA_BASE_CREATE_START"  << std::endl;
         {
             CurrentlyRunningTasksExecution();
+            // для создания новой базы данных нужно создать новый сервисный блок в хранилище,
+            // чтобы стереть прошлую информацию о сохранённых блоках.
+            m_pxDataStoreFileSystem -> CreateServiceSection();
 
             CDataContainerDataBase* pxDataContainer =
                 (CDataContainerDataBase*)GetExecutorDataContainerPointer();

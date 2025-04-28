@@ -463,9 +463,12 @@ uint8_t CDataBaseCreate::Fsm(void)
     case DATA_BASE_CREATE_START:
         std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_START"  << std::endl;
         {
+//            // для создания новой базы данных нужно создать новый сервисный блок в хранилище,
+//            // чтобы стереть прошлую информацию о сохранённых блоках.
+//            m_pxDataStoreFileSystem -> CreateServiceSection();
             m_uiBlocksCounter = 0;
-//            SetFsmState(DATA_BASE_CREATE_DEFAULT_ALL_DATA_BASE_BLOCKS_WRITE_START);
-            SetFsmState(DATA_BASE_CREATE_DIMENTIONS_PARAMETERS_CREATE_START);
+            SetFsmState(DATA_BASE_CREATE_DEFAULT_ALL_DATA_BASE_BLOCKS_WRITE_START);
+//            SetFsmState(DATA_BASE_CREATE_DIMENTIONS_PARAMETERS_CREATE_START);
         }
         break;
 
