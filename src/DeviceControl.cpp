@@ -473,27 +473,6 @@ uint8_t CDeviceControl::Fsm(void)
     case DATA_BASE_BLOCK_READ:
         std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_READ 1"  << std::endl;
         {
-//            uint16_t uiLength =
-//                m_pxDataStore ->
-//                ReadBlock(((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer,
-//                          ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiDataIndex);
-//
-//            if (uiLength)
-//            {
-//                std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_READ 2"  << std::endl;
-//                ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiDataLength = uiLength;
-//                ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-//                SetFsmState(DONE_OK);
-//            }
-//            else
-//            {
-//                std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_READ 3"  << std::endl;
-//                ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiDataLength = uiLength;
-////                ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
-//                ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-//                SetFsmState(DONE_OK);
-//            }
-
             m_uiDataStoreId =
                 GetResources() ->
                 GetTaskIdByNameFromMap(m_sDataStoreName);
@@ -522,6 +501,17 @@ uint8_t CDeviceControl::Fsm(void)
     case DATA_BASE_BLOCK_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
         std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
         {
+            CDataContainerDataBase* pxExecutorDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            CDataContainerDataBase* pxCustomerDataContainer =
+                (CDataContainerDataBase*)GetCustomerDataContainerPointer();
+
+            memcpy(pxCustomerDataContainer -> m_puiDataPointer,
+                   (pxExecutorDataContainer -> m_puiDataPointer),
+                   pxExecutorDataContainer -> m_uiDataLength);
+            pxCustomerDataContainer -> m_uiDataLength =
+                pxExecutorDataContainer -> m_uiDataLength;
+
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(DONE_OK);
         }

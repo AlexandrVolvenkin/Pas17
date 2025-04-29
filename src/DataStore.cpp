@@ -189,10 +189,10 @@ CDataStore::~CDataStore()
 uint8_t CDataStore::Init(void)
 {
     std::cout << "CDataStore Init"  << std::endl;
-    m_pxCommandDataContainer = static_cast<CDataContainerDataBase*>(GetResources() ->
-                               AddDataContainer(std::make_shared<CDataContainerDataBase>()));
-    m_pxOperatingDataContainer = static_cast<CDataContainerDataBase*>(GetResources() ->
-                                 AddDataContainer(std::make_shared<CDataContainerDataBase>()));
+//    m_pxCommandDataContainer = static_cast<CDataContainerDataBase*>(GetResources() ->
+//                               AddDataContainer(std::make_shared<CDataContainerDataBase>()));
+//    m_pxOperatingDataContainer = static_cast<CDataContainerDataBase*>(GetResources() ->
+//                                 AddDataContainer(std::make_shared<CDataContainerDataBase>()));
 
     SetExecutorDataContainer(static_cast<CDataContainerDataBase*>(GetResources() ->
                              AddDataContainer(std::make_shared<CDataContainerDataBase>())));
@@ -1481,13 +1481,12 @@ uint8_t CDataStore::Fsm(void)
     case READ_BLOCK_DATA_START:
         std::cout << "CDataStore::Fsm READ_BLOCK_DATA_START"  << std::endl;
         {
-//            ReadBlock(((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer,
-//                      ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiDataIndex);
+            uint16_t uiLength =
+                ReadBlock(((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer,
+                          ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiDataIndex);
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiDataLength = uiLength;
 
-//            ReadBlock();
-
-            if (ReadBlock(((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer,
-                          ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiDataIndex))
+            if (uiLength)
             {
                 std::cout << "CDataStore::Fsm READ_BLOCK_DATA_START 2"  << std::endl;
                 SetFsmState(READ_BLOCK_DATA_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
