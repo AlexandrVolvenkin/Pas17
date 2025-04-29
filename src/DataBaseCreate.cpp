@@ -484,7 +484,7 @@ uint8_t CDataBaseCreate::Fsm(void)
                 (CDataContainerDataBase*)GetExecutorDataContainerPointer();
             pxDataContainer -> m_uiTaskId = m_uiDeviceControlId;
             pxDataContainer -> m_uiFsmCommandState =
-                CDeviceControl::DATA_BASE_BLOCK_START_WRITE;
+                CDeviceControl::DATA_BASE_BLOCK_WRITE_START;
             pxDataContainer -> m_uiDataIndex = m_uiBlocksCounter;
             pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
 
@@ -522,7 +522,7 @@ uint8_t CDataBaseCreate::Fsm(void)
                 (CDataContainerDataBase*)GetExecutorDataContainerPointer();
             pxDataContainer -> m_uiTaskId = m_uiDeviceControlId;
             pxDataContainer -> m_uiFsmCommandState =
-                CDeviceControl::DATA_BASE_BLOCK_START_WRITE;
+                CDeviceControl::DATA_BASE_BLOCK_WRITE_START;
             // стартовые текстовые реквизиты размерностей блок 35
             pxDataContainer -> m_uiDataIndex = DIMENSIONS_PARAMETERS_DATA_BASE_BLOCK_OFFSET;
             pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
@@ -553,7 +553,7 @@ uint8_t CDataBaseCreate::Fsm(void)
                 (CDataContainerDataBase*)GetExecutorDataContainerPointer();
             pxDataContainer -> m_uiTaskId = m_uiDeviceControlId;
             pxDataContainer -> m_uiFsmCommandState =
-                CDeviceControl::DATA_BASE_BLOCK_START_WRITE;
+                CDeviceControl::DATA_BASE_BLOCK_WRITE_START;
             // стартовые текстовые реквизиты дискретных сигналов блок 40
             pxDataContainer -> m_uiDataIndex = TEXT_TITLES_DATA_BASE_BLOCK_OFFSET;
             pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
@@ -583,7 +583,7 @@ uint8_t CDataBaseCreate::Fsm(void)
                 (CDataContainerDataBase*)GetExecutorDataContainerPointer();
             pxDataContainer -> m_uiTaskId = m_uiDeviceControlId;
             pxDataContainer -> m_uiFsmCommandState =
-                CDeviceControl::DATA_BASE_BLOCK_START_WRITE;
+                CDeviceControl::DATA_BASE_BLOCK_WRITE_START;
             // стартовые текстовые реквизиты аналоговых сигналов блок 41
             pxDataContainer -> m_uiDataIndex = (TEXT_TITLES_DATA_BASE_BLOCK_OFFSET + 1);
             pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
@@ -614,7 +614,7 @@ uint8_t CDataBaseCreate::Fsm(void)
                 (CDataContainerDataBase*)GetExecutorDataContainerPointer();
             pxDataContainer -> m_uiTaskId = m_uiDeviceControlId;
             pxDataContainer -> m_uiFsmCommandState =
-                CDeviceControl::DATA_BASE_BLOCK_START_WRITE;
+                CDeviceControl::DATA_BASE_BLOCK_WRITE_START;
             // конфигурация блок 100
             pxDataContainer -> m_uiDataIndex = CONFIGURATION_DATA_BASE_BLOCK_OFFSET;
             pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
@@ -671,7 +671,7 @@ uint8_t CDataBaseCreate::Fsm(void)
                 (CDataContainerDataBase*)GetExecutorDataContainerPointer();
             pxDataContainer -> m_uiTaskId = m_uiDeviceControlId;
             pxDataContainer -> m_uiFsmCommandState =
-                CDeviceControl::DATA_BASE_BLOCK_START_WRITE;
+                CDeviceControl::DATA_BASE_BLOCK_WRITE_START;
             // модуль аналоговых сигналов мувр блок 1
             pxDataContainer -> m_uiDataIndex = ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_OFFSET;
             pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;

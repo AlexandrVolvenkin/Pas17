@@ -193,6 +193,11 @@ uint8_t CDataStore::Init(void)
                                AddDataContainer(std::make_shared<CDataContainerDataBase>()));
     m_pxOperatingDataContainer = static_cast<CDataContainerDataBase*>(GetResources() ->
                                  AddDataContainer(std::make_shared<CDataContainerDataBase>()));
+
+    SetExecutorDataContainer(static_cast<CDataContainerDataBase*>(GetResources() ->
+                             AddDataContainer(std::make_shared<CDataContainerDataBase>())));
+
+    SetCustomerDataContainer(GetExecutorDataContainerPointer());
 }
 
 //-------------------------------------------------------------------------------
@@ -217,7 +222,7 @@ void CDataStore::SetStorageDevice(CStorageDeviceInterface* pxStorageDevice)
 //-------------------------------------------------------------------------------
 void CDataStore::SetBlockIndex(uint8_t uiBlockIndex)
 {
-    CDataContainerDataBase* pxDataContainer = m_pxCommandDataContainer;
+    CDataContainerDataBase* pxDataContainer = ((CDataContainerDataBase*)GetCustomerDataContainerPointer());
 
     pxDataContainer ->
     SetDataIndex(uiBlockIndex);
@@ -272,7 +277,7 @@ uint8_t CDataStore::TemporaryServiceSectionWritePrepare(void)
                                            reinterpret_cast<uint8_t*>(&m_xServiseSection),
                                            sizeof(struct TServiseSection));
 
-    CDataContainerDataBase* pxDataContainer = m_pxOperatingDataContainer;
+    CDataContainerDataBase* pxDataContainer = ((CDataContainerDataBase*)GetExecutorDataContainerPointer());
 
     pxDataContainer ->
     SetDataIndex(0);
@@ -313,7 +318,7 @@ uint8_t CDataStore::ServiceSectionWritePrepare(void)
                                            reinterpret_cast<uint8_t*>(&m_xServiseSection),
                                            sizeof(struct TServiseSection));
 
-    CDataContainerDataBase* pxDataContainer = m_pxOperatingDataContainer;
+    CDataContainerDataBase* pxDataContainer = ((CDataContainerDataBase*)GetExecutorDataContainerPointer());
 
     pxDataContainer ->
     SetDataIndex(0);
@@ -342,7 +347,7 @@ uint8_t CDataStore::TemporaryBlockWritePrepare(void)
 {
     std::cout << "CDataStore::TemporaryBlockWritePrepare 1"  << std::endl;
 
-    CDataContainerDataBase* pxDataContainer = m_pxCommandDataContainer;
+    CDataContainerDataBase* pxDataContainer = ((CDataContainerDataBase*)GetCustomerDataContainerPointer());
 
     uint8_t uiBlock = pxDataContainer -> m_uiDataIndex;
     uint8_t *puiSource = pxDataContainer -> m_puiDataPointer;
@@ -383,7 +388,7 @@ uint8_t CDataStore::TemporaryBlockWritePrepare(void)
     axBlockPositionData[uiBlock].uiCrc =
         usCrc16(puiSource, uiLength);
 
-    pxDataContainer = m_pxOperatingDataContainer;
+    pxDataContainer = ((CDataContainerDataBase*)GetExecutorDataContainerPointer());
 
     pxDataContainer ->
     SetDataIndex(uiBlock);
@@ -414,7 +419,7 @@ uint8_t CDataStore::BlockWritePrepare(void)
 {
     std::cout << "CDataStore::BlockWritePrepare 1"  << std::endl;
 
-    CDataContainerDataBase* pxDataContainer = m_pxCommandDataContainer;
+    CDataContainerDataBase* pxDataContainer = ((CDataContainerDataBase*)GetCustomerDataContainerPointer());
 
     uint8_t uiBlock = pxDataContainer -> m_uiDataIndex;
     uint8_t *puiSource = pxDataContainer -> m_puiDataPointer;
@@ -459,7 +464,7 @@ uint8_t CDataStore::BlockWritePrepare(void)
 //    // —охраним индекс последнего записываемого блока.
 //    m_xServiseSection.xServiseSectionData.uiLastWritedBlockNumber = uiBlock;
 
-    pxDataContainer = m_pxOperatingDataContainer;
+    pxDataContainer = ((CDataContainerDataBase*)GetExecutorDataContainerPointer());
 
     pxDataContainer ->
     SetDataIndex(uiBlock);
@@ -496,7 +501,7 @@ uint8_t CDataStore::WriteBlock(uint8_t *puiSource, uint16_t uiLength, uint8_t ui
         return 0;
     }
 
-    CDataContainerDataBase* pxDataContainer = m_pxCommandDataContainer;
+    CDataContainerDataBase* pxDataContainer = ((CDataContainerDataBase*)GetExecutorDataContainerPointer());//((CDataContainerDataBase*)GetCustomerDataContainerPointer());
 
     std::cout << "CDataStore::WriteBlock 3"  << std::endl;
     pxDataContainer ->
@@ -509,7 +514,8 @@ uint8_t CDataStore::WriteBlock(uint8_t *puiSource, uint16_t uiLength, uint8_t ui
     SetDataLength(uiLength);
 
     std::cout << "CDataStore::WriteBlock 4"  << std::endl;
-    SetFsmCommandState(START_WRITE_TEMPORARY_BLOCK_DATA);
+//    SetFsmCommandState(START_WRITE_TEMPORARY_BLOCK_DATA);
+    SetFsmState(START_WRITE_TEMPORARY_BLOCK_DATA);
 
     return 1;
 }
@@ -542,7 +548,7 @@ uint8_t CDataStore::ReadTemporaryServiceSection(void)
         (CHammingCodes::CalculateEncodedDataLength(sizeof(struct TServiseSection)));
 
     // получим указатель на контейнер с данными задачи
-    CDataContainerDataBase* pxDataContainer = m_pxOperatingDataContainer;
+    CDataContainerDataBase* pxDataContainer = ((CDataContainerDataBase*)GetExecutorDataContainerPointer());
 
     pxDataContainer ->
     SetDataIndex(0);
@@ -592,7 +598,7 @@ uint8_t CDataStore::ReadServiceSection(void)
         (CHammingCodes::CalculateEncodedDataLength(sizeof(struct TServiseSection)));
 
     // получим указатель на контейнер с данными задачи исполнител€
-    CDataContainerDataBase* pxDataContainer = m_pxOperatingDataContainer;
+    CDataContainerDataBase* pxDataContainer = ((CDataContainerDataBase*)GetExecutorDataContainerPointer());
 
     pxDataContainer ->
     SetDataIndex(0);
@@ -639,7 +645,7 @@ uint8_t CDataStore::CheckTemporaryBlock(void)
 {
     std::cout << "CDataStore::CheckTemporaryBlock 1"  << std::endl;
 //    // получим указатель на свой контейнер с данными
-    CDataContainerDataBase* pxDataContainer = m_pxCommandDataContainer;
+    CDataContainerDataBase* pxDataContainer = ((CDataContainerDataBase*)GetCustomerDataContainerPointer());
 
     uint8_t uiBlock = pxDataContainer -> m_uiDataIndex;
     std::cout << "CDataStore::CheckTemporaryBlock 1 uiBlock "  <<  (int)(uiBlock) << std::endl;
@@ -680,7 +686,7 @@ uint8_t CDataStore::CheckTemporaryBlock(void)
         return 0;
     }
 
-    pxDataContainer = m_pxOperatingDataContainer;
+    pxDataContainer = ((CDataContainerDataBase*)GetExecutorDataContainerPointer());
 
     pxDataContainer ->
     SetDataIndex(uiBlock);
@@ -727,7 +733,7 @@ uint8_t CDataStore::CheckBlock(void)
 {
     std::cout << "CDataStore::CheckBlock 1"  << std::endl;
 
-    CDataContainerDataBase* pxDataContainer = m_pxCommandDataContainer;
+    CDataContainerDataBase* pxDataContainer = ((CDataContainerDataBase*)GetCustomerDataContainerPointer());
 
     uint8_t uiBlock = pxDataContainer -> m_uiDataIndex;
     std::cout << "CDataStore::CheckBlock 1 uiBlock "  <<  (int)(uiBlock) << std::endl;
@@ -768,7 +774,7 @@ uint8_t CDataStore::CheckBlock(void)
         return 0;
     }
 
-    pxDataContainer = m_pxOperatingDataContainer;
+    pxDataContainer = ((CDataContainerDataBase*)GetExecutorDataContainerPointer());
 
     pxDataContainer ->
     SetDataIndex(uiBlock);
@@ -808,6 +814,7 @@ uint8_t CDataStore::CheckBlock(void)
         return 0;
     }
 }
+
 //-------------------------------------------------------------------------------
 // —читывает и провер€ет целостность блока.
 uint16_t CDataStore::ReadBlock(uint8_t *puiDestination, uint8_t uiBlock)
@@ -869,7 +876,7 @@ uint16_t CDataStore::ReadBlock(uint8_t *puiDestination, uint8_t uiBlock)
         return 0;
     }
 
-    CDataContainerDataBase* pxDataContainer = m_pxOperatingDataContainer;
+    CDataContainerDataBase* pxDataContainer = ((CDataContainerDataBase*)GetExecutorDataContainerPointer());
 
     pxDataContainer ->
     SetDataIndex(uiBlock);
@@ -910,6 +917,113 @@ uint16_t CDataStore::ReadBlock(uint8_t *puiDestination, uint8_t uiBlock)
         return 2;
     }
 }
+
+////-------------------------------------------------------------------------------
+//// —читывает и провер€ет целостность блока.
+//void CDataStore::ReadBlock(void)
+//{
+//    std::cout << "CDataStore::ReadBlock 1"  << std::endl;
+//
+////    CDataContainerDataBase* pxExecutorDataContainer =
+////        (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+////    CDataContainerDataBase* pxCustomerDataContainer =
+////        (CDataContainerDataBase*)GetCustomerDataContainerPointer();
+////
+////    memcpy(pxCustomerDataContainer -> m_puiDataPointer,
+////           (pxExecutorDataContainer -> m_puiDataPointer),
+////           pxExecutorDataContainer -> m_uiDataLength);
+//
+//    uint16_t uiLength;
+//    uint16_t uiEncodedLength;
+//    uint16_t uiSourceOffset;
+//
+//    // получим указатель на буфер куда помещать прочитанный блок.
+//    uint8_t* puiDestination =
+//        (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer);
+//    // получим номер блока.
+//    uint8_t uiBlock =
+//        (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiDataIndex);
+////    uint8_t uiDataLength =
+////        (m_pxDataStore ->
+////         GetBlockLength((((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiDataIndex)));
+//
+//    std::cout << "CDataStore::ReadBlock 1 uiBlock "  <<  (int)(uiBlock) << std::endl;
+//
+//    // ѕроизошЄл выход за границы буфера?
+//    if (uiBlock >= MAX_BLOCKS_NUMBER)
+//    {
+//        std::cout << "CDataStore::ReadBlock 2"  << std::endl;
+//        // Ќет данных.
+//        return 0;
+//    }
+//
+//    // Ѕлок существует?
+//    if ((m_xServiseSection.xServiseSectionData.
+//            axBlockPositionData[uiBlock].uiLength != 0) &&
+//            (m_xServiseSection.xServiseSectionData.
+//             axBlockPositionData[uiBlock].uiEncodedLength != 0))
+//    {
+//        std::cout << "CDataStore::ReadBlock 3"  << std::endl;
+//        // ѕолучим адрес блока в EEPROM.
+//        uiSourceOffset = m_xServiseSection.xServiseSectionData.
+//                         axBlockPositionData[uiBlock].uiOffset;
+//        // ѕолучим размер блока.
+//        uiLength = m_xServiseSection.xServiseSectionData.
+//                   axBlockPositionData[uiBlock].uiLength;
+//        // ѕолучим размер закодированного блока.
+//        uiEncodedLength = m_xServiseSection.xServiseSectionData.
+//                          axBlockPositionData[uiBlock].uiEncodedLength;
+//    }
+//    else
+//    {
+//        std::cout << "CDataStore::ReadBlock 4"  << std::endl;
+//        // Ќет данных.
+//        return 0;
+//    }
+//
+//    // заполним контейнер параметрами дл€ чтени€ блока из устройства хранени€.
+//    CDataContainerDataBase* pxDataContainer = ((CDataContainerDataBase*)GetExecutorDataContainerPointer());
+//
+//    pxDataContainer ->
+//    SetDataIndex(uiBlock);
+//    pxDataContainer ->
+//    SetDataPointer(m_puiIntermediateBuff);
+//    pxDataContainer ->
+//    SetDataOffset(uiSourceOffset);
+//    pxDataContainer ->
+//    SetDataLength(uiEncodedLength);
+//
+//    std::cout << "CDataStore::ReadBlock 1 uiBlock "  <<  (int)(uiBlock) << std::endl;
+//    // ѕрочитаем закодированные данные.
+//    // ѕри чтении данных возникла ошибка?
+//    if (!(m_pxStorageDevice -> ReadBlock(pxDataContainer)))
+//    {
+//        std::cout << "CDataStore::ReadBlock 5"  << std::endl;
+//        // Ќет данных.
+//        return 0;
+//    }
+//
+//    // ƒекодируем прочитанные данные.
+//    CHammingCodes::HammingCodesToBytes(m_puiIntermediateBuff,
+//                                       m_puiIntermediateBuff,
+//                                       uiEncodedLength);
+//
+//    // Ѕлок не повреждЄн?
+//    if (m_xServiseSection.xServiseSectionData.
+//            axBlockPositionData[uiBlock].uiCrc ==
+//            usCrc16(m_puiIntermediateBuff, uiLength))
+//    {
+//        std::cout << "CDataStore::ReadBlock 6"  << std::endl;
+//        memcpy(puiDestination, m_puiIntermediateBuff, uiLength);
+//        return uiLength;
+//    }
+//    else
+//    {
+//        std::cout << "CDataStore::ReadBlock 7"  << std::endl;
+//        // Ќет данных.
+//        return 2;
+//    }
+//}
 
 //-------------------------------------------------------------------------------
 // ¬ызываетс€ только если база данных подтверждена пользователем.
@@ -1037,14 +1151,130 @@ uint8_t CDataStore::Fsm(void)
 
     case READY:
 //        std::cout << "CDataStore::Fsm READY"  << std::endl;
-    {
-        if (GetFsmCommandState() != 0)
+//    {
+//        if (GetFsmCommandState() != 0)
+//        {
+//            SetFsmState(GetFsmCommandState());
+//            SetFsmCommandState(0);
+//        }
+//    }
+        break;
+
+    case DONE_OK:
+//        std::cout << "CDataStore::Fsm DONE_OK"  << std::endl;
+//        SetFsmOperationStatus(DONE_OK);
+//        SetFsmState(READY);
+        break;
+
+    case DONE_ERROR:
+//        std::cout << "CDataStore::Fsm DONE_ERROR"  << std::endl;
+//        SetFsmOperationStatus(DONE_ERROR);
+//        SetFsmState(READY);
+        break;
+
+//-------------------------------------------------------------------------------
+    case SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_START:
+        std::cout << "CDataStore::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_START"  << std::endl;
         {
-            SetFsmState(GetFsmCommandState());
-            SetFsmCommandState(0);
+            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING);
+        }
+        break;
+
+    case SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING:
+//        std::cout << "CDataStore::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING 1"  << std::endl;
+    {
+        if (SetTaskData(GetExecutorDataContainerPointer()))
+        {
+            std::cout << "CDataStore::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING 2"  << std::endl;
+//            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(GetFsmNextStateDoneOk());
+        }
+        else
+        {
+            std::cout << "CDataStore::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING 3"  << std::endl;
+            // ¬рем€ ожидани€ выполнени€ запроса закончилось?
+            if (GetTimerPointer() -> IsOverflow())
+            {
+                std::cout << "CDataStore::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING 4"  << std::endl;
+                ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+                SetFsmState(GetFsmNextStateReadyWaitingError());
+            }
         }
     }
+    break;
 
+//-------------------------------------------------------------------------------
+    case SUBTASK_EXECUTOR_READY_CHECK_START:
+        std::cout << "CDataStore::Fsm SUBTASK_EXECUTOR_READY_CHECK_START"  << std::endl;
+        {
+            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_WAITING);
+        }
+        break;
+
+    case SUBTASK_EXECUTOR_READY_CHECK_WAITING:
+//        std::cout << "CDataStore::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 1"  << std::endl;
+    {
+        if (SetTaskData(GetExecutorDataContainerPointer()))
+        {
+            std::cout << "CDataStore::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 2"  << std::endl;
+            SetFsmState(SUBTASK_EXECUTOR_DONE_CHECK_START);
+        }
+        else
+        {
+            std::cout << "CDataStore::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 3"  << std::endl;
+            // ¬рем€ ожидани€ выполнени€ запроса закончилось?
+            if (GetTimerPointer() -> IsOverflow())
+            {
+                std::cout << "CDataStore::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 4"  << std::endl;
+                ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+                SetFsmState(GetFsmNextStateReadyWaitingError());
+            }
+        }
+    }
+    break;
+
+    case SUBTASK_EXECUTOR_DONE_CHECK_START:
+        std::cout << "CDataStore::Fsm SUBTASK_EXECUTOR_DONE_CHECK_START 1"  << std::endl;
+        {
+            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
+            SetFsmState(SUBTASK_EXECUTOR_DONE_CHECK_WAITING);
+        }
+
+        break;
+
+    case SUBTASK_EXECUTOR_DONE_CHECK_WAITING:
+//        std::cout << "CDataStore::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 1"  << std::endl;
+    {
+        CDataContainerDataBase* pxDataContainer =
+            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+
+        uint8_t uiFsmState = pxDataContainer -> m_uiFsmCommandState;
+
+        if (uiFsmState == DONE_OK)
+        {
+            std::cout << "CDataStore::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 2"  << std::endl;
+//            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(GetFsmNextStateDoneOk());
+        }
+        else if (uiFsmState == DONE_ERROR)
+        {
+            std::cout << "CDataStore::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 3"  << std::endl;
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+            SetFsmState(GetFsmNextStateDoneWaitingDoneError());
+        }
+        else
+        {
+            // ¬рем€ ожидани€ выполнени€ запроса закончилось?
+            if (GetTimerPointer() -> IsOverflow())
+            {
+                std::cout << "CDataStore::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 4"  << std::endl;
+                ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+                SetFsmState(GetFsmNextStateDoneWaitingError());
+            }
+        }
+    }
     break;
 
 //-------------------------------------------------------------------------------
@@ -1235,14 +1465,55 @@ uint8_t CDataStore::Fsm(void)
 
     case DATA_WRITED_SUCCESSFULLY:
         std::cout << "CDataStore::Fsm 25"  << std::endl;
+        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
         SetFsmOperationStatus(DONE_OK);
         SetFsmState(READY);
         break;
 
     case WRITE_ERROR:
         std::cout << "CDataStore::Fsm 26"  << std::endl;
+        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
         SetFsmOperationStatus(DONE_ERROR);
         SetFsmState(READY);
+        break;
+
+//-------------------------------------------------------------------------------
+    case READ_BLOCK_DATA_START:
+        std::cout << "CDataStore::Fsm READ_BLOCK_DATA_START"  << std::endl;
+        {
+//            ReadBlock(((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer,
+//                      ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiDataIndex);
+
+//            ReadBlock();
+
+            if (ReadBlock(((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer,
+                          ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiDataIndex))
+            {
+                std::cout << "CDataStore::Fsm READ_BLOCK_DATA_START 2"  << std::endl;
+                SetFsmState(READ_BLOCK_DATA_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+            }
+            else
+            {
+                std::cout << "CDataStore::Fsm READ_BLOCK_DATA_START 3"  << std::endl;
+                SetFsmState(READ_BLOCK_DATA_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            }
+        }
+        break;
+
+    case READ_BLOCK_DATA_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+        std::cout << "CDataStore::Fsm READ_BLOCK_DATA_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        {
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(DONE_OK);
+        }
+        break;
+
+    case READ_BLOCK_DATA_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+        std::cout << "CDataStore::Fsm READ_BLOCK_DATA_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        {
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+            SetFsmState(DONE_ERROR);
+        }
         break;
 
     default:

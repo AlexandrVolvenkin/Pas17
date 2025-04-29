@@ -310,7 +310,7 @@ uint8_t CAnalogueSignals::Fsm(void)
 //                                  GetTaskPointerByNameFromMap("DeviceControlRtuUpperLevel"));
 //
 //            m_pxOperatingDataContainer -> m_uiFsmCommandState =
-//                CDeviceControl::DATA_BASE_BLOCK_START_WRITE;
+//                CDeviceControl::DATA_BASE_BLOCK_WRITE_START;
 //            m_pxOperatingDataContainer -> m_uiDataIndex = 1;
 //            m_pxOperatingDataContainer -> m_puiDataPointer =
 //                m_puiIntermediateBuff;
@@ -635,7 +635,7 @@ uint8_t CAnalogueSignals::Fsm(void)
 //                                  GetTaskPointerByNameFromMap("DeviceControlRtuUpperLevel"));
 //
 //            m_pxOperatingDataContainer -> m_uiFsmCommandState =
-//                CDeviceControl::DATA_BASE_BLOCK_START_WRITE;
+//                CDeviceControl::DATA_BASE_BLOCK_WRITE_START;
 //            m_pxOperatingDataContainer -> m_uiDataIndex = 1;
 //            m_pxOperatingDataContainer -> m_puiDataPointer =
 //                &m_puiIntermediateBuff[256];

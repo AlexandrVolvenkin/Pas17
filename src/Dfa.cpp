@@ -65,6 +65,18 @@ uint8_t CDfa::GetFsmOperationStatus(void)
 }
 
 //-------------------------------------------------------------------------------
+void CDfa::SetPreviousFsmState(uint8_t uiData)
+{
+    m_uiPreviousFsmState = uiData;
+}
+
+//-------------------------------------------------------------------------------
+uint8_t CDfa::GetPreviousFsmState(void)
+{
+    return m_uiPreviousFsmState;
+}
+
+//-------------------------------------------------------------------------------
 CTimer* CDfa::GetTimerPointer(void)
 {
     return &m_xTimer;

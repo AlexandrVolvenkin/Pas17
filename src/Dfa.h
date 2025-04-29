@@ -46,6 +46,8 @@ public:
     virtual void SetFsmOperationStatus(uint8_t uiData);
     virtual uint8_t GetFsmOperationStatus(void);
     virtual CTimer* GetTimerPointer(void);
+    virtual uint8_t GetPreviousFsmState(void);
+    virtual void SetPreviousFsmState(uint8_t uiData);
 //    virtual bool IsDoneOk(void);
 //    virtual bool IsDoneError(void);
 
@@ -53,6 +55,7 @@ protected:
     uint8_t m_uiFsmState;
     uint8_t m_uiFsmCommandState;
     uint8_t m_uiFsmOperationStatus;
+    uint8_t m_uiPreviousFsmState;
     CTimer m_xTimer;
 };
 

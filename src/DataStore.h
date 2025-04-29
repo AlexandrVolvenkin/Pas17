@@ -74,6 +74,10 @@ public:
 
         DATA_WRITED_SUCCESSFULLY,
         WRITE_ERROR,
+
+        READ_BLOCK_DATA_START,
+        READ_BLOCK_DATA_EXECUTOR_DONE_OK_ANSWER_PROCESSING,
+        READ_BLOCK_DATA_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING,
     };
 
     struct TBlockPositionData
@@ -146,6 +150,7 @@ public:
     uint8_t WriteBlock(uint8_t *puiSource, uint16_t uiLength, uint8_t uiBlock);
     bool WriteBlock(CDataContainerDataBase* pxDataContainer);
     uint16_t ReadBlock(uint8_t *, uint8_t );
+//    void ReadBlock(void);
     void CrcOfBlocksCrcCreate(void);
     bool CrcOfBlocksCrcCheck(void);
     uint8_t Fsm(void);

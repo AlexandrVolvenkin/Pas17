@@ -209,6 +209,9 @@ bool CTask::SetTaskData(CDataContainerInterface* pxDataContainer)
         {
 //            std::cout << "CTask::SetTaskData 2" << std::endl;
             pxTask -> SetCustomerDataContainer(pxDataContainer);
+            // сохраним текущее состояние автомата.
+            pxTask -> SetPreviousFsmState(pxTask ->
+                                          GetFsmState());
             pxTask -> SetFsmState(pxDataContainer ->
                                   GetFsmCommandState());
             return true;

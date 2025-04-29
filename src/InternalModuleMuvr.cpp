@@ -359,7 +359,7 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
 //        }
 //    }
 
-    usleep(10000);
+//    usleep(10000);
     m_pxCommunicationDevice -> Exchange(GetAddress(),
                                         auiSpiTxBuffer,
                                         auiSpiRxBuffer,
@@ -616,7 +616,7 @@ uint8_t CInternalModuleMuvr::DataBaseRead(void)
            0,
            sizeof(aucTempArray));
 //
-    usleep(10000);
+//    usleep(10000);
     auiSpiTxBuffer[0] = MUVR_GET_DATA_BASE_COMMAND;
     m_pxCommunicationDevice -> Exchange(GetAddress(),
                                         auiSpiTxBuffer,
@@ -819,8 +819,8 @@ uint8_t CInternalModuleMuvr::DataBaseBlockWrite(void)
            pucSource,
            ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_LENGTH +
            TWO_BYTE_CRC_LENGTH);
-    // отправим данные в модуль.
-    usleep(10000);
+//    // отправим данные в модуль.
+//    usleep(10000);
     auiSpiTxBuffer[0] = MUVR_SET_DATA_BASE_COMMAND;
     m_pxCommunicationDevice -> Exchange(GetAddress(),
                                         auiSpiTxBuffer,
@@ -906,7 +906,7 @@ uint8_t CInternalModuleMuvr::DataBaseBlockWriteCheck(void)
                                         TAIL_ANSWER_LENGTH,
                                         LOW_SPEED_IN_HZ);
 
-    return 0;
+    return DATA_EXCHANGE_OK;
 
     // есть подтверждение записи базы данных в EEPROM модул€?
     if((auiSpiRxBuffer[SPI_DATA_BYTE_OFFSET]) == DATA_EXCHANGE_OK)
@@ -1040,8 +1040,8 @@ uint8_t CInternalModuleMuvr::Fsm(void)
         break;
 
     case MUVR_WRITE_DATA_BASE:
-        //std::cout << "CInternalModuleMuvr::Fsm MUVR_WRITE_DATA_BASE"  << std::endl;
-        DataBaseBlockWrite();
+        std::cout << "CInternalModuleMuvr::Fsm MUVR_WRITE_DATA_BASE"  << std::endl;
+//        DataBaseBlockWrite();
         GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
         SetFsmState(MUVR_WRITE_DATA_BASE_CHECK);
         break;
@@ -1053,12 +1053,14 @@ uint8_t CInternalModuleMuvr::Fsm(void)
 
         if (uiFsmState == DATA_EXCHANGE_OK)
         {
-            //std::cout << "CInternalModuleMuvr::Fsm MUVR_WRITE_DATA_BASE_CHECK 2"  << std::endl;
+            std::cout << "CInternalModuleMuvr::Fsm MUVR_WRITE_DATA_BASE_CHECK 2"  << std::endl;
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(DONE_OK);
         }
         else if (uiFsmState == DATA_EXCHANGE_ERROR)
         {
-            //std::cout << "CInternalModuleMuvr::Fsm MUVR_WRITE_DATA_BASE_CHECK 3"  << std::endl;
+            std::cout << "CInternalModuleMuvr::Fsm MUVR_WRITE_DATA_BASE_CHECK 3"  << std::endl;
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
             SetFsmState(DONE_ERROR);
         }
         else
@@ -1066,7 +1068,8 @@ uint8_t CInternalModuleMuvr::Fsm(void)
             // ¬рем€ ожидани€ выполнени€ запроса закончилось?
             if (GetTimerPointer() -> IsOverflow())
             {
-                //std::cout << "CInternalModuleMuvr::Fsm MUVR_WRITE_DATA_BASE_CHECK 4"  << std::endl;
+                std::cout << "CInternalModuleMuvr::Fsm MUVR_WRITE_DATA_BASE_CHECK 4"  << std::endl;
+                ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
                 SetFsmState(DONE_ERROR);
             }
         }
