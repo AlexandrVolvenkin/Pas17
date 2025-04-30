@@ -766,7 +766,7 @@ uint8_t CInternalModuleMuvr::DataBaseBlockWrite(void)
            sizeof(aucTempArray));
     // получим указатель на блок базы данных, принятый по Modbus во временный буфер.
 
-    pucSource = m_pxOperatingDataContainer -> m_puiDataPointer;
+    pucSource = (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer);
 
     // получим указатель на данные программирования первого входа, для записи в модуль.
     pucDestination = &aucTempArray[SPI_DATA_BYTE_OFFSET];
@@ -789,7 +789,7 @@ uint8_t CInternalModuleMuvr::DataBaseBlockWrite(void)
     }
     // получим указатель на блок базы данных, принятый по Modbus во временный буфер.
 
-    pucSource = m_pxOperatingDataContainer -> m_puiDataPointer;
+    pucSource = (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer);
 
     // перейдём к данным текстового реквизита первого входа(+20 байт).
     pucSource += 20;
@@ -1033,7 +1033,7 @@ uint8_t CInternalModuleMuvr::Fsm(void)
         break;
 
     case MUVR_DATA_BASE_READ:
-        //std::cout << "CInternalModuleMuvr::Fsm MUVR_DATA_BASE_READ"  << std::endl;
+        std::cout << "CInternalModuleMuvr::Fsm MUVR_DATA_BASE_READ"  << std::endl;
         DataBaseRead();
         ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
         SetFsmState(DONE_OK);
@@ -1041,36 +1041,45 @@ uint8_t CInternalModuleMuvr::Fsm(void)
 
     case MUVR_WRITE_DATA_BASE:
         std::cout << "CInternalModuleMuvr::Fsm MUVR_WRITE_DATA_BASE"  << std::endl;
-//        DataBaseBlockWrite();
+        DataBaseBlockWrite();
         GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
-        SetFsmState(MUVR_WRITE_DATA_BASE_CHECK);
+        // установим время периода опроса модуля для запроса результата программирования.
+        m_xWriteCompleteWaitTimer.Set(500);
+//        SetFsmState(MUVR_WRITE_DATA_BASE_CHECK);
+        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+        SetFsmState(DONE_OK);
         break;
 
     case MUVR_WRITE_DATA_BASE_CHECK:
         //std::cout << "CInternalModuleMuvr::Fsm MUVR_WRITE_DATA_BASE_CHECK 1"  << std::endl;
     {
-        uint8_t uiFsmState = DataBaseBlockWriteCheck();
+        // Время периода опроса модуля для запроса результата программирования закончилось?
+        if (m_xWriteCompleteWaitTimer.IsOverflow())
+        {
+            std::cout << "CInternalModuleMuvr::Fsm MUVR_WRITE_DATA_BASE_CHECK 5"  << std::endl;
+            uint8_t uiFsmState = DataBaseBlockWriteCheck();
 
-        if (uiFsmState == DATA_EXCHANGE_OK)
-        {
-            std::cout << "CInternalModuleMuvr::Fsm MUVR_WRITE_DATA_BASE_CHECK 2"  << std::endl;
-            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-            SetFsmState(DONE_OK);
-        }
-        else if (uiFsmState == DATA_EXCHANGE_ERROR)
-        {
-            std::cout << "CInternalModuleMuvr::Fsm MUVR_WRITE_DATA_BASE_CHECK 3"  << std::endl;
-            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
-            SetFsmState(DONE_ERROR);
-        }
-        else
-        {
-            // Время ожидания выполнения запроса закончилось?
-            if (GetTimerPointer() -> IsOverflow())
+            if (uiFsmState == DATA_EXCHANGE_OK)
             {
-                std::cout << "CInternalModuleMuvr::Fsm MUVR_WRITE_DATA_BASE_CHECK 4"  << std::endl;
+                std::cout << "CInternalModuleMuvr::Fsm MUVR_WRITE_DATA_BASE_CHECK 2"  << std::endl;
+                ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+                SetFsmState(DONE_OK);
+            }
+            else if (uiFsmState == DATA_EXCHANGE_ERROR)
+            {
+                std::cout << "CInternalModuleMuvr::Fsm MUVR_WRITE_DATA_BASE_CHECK 3"  << std::endl;
                 ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
                 SetFsmState(DONE_ERROR);
+            }
+            else
+            {
+                // Время ожидания выполнения запроса закончилось?
+                if (GetTimerPointer() -> IsOverflow())
+                {
+                    std::cout << "CInternalModuleMuvr::Fsm MUVR_WRITE_DATA_BASE_CHECK 4"  << std::endl;
+                    ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+                    SetFsmState(DONE_ERROR);
+                }
             }
         }
     }

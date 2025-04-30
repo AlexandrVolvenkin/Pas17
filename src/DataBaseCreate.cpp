@@ -22,15 +22,6 @@
 
 using namespace std;
 
-
-//TAnalogoueSignalsTextTitle axAnalogoueSignalsTextTitles[] =
-//{
-//    {"Аналоговый входной сигнал AIn1_____"},
-//    {"Аналоговый входной сигнал AIn2_____"},
-//    {"Аналоговый входной сигнал AIn3_____"},
-//    {"Аналоговый входной сигнал AIn4_____"}
-//};
-
 //-------------------------------------------------------------------------------
 CDataBaseCreate::CDataBaseCreate()
 {
@@ -468,7 +459,6 @@ uint8_t CDataBaseCreate::Fsm(void)
 //            m_pxDataStoreFileSystem -> CreateServiceSection();
             m_uiBlocksCounter = 0;
             SetFsmState(DATA_BASE_CREATE_DEFAULT_ALL_DATA_BASE_BLOCKS_WRITE_START);
-//            SetFsmState(DATA_BASE_CREATE_DIMENTIONS_PARAMETERS_CREATE_START);
         }
         break;
 
@@ -480,11 +470,16 @@ uint8_t CDataBaseCreate::Fsm(void)
                    0,
                    CDataStore::MAX_BLOCK_LENGTH);
 
+
+            m_uiDataStoreId =
+                GetResources() ->
+                GetTaskIdByNameFromMap(m_sDataStoreName);
+
             CDataContainerDataBase* pxDataContainer =
                 (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-            pxDataContainer -> m_uiTaskId = m_uiDeviceControlId;
+            pxDataContainer -> m_uiTaskId = m_uiDataStoreId;
             pxDataContainer -> m_uiFsmCommandState =
-                CDeviceControl::DATA_BASE_BLOCK_WRITE_START;
+                CDataStore::START_WRITE_TEMPORARY_BLOCK_DATA;
             pxDataContainer -> m_uiDataIndex = m_uiBlocksCounter;
             pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
 
@@ -518,11 +513,15 @@ uint8_t CDataBaseCreate::Fsm(void)
         {
             DimentionsParametersDataBaseCreate(m_puiIntermediateBuff);
 
+            m_uiDataStoreId =
+                GetResources() ->
+                GetTaskIdByNameFromMap(m_sDataStoreName);
+
             CDataContainerDataBase* pxDataContainer =
                 (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-            pxDataContainer -> m_uiTaskId = m_uiDeviceControlId;
+            pxDataContainer -> m_uiTaskId = m_uiDataStoreId;
             pxDataContainer -> m_uiFsmCommandState =
-                CDeviceControl::DATA_BASE_BLOCK_WRITE_START;
+                CDataStore::START_WRITE_TEMPORARY_BLOCK_DATA;
             // стартовые текстовые реквизиты размерностей блок 35
             pxDataContainer -> m_uiDataIndex = DIMENSIONS_PARAMETERS_DATA_BASE_BLOCK_OFFSET;
             pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
@@ -539,7 +538,6 @@ uint8_t CDataBaseCreate::Fsm(void)
         std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_DIMENTIONS_PARAMETERS_CREATE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
         {
             SetFsmState(DATA_BASE_CREATE_TEXT_TITLES_CREATE_DISCRETE_SIGNALS_DATA_BASE_BLOCKS_WRITE_START);
-//            SetFsmState(DONE_OK);
         }
         break;
 
@@ -549,11 +547,15 @@ uint8_t CDataBaseCreate::Fsm(void)
         {
             AnalogoueInputModuleDiscreteSignalsTextTitlesCreate(m_puiIntermediateBuff);
 
+            m_uiDataStoreId =
+                GetResources() ->
+                GetTaskIdByNameFromMap(m_sDataStoreName);
+
             CDataContainerDataBase* pxDataContainer =
                 (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-            pxDataContainer -> m_uiTaskId = m_uiDeviceControlId;
+            pxDataContainer -> m_uiTaskId = m_uiDataStoreId;
             pxDataContainer -> m_uiFsmCommandState =
-                CDeviceControl::DATA_BASE_BLOCK_WRITE_START;
+                CDataStore::START_WRITE_TEMPORARY_BLOCK_DATA;
             // стартовые текстовые реквизиты дискретных сигналов блок 40
             pxDataContainer -> m_uiDataIndex = TEXT_TITLES_DATA_BASE_BLOCK_OFFSET;
             pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
@@ -579,11 +581,15 @@ uint8_t CDataBaseCreate::Fsm(void)
         {
             AnalogoueInputModuleAnalogoueSignalsTextTitlesCreate(m_puiIntermediateBuff);
 
+            m_uiDataStoreId =
+                GetResources() ->
+                GetTaskIdByNameFromMap(m_sDataStoreName);
+
             CDataContainerDataBase* pxDataContainer =
                 (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-            pxDataContainer -> m_uiTaskId = m_uiDeviceControlId;
+            pxDataContainer -> m_uiTaskId = m_uiDataStoreId;
             pxDataContainer -> m_uiFsmCommandState =
-                CDeviceControl::DATA_BASE_BLOCK_WRITE_START;
+                CDataStore::START_WRITE_TEMPORARY_BLOCK_DATA;
             // стартовые текстовые реквизиты аналоговых сигналов блок 41
             pxDataContainer -> m_uiDataIndex = (TEXT_TITLES_DATA_BASE_BLOCK_OFFSET + 1);
             pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
@@ -610,11 +616,15 @@ uint8_t CDataBaseCreate::Fsm(void)
             CConfigurationCreate::ConfigurationToProgrammerFormat((CConfigurationCreate::TConfigDataProgrammerPackOne*)(m_puiIntermediateBuff),
                     (GetResources() -> GetDeviceConfigSearchPointer()));
 
+            m_uiDataStoreId =
+                GetResources() ->
+                GetTaskIdByNameFromMap(m_sDataStoreName);
+
             CDataContainerDataBase* pxDataContainer =
                 (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-            pxDataContainer -> m_uiTaskId = m_uiDeviceControlId;
+            pxDataContainer -> m_uiTaskId = m_uiDataStoreId;
             pxDataContainer -> m_uiFsmCommandState =
-                CDeviceControl::DATA_BASE_BLOCK_WRITE_START;
+                CDataStore::START_WRITE_TEMPORARY_BLOCK_DATA;
             // конфигурация блок 100
             pxDataContainer -> m_uiDataIndex = CONFIGURATION_DATA_BASE_BLOCK_OFFSET;
             pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
@@ -667,11 +677,15 @@ uint8_t CDataBaseCreate::Fsm(void)
     case DATA_BASE_CREATE_MODULE_MUVR_DATA_BASE_BLOCKS_WRITE_START:
         std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_MODULE_MUVR_DATA_BASE_BLOCKS_WRITE_START"  << std::endl;
         {
+            m_uiDataStoreId =
+                GetResources() ->
+                GetTaskIdByNameFromMap(m_sDataStoreName);
+
             CDataContainerDataBase* pxDataContainer =
                 (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-            pxDataContainer -> m_uiTaskId = m_uiDeviceControlId;
+            pxDataContainer -> m_uiTaskId = m_uiDataStoreId;
             pxDataContainer -> m_uiFsmCommandState =
-                CDeviceControl::DATA_BASE_BLOCK_WRITE_START;
+                CDataStore::START_WRITE_TEMPORARY_BLOCK_DATA;
             // модуль аналоговых сигналов мувр блок 1
             pxDataContainer -> m_uiDataIndex = ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_OFFSET;
             pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;

@@ -263,36 +263,36 @@ uint8_t CConfigurationCheck::Fsm(void)
             CConfigurationCreate::ConfigurationToProgrammerFormat((CConfigurationCreate::TConfigDataProgrammerPackOne*)(auiTempArray),
                     (GetResources() -> GetDeviceConfigSearchPointer()));
 
-//            {
-//                std::cout << "CConfigurationCheck::Fsm auiTempArray"  << std::endl;
-//                unsigned char *pucSourceTemp;
-//                pucSourceTemp = (unsigned char*)auiTempArray;
-//                for(int i=0; i<32; )
-//                {
-//                    for(int j=0; j<8; j++)
-//                    {
-//                        cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
-//                    }
-//                    cout << endl;
-//                    i += 8;
-//                }
-//            }
-//
-//
-//            {
-//                std::cout << "CConfigurationCheck::Fsm m_puiIntermediateBuff " << (sizeof(struct CConfigurationCreate::TConfigDataProgrammerPackOne))  << std::endl;
-//                unsigned char *pucSourceTemp;
-//                pucSourceTemp = (unsigned char*)m_puiIntermediateBuff;
-//                for(int i=0; i<32; )
-//                {
-//                    for(int j=0; j<8; j++)
-//                    {
-//                        cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
-//                    }
-//                    cout << endl;
-//                    i += 8;
-//                }
-//            }
+            {
+                std::cout << "CConfigurationCheck::Fsm auiTempArray"  << std::endl;
+                unsigned char *pucSourceTemp;
+                pucSourceTemp = (unsigned char*)auiTempArray;
+                for(int i=0; i<32; )
+                {
+                    for(int j=0; j<8; j++)
+                    {
+                        cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+                    }
+                    cout << endl;
+                    i += 8;
+                }
+            }
+
+
+            {
+                std::cout << "CConfigurationCheck::Fsm m_puiIntermediateBuff " << (sizeof(struct CConfigurationCreate::TConfigDataProgrammerPackOne))  << std::endl;
+                unsigned char *pucSourceTemp;
+                pucSourceTemp = (unsigned char*)m_puiIntermediateBuff;
+                for(int i=0; i<32; )
+                {
+                    for(int j=0; j<8; j++)
+                    {
+                        cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+                    }
+                    cout << endl;
+                    i += 8;
+                }
+            }
 
             // текущая конфигурация и сохранённая в базе данных совпадают?
             if (memcmp(auiTempArray,

@@ -272,6 +272,7 @@ uint8_t CDataStoreCheck::Fsm(void)
             switch (ReadBlock(auiTempArray, i))
             {
             case 0:
+                std::cout << "CDataStoreCheck::Fsm TEMPORARY_SERVICE_SECTION_LINKED_BLOCKS_CHECK 9"  << std::endl;
                 break;
 
             case 1:

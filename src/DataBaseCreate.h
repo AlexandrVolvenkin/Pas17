@@ -123,6 +123,18 @@ public:
     CDataBaseCreate();
     virtual ~CDataBaseCreate();
 
+    // Геттер для m_sDataStoreName
+    std::string GetDataStoreName() const
+    {
+        return m_sDataStoreName;
+    }
+
+    // Сеттер для m_sDataStoreName
+    void SetDataStoreName(const std::string& sName)
+    {
+        m_sDataStoreName = sName;
+    }
+
     void SetInternalModuleName(std::string sName);
     void SetInternalModuleMuvrName(std::string sName);
     void SetDeviceControlName(std::string sName);
@@ -136,6 +148,9 @@ private:
     void AnalogoueInputModuleAnalogoueSignalsTextTitlesCreate(uint8_t* puiBlockDataPointer);
 
 private:
+    std::string m_sDataStoreName;
+    uint8_t m_uiDataStoreId;
+
     std::string m_sInternalModuleName;
     uint8_t m_uiInternalModuleId;
 

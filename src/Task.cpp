@@ -218,7 +218,7 @@ bool CTask::SetTaskData(CDataContainerInterface* pxDataContainer)
         }
         else
         {
-            std::cout << "CTask::SetTaskData 3" << std::endl;
+//            std::cout << "CTask::SetTaskData 3" << std::endl;
             return false;
         }
     }

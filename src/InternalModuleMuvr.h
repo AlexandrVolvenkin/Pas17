@@ -216,6 +216,8 @@ private:
     uint8_t* m_puiAnalogueInputsBadState;
     uint8_t m_uiBadAnswerCounter;
     TAnalogueInputDescriptionWork* m_pxAnalogueInputDescriptionWork;
+
+    CTimer m_xWriteCompleteWaitTimer;
 };
 
 #endif // CINTERNALMODULEMUVR_H

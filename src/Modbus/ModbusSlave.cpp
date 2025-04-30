@@ -1756,7 +1756,7 @@ uint8_t CModbusSlave::Fsm(void)
         }
         else
         {
-            std::cout << "CModbusSlave::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 3"  << std::endl;
+//            std::cout << "CModbusSlave::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 3"  << std::endl;
             // ¬рем€ ожидани€ выполнени€ запроса закончилось?
             if (GetTimerPointer() -> IsOverflow())
             {

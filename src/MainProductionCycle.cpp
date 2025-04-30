@@ -423,6 +423,8 @@ uint8_t CMainProductionCycle::CreateTasks(void)
     pxDataBaseCreate ->
     SetResources(&m_xResources);
     pxDataBaseCreate ->
+    SetDataStoreName("DataStoreFileSystem");
+    pxDataBaseCreate ->
     SetInternalModuleName("InternalModuleCommon");
     pxDataBaseCreate ->
     SetInternalModuleMuvrName("InternalModuleMuvr0");

@@ -362,13 +362,13 @@ CTaskInterface* CResources::GetTaskPointerByNameFromMap(std::string sTaskName)
 //-------------------------------------------------------------------------------
 uint8_t CResources::GetTaskIdByNameFromMap(std::string sTaskName)
 {
-//    std::cout << "CResources::GetTaskIdByNameFromMap 1"  << std::endl;
+    std::cout << "CResources::GetTaskIdByNameFromMap 1"  << std::endl;
     CTaskInterface* pxTask = GetTaskPointerByNameFromMap(sTaskName);
 
     if (pxTask != nullptr)
     {
         // ключ найден
-        std::cout << "CResources::GetTaskIdByNameFromMap 2"  << std::endl;
+//        std::cout << "CResources::GetTaskIdByNameFromMap 2"  << std::endl;
         if (m_uiUsedCommonTaskPointersCounter < MAX_TASK_NUMBER)
         {
             std::cout << "CResources::GetTaskIdByNameFromMap 3"  << std::endl;

@@ -351,8 +351,9 @@ uint8_t CDataStore::TemporaryBlockWritePrepare(void)
 
     uint8_t uiBlock = pxDataContainer -> m_uiDataIndex;
     uint8_t *puiSource = pxDataContainer -> m_puiDataPointer;
-//    uint16_t uiOffset = pxDataContainer -> m_uiDataOffset;
-    uint16_t uiLength = pxDataContainer -> m_uiDataLength;
+//    uint16_t uiLength = pxDataContainer -> m_uiDataLength;
+    uint16_t uiLength = (GetBlockLength(uiBlock));
+
     std::cout << "CDataStore::TemporaryBlockWritePrepare 1 uiBlock "  <<  (int)(uiBlock) << std::endl;
 
     // Звкодируем данные алгоритмом Хемминга.
@@ -424,7 +425,8 @@ uint8_t CDataStore::BlockWritePrepare(void)
     uint8_t uiBlock = pxDataContainer -> m_uiDataIndex;
     uint8_t *puiSource = pxDataContainer -> m_puiDataPointer;
     uint16_t uiOffset = pxDataContainer -> m_uiDataOffset;
-    uint16_t uiLength = pxDataContainer -> m_uiDataLength;
+//    uint16_t uiLength = pxDataContainer -> m_uiDataLength;
+    uint16_t uiLength = (GetBlockLength(uiBlock));
     std::cout << "CDataStore::BlockWritePrepare 1 uiBlock "  <<  (int)(uiBlock) << std::endl;
     cout << "CDataStore::Write puiSource" << " " << (int)puiSource << endl;
     cout << "CDataStore::Write uiOffset" << " " << (int)uiOffset << endl;
