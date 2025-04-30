@@ -101,6 +101,7 @@ public:
     uint16_t PollProgramming(void);
     uint16_t DataBaseRead(void);
     uint16_t DataBaseWrite(void);
+    uint16_t OnlineDataRead(void);
     uint16_t RequestProcessing(void);
 
 //-------------------------------------------------------------------------------
@@ -119,6 +120,7 @@ public:
     uint16_t PollProgrammingAnswer(void);
     uint16_t DataBaseReadAnswer(void);
     uint16_t DataBaseWriteAnswer(void);
+    uint16_t OnlineDataReadAnswer(void);
     uint16_t AnswerProcessing(void);
 
 //-------------------------------------------------------------------------------

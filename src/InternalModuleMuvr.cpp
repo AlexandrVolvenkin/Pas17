@@ -204,6 +204,17 @@ void CInternalModuleMuvr::Allocate(void)
         MUVR_ANALOG_INPUT_QUANTITY;
 
 
+    // Получим указатель на место в массиве аналоговых входов для текущего модуля.
+    m_puiReperPointsAdcBuffer =
+        &(GetResources() ->
+          m_puiReperPointsAdcBuffer[GetResources() ->
+                                                   m_uiUsedReperPointsAdcBuffer]);
+    // Увеличим общий объём выделенной памяти.
+    GetResources() ->
+    m_uiUsedReperPointsAdcBuffer +=
+        ANALOGUE_INPUT_MODULE_REPER_POINTS_ADC_DATA_BASE_BLOCK_LENGTH;
+
+
     m_uiBadAnswerCounter = 0;
 }
 
@@ -599,6 +610,103 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
         SetBadAnswerCounter(GetBadAnswerCounter() - 1);
     }
     return 0;
+}
+
+//-----------------------------------------------------------------------------------------------------
+// чтение из модуля зачений реперных точек и кода АЦП.
+uint8_t CInternalModuleMuvr::ReperPointsAdcRead(void)
+{
+    //std::cout << "CInternalModuleMuvr::ReperPointsAdcRead 1"  << std::endl;
+    unsigned short usData;
+    int i;
+    unsigned char *pucSource;
+    unsigned char *pucDestination;
+    unsigned char aucTempArray[PLC_DATA_BASE_BLOCK_LENGTH];
+    unsigned char auiSpiTxBuffer[TX_RX_BUFF_SIZE];
+    unsigned char auiSpiRxBuffer[TX_RX_BUFF_SIZE];
+
+//    memset(&aucTempArray[0],
+//           0,
+//           sizeof(aucTempArray));
+
+    auiSpiTxBuffer[0] = MUVR_GET_REPER_POINTS_ADC_DATA_COMMAND;
+    m_pxCommunicationDevice -> Exchange(GetAddress(),
+                                        auiSpiTxBuffer,
+                                        auiSpiRxBuffer,
+                                        SPI_PREAMBLE_LENGTH +
+                                        ANALOGUE_INPUT_MODULE_REPER_POINTS_ADC_DATA_BASE_BLOCK_LENGTH +
+                                        TWO_BYTE_CRC_LENGTH,
+                                        SPEED_IN_HZ);
+    // модуль отвечает?
+    if (auiSpiRxBuffer[SPI_COMMAND_BYTE_OFFSET] == MUVR_GET_REPER_POINTS_ADC_DATA_COMMAND) // if echo answer is ok.
+    {
+        std::cout << "CInternalModuleMuvr::ReperPointsAdcRead 2"  << std::endl;
+        // данные не повреждены?
+        if (iCrcSummTwoByteCompare(&auiSpiRxBuffer[SPI_DATA_BYTE_OFFSET],
+                                   ANALOGUE_INPUT_MODULE_REPER_POINTS_ADC_DATA_BASE_BLOCK_LENGTH) > 0)
+        {
+            std::cout << "CInternalModuleMuvr::ReperPointsAdcRead 3"  << std::endl;
+            // получим указатель на данные реперных точек и кодов АЦП принятых от модуля.
+            pucSource = &auiSpiRxBuffer[SPI_DATA_BYTE_OFFSET];
+//            // полученные от модуля зачения реперных точек и кода АЦП хранятся в блоках базы данных начиная с
+//            // номера(ANALOGUE_INPUT_MODULE_REPER_POINTS_ADC_DATA_BASE_BLOCK_OFFSET) включительно.
+//            // в количестве(MAX_MUVR_MODULES_QUANTITY).
+//            // в указателе pucDataBasePointer содержится адрес блока в базе данных, модулей аналогового ввода.
+//            // количество блоков баз данных модулей аналогового ввода равно
+//            // количеству блоков с данными реперных точек МВА + коды АЦП.
+//            // прибавим разницу между смещениями на блок реперных точек МВА + коды АЦП и блок модулей аналогового ввода.
+//            // и получим адрес блока реперных точек МВА + коды АЦП в базе данных.
+//            pucDestination = (unsigned char*)(pxModuleContext ->
+//                                              xModuleContextStatic.
+//                                              pucDataBasePointer +
+//                                              ((ANALOGUE_INPUT_MODULE_REPER_POINTS_ADC_DATA_BASE_BLOCK_OFFSET -
+//                                                ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_OFFSET)  * PLC_DATA_BASE_BLOCK_LENGTH));
+//
+
+//            pucDestination = m_puiReperPointsAdcBuffer;
+            pucDestination =
+                (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer);
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiDataLength =
+                ANALOGUE_INPUT_MODULE_REPER_POINTS_ADC_DATA_BASE_BLOCK_LENGTH;
+            // скопируем данные реперных точек и кодов АЦП из временного буфера в рабочий буфер прибора.
+            memcpy(pucDestination,
+                   pucSource,
+                   ANALOGUE_INPUT_MODULE_REPER_POINTS_ADC_DATA_BASE_BLOCK_LENGTH);
+
+            {
+                std::cout << "CInternalModuleMuvr::ReperPointsAdcRead pucDestination"  << std::endl;
+                unsigned char *pucSourceTemp;
+                pucSourceTemp = (unsigned char*)pucDestination;//pxCustomerDataContainer -> m_puiDataPointer;
+                for(int i=0; i<64; )
+                {
+                    for(int j=0; j<8; j++)
+                    {
+                        cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+                    }
+                    cout << endl;
+                    i += 8;
+                }
+            }
+            // всё OK.
+            //ucModuleError = 0;
+            return 1;
+        }
+        else
+        {
+            // ошибка обмена данными.
+            std::cout << "CInternalModuleMuvr::ReperPointsAdcRead 4"  << std::endl;
+//            ucModuleError = MUVR_GET_REPER_POINTS_ADC_DATA_COMMUNICATION_ERROR;
+            return 0;
+        }
+        return 0;
+    }
+    else
+    {
+        // модуль не отвечает.
+        std::cout << "CInternalModuleMuvr::ReperPointsAdcRead 5"  << std::endl;
+//        ucModuleError = MUVR_GET_REPER_POINTS_ADC_DATA_COMMAND_ERROR;
+        return 0;
+    }
 }
 
 //-------------------------------------------------------------------------------
@@ -1029,6 +1137,13 @@ uint8_t CInternalModuleMuvr::Fsm(void)
     case MUVR_GET_MODULE_TYPE:
 //        //std::cout << "CInternalModuleMuvr::Fsm MUVR_GET_MODULE_TYPE"  << std::endl;
         GetModuleType(GetAddress());
+        SetFsmState(DONE_OK);
+        break;
+
+    case MUVR_REPER_POINTS_ADC_READ:
+        std::cout << "CInternalModuleMuvr::Fsm MUVR_REPER_POINTS_ADC_READ"  << std::endl;
+        ReperPointsAdcRead();
+        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
         SetFsmState(DONE_OK);
         break;
 

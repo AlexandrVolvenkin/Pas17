@@ -170,6 +170,7 @@ public:
         MUVR_IDDLE = NEXT_STEP,
         MUVR_CHANGE_PROTOCOL,
         MUVR_GET_MODULE_TYPE,
+        MUVR_REPER_POINTS_ADC_READ,
         MUVR_WRITE_DATA_BASE,
         MUVR_WRITE_DATA_BASE_CHECK,
         MUVR_DATA_BASE_READ,
@@ -196,6 +197,8 @@ public:
 //    bool IsAbleToReplace(uint8_t uiType);
     void Allocate(void);
 //    uint8_t GetModuleType(uint8_t uiAddress);
+
+    uint8_t ReperPointsAdcRead(void);
     uint8_t DataBaseRead(void);
     uint8_t DataBaseBlockWrite(void);
     uint8_t DataBaseBlockWriteCheck(void);
@@ -214,6 +217,7 @@ private:
     uint8_t* m_puiAnalogueInputsState;
     uint8_t* m_puiAnalogueInputsOff;
     uint8_t* m_puiAnalogueInputsBadState;
+    uint8_t* m_puiReperPointsAdcBuffer;
     uint8_t m_uiBadAnswerCounter;
     TAnalogueInputDescriptionWork* m_pxAnalogueInputDescriptionWork;
 

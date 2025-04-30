@@ -768,6 +768,130 @@ uint16_t CModbusSlave::DataBaseWrite(void)
     return uiLength;
 }
 
+//-------------------------------------------------------------------------------
+uint16_t CModbusSlave::OnlineDataRead(void)
+{
+    std::cout << "CModbusSlave::OnlineDataRead 1" << std::endl;
+
+    uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
+    uint8_t * puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
+    uint8_t * puiResponse = m_pxModbusSlaveLinkLayer -> GetTxBuffer();
+    uint16_t  uiLength = m_pxModbusSlaveLinkLayer -> GetFrameLength();
+
+    int8_t uiSlave = puiRequest[uiPduOffset - 1];
+    int8_t uiFunctionCode = puiRequest[uiPduOffset];
+    uint8_t uiBlockIndex = puiRequest[uiPduOffset + 1];
+
+    std::cout << "CModbusSlave::OnlineDataRead uiSlave "  << (int)uiSlave << std::endl;
+    std::cout << "CModbusSlave::OnlineDataRead uiFunctionCode "  << (int)uiFunctionCode << std::endl;
+    std::cout << "CModbusSlave::OnlineDataRead uiBlockIndex "  << (int)uiBlockIndex << std::endl;
+
+    if ((uiBlockIndex < 0) ||
+            (uiBlockIndex > (CDataStore::MAX_BLOCKS_NUMBER - 1)))
+    {
+        std::cout << "CModbusSlave::OnlineDataRead 2" << std::endl;
+        SetFsmState(RESPONSE_EXCEPTION_ILLEGAL_DATA_VALUE);
+    }
+    else
+    {
+        std::cout << "CModbusSlave::OnlineDataRead 3" << std::endl;
+
+        m_uiFunctionCode = uiFunctionCode;
+
+        CDataContainerDataBase* pxDataContainer =
+            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+        pxDataContainer -> m_uiTaskId = m_uiDeviceControlId;
+        pxDataContainer -> m_uiFsmCommandState =
+            CDeviceControl::DATA_BASE_BLOCK_READ_REFERENCE_POINTS_ADC_CODES_MODULE_MUVR_DATA_READ_START;
+//            CDeviceControl::DATA_BASE_BLOCK_READ;
+        pxDataContainer -> m_uiDataIndex = uiBlockIndex;
+        pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+
+        SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+        SetFsmNextStateDoneOk(EXECUTOR_ANSWER_PROCESSING);
+        SetFsmNextStateReadyWaitingError(RESPONSE_EXCEPTION_SLAVE_OR_SERVER_BUSY);
+        SetFsmNextStateDoneWaitingError(RESPONSE_EXCEPTION_SLAVE_OR_SERVER_FAILURE);
+        SetFsmNextStateDoneWaitingDoneError(RESPONSE_EXCEPTION_SLAVE_OR_SERVER_FAILURE);
+    }
+
+    std::cout << "CModbusSlave::OnlineDataRead 7" << std::endl;
+    return uiLength;
+
+
+
+//    case _FC_ONLINE_DATA_READ:
+//        // req[offset + 1] -
+//        // если бит7 = 0, то запрашиваются реперные точки - (бит0 - бит6) - адрес аналогового входа.
+//        // если бит7 = 1, то запрашивается ТХС и (бит0 - бит2) - относительный адрес модуля МВСТ3.
+//        // req[offset + 2] - требуемое количество аналоговых входов.
+//        //        cout << "_FC_ONLINE_DATA_READ" << endl;
+//
+//        if ((((req[offset + 1]) & ANALOGUE_INPUT_ADDRESS_MASK) < MAX_HANDLED_ANALOGUE_INPUT) &&
+//                ((req[offset + 2]) <= (MVAI5_TXS_INPUT_QUANTITY + MVAI5_ANALOG_INPUT_QUANTITY)))
+//        {
+//            nuiBusyTimeCounter = MAX_MODBUS_BUFFER_BUSY_WAITING_TIME;
+//            while (mb_mapping->message_ready)
+//            {
+//                usleep(COMMON_DELAY_TIME);
+//                if (!nuiBusyTimeCounter--)
+//                {
+//                    cout << "MODBUS_EXCEPTION_SLAVE_OR_SERVER_BUSY 2" << endl;
+//                    rsp_length = response_exception(
+//                                     ctx, &sft,
+//                                     MODBUS_EXCEPTION_SLAVE_OR_SERVER_BUSY, rsp);
+//                    break;
+//                }
+//            }
+//
+//            mb_mapping->message_ready = 1;
+//            mb_mapping->current_message_address_common = address;
+//            mb_mapping->current_message_nb_common = 0;
+//            mb_mapping->function_code = _FC_ONLINE_DATA_READ;
+//            rsp_length = ctx->backend->build_response_basis(&sft, rsp);
+//            // (rsp_length - 2) - адрес slave.
+//            // (rsp_length - 1) - функция.
+//            // (rsp_length) - количество байт в ответе.
+//            // (rsp_length + 1) - начало данных в ответе.
+//            mb_mapping->buffer_pointer = mb_mapping->tab_auxiliary;
+//
+//            nuiBusyTimeCounter = MAX_MODBUS_BUFFER_BUSY_WAITING_TIME;
+//            while (mb_mapping->message_ready)
+//            {
+//                usleep(COMMON_DELAY_TIME);
+//                if (!nuiBusyTimeCounter--)
+//                {
+//                    cout << "MODBUS_EXCEPTION_SLAVE_OR_SERVER_BUSY 2" << endl;
+//                    rsp_length = response_exception(
+//                                     ctx, &sft,
+//                                     MODBUS_EXCEPTION_SLAVE_OR_SERVER_BUSY, rsp);
+//                    break;
+//                }
+//            }
+//
+//            memcpy((&(rsp[rsp_length + 1])),
+//                   mb_mapping->buffer_pointer,
+//                   mb_mapping -> current_message_nb_common);
+//
+//            rsp[rsp_length++] = mb_mapping->current_message_nb_common;
+//            rsp_length += mb_mapping->current_message_nb_common;
+//
+//            if (mb_mapping->current_message_address_common)
+//            {
+//                rsp_length = response_exception(
+//                                 ctx, &sft,
+//                                 (mb_mapping->current_message_address_common), rsp);
+//            }
+//
+//            mb_mapping->message_ready = 0;
+//        }
+//        else
+//        {
+//            rsp_length = response_exception(
+//                             ctx, &sft,
+//                             MODBUS_EXCEPTION_ILLEGAL_DATA_ADDRESS, rsp);
+//        }
+//        break;
+}
 
 //-------------------------------------------------------------------------------
 uint16_t CModbusSlave::RequestProcessing(void)
@@ -855,7 +979,14 @@ uint16_t CModbusSlave::RequestProcessing(void)
         uiLength = DataBaseWrite();
         break;
 
-    case _FC_PROGRAMMING:
+//    case _FC_PROGRAMMING:
+//        break;
+
+    case _FC_TIME_SET:
+        break;
+
+    case _FC_ONLINE_DATA_READ:
+        uiLength = OnlineDataRead();
         break;
 
     default:
@@ -1475,6 +1606,59 @@ uint16_t CModbusSlave::DataBaseWriteAnswer(void)
 }
 
 //-------------------------------------------------------------------------------
+uint16_t CModbusSlave::OnlineDataReadAnswer(void)
+{
+    std::cout << "CModbusSlave::OnlineDataReadAnswer 1" << std::endl;
+
+    uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
+    uint8_t * puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
+    uint8_t * puiResponse = m_pxModbusSlaveLinkLayer -> GetTxBuffer();
+    uint16_t  uiLength = m_pxModbusSlaveLinkLayer -> GetFrameLength();
+
+    int8_t uiSlave = puiRequest[uiPduOffset - 1];
+    int8_t uiFunctionCode = puiRequest[uiPduOffset];
+    uint8_t uiBlockIndex = puiRequest[uiPduOffset + 1];
+
+    std::cout << "CModbusSlave::OnlineDataReadAnswer uiSlave "  << (int)uiSlave << std::endl;
+    std::cout << "CModbusSlave::OnlineDataReadAnswer uiFunctionCode "  << (int)uiFunctionCode << std::endl;
+    std::cout << "CModbusSlave::OnlineDataReadAnswer uiBlockIndex "  << (int)uiBlockIndex << std::endl;
+
+    if ((uiBlockIndex < 0) ||
+            (uiBlockIndex > (CDataStore::MAX_BLOCKS_NUMBER - 1)))
+    {
+        std::cout << "CModbusSlave::OnlineDataReadAnswer 2" << std::endl;
+        SetFsmState(RESPONSE_EXCEPTION_ILLEGAL_DATA_VALUE);
+    }
+    else
+    {
+        CDataContainerDataBase* pxDataContainer =
+            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+        uiLength = pxDataContainer -> m_uiDataLength;
+
+        std::cout << "CModbusSlave::OnlineDataReadAnswer uiLength "  << (int)uiLength << std::endl;
+
+        memcpy(&puiResponse[uiPduOffset + 3],
+               (pxDataContainer -> m_puiDataPointer),
+               uiLength);
+
+        puiResponse[uiPduOffset + 1] = uiLength + 1;
+        uiLength ++;
+
+        uiLength += m_pxModbusSlaveLinkLayer ->
+                    ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
+
+        // номер блока базы данных
+        puiResponse[uiPduOffset + 2] = puiRequest[uiPduOffset + 1];
+        uiLength ++;
+
+        SetFsmState(MESSAGE_TRANSMIT_START);
+    }
+
+    std::cout << "CModbusSlave::OnlineDataReadAnswer 7" << std::endl;
+    return uiLength;
+}
+
+//-------------------------------------------------------------------------------
 uint16_t CModbusSlave::AnswerProcessing(void)
 {
     std::cout << "CModbusSlave::AnswerProcessing 1" << std::endl;
@@ -1561,7 +1745,14 @@ uint16_t CModbusSlave::AnswerProcessing(void)
         uiLength = DataBaseWriteAnswer();
         break;
 
-    case _FC_PROGRAMMING:
+//    case _FC_PROGRAMMING:
+//        break;
+
+    case _FC_TIME_SET:
+        break;
+
+    case _FC_ONLINE_DATA_READ:
+        uiLength = OnlineDataReadAnswer();
         break;
 
     default:

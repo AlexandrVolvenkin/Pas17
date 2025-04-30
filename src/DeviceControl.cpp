@@ -177,6 +177,18 @@ uint16_t CDeviceControl::DataBaseBlockReadBlockRelatedAction(void)
         }
         break;
 
+    case DISCRETE_INPUT_SYGNALS_DATA_BASE_BLOCK_OFFSET:
+        cout << "CDeviceControl::DataBaseBlockReadBlockRelatedAction DISCRETE_INPUT_SYGNALS_DATA_BASE_BLOCK_OFFSET" << endl;
+        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+        SetFsmState(DONE_OK);
+        break;
+
+    case FUNCTION_BLOCK_DATA_BASE_BLOCK_OFFSET:
+        cout << "CDeviceControl::DataBaseBlockReadBlockRelatedAction FUNCTION_BLOCK_DATA_BASE_BLOCK_OFFSET" << endl;
+        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+        SetFsmState(DONE_OK);
+        break;
+
     case CURRENT_OUTPUT_MODULE_REGULATOR_DATA_BASE_BLOCK_OFFSET:
         cout << "CDeviceControl::DataBaseBlockReadBlockRelatedAction CURRENT_OUTPUT_MODULE_REGULATOR_DATA_BASE_BLOCK_OFFSET" << endl;
         ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
@@ -185,12 +197,6 @@ uint16_t CDeviceControl::DataBaseBlockReadBlockRelatedAction(void)
 
     case CURRENT_OUTPUT_MODULE_PSP_DATA_BASE_BLOCK_OFFSET:
         cout << "CDeviceControl::DataBaseBlockReadBlockRelatedAction CURRENT_OUTPUT_MODULE_PSP_DATA_BASE_BLOCK_OFFSET" << endl;
-        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-        SetFsmState(DONE_OK);
-        break;
-
-    case DISCRETE_INPUT_SYGNALS_DATA_BASE_BLOCK_OFFSET:
-        cout << "CDeviceControl::DataBaseBlockReadBlockRelatedAction DISCRETE_INPUT_SYGNALS_DATA_BASE_BLOCK_OFFSET" << endl;
         ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
         SetFsmState(DONE_OK);
         break;
@@ -207,10 +213,11 @@ uint16_t CDeviceControl::DataBaseBlockReadBlockRelatedAction(void)
         SetFsmState(DONE_OK);
         break;
 
-    case FUNCTION_BLOCK_DATA_BASE_BLOCK_OFFSET:
-        cout << "CDeviceControl::DataBaseBlockReadBlockRelatedAction FUNCTION_BLOCK_DATA_BASE_BLOCK_OFFSET" << endl;
-        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-        SetFsmState(DONE_OK);
+    case REFERENCE_POINTS_ADC_CODES_DATA_BASE_BLOCK_OFFSET:
+        cout << "CDeviceControl::DataBaseBlockReadBlockRelatedAction REFERENCE_POINTS_ADC_CODES_DATA_BASE_BLOCK_OFFSET" << endl;
+        {
+            SetFsmState(DATA_BASE_BLOCK_READ_REFERENCE_POINTS_ADC_CODES_MODULE_MUVR_DATA_READ_START);
+        }
         break;
 
     case NETWORK_ADDRESS_DATA_BASE_BLOCK_OFFSET:
@@ -255,6 +262,18 @@ uint16_t CDeviceControl::DataBaseBlockWriteBlockRelatedAction(void)
         }
         break;
 
+    case DISCRETE_INPUT_SYGNALS_DATA_BASE_BLOCK_OFFSET:
+        cout << "CDeviceControl::DataBaseBlockWriteBlockRelatedAction DISCRETE_INPUT_SYGNALS_DATA_BASE_BLOCK_OFFSET" << endl;
+        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+        SetFsmState(DONE_OK);
+        break;
+
+    case FUNCTION_BLOCK_DATA_BASE_BLOCK_OFFSET:
+        cout << "CDeviceControl::DataBaseBlockWriteBlockRelatedAction FUNCTION_BLOCK_DATA_BASE_BLOCK_OFFSET" << endl;
+        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+        SetFsmState(DONE_OK);
+        break;
+
     case CURRENT_OUTPUT_MODULE_REGULATOR_DATA_BASE_BLOCK_OFFSET:
         cout << "CDeviceControl::DataBaseBlockWriteBlockRelatedAction CURRENT_OUTPUT_MODULE_REGULATOR_DATA_BASE_BLOCK_OFFSET" << endl;
         ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
@@ -263,12 +282,6 @@ uint16_t CDeviceControl::DataBaseBlockWriteBlockRelatedAction(void)
 
     case CURRENT_OUTPUT_MODULE_PSP_DATA_BASE_BLOCK_OFFSET:
         cout << "CDeviceControl::DataBaseBlockWriteBlockRelatedAction CURRENT_OUTPUT_MODULE_PSP_DATA_BASE_BLOCK_OFFSET" << endl;
-        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-        SetFsmState(DONE_OK);
-        break;
-
-    case DISCRETE_INPUT_SYGNALS_DATA_BASE_BLOCK_OFFSET:
-        cout << "CDeviceControl::DataBaseBlockWriteBlockRelatedAction DISCRETE_INPUT_SYGNALS_DATA_BASE_BLOCK_OFFSET" << endl;
         ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
         SetFsmState(DONE_OK);
         break;
@@ -285,8 +298,8 @@ uint16_t CDeviceControl::DataBaseBlockWriteBlockRelatedAction(void)
         SetFsmState(DONE_OK);
         break;
 
-    case FUNCTION_BLOCK_DATA_BASE_BLOCK_OFFSET:
-        cout << "CDeviceControl::DataBaseBlockWriteBlockRelatedAction FUNCTION_BLOCK_DATA_BASE_BLOCK_OFFSET" << endl;
+    case REFERENCE_POINTS_ADC_CODES_DATA_BASE_BLOCK_OFFSET:
+        cout << "CDeviceControl::DataBaseBlockReadBlockRelatedAction REFERENCE_POINTS_ADC_CODES_DATA_BASE_BLOCK_OFFSET" << endl;
         ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
         SetFsmState(DONE_OK);
         break;
@@ -678,6 +691,64 @@ uint8_t CDeviceControl::Fsm(void)
             SetFsmState(DONE_ERROR);
         }
         break;
+
+//-------------------------------------------------------------------------------
+    case DATA_BASE_BLOCK_READ_REFERENCE_POINTS_ADC_CODES_MODULE_MUVR_DATA_READ_START:
+        std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_READ_REFERENCE_POINTS_ADC_CODES_MODULE_MUVR_DATA_READ_START"  << std::endl;
+        {
+            m_uiInternalModuleMuvrId =
+                GetResources() ->
+                GetTaskIdByNameFromMap(m_sInternalModuleMuvrName);
+
+            uint8_t* puiDataPointer =
+                (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer);
+            uint8_t uiBlockIndex =
+                (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiDataIndex);
+
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            pxDataContainer -> m_uiTaskId = m_uiInternalModuleMuvrId;
+            pxDataContainer -> m_uiFsmCommandState =
+                CInternalModuleMuvr::MUVR_REPER_POINTS_ADC_READ;
+            pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+            SetFsmNextStateDoneOk(DATA_BASE_BLOCK_READ_REFERENCE_POINTS_ADC_CODES_MODULE_MUVR_DATA_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+            SetFsmNextStateReadyWaitingError(DATA_BASE_BLOCK_READ_REFERENCE_POINTS_ADC_CODES_MODULE_MUVR_DATA_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingError(DATA_BASE_BLOCK_READ_REFERENCE_POINTS_ADC_CODES_MODULE_MUVR_DATA_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingDoneError(DATA_BASE_BLOCK_READ_REFERENCE_POINTS_ADC_CODES_MODULE_MUVR_DATA_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+        }
+        break;
+
+    case DATA_BASE_BLOCK_READ_REFERENCE_POINTS_ADC_CODES_MODULE_MUVR_DATA_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+        std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_READ_REFERENCE_POINTS_ADC_CODES_MODULE_MUVR_DATA_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        {
+            CDataContainerDataBase* pxExecutorDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            CDataContainerDataBase* pxCustomerDataContainer =
+                (CDataContainerDataBase*)GetCustomerDataContainerPointer();
+
+            memcpy(pxCustomerDataContainer -> m_puiDataPointer,
+                   (pxExecutorDataContainer -> m_puiDataPointer),
+                   pxExecutorDataContainer -> m_uiDataLength);
+            pxCustomerDataContainer -> m_uiDataLength =
+                pxExecutorDataContainer -> m_uiDataLength;
+
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(DONE_OK);
+        }
+        break;
+
+    case DATA_BASE_BLOCK_READ_REFERENCE_POINTS_ADC_CODES_MODULE_MUVR_DATA_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+        std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_READ_REFERENCE_POINTS_ADC_CODES_MODULE_MUVR_DATA_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        {
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+            SetFsmState(DONE_ERROR);
+        }
+        break;
+//-------------------------------------------------------------------------------
+
+
 
 //-------------------------------------------------------------------------------
     case DATA_BASE_BLOCK_WRITE_START:
