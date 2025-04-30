@@ -642,66 +642,19 @@ uint16_t CModbusSlave::PollProgramming(void)
     int8_t uiSlave = puiRequest[uiPduOffset - 1];
     int8_t uiFunctionCode = puiRequest[uiPduOffset];
 
-//    CDataContainerDataBase* pxDataContainer =
-//        (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-//
-//    uint8_t uiFsmState = pxDataContainer -> m_uiFsmCommandState;
-//
-//    // Ожидаем окончания записи автоматом устройства хранения.
-//    // Устройство хранения закончило запись успешно?
-//    if (uiFsmState == DONE_OK)
-//    {
-//        std::cout << "CModbusSlave::PollProgramming 2" << std::endl;
-//
-//        uiLength = m_pxModbusSlaveLinkLayer ->
-//                   ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
-//
-//        SetFsmState(MESSAGE_TRANSMIT_START);
-//    }
-////    // Устройство хранения закончило запись не успешно?
-////    else if (pxDataStoreFileSystem -> IsDoneError())
-////    {
-////        SetFsmState(RESPONSE_EXCEPTION_SLAVE_OR_SERVER_BUSY);
-////    }
-//    else
-//    {
-//        // Устройство хранения ещё не закончило запись.
-//        std::cout << "CModbusSlave::PollProgramming 3" << std::endl;
-//        SetFsmState(RESPONSE_EXCEPTION_SLAVE_OR_SERVER_BUSY);
-//    }
-//
-//    return uiLength;
+    m_uiFunctionCode = uiFunctionCode;
 
+    CDataContainerDataBase* pxDataContainer =
+        (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+    pxDataContainer -> m_uiTaskId = m_uiDeviceControlId;
+    pxDataContainer -> m_uiFsmCommandState =
+        CDeviceControl::DATA_BASE_BLOCK_WRITE_COMPLETE_CHECK_START;
 
-
-
-    CDataStore* pxDataStoreFileSystem =
-        (CDataStore*)GetResources() ->
-        GetTaskPointerByNameFromMap("DataStoreFileSystem");
-
-    // Ожидаем окончания записи автоматом устройства хранения.
-    // Устройство хранения закончило запись успешно?
-    if (pxDataStoreFileSystem -> IsDoneOk())
-    {
-        std::cout << "CModbusSlave::PollProgramming 2" << std::endl;
-
-        uiLength = m_pxModbusSlaveLinkLayer ->
-                   ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
-
-        SetFsmState(MESSAGE_TRANSMIT_START);
-    }
-    else
-    {
-        std::cout << "CModbusSlave::PollProgramming 3" << std::endl;
-
-        uiLength = m_pxModbusSlaveLinkLayer ->
-                   ResponseException(uiSlave,
-                                     uiFunctionCode,
-                                     MODBUS_EXCEPTION_SLAVE_OR_SERVER_BUSY,
-                                     puiResponse);
-
-        SetFsmState(RESPONSE_EXCEPTION_SLAVE_OR_SERVER_BUSY);
-    }
+    SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+    SetFsmNextStateDoneOk(EXECUTOR_ANSWER_PROCESSING);
+    SetFsmNextStateReadyWaitingError(RESPONSE_EXCEPTION_SLAVE_OR_SERVER_BUSY);
+    SetFsmNextStateDoneWaitingError(RESPONSE_EXCEPTION_SLAVE_OR_SERVER_BUSY);
+    SetFsmNextStateDoneWaitingDoneError(RESPONSE_EXCEPTION_SLAVE_OR_SERVER_FAILURE);
 
     return uiLength;
 }
@@ -805,21 +758,10 @@ uint16_t CModbusSlave::DataBaseWrite(void)
         pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
 
         SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
-//        SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_START);
         SetFsmNextStateDoneOk(EXECUTOR_ANSWER_PROCESSING);
-//        SetFsmNextStateDoneOk(MESSAGE_TRANSMIT_START);
         SetFsmNextStateReadyWaitingError(RESPONSE_EXCEPTION_SLAVE_OR_SERVER_BUSY);
         SetFsmNextStateDoneWaitingError(RESPONSE_EXCEPTION_SLAVE_OR_SERVER_BUSY);
         SetFsmNextStateDoneWaitingDoneError(RESPONSE_EXCEPTION_SLAVE_OR_SERVER_FAILURE);
-
-//        uiLength = m_pxModbusSlaveLinkLayer ->
-//                   ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
-//
-//        // номер блока базы данных
-//        puiResponse[uiPduOffset + 1] = 1;
-//        uiLength ++;
-//        puiResponse[uiPduOffset + 2] = puiRequest[uiPduOffset + 1];
-//        uiLength ++;
     }
 
     std::cout << "CModbusSlave::DataBaseWrite 7" << std::endl;
@@ -1424,91 +1366,12 @@ uint16_t CModbusSlave::PollProgrammingAnswer(void)
     int8_t uiSlave = puiRequest[uiPduOffset - 1];
     int8_t uiFunctionCode = puiRequest[uiPduOffset];
 
-//    CDeviceControl* pxDeviceControl =
-//        (CDeviceControl*)GetResources() ->
-//        GetTaskPointerByNameFromMap("DeviceControl");
+    std::cout << "CModbusSlave::PollProgrammingAnswer 2" << std::endl;
 
-    CDataStore* pxDataStoreFileSystem =
-        (CDataStore*)GetResources() ->
-        GetTaskPointerByNameFromMap("DataStoreFileSystem");
+    uiLength = m_pxModbusSlaveLinkLayer ->
+               ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
 
-
-//    // Устройство хранения в прцессе записи?
-//    if (m_pxDeviceControl ->
-//            GetFsmOperationStatus() == CDfa::IN_PROGRESS)
-//    {
-//        std::cout << "CModbusSlave::PollProgrammingAnswer 2" << std::endl;
-//
-//        uiLength = m_pxModbusSlaveLinkLayer ->
-//    ResponseException(uiSlave,
-//                                     uiFunctionCode,
-//                                     MODBUS_EXCEPTION_SLAVE_OR_SERVER_BUSY,
-//                                     puiResponse);
-//    }
-//    // Устройство хранения закончило запись успешно?
-//    else if (m_pxDeviceControl ->
-//             GetFsmOperationStatus() == CDfa::DONE_SUCCESSFULLY)
-//    {
-//        std::cout << "CModbusSlave::PollProgrammingAnswer 3" << std::endl;
-//
-//        uiLength = m_pxModbusSlaveLinkLayer ->
-//                   ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
-//
-//    }
-//    // Устройство хранения закончило запись не успешно?
-//    else if (m_pxDeviceControl ->
-//             GetFsmOperationStatus() == CDfa::ERROR_OCCURED)
-//    {
-//        std::cout << "CModbusSlave::PollProgrammingAnswer 4" << std::endl;
-//
-//        uiLength = m_pxModbusSlaveLinkLayer ->
-//                      ResponseException(uiSlave,
-//                                     uiFunctionCode,
-//                                     MODBUS_EXCEPTION_ACKNOWLEDGE,
-//                                     puiResponse);
-//    }
-
-    // Ожидаем окончания записи автоматом устройства хранения.
-    // Устройство хранения закончило запись успешно?
-    if (pxDataStoreFileSystem -> IsDoneOk())
-    {
-        std::cout << "CModbusSlave::PollProgrammingAnswer 2" << std::endl;
-
-        uiLength = m_pxModbusSlaveLinkLayer ->
-                   ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
-
-//        // номер блока базы данных
-//        puiResponse[uiPduOffset + 2] = puiRequest[uiPduOffset + 1];
-//        uiLength ++;
-
-//        uiLength = m_pxModbusSlaveLinkLayer ->
-//        ResponseException(uiSlave,
-//                                     uiFunctionCode,
-//                                     MODBUS_EXCEPTION_ACKNOWLEDGE,
-//                                     puiResponse);
-    }
-//    // Устройство хранения закончило запись не успешно?
-//    else if (pxDataStoreFileSystem -> IsDoneError())
-//    {
-//        uiLength = m_pxModbusSlaveLinkLayer ->
-    //    ResponseException(uiSlave,
-//                                     uiFunctionCode,
-//                                     MODBUS_EXCEPTION_SLAVE_OR_SERVER_BUSY,
-//                                     puiResponse);
-//    }
-    else
-    {
-        std::cout << "CModbusSlave::PollProgrammingAnswer 3" << std::endl;
-
-//        uiLength = m_pxModbusSlaveLinkLayer ->
-//                    ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
-
-        uiLength = m_pxModbusSlaveLinkLayer ->
-                   ResponseException(uiSlave,
-                                     uiFunctionCode,
-                                     MODBUS_EXCEPTION_SLAVE_OR_SERVER_BUSY,
-                                     puiResponse);
-    }
+    SetFsmState(MESSAGE_TRANSMIT_START);
 
     return uiLength;
 }

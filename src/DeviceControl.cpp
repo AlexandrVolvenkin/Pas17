@@ -555,6 +555,10 @@ uint8_t CDeviceControl::Fsm(void)
             SetFsmNextStateReadyWaitingError(DATA_BASE_BLOCK_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
             SetFsmNextStateDoneWaitingError(DATA_BASE_BLOCK_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
             SetFsmNextStateDoneWaitingDoneError(DATA_BASE_BLOCK_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            // сообщим о том, что процесс записи блока начался нормально.
+            // при записи блока в базу данных не ожидается результат окончания выполнения задачи.
+            // проверка результата выполнения производится в _FC_PROGRAMMING_COMPLETION_REQUEST 14 функция.
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
 
 
 
@@ -585,7 +589,7 @@ uint8_t CDeviceControl::Fsm(void)
     case DATA_BASE_BLOCK_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
         std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
         {
-            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+//            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(DONE_OK);
         }
         break;
@@ -637,32 +641,33 @@ uint8_t CDeviceControl::Fsm(void)
     case DATA_BASE_BLOCK_WRITE_COMPLETE_CHECK_START:
         std::cout << "CDataBaseCreate::Fsm DATA_BASE_BLOCK_WRITE_COMPLETE_CHECK_START 1"  << std::endl;
         {
-            m_uiInternalModuleMuvrId =
-                GetResources() ->
-                GetTaskIdByNameFromMap(m_sInternalModuleMuvrName);
+//            m_uiInternalModuleMuvrId =
+//                GetResources() ->
+//                GetTaskIdByNameFromMap(m_sInternalModuleMuvrName);
+//
+//            CDataContainerDataBase* pxDataContainer =
+//                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+//            pxDataContainer -> m_uiTaskId = m_uiInternalModuleMuvrId;
+//            pxDataContainer -> m_uiFsmCommandState =
+//                CInternalModuleMuvr::MUVR_WRITE_DATA_BASE_CHECK;
+//
+//            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+//            SetFsmNextStateDoneOk(DATA_BASE_BLOCK_WRITE_COMPLETE_CHECK_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+//            SetFsmNextStateReadyWaitingError(DATA_BASE_BLOCK_WRITE_COMPLETE_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+//            SetFsmNextStateDoneWaitingError(DATA_BASE_BLOCK_WRITE_COMPLETE_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+//            SetFsmNextStateDoneWaitingDoneError(DATA_BASE_BLOCK_WRITE_COMPLETE_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
 
-            CDataContainerDataBase* pxDataContainer =
-                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-            pxDataContainer -> m_uiTaskId = m_uiInternalModuleMuvrId;
-            pxDataContainer -> m_uiFsmCommandState =
-                CInternalModuleMuvr::MUVR_WRITE_DATA_BASE_CHECK;
-
-            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
-            SetFsmNextStateDoneOk(DATA_BASE_BLOCK_WRITE_COMPLETE_CHECK_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
-            SetFsmNextStateReadyWaitingError(DATA_BASE_BLOCK_WRITE_COMPLETE_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
-            SetFsmNextStateDoneWaitingError(DATA_BASE_BLOCK_WRITE_COMPLETE_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
-            SetFsmNextStateDoneWaitingDoneError(DATA_BASE_BLOCK_WRITE_COMPLETE_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
-
-//            if ()
-//            {
-//                std::cout << "CDataBaseCreate::Fsm DATA_BASE_BLOCK_WRITE_COMPLETE_CHECK_START 2"  << std::endl;
-//                SetFsmState(DATA_BASE_BLOCK_WRITE_COMPLETE_CHECK_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
-//            }
-//            else
-//            {
-//                std::cout << "CDataBaseCreate::Fsm DATA_BASE_BLOCK_WRITE_COMPLETE_CHECK_START 3"  << std::endl;
-//                SetFsmState(DATA_BASE_BLOCK_WRITE_COMPLETE_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
-//            }
+            if ((GetPreviousFsmState() == DONE_OK) ||
+                    (GetPreviousFsmState() == READY))
+            {
+                std::cout << "CDataBaseCreate::Fsm DATA_BASE_BLOCK_WRITE_COMPLETE_CHECK_START 2"  << std::endl;
+                SetFsmState(DATA_BASE_BLOCK_WRITE_COMPLETE_CHECK_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+            }
+            else if (GetPreviousFsmState() == DONE_ERROR)
+            {
+                std::cout << "CDataBaseCreate::Fsm DATA_BASE_BLOCK_WRITE_COMPLETE_CHECK_START 3"  << std::endl;
+                SetFsmState(DATA_BASE_BLOCK_WRITE_COMPLETE_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            }
         }
         break;
 
