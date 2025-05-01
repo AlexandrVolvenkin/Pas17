@@ -170,6 +170,17 @@ void CInternalModuleMuvr::Allocate(void)
         MUVR_ANALOG_INPUT_QUANTITY;
 
 
+    // Получим указатель на место в массиве состояния аналоговых входов для текущего модуля.
+    m_puiAnalogueInputsState =
+        &(GetResources() ->
+          m_puiAnalogueInputsState[GetResources() ->
+                                                  m_uiUsedAnalogueInputsState]);
+    // Увеличим общий объём выделенной памяти.
+    GetResources() ->
+    m_uiUsedAnalogueInputsBadState +=
+        MUVR_ANALOG_INPUT_QUANTITY;
+
+
     // Получим указатель на место в массиве достоверности аналоговых входов для текущего модуля.
     m_puiAnalogueInputsBadState =
         &(GetResources() ->
@@ -411,10 +422,10 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
 //            // сбросим флаг отказа модуля.
 //            *(m_puiModuleBadStateBuffer) = BAD_MODULE_RESPONDED_OK;
 
-//            // получим данные состояния каналов аналоговых входов.
-//            memcpy(m_puiAnalogueInputsState,
-//                   &auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET],
-//                   MUVR_ANALOG_INPUT_QUANTITY);
+            // получим данные состояния каналов аналоговых входов.
+            memcpy(m_puiAnalogueInputsState,
+                   &auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET],
+                   MUVR_ANALOG_INPUT_QUANTITY);
 
             // получим измеренные значения всех аналоговых входов модуля.
             for (uint8_t i = 0; i < MUVR_ANALOG_INPUT_QUANTITY; i++)

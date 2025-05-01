@@ -50,111 +50,180 @@ uint8_t CDeviceControl::Init(void)
     SetCustomerDataContainer(GetExecutorDataContainerPointer());
 }
 
-////-------------------------------------------------------------------------------
-//bool CDeviceControl::SetTaskData(CDataContainerDataBase* pxDataContainer)
-//{
-//    std::cout << "CDeviceControl::SetTaskData 1" << std::endl;
-//
-//    if (IsTaskReady())
-//    {
-//        std::cout << "CDeviceControl::SetTaskData 2" << std::endl;
-//        *m_pxOperatingDataContainer = *pxDataContainer;
-//        SetFsmState(m_pxOperatingDataContainer -> m_uiFsmCommandState);
-//        return true;
-//    }
-//    else
-//    {
-//        std::cout << "CDeviceControl::SetTaskData 3" << std::endl;
-//        return false;
-//    }
-//}
-//
-////-------------------------------------------------------------------------------
-//bool CDeviceControl::GetTaskData(CDataContainerDataBase* pxDataContainer)
-//{
-//    std::cout << "CDeviceControl::GetTaskData 1" << std::endl;
-//
-//    m_pxOperatingDataContainer -> m_uiFsmCommandState = GetFsmState();
-//    *pxDataContainer = *m_pxOperatingDataContainer;
-//
-//    return true;
-//}
-
-////-------------------------------------------------------------------------------
-//CDataContainerDataBase* CDeviceControl::GetTaskData(void)
-//{
-//    std::cout << "CDeviceControl::GetTaskData 1" << std::endl;
-//
-//    m_pxOperatingDataContainer -> m_uiFsmCommandState = GetFsmState();
-//    m_pxOperatingDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
-//    m_pxOperatingDataContainer -> m_uiDataLength =
-//        m_pxResources ->
-//        m_pxDataStore ->
-//        GetBlockLength(m_pxOperatingDataContainer -> m_uiDataIndex);
-//
-//    return m_pxOperatingDataContainer;
-//}
-
-////-------------------------------------------------------------------------------
-//size_t CDeviceControl::GetObjectLength(void)
-//{
-//    std::cout << "CDeviceControl GetObjectLength"  << std::endl;
-//    return sizeof(*this);
-//}
-
 //-------------------------------------------------------------------------------
 void CDeviceControl::SetInternalModuleMuvrName(std::string sName)
 {
     m_sInternalModuleMuvrName = sName;
 }
 
-//-------------------------------------------------------------------------------
-uint16_t CDeviceControl::ConfigurationRead(uint8_t *puiDestination)
+//-----------------------------------------------------------------------------------------------------
+// обрабатывает входящие сообщения от Modbus интерфейсов по 71 функции - чтение данных онлайн, модулей аналогового ввода.
+// передаёт измеренные значения аналоговых входов, реперные точки АЦП, значения ТХС.
+void CDeviceControl::OnlineDataRead(void)
 {
-    std::cout << "CDeviceControl::ConfigurationRead 1" << std::endl;
-    uint8_t auiTempData[] = {1, 15, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 22, 4, 0,};
-    memcpy(puiDestination, auiTempData, sizeof(auiTempData));
-    return sizeof(auiTempData);
-}
+    std::cout << "CDeviceControl OnlineDataRead 1"  << std::endl;
+    float *pfSource;
+    unsigned char *pucSource;
+    unsigned char *pucSource2;
+    unsigned char *pucDestination;
+    unsigned char *pucTempArray;
+    unsigned int nuiBusyTimeCounter;
+    unsigned char nucIndexNumber;
+    unsigned char ucTempData;
+    unsigned short usCrc;
+    unsigned char ucFlowControl;
+    unsigned char ucAddressLow;
+    unsigned char ucAddressHigh;
+    int i;
+    int j;
+    int nb;
 
-//-------------------------------------------------------------------------------
-uint16_t CDeviceControl::DataBaseBlockRead(uint8_t *puiDestination, uint8_t uiBlockIndex)
-{
-    std::cout << "CDeviceControl::DataBaseRead 1" << std::endl;
-    uint8_t uiFsmState = GetFsmState();
+// ucAddressHigh -
+// если в старшем регистре адреса Modbus бит7 = 0, то запрашиваются реперные точки - (бит0 - бит6) - адрес аналогового входа.
+// если в старшем регистре адреса Modbus бит7 = 1, то запрашивается ТХС и (бит0 - бит2) - относительный адрес модуля МВСТ3.
+// ucAddressLow - требуемое количество аналоговых входов.
 
-    if ((uiFsmState == READY) ||
-            (uiFsmState == DONE_OK) ||
-            (uiFsmState == DONE_ERROR))
+    uint16_t uiAddress =
+        (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiDataOffset);
+    ucAddressLow = (unsigned char)(uiAddress);
+    ucAddressHigh = (unsigned char)((uiAddress) >> 8);
+    pucDestination =
+        (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer);
+
+    CConfigurationCreate::TConfigDataPackOne* pxDeviceConfigSearch =
+        (GetResources() -> GetDeviceConfigSearchPointer());
+
+    // запрос ТХС или реперных точек?
+    if (ucAddressHigh & MUVR_TXS_REQUEST_MASK)
     {
-        std::cout << "CDeviceControl::DataBaseRead 2" << std::endl;
-        SetFsmState(DATA_BASE_BLOCK_READ);
-        return 1;
+        std::cout << "CDeviceControl OnlineDataRead 2"  << std::endl;
+// запрос ТХС.
+//        cout << "TXS" << endl;
+        // вычислим индекс модуля в массиве контекста.
+        nucIndexNumber =
+            (((pxDeviceConfigSearch -> uiLastAnalogueInputModuleIndex + 1) -
+              pxDeviceConfigSearch -> uiServiceAnalogueInputModuleQuantity)  +
+             (ucAddressHigh & ANALOGUE_MODULE_ADDRESS_MASK));
+
+//        iModuleMvai5TxsRead(&xAllModulesContext.axAllModulesContext[nucIndexNumber]);
+//
+//        sprintf((char*)pucDestination,
+//                "%7.4f",
+//                ((TTxsData*)(xAllModulesContext.axAllModulesContext[nucIndexNumber].
+//                             xModuleContextStatic.
+//                             pucTxsBufferPointer)) -> fTxsValue);
+
+//        pucDestination += ONLINE_DATA_READ_ONE_INPUT_ASCII_BYTE_QUANTITY;
+//        *pucDestination = ((TTxsData*)(xAllModulesContext.axAllModulesContext[nucIndexNumber].
+//                                       xModuleContextStatic.
+//                                       pucTxsBufferPointer)) -> ucTxsStat;
+
+        (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiDataLength) =
+            (ONLINE_DATA_READ_ONE_INPUT_ASCII_BYTE_QUANTITY +
+             ONLINE_DATA_READ_ONE_INPUT_STAT_AI_BYTE_QUANTITY);
     }
     else
     {
-        std::cout << "CDeviceControl::DataBaseRead 3" << std::endl;
-        return 0;
+        std::cout << "CDeviceControl OnlineDataRead 3"  << std::endl;
+// запрос реперных точек.
 
+        // адрес аналогового входа принадлежит внутреннему или внешнему модулю?
+        if ((pxDeviceConfigSearch -> uiServiceAnalogueInputModuleQuantity) >=
+                (((ucAddressHigh & ANALOGUE_INPUT_ADDRESS_MASK) /
+                  MUVR_ANALOG_INPUT_QUANTITY) + 1))
+        {
+            std::cout << "CDeviceControl OnlineDataRead 4"  << std::endl;
+            // адрес аналогового входа принадлежит внутреннему модулю.
+            // вычислим индекс модуля в массиве контекста.
+            nucIndexNumber =
+                (((pxDeviceConfigSearch -> uiLastAnalogueInputModuleIndex + 1) -
+                  pxDeviceConfigSearch -> uiServiceAnalogueInputModuleQuantity)  +
+                 ((ucAddressHigh & ANALOGUE_INPUT_ADDRESS_MASK) /
+                  MUVR_ANALOG_INPUT_QUANTITY));
+
+            // получим адрес значения аналогового входа.
+////            pfSource = (float*)&aucHoldingRegistersArray[AI_VALUE_BYTE_ARRAY_OFFSET +
+////                       ((ucAddressHigh & ANALOGUE_INPUT_ADDRESS_MASK) *
+////                        sizeof(float))];
+//            pfSource = &afAnalogueInputData[(ucAddressHigh & ANALOGUE_INPUT_ADDRESS_MASK)];
+            pfSource = &(GetResources() ->
+                         m_pfAnalogueInputsValue[(ucAddressHigh & ANALOGUE_INPUT_ADDRESS_MASK)]);
+            // получим адрес значения состояние канала аналогового входа.
+//              pucSource2 = &aucStatAiByteArray[ucAddressHigh];
+            pucSource2 = &(GetResources() ->
+                           m_puiAnalogueInputsState[ucAddressHigh]);
+            for (i = 0; i < (ucAddressLow); i++)
+            {
+                // преобразуем первые 7 цифр float значения, в ASCII символы, для отображения в строковом виде в программаторе.
+                sprintf((char*)pucDestination,
+                        "%7.4f",
+                        pfSource[i]);
+                pucDestination += ONLINE_DATA_READ_ONE_INPUT_ASCII_BYTE_QUANTITY;
+                // получим значения состояния канала аналогового входа.
+                *pucDestination = *pucSource2++;
+                pucDestination += ONLINE_DATA_READ_ONE_INPUT_STAT_AI_BYTE_QUANTITY;
+            }
+
+            (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiDataLength) =
+                ((ucAddressLow *
+                  (ONLINE_DATA_READ_ONE_INPUT_ASCII_BYTE_QUANTITY +
+                   ONLINE_DATA_READ_ONE_INPUT_STAT_AI_BYTE_QUANTITY)));
+
+            std::cout << "CDeviceControl::OnlineDataRead m_uiDataLength "  <<
+                      (int)(((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiDataLength) << std::endl;
+        }
+        else
+        {
+            std::cout << "CDeviceControl OnlineDataRead 5"  << std::endl;
+//            // адрес аналогового входа принадлежит внешнему модулю.
+////            cout << "LSNU" << endl;
+//            // получим адрес значения аналогового входа.
+////            pfSource = (float*)&aucHoldingRegistersArray[AI_VALUE_BYTE_ARRAY_OFFSET +
+////                       ((ucAddressHigh & ANALOGUE_INPUT_ADDRESS_MASK) *
+////                        sizeof(float))];
+//            pfSource = &afAnalogueInputData[(ucAddressHigh & ANALOGUE_INPUT_ADDRESS_MASK)];
+//            // получим адрес значения состояние канала аналогового входа.
+//            pucSource2 = &aucStatAiByteArray[ucAddressHigh];
+//
+//            for (i = 0; i < (ucAddressLow); i++)
+//            {
+//                // преобразуем первые 7 цифр float значения, в ASCII символы, для отображения в строковом виде в программаторе.
+//                sprintf((char*)pucDestination,
+//                        "%7.4f",
+//                        pfSource[i]);
+//                pucDestination += ONLINE_DATA_READ_ONE_INPUT_ASCII_BYTE_QUANTITY;
+//                // получим значения состояния канала аналогового входа.
+//                *pucDestination = *pucSource2++;
+//                pucDestination += ONLINE_DATA_READ_ONE_INPUT_STAT_AI_BYTE_QUANTITY;
+//            }
+
+            (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiDataLength) =
+                (ucAddressLow *
+                 (ONLINE_DATA_READ_ONE_INPUT_ASCII_BYTE_QUANTITY +
+                  ONLINE_DATA_READ_ONE_INPUT_STAT_AI_BYTE_QUANTITY));
+        }
     }
-//    uint16_t uiLength;
+
+    (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiDataOffset) = 0;
+
+//    if (ucModuleError ==
+//            PROGRAMMING_DATA_BASE_WRITE_BLOCK_MVA_TXS_READ_ERROR)
+//    {
+//        pxModbusMapping -> current_message_address_common =
+//            PROGRAMMING_DATA_BASE_WRITE_BLOCK_MVA_TXS_READ_ERROR;
+//        cout << "PROGRAMMING_DATA_BASE_WRITE_BLOCK_MVA_TXS_READ_ERROR" << endl;
+//        ucModuleError = 0;
+//    }
 //
-//    uiLength = m_pxResources ->
-//               m_pxDataStore ->
-//               GetBlockLength(uiBlockIndex);
-//
-//    std::cout << "CDeviceControl::DataBaseRead uiLength " << (int)uiLength << std::endl;
-//    return uiLength;
-}
+//    if (ucModuleError ==
+//            MUVR_GET_REPER_POINTS_ADC_DATA_COMMAND_ERROR)
+//    {
+//        pxModbusMapping -> current_message_address_common =
+//            MUVR_GET_REPER_POINTS_ADC_DATA_COMMAND_ERROR;
+//        cout << "MUVR_GET_REPER_POINTS_ADC_DATA_COMMAND_ERROR" << endl;
+//        ucModuleError = 0;
+//    }
 
-//-------------------------------------------------------------------------------
-uint16_t CDeviceControl::DataBaseBlockReadAnswer(void)
-{
-    std::cout << "CDeviceControl::DataBaseBlockReadAnswer 1" << std::endl;
-
-    uint16_t uiLength;
-
-    return uiLength;
 }
 
 //-------------------------------------------------------------------------------
@@ -324,13 +393,6 @@ uint16_t CDeviceControl::DataBaseBlockWriteBlockRelatedAction(void)
     };
 
     return 0;
-}
-
-//-------------------------------------------------------------------------------
-uint8_t CDeviceControl::GetFsmOperationStatus(void)
-{
-//    return ((static_cast<CDataContainerDataBase*>(GetCommandDataContainerPointer())) ->
-//            GetFsmOperationStatus());
 }
 
 //-------------------------------------------------------------------------------
@@ -574,6 +636,42 @@ uint8_t CDeviceControl::Fsm(void)
 
     case CONFIGURATION_REQUEST_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
         std::cout << "CDeviceControl::Fsm CONFIGURATION_REQUEST_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        {
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+            SetFsmState(DONE_ERROR);
+        }
+        break;
+
+//-------------------------------------------------------------------------------
+    case ONLINE_DATA_READ_START:
+        std::cout << "CDeviceControl::Fsm ONLINE_DATA_READ_START"  << std::endl;
+        {
+            OnlineDataRead();
+            SetFsmState(ONLINE_DATA_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+        }
+        break;
+
+    case ONLINE_DATA_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+        std::cout << "CDeviceControl::Fsm ONLINE_DATA_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        {
+//            CDataContainerDataBase* pxExecutorDataContainer =
+//                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+//            CDataContainerDataBase* pxCustomerDataContainer =
+//                (CDataContainerDataBase*)GetCustomerDataContainerPointer();
+//
+//            memcpy(pxCustomerDataContainer -> m_puiDataPointer,
+//                   (pxExecutorDataContainer -> m_puiDataPointer),
+//                   pxExecutorDataContainer -> m_uiDataLength);
+//            pxCustomerDataContainer -> m_uiDataLength =
+//                pxExecutorDataContainer -> m_uiDataLength;
+
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(DONE_OK);
+        }
+        break;
+
+    case ONLINE_DATA_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+        std::cout << "CDeviceControl::Fsm ONLINE_DATA_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
         {
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
             SetFsmState(DONE_ERROR);

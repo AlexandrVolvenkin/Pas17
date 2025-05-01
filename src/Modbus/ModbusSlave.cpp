@@ -9,6 +9,7 @@
 #include <string.h>
 #include <typeinfo>
 
+#include "Configuration.h"
 #include "Task.h"
 #include "Resources.h"
 #include "Platform.h"
@@ -16,6 +17,7 @@
 #include "DeviceControl.h"
 #include "Link.h"
 #include "DataContainer.h"
+#include "InternalModuleMuvr.h"
 #include "ModbusRtuSlaveLinkLayer.h"
 #include "ModbusSlaveLinkLayer.h"
 #include "ModbusSlave.h"
@@ -772,6 +774,11 @@ uint16_t CModbusSlave::DataBaseWrite(void)
 uint16_t CModbusSlave::OnlineDataRead(void)
 {
     std::cout << "CModbusSlave::OnlineDataRead 1" << std::endl;
+    // puiRequest[uiPduOffset + 1] -
+    // если бит7 = 0, то запрашиваются реперные точки - (бит0 - бит6) - адрес аналогового входа.
+    // если бит7 = 1, то запрашивается ТХС и (бит0 - бит2) - относительный адрес модуля МВСТ3.
+    // puiRequest[uiPduOffset + 2] - требуемое количество аналоговых входов.
+    //        cout << "_FC_ONLINE_DATA_READ" << endl;
 
     uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
     uint8_t * puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
@@ -780,17 +787,18 @@ uint16_t CModbusSlave::OnlineDataRead(void)
 
     int8_t uiSlave = puiRequest[uiPduOffset - 1];
     int8_t uiFunctionCode = puiRequest[uiPduOffset];
-    uint8_t uiBlockIndex = puiRequest[uiPduOffset + 1];
+    uint16_t uiAddress = ((static_cast<uint16_t>(puiRequest[uiPduOffset + 1]) << 8) |
+                          (static_cast<uint16_t>(puiRequest[uiPduOffset + 2])));
 
     std::cout << "CModbusSlave::OnlineDataRead uiSlave "  << (int)uiSlave << std::endl;
     std::cout << "CModbusSlave::OnlineDataRead uiFunctionCode "  << (int)uiFunctionCode << std::endl;
-    std::cout << "CModbusSlave::OnlineDataRead uiBlockIndex "  << (int)uiBlockIndex << std::endl;
+    std::cout << "CModbusSlave::OnlineDataRead uiAddress "  << (int)uiAddress << std::endl;
 
-    if ((uiBlockIndex < 0) ||
-            (uiBlockIndex > (CDataStore::MAX_BLOCKS_NUMBER - 1)))
+    if ((((puiRequest[uiPduOffset + 1]) & ANALOGUE_INPUT_ADDRESS_MASK) < MAX_HANDLED_ANALOGUE_INPUT) &&
+            ((puiRequest[uiPduOffset + 2]) <= (MUVR_TXS_INPUT_QUANTITY + MUVR_ANALOG_INPUT_QUANTITY)))
     {
         std::cout << "CModbusSlave::OnlineDataRead 2" << std::endl;
-        SetFsmState(RESPONSE_EXCEPTION_ILLEGAL_DATA_VALUE);
+        SetFsmState(RESPONSE_EXCEPTION_ILLEGAL_DATA_ADDRESS);
     }
     else
     {
@@ -802,10 +810,9 @@ uint16_t CModbusSlave::OnlineDataRead(void)
             (CDataContainerDataBase*)GetExecutorDataContainerPointer();
         pxDataContainer -> m_uiTaskId = m_uiDeviceControlId;
         pxDataContainer -> m_uiFsmCommandState =
-            CDeviceControl::DATA_BASE_BLOCK_READ_REFERENCE_POINTS_ADC_CODES_MODULE_MUVR_DATA_READ_START;
-//            CDeviceControl::DATA_BASE_BLOCK_READ;
-        pxDataContainer -> m_uiDataIndex = uiBlockIndex;
+            CDeviceControl::ONLINE_DATA_READ_START;
         pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+        pxDataContainer -> m_uiDataOffset = uiAddress;
 
         SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
         SetFsmNextStateDoneOk(EXECUTOR_ANSWER_PROCESSING);
@@ -1474,7 +1481,7 @@ uint16_t CModbusSlave::ReportSlaveIDAnswer(void)
 
     // количество байт в прикладном сообщении массиве конфигурации, не включая остальные.
     puiResponse[uiPduOffset + 1] = uiLength;
-    uiLength ++;
+    uiLength++;
     uiLength += m_pxModbusSlaveLinkLayer ->
                 ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
 
@@ -1544,14 +1551,14 @@ uint16_t CModbusSlave::DataBaseReadAnswer(void)
                uiLength);
 
         puiResponse[uiPduOffset + 1] = uiLength + 1;
-        uiLength ++;
+        uiLength++;
 
         uiLength += m_pxModbusSlaveLinkLayer ->
                     ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
 
         // номер блока базы данных
         puiResponse[uiPduOffset + 2] = puiRequest[uiPduOffset + 1];
-        uiLength ++;
+        uiLength++;
 
         SetFsmState(MESSAGE_TRANSMIT_START);
     }
@@ -1594,9 +1601,9 @@ uint16_t CModbusSlave::DataBaseWriteAnswer(void)
 
         // номер блока базы данных
         puiResponse[uiPduOffset + 1] = 1;
-        uiLength ++;
+        uiLength++;
         puiResponse[uiPduOffset + 2] = puiRequest[uiPduOffset + 1];
-        uiLength ++;
+        uiLength++;
 
         SetFsmState(MESSAGE_TRANSMIT_START);
     }
@@ -1617,45 +1624,112 @@ uint16_t CModbusSlave::OnlineDataReadAnswer(void)
 
     int8_t uiSlave = puiRequest[uiPduOffset - 1];
     int8_t uiFunctionCode = puiRequest[uiPduOffset];
-    uint8_t uiBlockIndex = puiRequest[uiPduOffset + 1];
 
     std::cout << "CModbusSlave::OnlineDataReadAnswer uiSlave "  << (int)uiSlave << std::endl;
     std::cout << "CModbusSlave::OnlineDataReadAnswer uiFunctionCode "  << (int)uiFunctionCode << std::endl;
-    std::cout << "CModbusSlave::OnlineDataReadAnswer uiBlockIndex "  << (int)uiBlockIndex << std::endl;
 
-    if ((uiBlockIndex < 0) ||
-            (uiBlockIndex > (CDataStore::MAX_BLOCKS_NUMBER - 1)))
-    {
-        std::cout << "CModbusSlave::OnlineDataReadAnswer 2" << std::endl;
-        SetFsmState(RESPONSE_EXCEPTION_ILLEGAL_DATA_VALUE);
-    }
-    else
-    {
-        CDataContainerDataBase* pxDataContainer =
-            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-        uiLength = pxDataContainer -> m_uiDataLength;
+    // (rsp_length) = 2.
+    // (rsp_length - 2) - адрес slave.
+    // (rsp_length - 1) - функция.
+    // (rsp_length) - количество байт в ответе.
+    // (rsp_length + 1) - начало данных в ответе.
 
-        std::cout << "CModbusSlave::OnlineDataReadAnswer uiLength "  << (int)uiLength << std::endl;
+    CDataContainerDataBase* pxDataContainer =
+        (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+    uiLength = pxDataContainer -> m_uiDataLength;
 
-        memcpy(&puiResponse[uiPduOffset + 3],
-               (pxDataContainer -> m_puiDataPointer),
-               uiLength);
+    std::cout << "CModbusSlave::OnlineDataReadAnswer uiLength "  << (int)uiLength << std::endl;
 
-        puiResponse[uiPduOffset + 1] = uiLength + 1;
-        uiLength ++;
+    memcpy(&puiResponse[uiPduOffset + 2],
+           (pxDataContainer -> m_puiDataPointer),
+           uiLength);
 
-        uiLength += m_pxModbusSlaveLinkLayer ->
-                    ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
+    puiResponse[uiPduOffset + 1] = uiLength;
+    uiLength++;
 
-        // номер блока базы данных
-        puiResponse[uiPduOffset + 2] = puiRequest[uiPduOffset + 1];
-        uiLength ++;
+    uiLength += m_pxModbusSlaveLinkLayer ->
+                ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
 
-        SetFsmState(MESSAGE_TRANSMIT_START);
-    }
+    SetFsmState(MESSAGE_TRANSMIT_START);
 
     std::cout << "CModbusSlave::OnlineDataReadAnswer 7" << std::endl;
     return uiLength;
+
+
+
+
+//    case _FC_ONLINE_DATA_READ:
+//        // req[offset + 1] -
+//        // если бит7 = 0, то запрашиваются реперные точки - (бит0 - бит6) - адрес аналогового входа.
+//        // если бит7 = 1, то запрашивается ТХС и (бит0 - бит2) - относительный адрес модуля МВСТ3.
+//        // req[offset + 2] - требуемое количество аналоговых входов.
+//        //        cout << "_FC_ONLINE_DATA_READ" << endl;
+//
+//        if ((((req[offset + 1]) & ANALOGUE_INPUT_ADDRESS_MASK) < MAX_HANDLED_ANALOGUE_INPUT) &&
+//                ((req[offset + 2]) <= (MVAI5_TXS_INPUT_QUANTITY + MVAI5_ANALOG_INPUT_QUANTITY)))
+//        {
+//            nuiBusyTimeCounter = MAX_MODBUS_BUFFER_BUSY_WAITING_TIME;
+//            while (mb_mapping->message_ready)
+//            {
+//                usleep(COMMON_DELAY_TIME);
+//                if (!nuiBusyTimeCounter--)
+//                {
+//                    cout << "MODBUS_EXCEPTION_SLAVE_OR_SERVER_BUSY 2" << endl;
+//                    rsp_length = response_exception(
+//                                     ctx, &sft,
+//                                     MODBUS_EXCEPTION_SLAVE_OR_SERVER_BUSY, rsp);
+//                    break;
+//                }
+//            }
+//
+//            mb_mapping->message_ready = 1;
+//            mb_mapping->current_message_address_common = address;
+//            mb_mapping->current_message_nb_common = 0;
+//            mb_mapping->function_code = _FC_ONLINE_DATA_READ;
+//            rsp_length = ctx->backend->build_response_basis(&sft, rsp);
+//            // (rsp_length - 2) - адрес slave.
+//            // (rsp_length - 1) - функция.
+//            // (rsp_length) - количество байт в ответе.
+//            // (rsp_length + 1) - начало данных в ответе.
+//            mb_mapping->buffer_pointer = mb_mapping->tab_auxiliary;
+//
+//            nuiBusyTimeCounter = MAX_MODBUS_BUFFER_BUSY_WAITING_TIME;
+//            while (mb_mapping->message_ready)
+//            {
+//                usleep(COMMON_DELAY_TIME);
+//                if (!nuiBusyTimeCounter--)
+//                {
+//                    cout << "MODBUS_EXCEPTION_SLAVE_OR_SERVER_BUSY 2" << endl;
+//                    rsp_length = response_exception(
+//                                     ctx, &sft,
+//                                     MODBUS_EXCEPTION_SLAVE_OR_SERVER_BUSY, rsp);
+//                    break;
+//                }
+//            }
+//
+//            memcpy((&(rsp[rsp_length + 1])),
+//                   mb_mapping->buffer_pointer,
+//                   mb_mapping -> current_message_nb_common);
+//
+//            rsp[rsp_length++] = mb_mapping->current_message_nb_common;
+//            rsp_length += mb_mapping->current_message_nb_common;
+//
+//            if (mb_mapping->current_message_address_common)
+//            {
+//                rsp_length = response_exception(
+//                                 ctx, &sft,
+//                                 (mb_mapping->current_message_address_common), rsp);
+//            }
+//
+//            mb_mapping->message_ready = 0;
+//        }
+//        else
+//        {
+//            rsp_length = response_exception(
+//                             ctx, &sft,
+//                             MODBUS_EXCEPTION_ILLEGAL_DATA_ADDRESS, rsp);
+//        }
+//        break;
 }
 
 //-------------------------------------------------------------------------------

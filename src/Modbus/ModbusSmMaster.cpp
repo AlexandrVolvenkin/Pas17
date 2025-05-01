@@ -270,69 +270,69 @@ uint16_t CModbusSmMaster::ReportSlaveID(void)
 {
     std::cout << "CModbusSmMaster::ReportSlaveID 1" << std::endl;
 
-    uint16_t uiPduOffset = m_pxModbusMasterLinkLayer -> GetPduOffset();
-    uint8_t * puiRequest = m_pxModbusMasterLinkLayer -> GetRxBuffer();
-    uint8_t * puiResponse = m_pxModbusMasterLinkLayer -> GetTxBuffer();
-    uint16_t  uiLength = m_pxModbusMasterLinkLayer -> GetFrameLength();
-
-    int8_t uiSlave = puiRequest[uiPduOffset - 1];
-    int8_t uiFunctionCode = puiRequest[uiPduOffset];
-
-    std::cout << "CModbusSmMaster::ReportSlaveID uiSlave "  << (int)uiSlave << std::endl;
-    std::cout << "CModbusSmMaster::ReportSlaveID uiFunctionCode "  << (int)uiFunctionCode << std::endl;
-
-    std::cout << "CModbusSmMaster::ReportSlaveID 4" << std::endl;
-
-    CDeviceControl* pxDeviceControl =
-        (CDeviceControl*)GetResources() ->
-        GetTaskPointerByNameFromMap("DeviceControlRtuUpperLevel");
-
-    uiLength = pxDeviceControl ->
-               ConfigurationRead(&puiResponse[uiPduOffset + 2]);
-//    uiLength = m_pxResources ->
-//               m_pxDeviceControl ->
+//    uint16_t uiPduOffset = m_pxModbusMasterLinkLayer -> GetPduOffset();
+//    uint8_t * puiRequest = m_pxModbusMasterLinkLayer -> GetRxBuffer();
+//    uint8_t * puiResponse = m_pxModbusMasterLinkLayer -> GetTxBuffer();
+//    uint16_t  uiLength = m_pxModbusMasterLinkLayer -> GetFrameLength();
+//
+//    int8_t uiSlave = puiRequest[uiPduOffset - 1];
+//    int8_t uiFunctionCode = puiRequest[uiPduOffset];
+//
+//    std::cout << "CModbusSmMaster::ReportSlaveID uiSlave "  << (int)uiSlave << std::endl;
+//    std::cout << "CModbusSmMaster::ReportSlaveID uiFunctionCode "  << (int)uiFunctionCode << std::endl;
+//
+//    std::cout << "CModbusSmMaster::ReportSlaveID 4" << std::endl;
+//
+//    CDeviceControl* pxDeviceControl =
+//        (CDeviceControl*)GetResources() ->
+//        GetTaskPointerByNameFromMap("DeviceControlRtuUpperLevel");
+//
+//    uiLength = pxDeviceControl ->
 //               ConfigurationRead(&puiResponse[uiPduOffset + 2]);
-
-//    uint8_t auiTempData[] = {1, 15, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 22, 4, 0,};
-//    memcpy(&puiResponse[uiPduOffset + 2], auiTempData, sizeof(auiTempData));
-//    uiLength += sizeof(auiTempData);
-
-    // количество байт в прикладном сообщении массиве конфигурации, не включая остальные.
-    puiResponse[uiPduOffset + 1] = uiLength;//sizeof(auiTempData);// + 1;
-    uiLength ++;
-    uiLength += m_pxModbusMasterLinkLayer ->
-                ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
-
-    std::cout << "CModbusSmMaster::ReportSlaveID 7" << std::endl;
-    return uiLength;
-
-
-
-//        {
-//            uint16_t uiPduOffset = m_pxModbusMasterLinkLayer -> GetPduOffset();
-//            uint8_t * puiRequest = m_pxModbusMasterLinkLayer -> GetRxBuffer();
-//            uint8_t * puiResponse = (m_pxModbusMasterLinkLayer -> GetTxBuffer());
-//            uint16_t  uiLength = m_pxModbusMasterLinkLayer -> GetFrameLength();
+////    uiLength = m_pxResources ->
+////               m_pxDeviceControl ->
+////               ConfigurationRead(&puiResponse[uiPduOffset + 2]);
 //
-//            int8_t uiSlave = 1;//puiRequest[uiPduOffset - 1];
-//            int8_t uiFunctionCode = 23;//puiRequest[uiPduOffset];
+////    uint8_t auiTempData[] = {1, 15, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 22, 4, 0,};
+////    memcpy(&puiResponse[uiPduOffset + 2], auiTempData, sizeof(auiTempData));
+////    uiLength += sizeof(auiTempData);
 //
-//            uint8_t auiTempData[] = {1, 15, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 22, 4, 0,};
-//            memcpy(&puiResponse[uiPduOffset + 2], auiTempData, sizeof(auiTempData));
-//            uiLength += sizeof(auiTempData);
+//    // количество байт в прикладном сообщении массиве конфигурации, не включая остальные.
+//    puiResponse[uiPduOffset + 1] = uiLength;//sizeof(auiTempData);// + 1;
+//    uiLength ++;
+//    uiLength += m_pxModbusMasterLinkLayer ->
+//                ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
 //
-//            // количество байт в прикладном сообщении массиве конфигурации, не включая остальные.
-//            puiResponse[uiPduOffset + 1] = uiLength;//sizeof(auiTempData);// + 1;
-//            uiLength ++;
-//            uiLength += m_pxModbusMasterLinkLayer ->
-//                        ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
+//    std::cout << "CModbusSmMaster::ReportSlaveID 7" << std::endl;
+//    return uiLength;
 //
-//            uiLength = m_pxModbusMasterLinkLayer -> Tail(puiResponse, uiLength);
-//            m_pxModbusMasterLinkLayer -> SetFrameLength(uiLength);
 //
-//            GetTimerPointer() -> Set(1000);
-//            SetFsmState(BEFORE_REQUEST_WAITING);
-//        }
+//
+////        {
+////            uint16_t uiPduOffset = m_pxModbusMasterLinkLayer -> GetPduOffset();
+////            uint8_t * puiRequest = m_pxModbusMasterLinkLayer -> GetRxBuffer();
+////            uint8_t * puiResponse = (m_pxModbusMasterLinkLayer -> GetTxBuffer());
+////            uint16_t  uiLength = m_pxModbusMasterLinkLayer -> GetFrameLength();
+////
+////            int8_t uiSlave = 1;//puiRequest[uiPduOffset - 1];
+////            int8_t uiFunctionCode = 23;//puiRequest[uiPduOffset];
+////
+////            uint8_t auiTempData[] = {1, 15, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 22, 4, 0,};
+////            memcpy(&puiResponse[uiPduOffset + 2], auiTempData, sizeof(auiTempData));
+////            uiLength += sizeof(auiTempData);
+////
+////            // количество байт в прикладном сообщении массиве конфигурации, не включая остальные.
+////            puiResponse[uiPduOffset + 1] = uiLength;//sizeof(auiTempData);// + 1;
+////            uiLength ++;
+////            uiLength += m_pxModbusMasterLinkLayer ->
+////                        ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
+////
+////            uiLength = m_pxModbusMasterLinkLayer -> Tail(puiResponse, uiLength);
+////            m_pxModbusMasterLinkLayer -> SetFrameLength(uiLength);
+////
+////            GetTimerPointer() -> Set(1000);
+////            SetFsmState(BEFORE_REQUEST_WAITING);
+////        }
 }
 
 
@@ -358,41 +358,41 @@ uint16_t CModbusSmMaster::ReportSlaveIDAnswer(void)
 {
     std::cout << "CModbusSmMaster::ReportSlaveIDAnswer 1" << std::endl;
 
-    uint16_t uiPduOffset = m_pxModbusMasterLinkLayer -> GetPduOffset();
-    uint8_t * puiRequest = m_pxModbusMasterLinkLayer -> GetRxBuffer();
-    uint8_t * puiResponse = m_pxModbusMasterLinkLayer -> GetTxBuffer();
-    uint16_t  uiLength = m_pxModbusMasterLinkLayer -> GetFrameLength();
-
-    int8_t uiSlave = puiRequest[uiPduOffset - 1];
-    int8_t uiFunctionCode = puiRequest[uiPduOffset];
-
-    std::cout << "CModbusSmMaster::ReportSlaveIDAnswer uiSlave "  << (int)uiSlave << std::endl;
-    std::cout << "CModbusSmMaster::ReportSlaveIDAnswer uiFunctionCode "  << (int)uiFunctionCode << std::endl;
-
-    std::cout << "CModbusSmMaster::ReportSlaveIDAnswer 4" << std::endl;
-
-    CDeviceControl* pxDeviceControl =
-        (CDeviceControl*)GetResources() ->
-        GetTaskPointerByNameFromMap("DeviceControlRtuUpperLevel");
-
-    uiLength = pxDeviceControl ->
-               ConfigurationRead(&puiResponse[uiPduOffset + 2]);
-//    uiLength = m_pxResources ->
-//               m_pxDeviceControl ->
+//    uint16_t uiPduOffset = m_pxModbusMasterLinkLayer -> GetPduOffset();
+//    uint8_t * puiRequest = m_pxModbusMasterLinkLayer -> GetRxBuffer();
+//    uint8_t * puiResponse = m_pxModbusMasterLinkLayer -> GetTxBuffer();
+//    uint16_t  uiLength = m_pxModbusMasterLinkLayer -> GetFrameLength();
+//
+//    int8_t uiSlave = puiRequest[uiPduOffset - 1];
+//    int8_t uiFunctionCode = puiRequest[uiPduOffset];
+//
+//    std::cout << "CModbusSmMaster::ReportSlaveIDAnswer uiSlave "  << (int)uiSlave << std::endl;
+//    std::cout << "CModbusSmMaster::ReportSlaveIDAnswer uiFunctionCode "  << (int)uiFunctionCode << std::endl;
+//
+//    std::cout << "CModbusSmMaster::ReportSlaveIDAnswer 4" << std::endl;
+//
+//    CDeviceControl* pxDeviceControl =
+//        (CDeviceControl*)GetResources() ->
+//        GetTaskPointerByNameFromMap("DeviceControlRtuUpperLevel");
+//
+//    uiLength = pxDeviceControl ->
 //               ConfigurationRead(&puiResponse[uiPduOffset + 2]);
-
-//    uint8_t auiTempData[] = {1, 15, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 22, 4, 0,};
-//    memcpy(&puiResponse[uiPduOffset + 2], auiTempData, sizeof(auiTempData));
-//    uiLength += sizeof(auiTempData);
-
-    // количество байт в прикладном сообщении массиве конфигурации, не включая остальные.
-    puiResponse[uiPduOffset + 1] = uiLength;//sizeof(auiTempData);// + 1;
-    uiLength ++;
-    uiLength += m_pxModbusMasterLinkLayer ->
-                ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
-
-    std::cout << "CModbusSmMaster::ReportSlaveIDAnswer 7" << std::endl;
-    return uiLength;
+////    uiLength = m_pxResources ->
+////               m_pxDeviceControl ->
+////               ConfigurationRead(&puiResponse[uiPduOffset + 2]);
+//
+////    uint8_t auiTempData[] = {1, 15, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 22, 4, 0,};
+////    memcpy(&puiResponse[uiPduOffset + 2], auiTempData, sizeof(auiTempData));
+////    uiLength += sizeof(auiTempData);
+//
+//    // количество байт в прикладном сообщении массиве конфигурации, не включая остальные.
+//    puiResponse[uiPduOffset + 1] = uiLength;//sizeof(auiTempData);// + 1;
+//    uiLength ++;
+//    uiLength += m_pxModbusMasterLinkLayer ->
+//                ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
+//
+//    std::cout << "CModbusSmMaster::ReportSlaveIDAnswer 7" << std::endl;
+//    return uiLength;
 }
 
 //-------------------------------------------------------------------------------

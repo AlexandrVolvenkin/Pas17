@@ -16,6 +16,7 @@
 #include "DataContainer.h"
 #include "AnalogueSignals.h"
 #include "ConfigurationCreate.h"
+#include "InternalModuleMuvr.h"
 #include "Resources.h"
 
 //-------------------------------------------------------------------------------
@@ -42,6 +43,7 @@ CResources::~CResources()
 {
     delete[] m_ppxCommonTaskPointers;
     delete[] m_puiReperPointsAdcBuffer;
+    delete[] m_puiAnalogueInputsState;
 }
 
 //-------------------------------------------------------------------------------
@@ -222,11 +224,11 @@ void CResources::Allocate(void)
     m_pfAnalogueInputsValue =
         (float*)&m_puiHoldingRegisters[ANALOGUE_INPUTS_VALUE_OFFSET];
 
-//    // Обнулим общий объём выделенной памяти.
-//    m_uiUsedAnalogueInputsState = 0;
-//    // Подключим буфер для хранения состояний аналоговых входов.
-//    m_puiAnalogueInputsState =
-//        &m_puiCoils[ANALOGUE_INPUTS_BAD_STATE_OFFSET];
+    // Обнулим общий объём выделенной памяти.
+    m_uiUsedAnalogueInputsState = 0;
+    // Подключим буфер для хранения состояний аналоговых входов.
+    m_puiAnalogueInputsState =
+        new uint8_t[256];
 
     // Обнулим общий объём выделенной памяти.
     m_uiUsedAnalogueInputsBadState = 0;

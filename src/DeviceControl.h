@@ -30,6 +30,10 @@ public:
         CONFIGURATION_REQUEST_EXECUTOR_DONE_OK_ANSWER_PROCESSING,
         CONFIGURATION_REQUEST_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING,
 
+        ONLINE_DATA_READ_START,
+        ONLINE_DATA_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING,
+        ONLINE_DATA_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING,
+
         DATA_BASE_BLOCK_READ,
         DATA_BASE_BLOCK_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING,
         DATA_BASE_BLOCK_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING,
@@ -144,16 +148,9 @@ public:
     void SetInternalModuleMuvrName(std::string sName);
 
     uint8_t Init(void);
-//    bool SetTaskData(CDataContainerDataBase* pxDataContainer);
-//    bool GetTaskData(CDataContainerDataBase* pxDataContainer);
-//    CDataContainerDataBase* GetTaskData(void);
-
-    uint16_t ConfigurationRead(uint8_t *puiDestination);
-    uint16_t DataBaseBlockRead(uint8_t *puiDestination, uint8_t uiBlockIndex);
-    uint16_t DataBaseBlockReadAnswer(void);
+    void OnlineDataRead(void);
     uint16_t DataBaseBlockReadBlockRelatedAction(void);
     uint16_t DataBaseBlockWriteBlockRelatedAction(void);
-    uint8_t GetFsmOperationStatus(void);
 
     uint8_t Fsm(void);
 
