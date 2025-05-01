@@ -473,8 +473,8 @@ enum EDataBaseBlockOffsets
 //-------------------------------------------------------------------------------
 enum
 {
-    COILS_WORK_ARRAY_LENGTH = 2000,
-    DISCRETE_INPUTS_ARRAY_LENGTH = 2000,
+    COILS_WORK_ARRAY_LENGTH = 8000,
+    DISCRETE_INPUTS_ARRAY_LENGTH = 8000,
     HOLDING_REGISTERS_ARRAY_LENGTH = 128,
     INPUT_REGISTERS_ARRAY_LENGTH = 128,
 };

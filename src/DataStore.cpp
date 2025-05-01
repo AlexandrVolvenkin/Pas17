@@ -503,7 +503,7 @@ uint8_t CDataStore::WriteBlock(uint8_t *puiSource, uint16_t uiLength, uint8_t ui
         return 0;
     }
 
-    CDataContainerDataBase* pxDataContainer = ((CDataContainerDataBase*)GetExecutorDataContainerPointer());//((CDataContainerDataBase*)GetCustomerDataContainerPointer());
+    CDataContainerDataBase* pxDataContainer = ((CDataContainerDataBase*)GetCustomerDataContainerPointer());//((CDataContainerDataBase*)GetCustomerDataContainerPointer());
 
     std::cout << "CDataStore::WriteBlock 3"  << std::endl;
     pxDataContainer ->

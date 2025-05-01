@@ -430,31 +430,61 @@ uint16_t CModbusSlave::WriteSingleCoil(void)
     uint16_t uiAddress = ((static_cast<uint16_t>(puiRequest[uiPduOffset + 1]) << 8) |
                           (static_cast<uint16_t>(puiRequest[uiPduOffset + 2])));
 
+    std::cout << "CModbusSlave::DataBaseRead uiSlave "  << (int)uiSlave << std::endl;
+    std::cout << "CModbusSlave::DataBaseRead uiFunctionCode "  << (int)uiFunctionCode << std::endl;
+    std::cout << "CModbusSlave::DataBaseRead uiAddress "  << (int)uiAddress << std::endl;
+
     if (uiAddress >= m_uiCoilsNumber)
     {
+        std::cout << "CModbusSlave::WriteSingleCoil 2" << std::endl;
         SetFsmState(RESPONSE_EXCEPTION_ILLEGAL_DATA_ADDRESS);
     }
     else
     {
+        std::cout << "CModbusSlave::WriteSingleCoil 3" << std::endl;
         uint16_t uiData = ((static_cast<uint16_t>(puiRequest[uiPduOffset + 3]) << 8) |
                            (static_cast<uint16_t>(puiRequest[uiPduOffset + 4])));
 
         if (uiData == 0xFF00 || uiData == 0x0)
         {
+            std::cout << "CModbusSlave::WriteSingleCoil 4" << std::endl;
             if (uiData)
             {
-                m_puiCoils[uiAddress] = 1;
+                std::cout << "CModbusSlave::WriteSingleCoil 5" << std::endl;
+                m_puiIntermediateBuff[0] = 1;
+//                m_puiCoils[uiAddress] = 1;
             }
             else
             {
-                m_puiCoils[uiAddress] = 0;
+                std::cout << "CModbusSlave::WriteSingleCoil 6" << std::endl;
+                m_puiIntermediateBuff[0] = 0;
+//                m_puiCoils[uiAddress] = 0;
             }
             memcpy(puiResponse, puiRequest, uiLength);
 
-            SetFsmState(MESSAGE_TRANSMIT_START);
+
+
+            m_uiFunctionCode = uiFunctionCode;
+
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            pxDataContainer -> m_uiTaskId = m_uiDeviceControlId;
+            pxDataContainer -> m_uiFsmCommandState =
+                CDeviceControl::MODBUS_FUNCTION_5_HANDLER_START;
+            pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+            pxDataContainer -> m_uiDataOffset = uiAddress;
+
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+            SetFsmNextStateDoneOk(EXECUTOR_ANSWER_PROCESSING);
+            SetFsmNextStateReadyWaitingError(RESPONSE_EXCEPTION_SLAVE_OR_SERVER_BUSY);
+            SetFsmNextStateDoneWaitingError(RESPONSE_EXCEPTION_SLAVE_OR_SERVER_FAILURE);
+            SetFsmNextStateDoneWaitingDoneError(RESPONSE_EXCEPTION_SLAVE_OR_SERVER_FAILURE);
+
+//            SetFsmState(MESSAGE_TRANSMIT_START);
         }
         else
         {
+            std::cout << "CModbusSlave::WriteSingleCoil 7" << std::endl;
             SetFsmState(RESPONSE_EXCEPTION_ILLEGAL_DATA_VALUE);
         }
     }
@@ -795,14 +825,9 @@ uint16_t CModbusSlave::OnlineDataRead(void)
     std::cout << "CModbusSlave::OnlineDataRead uiAddress "  << (int)uiAddress << std::endl;
 
     if ((((puiRequest[uiPduOffset + 1]) & ANALOGUE_INPUT_ADDRESS_MASK) < MAX_HANDLED_ANALOGUE_INPUT) &&
-            ((puiRequest[uiPduOffset + 2]) <= (MUVR_TXS_INPUT_QUANTITY + MUVR_ANALOG_INPUT_QUANTITY)))
+            ((puiRequest[uiPduOffset + 2]) <= (MUVR_TXS_INPUT_QUANTITY + MUVR_ANALOG_INPUT_QUANTITY + 2)))
     {
         std::cout << "CModbusSlave::OnlineDataRead 2" << std::endl;
-        SetFsmState(RESPONSE_EXCEPTION_ILLEGAL_DATA_ADDRESS);
-    }
-    else
-    {
-        std::cout << "CModbusSlave::OnlineDataRead 3" << std::endl;
 
         m_uiFunctionCode = uiFunctionCode;
 
@@ -820,84 +845,15 @@ uint16_t CModbusSlave::OnlineDataRead(void)
         SetFsmNextStateDoneWaitingError(RESPONSE_EXCEPTION_SLAVE_OR_SERVER_FAILURE);
         SetFsmNextStateDoneWaitingDoneError(RESPONSE_EXCEPTION_SLAVE_OR_SERVER_FAILURE);
     }
+    else
+    {
+        std::cout << "CModbusSlave::OnlineDataRead 3" << std::endl;
+
+        SetFsmState(RESPONSE_EXCEPTION_ILLEGAL_DATA_ADDRESS);
+    }
 
     std::cout << "CModbusSlave::OnlineDataRead 7" << std::endl;
     return uiLength;
-
-
-
-//    case _FC_ONLINE_DATA_READ:
-//        // req[offset + 1] -
-//        // если бит7 = 0, то запрашиваются реперные точки - (бит0 - бит6) - адрес аналогового входа.
-//        // если бит7 = 1, то запрашивается ТХС и (бит0 - бит2) - относительный адрес модуля МВСТ3.
-//        // req[offset + 2] - требуемое количество аналоговых входов.
-//        //        cout << "_FC_ONLINE_DATA_READ" << endl;
-//
-//        if ((((req[offset + 1]) & ANALOGUE_INPUT_ADDRESS_MASK) < MAX_HANDLED_ANALOGUE_INPUT) &&
-//                ((req[offset + 2]) <= (MVAI5_TXS_INPUT_QUANTITY + MVAI5_ANALOG_INPUT_QUANTITY)))
-//        {
-//            nuiBusyTimeCounter = MAX_MODBUS_BUFFER_BUSY_WAITING_TIME;
-//            while (mb_mapping->message_ready)
-//            {
-//                usleep(COMMON_DELAY_TIME);
-//                if (!nuiBusyTimeCounter--)
-//                {
-//                    cout << "MODBUS_EXCEPTION_SLAVE_OR_SERVER_BUSY 2" << endl;
-//                    rsp_length = response_exception(
-//                                     ctx, &sft,
-//                                     MODBUS_EXCEPTION_SLAVE_OR_SERVER_BUSY, rsp);
-//                    break;
-//                }
-//            }
-//
-//            mb_mapping->message_ready = 1;
-//            mb_mapping->current_message_address_common = address;
-//            mb_mapping->current_message_nb_common = 0;
-//            mb_mapping->function_code = _FC_ONLINE_DATA_READ;
-//            rsp_length = ctx->backend->build_response_basis(&sft, rsp);
-//            // (rsp_length - 2) - адрес slave.
-//            // (rsp_length - 1) - функция.
-//            // (rsp_length) - количество байт в ответе.
-//            // (rsp_length + 1) - начало данных в ответе.
-//            mb_mapping->buffer_pointer = mb_mapping->tab_auxiliary;
-//
-//            nuiBusyTimeCounter = MAX_MODBUS_BUFFER_BUSY_WAITING_TIME;
-//            while (mb_mapping->message_ready)
-//            {
-//                usleep(COMMON_DELAY_TIME);
-//                if (!nuiBusyTimeCounter--)
-//                {
-//                    cout << "MODBUS_EXCEPTION_SLAVE_OR_SERVER_BUSY 2" << endl;
-//                    rsp_length = response_exception(
-//                                     ctx, &sft,
-//                                     MODBUS_EXCEPTION_SLAVE_OR_SERVER_BUSY, rsp);
-//                    break;
-//                }
-//            }
-//
-//            memcpy((&(rsp[rsp_length + 1])),
-//                   mb_mapping->buffer_pointer,
-//                   mb_mapping -> current_message_nb_common);
-//
-//            rsp[rsp_length++] = mb_mapping->current_message_nb_common;
-//            rsp_length += mb_mapping->current_message_nb_common;
-//
-//            if (mb_mapping->current_message_address_common)
-//            {
-//                rsp_length = response_exception(
-//                                 ctx, &sft,
-//                                 (mb_mapping->current_message_address_common), rsp);
-//            }
-//
-//            mb_mapping->message_ready = 0;
-//        }
-//        else
-//        {
-//            rsp_length = response_exception(
-//                             ctx, &sft,
-//                             MODBUS_EXCEPTION_ILLEGAL_DATA_ADDRESS, rsp);
-//        }
-//        break;
 }
 
 //-------------------------------------------------------------------------------
@@ -1264,44 +1220,71 @@ uint16_t CModbusSlave::WriteSingleCoilAnswer(void)
 
     int8_t uiSlave = puiRequest[uiPduOffset - 1];
     int8_t uiFunctionCode = puiRequest[uiPduOffset];
-    uint16_t uiAddress = ((static_cast<uint16_t>(puiRequest[uiPduOffset + 1]) << 8) |
-                          (static_cast<uint16_t>(puiRequest[uiPduOffset + 2])));
+//    uint16_t uiAddress = ((static_cast<uint16_t>(puiRequest[uiPduOffset + 1]) << 8) |
+//                          (static_cast<uint16_t>(puiRequest[uiPduOffset + 2])));
+//
+//    if (uiAddress >= m_uiCoilsNumber)
+//    {
+//        uiLength = m_pxModbusSlaveLinkLayer ->
+//                   ResponseException(uiSlave,
+//                                     uiFunctionCode,
+//                                     MODBUS_EXCEPTION_ILLEGAL_DATA_ADDRESS,
+//                                     puiResponse);
+//    }
+//    else
+//    {
+//        uint16_t uiData = ((static_cast<uint16_t>(puiRequest[uiPduOffset + 3]) << 8) |
+//                           (static_cast<uint16_t>(puiRequest[uiPduOffset + 4])));
+//
+//        if (uiData == 0xFF00 || uiData == 0x0)
+//        {
+//    if (uiData)
+//    {
+//        m_puiCoils[uiAddress] = 1;
+//    }
+//    else
+//    {
+//        m_puiCoils[uiAddress] = 0;
+//    }
+//    memcpy(puiResponse, puiRequest, uiLength);
 
-    if (uiAddress >= m_uiCoilsNumber)
+
+
+    CDataContainerDataBase* pxDataContainer =
+        (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+//    uiLength = pxDataContainer -> m_uiDataLength;
+//
+//    std::cout << "CModbusSlave::DataBaseReadAnswer uiLength "  << (int)uiLength << std::endl;
+//
+//    memcpy(&puiResponse[uiPduOffset + 3],
+//           (pxDataContainer -> m_puiDataPointer),
+//           uiLength);
+
+    if ((pxDataContainer -> m_puiDataPointer[0]))
     {
-        uiLength = m_pxModbusSlaveLinkLayer ->
-                   ResponseException(uiSlave,
-                                     uiFunctionCode,
-                                     MODBUS_EXCEPTION_ILLEGAL_DATA_ADDRESS,
-                                     puiResponse);
+        m_puiCoils[(pxDataContainer -> m_uiDataOffset)] = 1;
     }
     else
     {
-        uint16_t uiData = ((static_cast<uint16_t>(puiRequest[uiPduOffset + 3]) << 8) |
-                           (static_cast<uint16_t>(puiRequest[uiPduOffset + 4])));
-
-        if (uiData == 0xFF00 || uiData == 0x0)
-        {
-            if (uiData)
-            {
-                m_puiCoils[uiAddress] = 1;
-            }
-            else
-            {
-                m_puiCoils[uiAddress] = 0;
-            }
-            memcpy(puiResponse, puiRequest, uiLength);
-        }
-        else
-        {
-            uiLength = m_pxModbusSlaveLinkLayer ->
-                       ResponseException(uiSlave,
-                                         uiFunctionCode,
-                                         MODBUS_EXCEPTION_ILLEGAL_DATA_VALUE,
-                                         puiResponse);
-        }
-
+        m_puiCoils[(pxDataContainer -> m_uiDataOffset)] = 0;
     }
+//    memcpy(puiResponse, puiRequest, uiLength);
+
+    SetFsmState(MESSAGE_TRANSMIT_START);
+
+
+
+//        }
+//        else
+//        {
+//            uiLength = m_pxModbusSlaveLinkLayer ->
+//                       ResponseException(uiSlave,
+//                                         uiFunctionCode,
+//                                         MODBUS_EXCEPTION_ILLEGAL_DATA_VALUE,
+//                                         puiResponse);
+//        }
+//
+//    }
     return uiLength;
 }
 
@@ -1654,82 +1637,6 @@ uint16_t CModbusSlave::OnlineDataReadAnswer(void)
 
     std::cout << "CModbusSlave::OnlineDataReadAnswer 7" << std::endl;
     return uiLength;
-
-
-
-
-//    case _FC_ONLINE_DATA_READ:
-//        // req[offset + 1] -
-//        // если бит7 = 0, то запрашиваются реперные точки - (бит0 - бит6) - адрес аналогового входа.
-//        // если бит7 = 1, то запрашивается ТХС и (бит0 - бит2) - относительный адрес модуля МВСТ3.
-//        // req[offset + 2] - требуемое количество аналоговых входов.
-//        //        cout << "_FC_ONLINE_DATA_READ" << endl;
-//
-//        if ((((req[offset + 1]) & ANALOGUE_INPUT_ADDRESS_MASK) < MAX_HANDLED_ANALOGUE_INPUT) &&
-//                ((req[offset + 2]) <= (MVAI5_TXS_INPUT_QUANTITY + MVAI5_ANALOG_INPUT_QUANTITY)))
-//        {
-//            nuiBusyTimeCounter = MAX_MODBUS_BUFFER_BUSY_WAITING_TIME;
-//            while (mb_mapping->message_ready)
-//            {
-//                usleep(COMMON_DELAY_TIME);
-//                if (!nuiBusyTimeCounter--)
-//                {
-//                    cout << "MODBUS_EXCEPTION_SLAVE_OR_SERVER_BUSY 2" << endl;
-//                    rsp_length = response_exception(
-//                                     ctx, &sft,
-//                                     MODBUS_EXCEPTION_SLAVE_OR_SERVER_BUSY, rsp);
-//                    break;
-//                }
-//            }
-//
-//            mb_mapping->message_ready = 1;
-//            mb_mapping->current_message_address_common = address;
-//            mb_mapping->current_message_nb_common = 0;
-//            mb_mapping->function_code = _FC_ONLINE_DATA_READ;
-//            rsp_length = ctx->backend->build_response_basis(&sft, rsp);
-//            // (rsp_length - 2) - адрес slave.
-//            // (rsp_length - 1) - функция.
-//            // (rsp_length) - количество байт в ответе.
-//            // (rsp_length + 1) - начало данных в ответе.
-//            mb_mapping->buffer_pointer = mb_mapping->tab_auxiliary;
-//
-//            nuiBusyTimeCounter = MAX_MODBUS_BUFFER_BUSY_WAITING_TIME;
-//            while (mb_mapping->message_ready)
-//            {
-//                usleep(COMMON_DELAY_TIME);
-//                if (!nuiBusyTimeCounter--)
-//                {
-//                    cout << "MODBUS_EXCEPTION_SLAVE_OR_SERVER_BUSY 2" << endl;
-//                    rsp_length = response_exception(
-//                                     ctx, &sft,
-//                                     MODBUS_EXCEPTION_SLAVE_OR_SERVER_BUSY, rsp);
-//                    break;
-//                }
-//            }
-//
-//            memcpy((&(rsp[rsp_length + 1])),
-//                   mb_mapping->buffer_pointer,
-//                   mb_mapping -> current_message_nb_common);
-//
-//            rsp[rsp_length++] = mb_mapping->current_message_nb_common;
-//            rsp_length += mb_mapping->current_message_nb_common;
-//
-//            if (mb_mapping->current_message_address_common)
-//            {
-//                rsp_length = response_exception(
-//                                 ctx, &sft,
-//                                 (mb_mapping->current_message_address_common), rsp);
-//            }
-//
-//            mb_mapping->message_ready = 0;
-//        }
-//        else
-//        {
-//            rsp_length = response_exception(
-//                             ctx, &sft,
-//                             MODBUS_EXCEPTION_ILLEGAL_DATA_ADDRESS, rsp);
-//        }
-//        break;
 }
 
 //-------------------------------------------------------------------------------
