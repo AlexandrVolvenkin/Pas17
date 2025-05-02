@@ -183,6 +183,7 @@ public:
     bool m_fbIsAcknowledjedGlobal = false;
     bool m_fbIsResetededGlobal = false;
     bool m_fbIsBlockededGlobal = false;
+    uint8_t m_uiAinOffProcessOwnerIndex = 0;
 };
 
 //-------------------------------------------------------------------------------

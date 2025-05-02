@@ -235,7 +235,7 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
     case DEVICE_CONTROL_PC_KVIT:
     {
         CDataContainerDataBase* pxDataContainer =
-            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            (CDataContainerDataBase*)GetCustomerDataContainerPointer();
         // бит установлен?
         if ((pxDataContainer -> m_puiDataPointer[0]))
         {
@@ -253,7 +253,7 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
     case DEVICE_CONTROL_PC_RESET:
     {
         CDataContainerDataBase* pxDataContainer =
-            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            (CDataContainerDataBase*)GetCustomerDataContainerPointer();
         // бит установлен?
         if ((pxDataContainer -> m_puiDataPointer[0]))
         {
@@ -271,7 +271,7 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
     case DEVICE_CONTROL_BLOCK:
     {
         CDataContainerDataBase* pxDataContainer =
-            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            (CDataContainerDataBase*)GetCustomerDataContainerPointer();
         // бит установлен?
         if ((pxDataContainer -> m_puiDataPointer[0]))
         {
@@ -289,53 +289,112 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
         break;
     };
 
-////-----------------------------------------------------------------------------------------------------
-//	// смотрим, по какому адресу записывается бит.
-//	switch(((uiAddress -
-//			 COILS_ARRAY_MODBUS_BEGIN_ADDRESS) & 0xFF00))
-//	{
-//		// включение-выключение режима калибровки.
-//	case DEVICE_CONTROL_CALIBRATION_ON_OFF:
-//		// перед этим кто либо другой не вывел из обработки аналоговый вход?
-//		if ((xMainFlagRegister.ui8AinOffProcessOwnerIndex == AIN_OFF_PROCESS_OWNER_IS_NONE) ||
-//				(xMainFlagRegister.ui8AinOffProcessOwnerIndex == AIN_OFF_PROCESS_OWNER_IS_PROGRAMMER))
-//		{
-////        // вычислим индекс модуля в массиве контекста, к которому поступила команда - калибровка.
-////        nucIndexNumber = (((xPlcConfigService.xPlcConfigServiceData.ucLastAnalogueInputModuleIndex + 1) -
-////                           xPlcConfigService.xPlcConfigServiceData.ucServiceAnalogueInputModuleQuantity)  +
-////                          ((((uiAddress -
-////                              COILS_ARRAY_MODBUS_BEGIN_ADDRESS) & CALIBRATION_ANALOG_MODULE_NUMBER_MASK) >> 4) - 1));
-//			// вычислим индекс модуля в массиве контекста, к которому поступила команда - калибровка.
-//			nucIndexNumber = (((xPlcConfigService.xPlcConfigServiceData.ucLastAnalogueInputModuleIndex + 1) -
-//							   xPlcConfigService.xPlcConfigServiceData.ucServiceAnalogueInputModuleQuantity)  +
-//							  (((uiAddress -
-//								 COILS_ARRAY_MODBUS_BEGIN_ADDRESS) & CALIBRATION_ANALOG_MODULE_NUMBER_MASK) >> 4));
-//			// по индексу - nucIndexNumber есть модуль?
-//			if (nucIndexNumber <= (xPlcConfigService.xPlcConfigServiceData.ucLastAnalogueInputModuleIndex))
-//			{
-//				// бит установлен или сброшен?
-//				if (pxModbusMapping->tab_bits[uiAddress -
-//											  COILS_ARRAY_MODBUS_BEGIN_ADDRESS])
-//				{
-//					// включение режима калибровки.
-//					cout << "DEVICE_CONTROL_CALIBRATION_ON" << endl;
+//-----------------------------------------------------------------------------------------------------
+    // смотрим, по какому адресу записывается бит.
+    switch(((uiAddress -
+             COILS_ARRAY_MODBUS_BEGIN_ADDRESS) & 0xFF00))
+    {
+    // включение-выключение режима калибровки.
+    case DEVICE_CONTROL_CALIBRATION_ON_OFF:
+        // перед этим кто либо другой не вывел из обработки аналоговый вход?
+        if (((GetResources() -> m_uiAinOffProcessOwnerIndex) == AIN_OFF_PROCESS_OWNER_IS_NONE) ||
+                ((GetResources() -> m_uiAinOffProcessOwnerIndex) == AIN_OFF_PROCESS_OWNER_IS_PROGRAMMER))
+        {
+            // вычислим индекс модуля в массиве контекста, к которому поступила команда - калибровка.
+            nucIndexNumber = (((((GetResources() -> GetDeviceConfigSearchPointer()) -> uiLastAnalogueInputModuleIndex) + 1) -
+                               ((GetResources() -> GetDeviceConfigSearchPointer()) -> uiServiceAnalogueInputModuleQuantity))  +
+                              (((uiAddress -
+                                 COILS_ARRAY_MODBUS_BEGIN_ADDRESS) & CALIBRATION_ANALOG_MODULE_NUMBER_MASK) >> 4));
+
+                cout << "DEVICE_CONTROL_CALIBRATION_ON nucIndexNumber " << (int)nucIndexNumber << endl;
+            // по индексу - nucIndexNumber есть модуль?
+//            if (nucIndexNumber <= ((GetResources() -> GetDeviceConfigSearchPointer()) -> uiLastAnalogueInputModuleIndex))
+            if (1)
+            {
+                // получимуказатель на контейнер с данными заказчика.
+                CDataContainerDataBase* pxDataContainer =
+                    (CDataContainerDataBase*)GetCustomerDataContainerPointer();
+                // бит установлен?
+                if ((pxDataContainer -> m_puiDataPointer[0]) == 0)
+                {
+                    // включение режима калибровки.
+                    cout << "DEVICE_CONTROL_CALIBRATION_ON" << endl;
+                    // если установлен - сбросим.
+                    (pxDataContainer -> m_puiDataPointer[0]) = 0;
+                    // получимуказатель на контейнер с данными исполнителя..
+                    pxDataContainer =
+                        (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+                    // передадим драйверу модуля номер калибруемого входа.
+                    // в DO-D2 - № входа в модуле (0-нет режима калибровки).
+                    (pxDataContainer -> m_puiDataPointer[0]) = (((uiAddress -
+                            COILS_ARRAY_MODBUS_BEGIN_ADDRESS) & CALIBRATION_INPUT_NUMBER_MASK));
+
+                cout << "DEVICE_CONTROL_CALIBRATION_ON ucCommonIndex " << (int)(pxDataContainer -> m_puiDataPointer[0]) << endl;
+                    // вернём в рабочее состояние все выведенные из обработки аналоговые входы.
+                    for (i = 0; i < MAX_HANDLED_ANALOGUE_INPUT; i++)
+                    {
+                        (GetResources() -> m_puiAnalogueInputsOff[i]) = 0;
+                    }
+
+                    (GetResources() -> m_puiAnalogueInputsOff[(((((uiAddress - // вычисляем номер модуля
+                            COILS_ARRAY_MODBUS_BEGIN_ADDRESS) &
+                            CALIBRATION_ANALOG_MODULE_NUMBER_MASK) >> 4) *
+                            ANALOG_MODULE_INPUT_QUANTITY) +
+
+                            (((uiAddress - // вычисляем номер входа
+                               COILS_ARRAY_MODBUS_BEGIN_ADDRESS) &
+                              CALIBRATION_INPUT_NUMBER_MASK) - 1))]) = 1;
+
+//                    xMainFlagRegister.ui8AinOffProcessOwnerIndex = AIN_OFF_PROCESS_OWNER_IS_PROGRAMMER;
+                }
+                else
+                {
+                    // выключение режима калибровки.
+                    cout << "DEVICE_CONTROL_CALIBRATION_OFF" << endl;
+                    // получимуказатель на контейнер с данными исполнителя..
+                    pxDataContainer =
+                        (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+                    // передадим драйверу модуля номер калибруемого входа. если 0, калибровка выключена.
+                    // в DO-D2 - № входа в модуле (0-нет режима калибровки).
+                    (pxDataContainer -> m_puiDataPointer[0]) = 0;
+                    // вернём в рабочее состояние все выведенные из обработки аналоговые входы.
+                    for (i = 0; i < MAX_HANDLED_ANALOGUE_INPUT; i++)
+                    {
+                        (GetResources() -> m_puiAnalogueInputsOff[i]);
+                    }
+
+//                    xMainFlagRegister.ui8AinOffProcessOwnerIndex = AIN_OFF_PROCESS_OWNER_IS_NONE;
+                }
+
+//                // бит установлен или сброшен?
+//                if (pxModbusMapping->tab_bits[uiAddress -
+//                                                        COILS_ARRAY_MODBUS_BEGIN_ADDRESS])
+//                {
+//                    // включение режима калибровки.
+//                    cout << "DEVICE_CONTROL_CALIBRATION_ON" << endl;
 ////                cout << "DEVICE_CONTROL_CALIBRATION_ON nucIndexNumber " << (int)nucIndexNumber << endl;
 ////                cout << "DEVICE_CONTROL_CALIBRATION_ON current_message_address_bits " << (int)(uiAddress -
 ////                        COILS_ARRAY_MODBUS_BEGIN_ADDRESS) << endl;
-//					// если установлен - сбросим.
-//					pxModbusMapping->tab_bits[uiAddress -
-//											  COILS_ARRAY_MODBUS_BEGIN_ADDRESS] = 0;
-//					// передадим драйверу модуля номер калибруемого входа.
-//					// в DO-D2 - № входа в модуле (0-нет режима калибровки).
-//					xAllModulesContext.axAllModulesContext[nucIndexNumber].
-//					xModuleContextDinamic.
-//					ucCommonIndex = (((uiAddress -
-//									   COILS_ARRAY_MODBUS_BEGIN_ADDRESS) & CALIBRATION_INPUT_NUMBER_MASK));
-//					// вернём в рабочее состояние все выведенные из обработки аналоговые входы.
-//					for (i = 0; i < MAX_HANDLED_ANALOGUE_INPUT; i++)
-//					{
-//						aucCoilsArray[AIN_OFF_BIT_ARRAY_OFFSET + i] = 0;
-//					}
+//                    // если установлен - сбросим.
+//                    pxModbusMapping->tab_bits[uiAddress -
+//                                                        COILS_ARRAY_MODBUS_BEGIN_ADDRESS] = 0;
+//                    // передадим драйверу модуля номер калибруемого входа.
+//                    // в DO-D2 - № входа в модуле (0-нет режима калибровки).
+//                    //                    xAllModulesContext.axAllModulesContext[nucIndexNumber].
+////                    xModuleContextDinamic.
+////                    ucCommonIndex = (((uiAddress -
+////                                       COILS_ARRAY_MODBUS_BEGIN_ADDRESS) & CALIBRATION_INPUT_NUMBER_MASK));
+//
+//                    (pxDataContainer -> m_puiDataPointer[0]) = (((uiAddress -
+//                            COILS_ARRAY_MODBUS_BEGIN_ADDRESS) & CALIBRATION_INPUT_NUMBER_MASK));
+//
+//                    // вернём в рабочее состояние все выведенные из обработки аналоговые входы.
+//                    for (i = 0; i < MAX_HANDLED_ANALOGUE_INPUT; i++)
+//                    {
+//                        m_puiAnalogueInputsOff[i] = 0;
+////                        aucCoilsArray[AIN_OFF_BIT_ARRAY_OFFSET + i] = 0;
+//                    }
+//
 ////            // выведем из обработки аналоговый вход - Y, модуля - X.
 ////            // в адресе Modbus 0x00XY, X - номер модуля, Y - номер калибруемого входа.
 ////            aucCoilsArray[AIN_OFF_BIT_ARRAY_OFFSET +
@@ -348,66 +407,77 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
 ////                              COILS_ARRAY_MODBUS_BEGIN_ADDRESS) &
 ////                             CALIBRATION_INPUT_NUMBER_MASK) - 1))] = 1;
 //
-//					// выведем из обработки аналоговый вход - Y, модуля - X.
-//					// в адресе Modbus 0x00XY, X - номер модуля, Y - номер калибруемого входа.
-//					aucCoilsArray[AIN_OFF_BIT_ARRAY_OFFSET +
-//								  (((((uiAddress - // вычисляем номер модуля
-//									   COILS_ARRAY_MODBUS_BEGIN_ADDRESS) &
-//									  CALIBRATION_ANALOG_MODULE_NUMBER_MASK) >> 4) *
-//									ANALOG_MODULE_INPUT_QUANTITY) +
-//
-//								   (((uiAddress - // вычисляем номер входа
-//									  COILS_ARRAY_MODBUS_BEGIN_ADDRESS) &
-//									 CALIBRATION_INPUT_NUMBER_MASK) - 1))] = 1;
-//
-//					xMainFlagRegister.ui8AinOffProcessOwnerIndex = AIN_OFF_PROCESS_OWNER_IS_PROGRAMMER;
-//				}
-//				else
-//				{
-//					// выключение режима калибровки.
-//					cout << "DEVICE_CONTROL_CALIBRATION_OFF" << endl;
-////                cout << "DEVICE_CONTROL_CALIBRATION_ON nucIndexNumber " << (int)nucIndexNumber << endl;
-////                cout << "DEVICE_CONTROL_CALIBRATION_ON current_message_address_bits " << (int)(uiAddress -
-////                        COILS_ARRAY_MODBUS_BEGIN_ADDRESS) << endl;
-//					// передадим драйверу модуля номер калибруемого входа. если 0, калибровка выключена.
-//					// в DO-D2 - № входа в модуле (0-нет режима калибровки).
-//					xAllModulesContext.axAllModulesContext[nucIndexNumber].
-//					xModuleContextDinamic.
-//					ucCommonIndex = 0;
-//					// вернём в рабочее состояние все выведенные из обработки аналоговые входы.
-//					for (i = 0; i < MAX_HANDLED_ANALOGUE_INPUT; i++)
-//					{
-//						aucCoilsArray[AIN_OFF_BIT_ARRAY_OFFSET + i] = 0;
-//					}
-//// вернём в рабочее состояние аналоговый вход - Y, модуля - X.
-////            aucCoilsArray[AIN_OFF_BIT_ARRAY_OFFSET +
-////                          ((((((uiAddress - // вычисляем номер модуля
-////                                COILS_ARRAY_MODBUS_BEGIN_ADDRESS) &
-////                               CALIBRATION_ANALOG_MODULE_NUMBER_MASK) >> 4) - 1) *
-////                            ANALOG_MODULE_INPUT_QUANTITY) +
+//                    // выведем из обработки аналоговый вход - Y, модуля - X.
+//                    // в адресе Modbus 0x00XY, X - номер модуля, Y - номер калибруемого входа.
+////                    aucCoilsArray[AIN_OFF_BIT_ARRAY_OFFSET +
+////                                                           (((((uiAddress - // вычисляем номер модуля
+////                                                                COILS_ARRAY_MODBUS_BEGIN_ADDRESS) &
+////                                                               CALIBRATION_ANALOG_MODULE_NUMBER_MASK) >> 4) *
+////                                                             ANALOG_MODULE_INPUT_QUANTITY) +
 ////
-////                           (((uiAddress - // вычисляем номер входа
-////                              COILS_ARRAY_MODBUS_BEGIN_ADDRESS) &
-////                             CALIBRATION_INPUT_NUMBER_MASK) - 1))] = 0;
+////                                                            (((uiAddress - // вычисляем номер входа
+////                                                               COILS_ARRAY_MODBUS_BEGIN_ADDRESS) &
+////                                                              CALIBRATION_INPUT_NUMBER_MASK) - 1))] = 1;
 //
+//                    m_puiAnalogueInputsOff[(((((uiAddress - // вычисляем номер модуля
+//                                                COILS_ARRAY_MODBUS_BEGIN_ADDRESS) &
+//                                               CALIBRATION_ANALOG_MODULE_NUMBER_MASK) >> 4) *
+//                                             ANALOG_MODULE_INPUT_QUANTITY) +
 //
-//// вернём в рабочее состояние аналоговый вход - Y, модуля - X.
-////            aucCoilsArray[AIN_OFF_BIT_ARRAY_OFFSET +
-////                          (((((uiAddress - // вычисляем номер модуля
-////                                COILS_ARRAY_MODBUS_BEGIN_ADDRESS) &
-////                               CALIBRATION_ANALOG_MODULE_NUMBER_MASK) >> 4) *
-////                            ANALOG_MODULE_INPUT_QUANTITY) +
+//                                            (((uiAddress - // вычисляем номер входа
+//                                               COILS_ARRAY_MODBUS_BEGIN_ADDRESS) &
+//                                              CALIBRATION_INPUT_NUMBER_MASK) - 1))] = 1;
+//
+////                    xMainFlagRegister.ui8AinOffProcessOwnerIndex = AIN_OFF_PROCESS_OWNER_IS_PROGRAMMER;
+//                }
+//                else
+//                {
+////                    // выключение режима калибровки.
+////                    cout << "DEVICE_CONTROL_CALIBRATION_OFF" << endl;
+//////                cout << "DEVICE_CONTROL_CALIBRATION_ON nucIndexNumber " << (int)nucIndexNumber << endl;
+//////                cout << "DEVICE_CONTROL_CALIBRATION_ON current_message_address_bits " << (int)(uiAddress -
+//////                        COILS_ARRAY_MODBUS_BEGIN_ADDRESS) << endl;
+////                    // передадим драйверу модуля номер калибруемого входа. если 0, калибровка выключена.
+////                    // в DO-D2 - № входа в модуле (0-нет режима калибровки).
+////                    xAllModulesContext.axAllModulesContext[nucIndexNumber].
+////                    xModuleContextDinamic.
+////                    ucCommonIndex = 0;
+////                    // вернём в рабочее состояние все выведенные из обработки аналоговые входы.
+////                    for (i = 0; i < MAX_HANDLED_ANALOGUE_INPUT; i++)
+////                    {
+////                        aucCoilsArray[AIN_OFF_BIT_ARRAY_OFFSET + i] = 0;
+////                    }
+////// вернём в рабочее состояние аналоговый вход - Y, модуля - X.
+//////            aucCoilsArray[AIN_OFF_BIT_ARRAY_OFFSET +
+//////                          ((((((uiAddress - // вычисляем номер модуля
+//////                                COILS_ARRAY_MODBUS_BEGIN_ADDRESS) &
+//////                               CALIBRATION_ANALOG_MODULE_NUMBER_MASK) >> 4) - 1) *
+//////                            ANALOG_MODULE_INPUT_QUANTITY) +
+//////
+//////                           (((uiAddress - // вычисляем номер входа
+//////                              COILS_ARRAY_MODBUS_BEGIN_ADDRESS) &
+//////                             CALIBRATION_INPUT_NUMBER_MASK) - 1))] = 0;
 ////
-////                           (((uiAddress - // вычисляем номер входа
-////                              COILS_ARRAY_MODBUS_BEGIN_ADDRESS) &
-////                             CALIBRATION_INPUT_NUMBER_MASK) - 1))] = 0;
-//
-//					xMainFlagRegister.ui8AinOffProcessOwnerIndex = AIN_OFF_PROCESS_OWNER_IS_NONE;
-//				}
-//			}
-//		}
-//		break;
-//
+////
+////// вернём в рабочее состояние аналоговый вход - Y, модуля - X.
+//////            aucCoilsArray[AIN_OFF_BIT_ARRAY_OFFSET +
+//////                          (((((uiAddress - // вычисляем номер модуля
+//////                                COILS_ARRAY_MODBUS_BEGIN_ADDRESS) &
+//////                               CALIBRATION_ANALOG_MODULE_NUMBER_MASK) >> 4) *
+//////                            ANALOG_MODULE_INPUT_QUANTITY) +
+//////
+//////                           (((uiAddress - // вычисляем номер входа
+//////                              COILS_ARRAY_MODBUS_BEGIN_ADDRESS) &
+//////                             CALIBRATION_INPUT_NUMBER_MASK) - 1))] = 0;
+////
+////                    xMainFlagRegister.ui8AinOffProcessOwnerIndex = AIN_OFF_PROCESS_OWNER_IS_NONE;
+//                }
+            }
+        }
+        SetFsmState(MODBUS_FUNCTION_5_HANDLER_INPUT_CALIBRATION_COMAND_START);
+        return 1;
+        break;
+
 //		// калибровка начала шкалы - НШК.
 //	case DEVICE_CONTROL_SET_BOTTOM_OF_SCALE:
 ////        // вычислим индекс модуля в массиве контекста, к которому поступила команда.
@@ -475,11 +545,11 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
 //			}
 //		}
 //
-//		break;
-//	default:
-//		break;
-//	};
-//
+//        break;
+    default:
+        break;
+    };
+
 ////-----------------------------------------------------------------------------------------------------
 //// инкремент уставок - SP, OUT, регуляторов модулей токового вывода - MTVI5.
 //	// адрес записываемого бита находится в диапазоне инкремента уставок - SP, OUT, регуляторов модулей токового вывода?
@@ -918,7 +988,7 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
 //		}
 //	}
 
-        return 0;
+    return 0;
 }
 
 //-------------------------------------------------------------------------------
@@ -1338,23 +1408,23 @@ uint8_t CDeviceControl::Fsm(void)
         break;
 
 //-------------------------------------------------------------------------------
-    case MODBUS_FUNCTION_5_HANDLER_ACKNOWLEDJEMENT_COMAND_START:
-        std::cout << "CDeviceControl::Fsm MODBUS_FUNCTION_5_HANDLER_ACKNOWLEDJEMENT_COMAND_START"  << std::endl;
+    case MODBUS_FUNCTION_5_HANDLER_INPUT_CALIBRATION_COMAND_START:
+        std::cout << "CDeviceControl::Fsm MODBUS_FUNCTION_5_HANDLER_INPUT_CALIBRATION_COMAND_START"  << std::endl;
         {
-            SetFsmState(MODBUS_FUNCTION_5_HANDLER_ACKNOWLEDJEMENT_COMAND_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+            SetFsmState(MODBUS_FUNCTION_5_HANDLER_INPUT_CALIBRATION_COMAND_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
         }
         break;
 
-    case MODBUS_FUNCTION_5_HANDLER_ACKNOWLEDJEMENT_COMAND_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
-        std::cout << "CDeviceControl::Fsm MODBUS_FUNCTION_5_HANDLER_ACKNOWLEDJEMENT_COMAND_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+    case MODBUS_FUNCTION_5_HANDLER_INPUT_CALIBRATION_COMAND_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+        std::cout << "CDeviceControl::Fsm MODBUS_FUNCTION_5_HANDLER_INPUT_CALIBRATION_COMAND_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
         {
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(DONE_OK);
         }
         break;
 
-    case MODBUS_FUNCTION_5_HANDLER_ACKNOWLEDJEMENT_COMAND_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
-        std::cout << "CDeviceControl::Fsm MODBUS_FUNCTION_5_HANDLER_ACKNOWLEDJEMENT_COMAND_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+    case MODBUS_FUNCTION_5_HANDLER_INPUT_CALIBRATION_COMAND_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+        std::cout << "CDeviceControl::Fsm MODBUS_FUNCTION_5_HANDLER_INPUT_CALIBRATION_COMAND_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
         {
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
             SetFsmState(DONE_ERROR);

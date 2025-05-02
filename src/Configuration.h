@@ -403,6 +403,9 @@
 //// смещение в массиве RX SPI. 0 - команда запроса, 1 - "эхо" команды запроса.
 //#define GET_MODULE_TYPE_COMMAND_OFFSET 1
 
+#define AIN_OFF_PROCESS_OWNER_IS_NONE 0
+#define AIN_OFF_PROCESS_OWNER_IS_PROGRAMMER 1
+#define AIN_OFF_PROCESS_OWNER_IS_HMI 2
 
 
 // (sizeof(struct TAnalogueInputDescriptionDataBase) * ANALOG_MODULE_INPUT_QUANTITY)// 28х6=168.
