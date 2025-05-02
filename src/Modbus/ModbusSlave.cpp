@@ -1218,57 +1218,57 @@ uint16_t CModbusSlave::WriteSingleCoilAnswer(void)
     uint8_t * puiResponse = m_pxModbusSlaveLinkLayer -> GetTxBuffer();
     uint16_t  uiLength = m_pxModbusSlaveLinkLayer -> GetFrameLength();
 
-    int8_t uiSlave = puiRequest[uiPduOffset - 1];
-    int8_t uiFunctionCode = puiRequest[uiPduOffset];
-//    uint16_t uiAddress = ((static_cast<uint16_t>(puiRequest[uiPduOffset + 1]) << 8) |
-//                          (static_cast<uint16_t>(puiRequest[uiPduOffset + 2])));
+//    int8_t uiSlave = puiRequest[uiPduOffset - 1];
+//    int8_t uiFunctionCode = puiRequest[uiPduOffset];
+////    uint16_t uiAddress = ((static_cast<uint16_t>(puiRequest[uiPduOffset + 1]) << 8) |
+////                          (static_cast<uint16_t>(puiRequest[uiPduOffset + 2])));
+////
+////    if (uiAddress >= m_uiCoilsNumber)
+////    {
+////        uiLength = m_pxModbusSlaveLinkLayer ->
+////                   ResponseException(uiSlave,
+////                                     uiFunctionCode,
+////                                     MODBUS_EXCEPTION_ILLEGAL_DATA_ADDRESS,
+////                                     puiResponse);
+////    }
+////    else
+////    {
+////        uint16_t uiData = ((static_cast<uint16_t>(puiRequest[uiPduOffset + 3]) << 8) |
+////                           (static_cast<uint16_t>(puiRequest[uiPduOffset + 4])));
+////
+////        if (uiData == 0xFF00 || uiData == 0x0)
+////        {
+////    if (uiData)
+////    {
+////        m_puiCoils[uiAddress] = 1;
+////    }
+////    else
+////    {
+////        m_puiCoils[uiAddress] = 0;
+////    }
+////    memcpy(puiResponse, puiRequest, uiLength);
 //
-//    if (uiAddress >= m_uiCoilsNumber)
+//
+//
+//    CDataContainerDataBase* pxDataContainer =
+//        (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+////    uiLength = pxDataContainer -> m_uiDataLength;
+////
+////    std::cout << "CModbusSlave::DataBaseReadAnswer uiLength "  << (int)uiLength << std::endl;
+////
+////    memcpy(&puiResponse[uiPduOffset + 3],
+////           (pxDataContainer -> m_puiDataPointer),
+////           uiLength);
+//
+//    if ((pxDataContainer -> m_puiDataPointer[0]))
 //    {
-//        uiLength = m_pxModbusSlaveLinkLayer ->
-//                   ResponseException(uiSlave,
-//                                     uiFunctionCode,
-//                                     MODBUS_EXCEPTION_ILLEGAL_DATA_ADDRESS,
-//                                     puiResponse);
+//        m_puiCoils[(pxDataContainer -> m_uiDataOffset)] = 1;
 //    }
 //    else
 //    {
-//        uint16_t uiData = ((static_cast<uint16_t>(puiRequest[uiPduOffset + 3]) << 8) |
-//                           (static_cast<uint16_t>(puiRequest[uiPduOffset + 4])));
-//
-//        if (uiData == 0xFF00 || uiData == 0x0)
-//        {
-//    if (uiData)
-//    {
-//        m_puiCoils[uiAddress] = 1;
+//        m_puiCoils[(pxDataContainer -> m_uiDataOffset)] = 0;
 //    }
-//    else
-//    {
-//        m_puiCoils[uiAddress] = 0;
-//    }
-//    memcpy(puiResponse, puiRequest, uiLength);
-
-
-
-    CDataContainerDataBase* pxDataContainer =
-        (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-//    uiLength = pxDataContainer -> m_uiDataLength;
-//
-//    std::cout << "CModbusSlave::DataBaseReadAnswer uiLength "  << (int)uiLength << std::endl;
-//
-//    memcpy(&puiResponse[uiPduOffset + 3],
-//           (pxDataContainer -> m_puiDataPointer),
-//           uiLength);
-
-    if ((pxDataContainer -> m_puiDataPointer[0]))
-    {
-        m_puiCoils[(pxDataContainer -> m_uiDataOffset)] = 1;
-    }
-    else
-    {
-        m_puiCoils[(pxDataContainer -> m_uiDataOffset)] = 0;
-    }
-//    memcpy(puiResponse, puiRequest, uiLength);
+////    memcpy(puiResponse, puiRequest, uiLength);
 
     SetFsmState(MESSAGE_TRANSMIT_START);
 

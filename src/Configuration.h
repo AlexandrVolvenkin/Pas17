@@ -456,6 +456,21 @@
 //#define NETWORK_ADDRESS_DATA_BASE_BLOCK_QUANTITY 1
 //#define FUNCTION_BLOCK_QUANTITY 1
 
+
+// смещения в массиве aucCoilsArray[].
+// начальный адрес Modbus.
+#define COILS_ARRAY_MODBUS_BEGIN_ADDRESS 0x00
+// смещения в массиве aucDiscreteInputsArray[].
+// начальный адрес Modbus.
+#define DISCRETE_INPUTS_ARRAY_MODBUS_BEGIN_ADDRESS 0x00
+// смещения в массиве aucHoldingRegistersArray[].
+// начальный адрес Modbus.
+#define HOLDING_REGISTERS_ARRAY_MODBUS_BEGIN_ADDRESS 0x00
+// смещения в массиве aucInputRegistersArray[].
+// начальный адрес Modbus.
+#define INPUT_REGISTERS_ARRAY_MODBUS_BEGIN_ADDRESS 0x00
+
+
 enum EDataBaseBlockOffsets
 {
     ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_OFFSET = 1,

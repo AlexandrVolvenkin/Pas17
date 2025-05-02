@@ -179,6 +179,10 @@ public:
     CDataStore* m_pxDataStore;
     CConfiguration* m_pxConfigurationCreate;
     CServiceMarket* m_pxServiceMarket;
+
+    bool m_fbIsAcknowledjedGlobal = false;
+    bool m_fbIsResetededGlobal = false;
+    bool m_fbIsBlockededGlobal = false;
 };
 
 //-------------------------------------------------------------------------------

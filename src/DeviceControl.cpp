@@ -214,109 +214,84 @@ void CDeviceControl::OnlineDataRead(void)
 
 //-----------------------------------------------------------------------------------------------------
 // обрабатывает входящие сообщения от Modbus интерфейсов, по 5 функции.
-void CDeviceControl::ModbusFunction5Handler(void)
+uint8_t CDeviceControl::ModbusFunction5Handler(void)
 {
     std::cout << "CDeviceControl ModbusFunction5Handler 1" << std::endl;
-//	unsigned char nucIndexNumber;
-//	int i;
-//
-////-----------------------------------------------------------------------------------------------------
-//// Function 5
-//	// смотрим, по какому адресу записывается бит.
-//	switch(pxModbusMapping->current_message_address_bits -
-//			COILS_ARRAY_MODBUS_BEGIN_ADDRESS)
-//	{
-//		// квитирование с верхнего уровня.
-//	case DEVICE_CONTROL_PC_KVIT:
-//		// бит установлен или сброшен?
-//		if (pxModbusMapping->tab_bits[pxModbusMapping->current_message_address_bits -
-//									  COILS_ARRAY_MODBUS_BEGIN_ADDRESS])
-//		{
-//			// если установлен - сбросим.
-//			pxModbusMapping->tab_bits[pxModbusMapping->current_message_address_bits -
-//									  COILS_ARRAY_MODBUS_BEGIN_ADDRESS] = 0;
-//			// установим флаг квитирования всем модулям.
-//			for (i = 0; i < MAX_MODULE_QUANTITY; i++)
-//			{
-//				xAllModulesContext.axAllModulesContext[i].
-//				xModuleContextDinamic.
-//				fbGlobalModbusKvit = 1;
-//			}
-////            fbHighLevelKvit = 1;
-//			fbGlobalKvit = 1;
-//
-//		}
-//		else
-//		{
-//
-//		}
-//		break;
-//
-//		// сброс с верхнего уровня.
-//	case DEVICE_CONTROL_PC_RESET:
-//		// бит установлен или сброшен?
-//		if (pxModbusMapping->tab_bits[pxModbusMapping->current_message_address_bits -
-//									  COILS_ARRAY_MODBUS_BEGIN_ADDRESS])
-//		{
-//			// если установлен - сбросим.
-//			pxModbusMapping->tab_bits[pxModbusMapping->current_message_address_bits -
-//									  COILS_ARRAY_MODBUS_BEGIN_ADDRESS] = 0;
-//			// установим флаг сброса всем модулям.
-//			for (i = 0; i < MAX_MODULE_QUANTITY; i++)
-//			{
-//				xAllModulesContext.axAllModulesContext[i].
-//				xModuleContextDinamic.
-//				fbGlobalModbusReset = 1;
-//			}
-////            fbHighLevelReset = 1;
-//			fbGlobalReset = 1;
-//		}
-//		else
-//		{
-//
-//		}
-//		break;
-//
-//		// блокировка с верхнего уровня.
-//	case DEVICE_CONTROL_BLOCK:
-//		// бит установлен или сброшен?
-//		if (pxModbusMapping->tab_bits[pxModbusMapping->current_message_address_bits -
-//									  COILS_ARRAY_MODBUS_BEGIN_ADDRESS])
-//		{
-//			// если установлен - сбросим.
-//			pxModbusMapping->tab_bits[pxModbusMapping->current_message_address_bits -
-//									  COILS_ARRAY_MODBUS_BEGIN_ADDRESS] = 0;
-////            // установим флаг блокировки всем модулям.
-////            for (i = 0; i < MAX_MODULE_QUANTITY; i++)
-////            {
-////                xAllModulesContext.axAllModulesContext[i].
-////                xModuleContextDinamic.
-////                fbGlobalModbusBlock = 1;
-////            }
-////            fbHighLevelBlock = 1;
-//			fbGlobalBlock = 1;
-//		}
-//		else
-//		{
-////            // сбросим флаг блокировки всем модулям.
-////            for (i = 0; i < MAX_MODULE_QUANTITY; i++)
-////            {
-////                xAllModulesContext.axAllModulesContext[i].
-////                xModuleContextDinamic.
-////                fbGlobalModbusBlock = 0;
-////            }
-////            fbHighLevelBlock = 0;
-//			fbGlobalBlock = 0;
-//		}
-//		break;
-//
-//	default:
-//		break;
-//	};
-//
+    unsigned char nucIndexNumber;
+    int i;
+
+    uint16_t uiAddress =
+        (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiDataOffset);
+    uint8_t* pucDestination =
+        (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer);
+
+//-----------------------------------------------------------------------------------------------------
+// Function 5
+    // смотрим, по какому адресу записывается бит.
+    switch(uiAddress -
+            COILS_ARRAY_MODBUS_BEGIN_ADDRESS)
+    {
+    // квитирование с верхнего уровня.
+    case DEVICE_CONTROL_PC_KVIT:
+    {
+        CDataContainerDataBase* pxDataContainer =
+            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+        // бит установлен?
+        if ((pxDataContainer -> m_puiDataPointer[0]))
+        {
+            (GetResources() -> m_fbIsAcknowledjedGlobal) = true;
+        }
+        else
+        {
+            (GetResources() -> m_fbIsAcknowledjedGlobal) = false;
+        }
+        return 1;
+    }
+    break;
+
+    // сброс с верхнего уровня.
+    case DEVICE_CONTROL_PC_RESET:
+    {
+        CDataContainerDataBase* pxDataContainer =
+            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+        // бит установлен?
+        if ((pxDataContainer -> m_puiDataPointer[0]))
+        {
+            (GetResources() -> m_fbIsResetededGlobal) = true;
+        }
+        else
+        {
+            (GetResources() -> m_fbIsResetededGlobal) = false;
+        }
+        return 1;
+    }
+    break;
+
+    // блокировка с верхнего уровня.
+    case DEVICE_CONTROL_BLOCK:
+    {
+        CDataContainerDataBase* pxDataContainer =
+            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+        // бит установлен?
+        if ((pxDataContainer -> m_puiDataPointer[0]))
+        {
+            (GetResources() -> m_fbIsBlockededGlobal) = true;
+        }
+        else
+        {
+            (GetResources() -> m_fbIsBlockededGlobal) = false;
+        }
+        return 1;
+    }
+    break;
+
+    default:
+        break;
+    };
+
 ////-----------------------------------------------------------------------------------------------------
 //	// смотрим, по какому адресу записывается бит.
-//	switch(((pxModbusMapping->current_message_address_bits -
+//	switch(((uiAddress -
 //			 COILS_ARRAY_MODBUS_BEGIN_ADDRESS) & 0xFF00))
 //	{
 //		// включение-выключение режима калибровки.
@@ -328,33 +303,33 @@ void CDeviceControl::ModbusFunction5Handler(void)
 ////        // вычислим индекс модуля в массиве контекста, к которому поступила команда - калибровка.
 ////        nucIndexNumber = (((xPlcConfigService.xPlcConfigServiceData.ucLastAnalogueInputModuleIndex + 1) -
 ////                           xPlcConfigService.xPlcConfigServiceData.ucServiceAnalogueInputModuleQuantity)  +
-////                          ((((pxModbusMapping->current_message_address_bits -
+////                          ((((uiAddress -
 ////                              COILS_ARRAY_MODBUS_BEGIN_ADDRESS) & CALIBRATION_ANALOG_MODULE_NUMBER_MASK) >> 4) - 1));
 //			// вычислим индекс модуля в массиве контекста, к которому поступила команда - калибровка.
 //			nucIndexNumber = (((xPlcConfigService.xPlcConfigServiceData.ucLastAnalogueInputModuleIndex + 1) -
 //							   xPlcConfigService.xPlcConfigServiceData.ucServiceAnalogueInputModuleQuantity)  +
-//							  (((pxModbusMapping->current_message_address_bits -
+//							  (((uiAddress -
 //								 COILS_ARRAY_MODBUS_BEGIN_ADDRESS) & CALIBRATION_ANALOG_MODULE_NUMBER_MASK) >> 4));
 //			// по индексу - nucIndexNumber есть модуль?
 //			if (nucIndexNumber <= (xPlcConfigService.xPlcConfigServiceData.ucLastAnalogueInputModuleIndex))
 //			{
 //				// бит установлен или сброшен?
-//				if (pxModbusMapping->tab_bits[pxModbusMapping->current_message_address_bits -
+//				if (pxModbusMapping->tab_bits[uiAddress -
 //											  COILS_ARRAY_MODBUS_BEGIN_ADDRESS])
 //				{
 //					// включение режима калибровки.
 //					cout << "DEVICE_CONTROL_CALIBRATION_ON" << endl;
 ////                cout << "DEVICE_CONTROL_CALIBRATION_ON nucIndexNumber " << (int)nucIndexNumber << endl;
-////                cout << "DEVICE_CONTROL_CALIBRATION_ON current_message_address_bits " << (int)(pxModbusMapping->current_message_address_bits -
+////                cout << "DEVICE_CONTROL_CALIBRATION_ON current_message_address_bits " << (int)(uiAddress -
 ////                        COILS_ARRAY_MODBUS_BEGIN_ADDRESS) << endl;
 //					// если установлен - сбросим.
-//					pxModbusMapping->tab_bits[pxModbusMapping->current_message_address_bits -
+//					pxModbusMapping->tab_bits[uiAddress -
 //											  COILS_ARRAY_MODBUS_BEGIN_ADDRESS] = 0;
 //					// передадим драйверу модуля номер калибруемого входа.
 //					// в DO-D2 - № входа в модуле (0-нет режима калибровки).
 //					xAllModulesContext.axAllModulesContext[nucIndexNumber].
 //					xModuleContextDinamic.
-//					ucCommonIndex = (((pxModbusMapping->current_message_address_bits -
+//					ucCommonIndex = (((uiAddress -
 //									   COILS_ARRAY_MODBUS_BEGIN_ADDRESS) & CALIBRATION_INPUT_NUMBER_MASK));
 //					// вернём в рабочее состояние все выведенные из обработки аналоговые входы.
 //					for (i = 0; i < MAX_HANDLED_ANALOGUE_INPUT; i++)
@@ -364,24 +339,24 @@ void CDeviceControl::ModbusFunction5Handler(void)
 ////            // выведем из обработки аналоговый вход - Y, модуля - X.
 ////            // в адресе Modbus 0x00XY, X - номер модуля, Y - номер калибруемого входа.
 ////            aucCoilsArray[AIN_OFF_BIT_ARRAY_OFFSET +
-////                          ((((((pxModbusMapping->current_message_address_bits - // вычисляем номер модуля
+////                          ((((((uiAddress - // вычисляем номер модуля
 ////                                COILS_ARRAY_MODBUS_BEGIN_ADDRESS) &
 ////                               CALIBRATION_ANALOG_MODULE_NUMBER_MASK) >> 4) - 1) *
 ////                            ANALOG_MODULE_INPUT_QUANTITY) +
 ////
-////                           (((pxModbusMapping->current_message_address_bits - // вычисляем номер входа
+////                           (((uiAddress - // вычисляем номер входа
 ////                              COILS_ARRAY_MODBUS_BEGIN_ADDRESS) &
 ////                             CALIBRATION_INPUT_NUMBER_MASK) - 1))] = 1;
 //
 //					// выведем из обработки аналоговый вход - Y, модуля - X.
 //					// в адресе Modbus 0x00XY, X - номер модуля, Y - номер калибруемого входа.
 //					aucCoilsArray[AIN_OFF_BIT_ARRAY_OFFSET +
-//								  (((((pxModbusMapping->current_message_address_bits - // вычисляем номер модуля
+//								  (((((uiAddress - // вычисляем номер модуля
 //									   COILS_ARRAY_MODBUS_BEGIN_ADDRESS) &
 //									  CALIBRATION_ANALOG_MODULE_NUMBER_MASK) >> 4) *
 //									ANALOG_MODULE_INPUT_QUANTITY) +
 //
-//								   (((pxModbusMapping->current_message_address_bits - // вычисляем номер входа
+//								   (((uiAddress - // вычисляем номер входа
 //									  COILS_ARRAY_MODBUS_BEGIN_ADDRESS) &
 //									 CALIBRATION_INPUT_NUMBER_MASK) - 1))] = 1;
 //
@@ -392,7 +367,7 @@ void CDeviceControl::ModbusFunction5Handler(void)
 //					// выключение режима калибровки.
 //					cout << "DEVICE_CONTROL_CALIBRATION_OFF" << endl;
 ////                cout << "DEVICE_CONTROL_CALIBRATION_ON nucIndexNumber " << (int)nucIndexNumber << endl;
-////                cout << "DEVICE_CONTROL_CALIBRATION_ON current_message_address_bits " << (int)(pxModbusMapping->current_message_address_bits -
+////                cout << "DEVICE_CONTROL_CALIBRATION_ON current_message_address_bits " << (int)(uiAddress -
 ////                        COILS_ARRAY_MODBUS_BEGIN_ADDRESS) << endl;
 //					// передадим драйверу модуля номер калибруемого входа. если 0, калибровка выключена.
 //					// в DO-D2 - № входа в модуле (0-нет режима калибровки).
@@ -406,24 +381,24 @@ void CDeviceControl::ModbusFunction5Handler(void)
 //					}
 //// вернём в рабочее состояние аналоговый вход - Y, модуля - X.
 ////            aucCoilsArray[AIN_OFF_BIT_ARRAY_OFFSET +
-////                          ((((((pxModbusMapping->current_message_address_bits - // вычисляем номер модуля
+////                          ((((((uiAddress - // вычисляем номер модуля
 ////                                COILS_ARRAY_MODBUS_BEGIN_ADDRESS) &
 ////                               CALIBRATION_ANALOG_MODULE_NUMBER_MASK) >> 4) - 1) *
 ////                            ANALOG_MODULE_INPUT_QUANTITY) +
 ////
-////                           (((pxModbusMapping->current_message_address_bits - // вычисляем номер входа
+////                           (((uiAddress - // вычисляем номер входа
 ////                              COILS_ARRAY_MODBUS_BEGIN_ADDRESS) &
 ////                             CALIBRATION_INPUT_NUMBER_MASK) - 1))] = 0;
 //
 //
 //// вернём в рабочее состояние аналоговый вход - Y, модуля - X.
 ////            aucCoilsArray[AIN_OFF_BIT_ARRAY_OFFSET +
-////                          (((((pxModbusMapping->current_message_address_bits - // вычисляем номер модуля
+////                          (((((uiAddress - // вычисляем номер модуля
 ////                                COILS_ARRAY_MODBUS_BEGIN_ADDRESS) &
 ////                               CALIBRATION_ANALOG_MODULE_NUMBER_MASK) >> 4) *
 ////                            ANALOG_MODULE_INPUT_QUANTITY) +
 ////
-////                           (((pxModbusMapping->current_message_address_bits - // вычисляем номер входа
+////                           (((uiAddress - // вычисляем номер входа
 ////                              COILS_ARRAY_MODBUS_BEGIN_ADDRESS) &
 ////                             CALIBRATION_INPUT_NUMBER_MASK) - 1))] = 0;
 //
@@ -438,22 +413,22 @@ void CDeviceControl::ModbusFunction5Handler(void)
 ////        // вычислим индекс модуля в массиве контекста, к которому поступила команда.
 ////        nucIndexNumber = (((xPlcConfigService.xPlcConfigServiceData.ucLastAnalogueInputModuleIndex + 1) -
 ////                           xPlcConfigService.xPlcConfigServiceData.ucServiceAnalogueInputModuleQuantity)  +
-////                          ((((pxModbusMapping->current_message_address_bits -
+////                          ((((uiAddress -
 ////                              COILS_ARRAY_MODBUS_BEGIN_ADDRESS) & CALIBRATION_ANALOG_MODULE_NUMBER_MASK) >> 4) - 1));
 //		// вычислим индекс модуля в массиве контекста, к которому поступила команда.
 //		nucIndexNumber = (((xPlcConfigService.xPlcConfigServiceData.ucLastAnalogueInputModuleIndex + 1) -
 //						   xPlcConfigService.xPlcConfigServiceData.ucServiceAnalogueInputModuleQuantity)  +
-//						  (((pxModbusMapping->current_message_address_bits -
+//						  (((uiAddress -
 //							 COILS_ARRAY_MODBUS_BEGIN_ADDRESS) & CALIBRATION_ANALOG_MODULE_NUMBER_MASK) >> 4));
 //		// по индексу - nucIndexNumber есть модуль?
 //		if (nucIndexNumber <= (xPlcConfigService.xPlcConfigServiceData.ucLastAnalogueInputModuleIndex))
 //		{
 //			// бит установлен или сброшен?
-//			if (pxModbusMapping->tab_bits[pxModbusMapping->current_message_address_bits -
+//			if (pxModbusMapping->tab_bits[uiAddress -
 //										  COILS_ARRAY_MODBUS_BEGIN_ADDRESS])
 //			{
 //				// если установлен - сбросим.
-//				pxModbusMapping->tab_bits[pxModbusMapping->current_message_address_bits -
+//				pxModbusMapping->tab_bits[uiAddress -
 //										  COILS_ARRAY_MODBUS_BEGIN_ADDRESS] = 0;
 //				// передадим драйверу модуля команду - калибровка начала шкалы - НШК.
 //				xAllModulesContext.axAllModulesContext[nucIndexNumber].
@@ -472,22 +447,22 @@ void CDeviceControl::ModbusFunction5Handler(void)
 ////        // вычислим индекс модуля в массиве контекста, к которому поступила команда.
 ////        nucIndexNumber = (((xPlcConfigService.xPlcConfigServiceData.ucLastAnalogueInputModuleIndex + 1) -
 ////                           xPlcConfigService.xPlcConfigServiceData.ucServiceAnalogueInputModuleQuantity)  +
-////                          ((((pxModbusMapping->current_message_address_bits -
+////                          ((((uiAddress -
 ////                              COILS_ARRAY_MODBUS_BEGIN_ADDRESS) & CALIBRATION_ANALOG_MODULE_NUMBER_MASK) >> 4) - 1));
 //		// вычислим индекс модуля в массиве контекста, к которому поступила команда.
 //		nucIndexNumber = (((xPlcConfigService.xPlcConfigServiceData.ucLastAnalogueInputModuleIndex + 1) -
 //						   xPlcConfigService.xPlcConfigServiceData.ucServiceAnalogueInputModuleQuantity)  +
-//						  (((pxModbusMapping->current_message_address_bits -
+//						  (((uiAddress -
 //							 COILS_ARRAY_MODBUS_BEGIN_ADDRESS) & CALIBRATION_ANALOG_MODULE_NUMBER_MASK) >> 4));
 //		// по индексу - nucIndexNumber есть модуль?
 //		if (nucIndexNumber <= (xPlcConfigService.xPlcConfigServiceData.ucLastAnalogueInputModuleIndex))
 //		{
 //			// бит установлен или сброшен?
-//			if (pxModbusMapping->tab_bits[pxModbusMapping->current_message_address_bits -
+//			if (pxModbusMapping->tab_bits[uiAddress -
 //										  COILS_ARRAY_MODBUS_BEGIN_ADDRESS])
 //			{
 //				// если установлен - сбросим.
-//				pxModbusMapping->tab_bits[pxModbusMapping->current_message_address_bits -
+//				pxModbusMapping->tab_bits[uiAddress -
 //										  COILS_ARRAY_MODBUS_BEGIN_ADDRESS] = 0;
 //				// передадим драйверу модуля команду - калибровка конца шкалы - ВШК.
 //				xAllModulesContext.axAllModulesContext[nucIndexNumber].
@@ -515,11 +490,11 @@ void CDeviceControl::ModbusFunction5Handler(void)
 //					  INCREMENT_SP_OUT_BIT_ARRAY_LENGTH)))
 //	{
 //		// бит установлен или сброшен?
-//		if (pxModbusMapping->tab_bits[pxModbusMapping->current_message_address_bits -
+//		if (pxModbusMapping->tab_bits[uiAddress -
 //									  COILS_ARRAY_MODBUS_BEGIN_ADDRESS])
 //		{
 //			// если установлен - сбросим.
-//			pxModbusMapping->tab_bits[pxModbusMapping->current_message_address_bits -
+//			pxModbusMapping->tab_bits[uiAddress -
 //									  COILS_ARRAY_MODBUS_BEGIN_ADDRESS] = 0;
 //			cout << "INCREMENT_SP_OUT_1__BIT_ARRAY_OFFSET 1" << endl;
 //			// установим флаг инкремента-декремента уставок - SP, OUT, регуляторов.
@@ -538,7 +513,7 @@ void CDeviceControl::ModbusFunction5Handler(void)
 //		nucIndexNumber =  ((((xPlcConfigService.xPlcConfigServiceData.ucLastAnalogueOutputModuleIndex) + 1) -
 //							((xPlcConfigService.xPlcConfigServiceData.ucServiceAnalogueOutputQuantity) /
 //							 MTVI5_ANALOG_OUTPUT_QUANTITY)) +
-//						   ((unsigned char)(((pxModbusMapping->current_message_address_bits -
+//						   ((unsigned char)(((uiAddress -
 //											  COILS_ARRAY_MODBUS_BEGIN_ADDRESS) -
 //											 INCREMENT_SP_OUT_BIT_ARRAY_OFFSET) /
 //											(MTVI5_ANALOG_OUTPUT_QUANTITY))));
@@ -551,7 +526,7 @@ void CDeviceControl::ModbusFunction5Handler(void)
 //			// вычислим номер регулятора модуля токового вывода, в котором инкрементируем-декрементируем уставку.
 //			xAllModulesContext.axAllModulesContext[nucIndexNumber].
 //			xModuleContextDinamic.
-//			ucCommonIndex = (unsigned char)((((pxModbusMapping->current_message_address_bits -
+//			ucCommonIndex = (unsigned char)((((uiAddress -
 //											   COILS_ARRAY_MODBUS_BEGIN_ADDRESS) -
 //											  INCREMENT_SP_OUT_BIT_ARRAY_OFFSET) %
 //											 MTVI5_ANALOG_OUTPUT_QUANTITY) +
@@ -594,11 +569,11 @@ void CDeviceControl::ModbusFunction5Handler(void)
 //					  DECREMENT_SP_OUT_BIT_ARRAY_LENGTH)))
 //	{
 //		// бит установлен или сброшен?
-//		if (pxModbusMapping->tab_bits[pxModbusMapping->current_message_address_bits -
+//		if (pxModbusMapping->tab_bits[uiAddress -
 //									  COILS_ARRAY_MODBUS_BEGIN_ADDRESS])
 //		{
 //			// если установлен - сбросим.
-//			pxModbusMapping->tab_bits[pxModbusMapping->current_message_address_bits -
+//			pxModbusMapping->tab_bits[uiAddress -
 //									  COILS_ARRAY_MODBUS_BEGIN_ADDRESS] = 0;
 //			cout << "DECREMENT_SP_OUT_BIT_ARRAY_OFFSET 1" << endl;
 //			// установим флаг инкремента-декремента уставок - SP, OUT, регуляторов.
@@ -617,7 +592,7 @@ void CDeviceControl::ModbusFunction5Handler(void)
 //		nucIndexNumber =  ((((xPlcConfigService.xPlcConfigServiceData.ucLastAnalogueOutputModuleIndex) + 1) -
 //							((xPlcConfigService.xPlcConfigServiceData.ucServiceAnalogueOutputQuantity) /
 //							 MTVI5_ANALOG_OUTPUT_QUANTITY)) +
-//						   ((unsigned char)(((pxModbusMapping->current_message_address_bits -
+//						   ((unsigned char)(((uiAddress -
 //											  COILS_ARRAY_MODBUS_BEGIN_ADDRESS) -
 //											 DECREMENT_SP_OUT_BIT_ARRAY_OFFSET) /
 //											(MTVI5_ANALOG_OUTPUT_QUANTITY))));
@@ -627,7 +602,7 @@ void CDeviceControl::ModbusFunction5Handler(void)
 //			// вычислим номер регулятора модуля токового вывода, в котором инкрементируем-декрементируем уставку.
 //			xAllModulesContext.axAllModulesContext[nucIndexNumber].
 //			xModuleContextDinamic.
-//			ucCommonIndex = (unsigned char)((((pxModbusMapping->current_message_address_bits -
+//			ucCommonIndex = (unsigned char)((((uiAddress -
 //											   COILS_ARRAY_MODBUS_BEGIN_ADDRESS) -
 //											  DECREMENT_SP_OUT_BIT_ARRAY_OFFSET) %
 //											 MTVI5_ANALOG_OUTPUT_QUANTITY) +
@@ -670,11 +645,11 @@ void CDeviceControl::ModbusFunction5Handler(void)
 //					  CONT_ST_BIT_ARRAY_LENGTH)))
 //	{
 //		// бит установлен или сброшен?
-//		if (pxModbusMapping->tab_bits[pxModbusMapping->current_message_address_bits -
+//		if (pxModbusMapping->tab_bits[uiAddress -
 //									  COILS_ARRAY_MODBUS_BEGIN_ADDRESS])
 //		{
 //			// если установлен - сбросим.
-//			pxModbusMapping->tab_bits[pxModbusMapping->current_message_address_bits -
+//			pxModbusMapping->tab_bits[uiAddress -
 //									  COILS_ARRAY_MODBUS_BEGIN_ADDRESS] = 0;
 //			cout << "CONT_ST_BIT_ARRAY 1" << endl;
 //			// установим бит дискретных сигналов регуляторов.
@@ -706,7 +681,7 @@ void CDeviceControl::ModbusFunction5Handler(void)
 //		nucIndexNumber =  ((((xPlcConfigService.xPlcConfigServiceData.ucLastAnalogueOutputModuleIndex) + 1) -
 //							((xPlcConfigService.xPlcConfigServiceData.ucServiceAnalogueOutputQuantity) /
 //							 MTVI5_ANALOG_OUTPUT_QUANTITY)) +
-//						   ((unsigned char)(((pxModbusMapping->current_message_address_bits -
+//						   ((unsigned char)(((uiAddress -
 //											  COILS_ARRAY_MODBUS_BEGIN_ADDRESS) -
 //											 CONT_ST_BIT_ARRAY_OFFSET) /
 //											(MTVI5_STAT_BIT_QUANTITY * MTVI5_ANALOG_OUTPUT_QUANTITY))));
@@ -730,11 +705,11 @@ void CDeviceControl::ModbusFunction5Handler(void)
 //					  LOG_COM_BIT_ARRAY_LENGTH)))
 //	{
 //		// бит установлен или сброшен?
-//		if (pxModbusMapping->tab_bits[pxModbusMapping->current_message_address_bits -
+//		if (pxModbusMapping->tab_bits[uiAddress -
 //									  COILS_ARRAY_MODBUS_BEGIN_ADDRESS])
 //		{
 //			// если установлен - сбросим.
-//			pxModbusMapping->tab_bits[pxModbusMapping->current_message_address_bits -
+//			pxModbusMapping->tab_bits[uiAddress -
 //									  COILS_ARRAY_MODBUS_BEGIN_ADDRESS] = 0;
 //			cout << "LOG_COM_BIT_ARRAY_OFFSET 1" << endl;
 //			// установим бит команд управления верхнего уровня.
@@ -770,7 +745,7 @@ void CDeviceControl::ModbusFunction5Handler(void)
 //			// вычислим индекс модуля в массиве контекста, к которому поступила команда.
 //			nucIndexNumber =  ((((xPlcConfigService.xPlcConfigServiceData.ucLastAnalogueInputModuleIndex) + 1) -
 //								(xPlcConfigService.xPlcConfigServiceData.ucServiceAnalogueInputModuleQuantity)) +
-//							   ((unsigned char)(((pxModbusMapping->current_message_address_bits -
+//							   ((unsigned char)(((uiAddress -
 //												  COILS_ARRAY_MODBUS_BEGIN_ADDRESS) -
 //												 AIN_OFF_BIT_ARRAY_OFFSET) /
 //												(MVAI5_ANALOG_INPUT_QUANTITY))));
@@ -803,18 +778,18 @@ void CDeviceControl::ModbusFunction5Handler(void)
 //				}
 //
 //				// бит установлен или сброшен?
-//				if (pxModbusMapping->tab_bits[pxModbusMapping->current_message_address_bits -
+//				if (pxModbusMapping->tab_bits[uiAddress -
 //											  COILS_ARRAY_MODBUS_BEGIN_ADDRESS])
 //				{
 //					// включение режима калибровки.
 //					cout << "AIN_OFF_BIT_ARRAY_OFFSET 1" << endl;
 //					// если установлен - сбросим.
-//					pxModbusMapping->tab_bits[pxModbusMapping->current_message_address_bits -
+//					pxModbusMapping->tab_bits[uiAddress -
 //											  COILS_ARRAY_MODBUS_BEGIN_ADDRESS] = 0;
 //					// вычислим и передадим драйверу модуля номер калибруемого входа.
 //					xAllModulesContext.axAllModulesContext[nucIndexNumber].
 //					xModuleContextDinamic.
-//					ucCommonIndex = (unsigned char)((((pxModbusMapping->current_message_address_bits -
+//					ucCommonIndex = (unsigned char)((((uiAddress -
 //													   COILS_ARRAY_MODBUS_BEGIN_ADDRESS) -
 //													  AIN_OFF_BIT_ARRAY_OFFSET) %
 //													 MVAI5_ANALOG_INPUT_QUANTITY) +
@@ -853,11 +828,11 @@ void CDeviceControl::ModbusFunction5Handler(void)
 //			CONFIGURATION_SAVE_COMMAND_BIT_ARRAY_OFFSET))
 //	{
 //		// бит установлен или сброшен?
-//		if (pxModbusMapping->tab_bits[pxModbusMapping->current_message_address_bits -
+//		if (pxModbusMapping->tab_bits[uiAddress -
 //									  COILS_ARRAY_MODBUS_BEGIN_ADDRESS])
 //		{
 //			// если установлен - сбросим.
-//			pxModbusMapping->tab_bits[pxModbusMapping->current_message_address_bits -
+//			pxModbusMapping->tab_bits[uiAddress -
 //									  COILS_ARRAY_MODBUS_BEGIN_ADDRESS] = 0;
 //			cout << "CONFIGURATION_SAVE_COMMAND_BIT_ARRAY_OFFSET 1" << endl;
 //
@@ -942,6 +917,8 @@ void CDeviceControl::ModbusFunction5Handler(void)
 //			// сбросим бит запись - конфигурации.
 //		}
 //	}
+
+        return 0;
 }
 
 //-------------------------------------------------------------------------------
@@ -1361,11 +1338,41 @@ uint8_t CDeviceControl::Fsm(void)
         break;
 
 //-------------------------------------------------------------------------------
+    case MODBUS_FUNCTION_5_HANDLER_ACKNOWLEDJEMENT_COMAND_START:
+        std::cout << "CDeviceControl::Fsm MODBUS_FUNCTION_5_HANDLER_ACKNOWLEDJEMENT_COMAND_START"  << std::endl;
+        {
+            SetFsmState(MODBUS_FUNCTION_5_HANDLER_ACKNOWLEDJEMENT_COMAND_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+        }
+        break;
+
+    case MODBUS_FUNCTION_5_HANDLER_ACKNOWLEDJEMENT_COMAND_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+        std::cout << "CDeviceControl::Fsm MODBUS_FUNCTION_5_HANDLER_ACKNOWLEDJEMENT_COMAND_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        {
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(DONE_OK);
+        }
+        break;
+
+    case MODBUS_FUNCTION_5_HANDLER_ACKNOWLEDJEMENT_COMAND_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+        std::cout << "CDeviceControl::Fsm MODBUS_FUNCTION_5_HANDLER_ACKNOWLEDJEMENT_COMAND_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        {
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+            SetFsmState(DONE_ERROR);
+        }
+        break;
+
+//-------------------------------------------------------------------------------
     case MODBUS_FUNCTION_5_HANDLER_START:
         std::cout << "CDeviceControl::Fsm MODBUS_FUNCTION_5_HANDLER_START"  << std::endl;
         {
-            ModbusFunction5Handler();
-            SetFsmState(MODBUS_FUNCTION_5_HANDLER_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+            if (ModbusFunction5Handler())
+            {
+                SetFsmState(MODBUS_FUNCTION_5_HANDLER_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+            }
+            else
+            {
+                SetFsmState(MODBUS_FUNCTION_5_HANDLER_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            }
         }
         break;
 
