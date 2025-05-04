@@ -175,6 +175,8 @@ public:
         MUVR_WRITE_DATA_BASE_CHECK,
         MUVR_DATA_BASE_READ,
         MUVR_DATA_EXCHANGE,
+        MUVR_CALIBRATION_ON_OFF,
+        MUVR_INPUT_SET_TOP_OR_BOTTOM_OF_SCALE,
     };
 
     CInternalModuleMuvr();
@@ -218,7 +220,9 @@ private:
     uint8_t* m_puiAnalogueInputsOff;
     uint8_t* m_puiAnalogueInputsBadState;
     uint8_t* m_puiReperPointsAdcBuffer;
-    uint8_t m_uiBadAnswerCounter;
+    uint8_t* m_puiAnalogueInputDiscreteInputsState;
+    uint8_t* m_puiAnalogueInputDiscreteInputsBadState;
+//    uint8_t m_uiBadAnswerCounter;
     TAnalogueInputDescriptionWork* m_pxAnalogueInputDescriptionWork;
 
     CTimer m_xWriteCompleteWaitTimer;

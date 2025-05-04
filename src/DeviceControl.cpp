@@ -245,6 +245,7 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
         {
             (GetResources() -> m_fbIsAcknowledjedGlobal) = false;
         }
+        SetFsmState(MODBUS_FUNCTION_5_HANDLER_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
         return 1;
     }
     break;
@@ -263,6 +264,7 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
         {
             (GetResources() -> m_fbIsResetededGlobal) = false;
         }
+        SetFsmState(MODBUS_FUNCTION_5_HANDLER_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
         return 1;
     }
     break;
@@ -281,6 +283,7 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
         {
             (GetResources() -> m_fbIsBlockededGlobal) = false;
         }
+        SetFsmState(MODBUS_FUNCTION_5_HANDLER_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
         return 1;
     }
     break;
@@ -306,22 +309,25 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
                               (((uiAddress -
                                  COILS_ARRAY_MODBUS_BEGIN_ADDRESS) & CALIBRATION_ANALOG_MODULE_NUMBER_MASK) >> 4));
 
-                cout << "DEVICE_CONTROL_CALIBRATION_ON nucIndexNumber " << (int)nucIndexNumber << endl;
+            cout << "DEVICE_CONTROL_CALIBRATION_ON nucIndexNumber " << (int)nucIndexNumber << endl;
+            cout << "DEVICE_CONTROL_CALIBRATION_ON uiLastAnalogueInputModuleIndex " << (int)(((GetResources() -> GetDeviceConfigSearchPointer()) ->
+                    uiLastAnalogueInputModuleIndex) + 1) << endl;
             // по индексу - nucIndexNumber есть модуль?
-//            if (nucIndexNumber <= ((GetResources() -> GetDeviceConfigSearchPointer()) -> uiLastAnalogueInputModuleIndex))
-            if (1)
+            if (nucIndexNumber <=
+                    (((GetResources() -> GetDeviceConfigSearchPointer()) ->
+                      uiLastAnalogueInputModuleIndex) + 1))
             {
-                // получимуказатель на контейнер с данными заказчика.
+                // получим указатель на контейнер с данными заказчика.
                 CDataContainerDataBase* pxDataContainer =
                     (CDataContainerDataBase*)GetCustomerDataContainerPointer();
                 // бит установлен?
-                if ((pxDataContainer -> m_puiDataPointer[0]) == 0)
+                if ((pxDataContainer -> m_puiDataPointer[0]))
                 {
                     // включение режима калибровки.
                     cout << "DEVICE_CONTROL_CALIBRATION_ON" << endl;
                     // если установлен - сбросим.
                     (pxDataContainer -> m_puiDataPointer[0]) = 0;
-                    // получимуказатель на контейнер с данными исполнителя..
+                    // получим указатель на контейнер с данными исполнителя..
                     pxDataContainer =
                         (CDataContainerDataBase*)GetExecutorDataContainerPointer();
                     // передадим драйверу модуля номер калибруемого входа.
@@ -329,7 +335,7 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
                     (pxDataContainer -> m_puiDataPointer[0]) = (((uiAddress -
                             COILS_ARRAY_MODBUS_BEGIN_ADDRESS) & CALIBRATION_INPUT_NUMBER_MASK));
 
-                cout << "DEVICE_CONTROL_CALIBRATION_ON ucCommonIndex " << (int)(pxDataContainer -> m_puiDataPointer[0]) << endl;
+                    cout << "DEVICE_CONTROL_CALIBRATION_ON ucCommonIndex " << (int)(pxDataContainer -> m_puiDataPointer[0]) << endl;
                     // вернём в рабочее состояние все выведенные из обработки аналоговые входы.
                     for (i = 0; i < MAX_HANDLED_ANALOGUE_INPUT; i++)
                     {
@@ -345,13 +351,13 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
                                COILS_ARRAY_MODBUS_BEGIN_ADDRESS) &
                               CALIBRATION_INPUT_NUMBER_MASK) - 1))]) = 1;
 
-//                    xMainFlagRegister.ui8AinOffProcessOwnerIndex = AIN_OFF_PROCESS_OWNER_IS_PROGRAMMER;
+                    (GetResources() -> m_uiAinOffProcessOwnerIndex) = AIN_OFF_PROCESS_OWNER_IS_PROGRAMMER;
                 }
                 else
                 {
                     // выключение режима калибровки.
                     cout << "DEVICE_CONTROL_CALIBRATION_OFF" << endl;
-                    // получимуказатель на контейнер с данными исполнителя..
+                    // получим указатель на контейнер с данными исполнителя..
                     pxDataContainer =
                         (CDataContainerDataBase*)GetExecutorDataContainerPointer();
                     // передадим драйверу модуля номер калибруемого входа. если 0, калибровка выключена.
@@ -363,157 +369,78 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
                         (GetResources() -> m_puiAnalogueInputsOff[i]);
                     }
 
-//                    xMainFlagRegister.ui8AinOffProcessOwnerIndex = AIN_OFF_PROCESS_OWNER_IS_NONE;
+                    (GetResources() -> m_uiAinOffProcessOwnerIndex) = AIN_OFF_PROCESS_OWNER_IS_NONE;
                 }
-
-//                // бит установлен или сброшен?
-//                if (pxModbusMapping->tab_bits[uiAddress -
-//                                                        COILS_ARRAY_MODBUS_BEGIN_ADDRESS])
-//                {
-//                    // включение режима калибровки.
-//                    cout << "DEVICE_CONTROL_CALIBRATION_ON" << endl;
-////                cout << "DEVICE_CONTROL_CALIBRATION_ON nucIndexNumber " << (int)nucIndexNumber << endl;
-////                cout << "DEVICE_CONTROL_CALIBRATION_ON current_message_address_bits " << (int)(uiAddress -
-////                        COILS_ARRAY_MODBUS_BEGIN_ADDRESS) << endl;
-//                    // если установлен - сбросим.
-//                    pxModbusMapping->tab_bits[uiAddress -
-//                                                        COILS_ARRAY_MODBUS_BEGIN_ADDRESS] = 0;
-//                    // передадим драйверу модуля номер калибруемого входа.
-//                    // в DO-D2 - № входа в модуле (0-нет режима калибровки).
-//                    //                    xAllModulesContext.axAllModulesContext[nucIndexNumber].
-////                    xModuleContextDinamic.
-////                    ucCommonIndex = (((uiAddress -
-////                                       COILS_ARRAY_MODBUS_BEGIN_ADDRESS) & CALIBRATION_INPUT_NUMBER_MASK));
-//
-//                    (pxDataContainer -> m_puiDataPointer[0]) = (((uiAddress -
-//                            COILS_ARRAY_MODBUS_BEGIN_ADDRESS) & CALIBRATION_INPUT_NUMBER_MASK));
-//
-//                    // вернём в рабочее состояние все выведенные из обработки аналоговые входы.
-//                    for (i = 0; i < MAX_HANDLED_ANALOGUE_INPUT; i++)
-//                    {
-//                        m_puiAnalogueInputsOff[i] = 0;
-////                        aucCoilsArray[AIN_OFF_BIT_ARRAY_OFFSET + i] = 0;
-//                    }
-//
-////            // выведем из обработки аналоговый вход - Y, модуля - X.
-////            // в адресе Modbus 0x00XY, X - номер модуля, Y - номер калибруемого входа.
-////            aucCoilsArray[AIN_OFF_BIT_ARRAY_OFFSET +
-////                          ((((((uiAddress - // вычисляем номер модуля
-////                                COILS_ARRAY_MODBUS_BEGIN_ADDRESS) &
-////                               CALIBRATION_ANALOG_MODULE_NUMBER_MASK) >> 4) - 1) *
-////                            ANALOG_MODULE_INPUT_QUANTITY) +
-////
-////                           (((uiAddress - // вычисляем номер входа
-////                              COILS_ARRAY_MODBUS_BEGIN_ADDRESS) &
-////                             CALIBRATION_INPUT_NUMBER_MASK) - 1))] = 1;
-//
-//                    // выведем из обработки аналоговый вход - Y, модуля - X.
-//                    // в адресе Modbus 0x00XY, X - номер модуля, Y - номер калибруемого входа.
-////                    aucCoilsArray[AIN_OFF_BIT_ARRAY_OFFSET +
-////                                                           (((((uiAddress - // вычисляем номер модуля
-////                                                                COILS_ARRAY_MODBUS_BEGIN_ADDRESS) &
-////                                                               CALIBRATION_ANALOG_MODULE_NUMBER_MASK) >> 4) *
-////                                                             ANALOG_MODULE_INPUT_QUANTITY) +
-////
-////                                                            (((uiAddress - // вычисляем номер входа
-////                                                               COILS_ARRAY_MODBUS_BEGIN_ADDRESS) &
-////                                                              CALIBRATION_INPUT_NUMBER_MASK) - 1))] = 1;
-//
-//                    m_puiAnalogueInputsOff[(((((uiAddress - // вычисляем номер модуля
-//                                                COILS_ARRAY_MODBUS_BEGIN_ADDRESS) &
-//                                               CALIBRATION_ANALOG_MODULE_NUMBER_MASK) >> 4) *
-//                                             ANALOG_MODULE_INPUT_QUANTITY) +
-//
-//                                            (((uiAddress - // вычисляем номер входа
-//                                               COILS_ARRAY_MODBUS_BEGIN_ADDRESS) &
-//                                              CALIBRATION_INPUT_NUMBER_MASK) - 1))] = 1;
-//
-////                    xMainFlagRegister.ui8AinOffProcessOwnerIndex = AIN_OFF_PROCESS_OWNER_IS_PROGRAMMER;
-//                }
-//                else
-//                {
-////                    // выключение режима калибровки.
-////                    cout << "DEVICE_CONTROL_CALIBRATION_OFF" << endl;
-//////                cout << "DEVICE_CONTROL_CALIBRATION_ON nucIndexNumber " << (int)nucIndexNumber << endl;
-//////                cout << "DEVICE_CONTROL_CALIBRATION_ON current_message_address_bits " << (int)(uiAddress -
-//////                        COILS_ARRAY_MODBUS_BEGIN_ADDRESS) << endl;
-////                    // передадим драйверу модуля номер калибруемого входа. если 0, калибровка выключена.
-////                    // в DO-D2 - № входа в модуле (0-нет режима калибровки).
-////                    xAllModulesContext.axAllModulesContext[nucIndexNumber].
-////                    xModuleContextDinamic.
-////                    ucCommonIndex = 0;
-////                    // вернём в рабочее состояние все выведенные из обработки аналоговые входы.
-////                    for (i = 0; i < MAX_HANDLED_ANALOGUE_INPUT; i++)
-////                    {
-////                        aucCoilsArray[AIN_OFF_BIT_ARRAY_OFFSET + i] = 0;
-////                    }
-////// вернём в рабочее состояние аналоговый вход - Y, модуля - X.
-//////            aucCoilsArray[AIN_OFF_BIT_ARRAY_OFFSET +
-//////                          ((((((uiAddress - // вычисляем номер модуля
-//////                                COILS_ARRAY_MODBUS_BEGIN_ADDRESS) &
-//////                               CALIBRATION_ANALOG_MODULE_NUMBER_MASK) >> 4) - 1) *
-//////                            ANALOG_MODULE_INPUT_QUANTITY) +
-//////
-//////                           (((uiAddress - // вычисляем номер входа
-//////                              COILS_ARRAY_MODBUS_BEGIN_ADDRESS) &
-//////                             CALIBRATION_INPUT_NUMBER_MASK) - 1))] = 0;
-////
-////
-////// вернём в рабочее состояние аналоговый вход - Y, модуля - X.
-//////            aucCoilsArray[AIN_OFF_BIT_ARRAY_OFFSET +
-//////                          (((((uiAddress - // вычисляем номер модуля
-//////                                COILS_ARRAY_MODBUS_BEGIN_ADDRESS) &
-//////                               CALIBRATION_ANALOG_MODULE_NUMBER_MASK) >> 4) *
-//////                            ANALOG_MODULE_INPUT_QUANTITY) +
-//////
-//////                           (((uiAddress - // вычисляем номер входа
-//////                              COILS_ARRAY_MODBUS_BEGIN_ADDRESS) &
-//////                             CALIBRATION_INPUT_NUMBER_MASK) - 1))] = 0;
-////
-////                    xMainFlagRegister.ui8AinOffProcessOwnerIndex = AIN_OFF_PROCESS_OWNER_IS_NONE;
-//                }
             }
         }
+
         SetFsmState(MODBUS_FUNCTION_5_HANDLER_INPUT_CALIBRATION_COMAND_START);
         return 1;
         break;
 
-//		// калибровка начала шкалы - НШК.
-//	case DEVICE_CONTROL_SET_BOTTOM_OF_SCALE:
-////        // вычислим индекс модуля в массиве контекста, к которому поступила команда.
-////        nucIndexNumber = (((xPlcConfigService.xPlcConfigServiceData.ucLastAnalogueInputModuleIndex + 1) -
-////                           xPlcConfigService.xPlcConfigServiceData.ucServiceAnalogueInputModuleQuantity)  +
-////                          ((((uiAddress -
-////                              COILS_ARRAY_MODBUS_BEGIN_ADDRESS) & CALIBRATION_ANALOG_MODULE_NUMBER_MASK) >> 4) - 1));
-//		// вычислим индекс модуля в массиве контекста, к которому поступила команда.
-//		nucIndexNumber = (((xPlcConfigService.xPlcConfigServiceData.ucLastAnalogueInputModuleIndex + 1) -
-//						   xPlcConfigService.xPlcConfigServiceData.ucServiceAnalogueInputModuleQuantity)  +
-//						  (((uiAddress -
-//							 COILS_ARRAY_MODBUS_BEGIN_ADDRESS) & CALIBRATION_ANALOG_MODULE_NUMBER_MASK) >> 4));
-//		// по индексу - nucIndexNumber есть модуль?
-//		if (nucIndexNumber <= (xPlcConfigService.xPlcConfigServiceData.ucLastAnalogueInputModuleIndex))
-//		{
-//			// бит установлен или сброшен?
-//			if (pxModbusMapping->tab_bits[uiAddress -
-//										  COILS_ARRAY_MODBUS_BEGIN_ADDRESS])
-//			{
-//				// если установлен - сбросим.
-//				pxModbusMapping->tab_bits[uiAddress -
-//										  COILS_ARRAY_MODBUS_BEGIN_ADDRESS] = 0;
-//				// передадим драйверу модуля команду - калибровка начала шкалы - НШК.
-//				xAllModulesContext.axAllModulesContext[nucIndexNumber].
-//				xModuleContextDinamic.
-//				ucCommandControl = MVAI5_COMMAND_CONTROL_SET_BOTTOM_OF_SCALE;
-//			}
-//			else
-//			{
-//
-//			}
-//		}
-//		break;
-//
-//		// калибровка конца шкалы - ВШК.
-//	case DEVICE_CONTROL_SET_TOP_OF_SCALE:
+    // калибровка начала шкалы - НШК.
+    case DEVICE_CONTROL_SET_BOTTOM_OF_SCALE:
+        // вычислим индекс модуля в массиве контекста, к которому поступила команда.
+        nucIndexNumber = (((((GetResources() -> GetDeviceConfigSearchPointer()) -> uiLastAnalogueInputModuleIndex) + 1) -
+                           ((GetResources() -> GetDeviceConfigSearchPointer()) -> uiServiceAnalogueInputModuleQuantity))  +
+                          (((uiAddress -
+                             COILS_ARRAY_MODBUS_BEGIN_ADDRESS) & CALIBRATION_ANALOG_MODULE_NUMBER_MASK) >> 4));
+        // по индексу - nucIndexNumber есть модуль?
+        if (nucIndexNumber <=
+                (((GetResources() -> GetDeviceConfigSearchPointer()) ->
+                  uiLastAnalogueInputModuleIndex) + 1))
+        {
+            // получим указатель на контейнер с данными заказчика.
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetCustomerDataContainerPointer();
+            // бит установлен?
+            if ((pxDataContainer -> m_puiDataPointer[0]))
+            {
+                // если установлен - сбросим.
+                (pxDataContainer -> m_puiDataPointer[0]) = 0;
+                // получим указатель на контейнер с данными исполнителя..
+                pxDataContainer =
+                    (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+                // передадим драйверу модуля команду - калибровка начала шкалы - НШК.
+                (pxDataContainer -> m_puiDataPointer[1]) = MUVR_COMMAND_CONTROL_SET_BOTTOM_OF_SCALE;
+            }
+        }
+
+        SetFsmState(MODBUS_FUNCTION_5_HANDLER_INPUT_SET_TOP_OR_BOTTOM_OF_SCALE_COMAND_START);
+        return 1;
+        break;
+
+    // калибровка конца шкалы - ВШК.
+    case DEVICE_CONTROL_SET_TOP_OF_SCALE:
+        // вычислим индекс модуля в массиве контекста, к которому поступила команда.
+        nucIndexNumber = (((((GetResources() -> GetDeviceConfigSearchPointer()) -> uiLastAnalogueInputModuleIndex) + 1) -
+                           ((GetResources() -> GetDeviceConfigSearchPointer()) -> uiServiceAnalogueInputModuleQuantity))  +
+                          (((uiAddress -
+                             COILS_ARRAY_MODBUS_BEGIN_ADDRESS) & CALIBRATION_ANALOG_MODULE_NUMBER_MASK) >> 4));
+        // по индексу - nucIndexNumber есть модуль?
+        if (nucIndexNumber <=
+                (((GetResources() -> GetDeviceConfigSearchPointer()) ->
+                  uiLastAnalogueInputModuleIndex) + 1))
+        {
+            // получим указатель на контейнер с данными заказчика.
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetCustomerDataContainerPointer();
+            // бит установлен?
+            if ((pxDataContainer -> m_puiDataPointer[0]))
+            {
+                // если установлен - сбросим.
+                (pxDataContainer -> m_puiDataPointer[0]) = 0;
+                // получим указатель на контейнер с данными исполнителя..
+                pxDataContainer =
+                    (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+                // передадим драйверу модуля команду - калибровка начала шкалы - НШК.
+                (pxDataContainer -> m_puiDataPointer[1]) = MUVR_COMMAND_CONTROL_SET_TOP_OF_SCALE;
+            }
+        }
+
+        SetFsmState(MODBUS_FUNCTION_5_HANDLER_INPUT_SET_TOP_OR_BOTTOM_OF_SCALE_COMAND_START);
+        return 1;
+
 ////        // вычислим индекс модуля в массиве контекста, к которому поступила команда.
 ////        nucIndexNumber = (((xPlcConfigService.xPlcConfigServiceData.ucLastAnalogueInputModuleIndex + 1) -
 ////                           xPlcConfigService.xPlcConfigServiceData.ucServiceAnalogueInputModuleQuantity)  +
@@ -544,8 +471,9 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
 //
 //			}
 //		}
-//
-//        break;
+
+        break;
+
     default:
         break;
     };
@@ -1140,8 +1068,9 @@ uint16_t CDeviceControl::DataBaseBlockWriteBlockRelatedAction(void)
 
     case NETWORK_ADDRESS_DATA_BASE_BLOCK_OFFSET:
         cout << "CDeviceControl::DataBaseBlockWriteBlockRelatedAction NETWORK_ADDRESS_DATA_BASE_BLOCK_OFFSET" << endl;
-        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-        SetFsmState(DONE_OK);
+        {
+            SetFsmState(DATA_BASE_BLOCK_NETWORK_ADDRESS_WRITE_START);
+        }
         break;
 
     case CONFIGURATION_DATA_BASE_BLOCK_OFFSET:
@@ -1408,10 +1337,64 @@ uint8_t CDeviceControl::Fsm(void)
         break;
 
 //-------------------------------------------------------------------------------
+    case MODBUS_FUNCTION_5_HANDLER_INPUT_SET_TOP_OR_BOTTOM_OF_SCALE_COMAND_START:
+        std::cout << "CDeviceControl::Fsm MODBUS_FUNCTION_5_HANDLER_INPUT_SET_TOP_OR_BOTTOM_OF_SCALE_COMAND_START"  << std::endl;
+        {
+            m_uiInternalModuleMuvrId =
+                GetResources() ->
+                GetTaskIdByNameFromMap(m_sInternalModuleMuvrName);
+
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            pxDataContainer -> m_uiTaskId = m_uiInternalModuleMuvrId;
+            pxDataContainer -> m_uiFsmCommandState =
+                CInternalModuleMuvr::MUVR_INPUT_SET_TOP_OR_BOTTOM_OF_SCALE;
+            pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+            SetFsmNextStateDoneOk(MODBUS_FUNCTION_5_HANDLER_INPUT_SET_TOP_OR_BOTTOM_OF_SCALE_COMAND_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+            SetFsmNextStateReadyWaitingError(MODBUS_FUNCTION_5_HANDLER_INPUT_SET_TOP_OR_BOTTOM_OF_SCALE_COMAND_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingError(MODBUS_FUNCTION_5_HANDLER_INPUT_SET_TOP_OR_BOTTOM_OF_SCALE_COMAND_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingDoneError(MODBUS_FUNCTION_5_HANDLER_INPUT_SET_TOP_OR_BOTTOM_OF_SCALE_COMAND_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+        }
+        break;
+
+    case MODBUS_FUNCTION_5_HANDLER_INPUT_SET_TOP_OR_BOTTOM_OF_SCALE_COMAND_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+        std::cout << "CDeviceControl::Fsm MODBUS_FUNCTION_5_HANDLER_INPUT_SET_TOP_OR_BOTTOM_OF_SCALE_COMAND_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        {
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(DONE_OK);
+        }
+        break;
+
+    case MODBUS_FUNCTION_5_HANDLER_INPUT_SET_TOP_OR_BOTTOM_OF_SCALE_COMAND_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+        std::cout << "CDeviceControl::Fsm MODBUS_FUNCTION_5_HANDLER_INPUT_SET_TOP_OR_BOTTOM_OF_SCALE_COMAND_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        {
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+            SetFsmState(DONE_ERROR);
+        }
+        break;
+
+//-------------------------------------------------------------------------------
     case MODBUS_FUNCTION_5_HANDLER_INPUT_CALIBRATION_COMAND_START:
         std::cout << "CDeviceControl::Fsm MODBUS_FUNCTION_5_HANDLER_INPUT_CALIBRATION_COMAND_START"  << std::endl;
         {
-            SetFsmState(MODBUS_FUNCTION_5_HANDLER_INPUT_CALIBRATION_COMAND_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+            m_uiInternalModuleMuvrId =
+                GetResources() ->
+                GetTaskIdByNameFromMap(m_sInternalModuleMuvrName);
+
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            pxDataContainer -> m_uiTaskId = m_uiInternalModuleMuvrId;
+            pxDataContainer -> m_uiFsmCommandState =
+                CInternalModuleMuvr::MUVR_CALIBRATION_ON_OFF;
+            pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+            SetFsmNextStateDoneOk(MODBUS_FUNCTION_5_HANDLER_INPUT_CALIBRATION_COMAND_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+            SetFsmNextStateReadyWaitingError(MODBUS_FUNCTION_5_HANDLER_INPUT_CALIBRATION_COMAND_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingError(MODBUS_FUNCTION_5_HANDLER_INPUT_CALIBRATION_COMAND_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingDoneError(MODBUS_FUNCTION_5_HANDLER_INPUT_CALIBRATION_COMAND_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
         }
         break;
 
@@ -1437,7 +1420,7 @@ uint8_t CDeviceControl::Fsm(void)
         {
             if (ModbusFunction5Handler())
             {
-                SetFsmState(MODBUS_FUNCTION_5_HANDLER_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+//                SetFsmState(MODBUS_FUNCTION_5_HANDLER_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
             }
             else
             {
@@ -1447,8 +1430,8 @@ uint8_t CDeviceControl::Fsm(void)
         break;
 
     case MODBUS_FUNCTION_5_HANDLER_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
-        std::cout << "CDeviceControl::Fsm MODBUS_FUNCTION_5_HANDLER_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
-        {
+//        std::cout << "CDeviceControl::Fsm MODBUS_FUNCTION_5_HANDLER_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+    {
 //            CDataContainerDataBase* pxExecutorDataContainer =
 //                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
 //            CDataContainerDataBase* pxCustomerDataContainer =
@@ -1460,10 +1443,10 @@ uint8_t CDeviceControl::Fsm(void)
 //            pxCustomerDataContainer -> m_uiDataLength =
 //                pxExecutorDataContainer -> m_uiDataLength;
 
-            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-            SetFsmState(DONE_OK);
-        }
-        break;
+//            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+//            SetFsmState(DONE_OK);
+    }
+    break;
 
     case MODBUS_FUNCTION_5_HANDLER_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
         std::cout << "CDeviceControl::Fsm MODBUS_FUNCTION_5_HANDLER_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
@@ -1841,6 +1824,46 @@ uint8_t CDeviceControl::Fsm(void)
 
     case DATA_BASE_BLOCK_MODULE_MUVR_WRITE_COMPLETE_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
         std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_MODULE_MUVR_WRITE_COMPLETE_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        {
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+            SetFsmState(DONE_ERROR);
+        }
+        break;
+
+//-------------------------------------------------------------------------------
+    case DATA_BASE_BLOCK_NETWORK_ADDRESS_WRITE_START:
+        std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_NETWORK_ADDRESS_WRITE_START"  << std::endl;
+        {
+            m_uiInternalModuleMuvrId =
+                GetResources() ->
+                GetTaskIdByNameFromMap(m_sInternalModuleMuvrName);
+
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            pxDataContainer -> m_uiTaskId = m_uiInternalModuleMuvrId;
+            pxDataContainer -> m_uiFsmCommandState =
+                CInternalModuleMuvr::MUVR_WRITE_DATA_BASE;
+            pxDataContainer -> m_puiDataPointer =
+                (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer);
+
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+            SetFsmNextStateDoneOk(DATA_BASE_BLOCK_NETWORK_ADDRESS_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+            SetFsmNextStateReadyWaitingError(DATA_BASE_BLOCK_NETWORK_ADDRESS_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingError(DATA_BASE_BLOCK_NETWORK_ADDRESS_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingDoneError(DATA_BASE_BLOCK_NETWORK_ADDRESS_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+        }
+        break;
+
+    case DATA_BASE_BLOCK_NETWORK_ADDRESS_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+        std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_NETWORK_ADDRESS_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        {
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(DATA_BASE_BLOCK_NETWORK_ADDRESS_WRITE_COMPLETE_CHECK_START);
+        }
+        break;
+
+    case DATA_BASE_BLOCK_NETWORK_ADDRESS_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+        std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_NETWORK_ADDRESS_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
         {
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
             SetFsmState(DONE_ERROR);

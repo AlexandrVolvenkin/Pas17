@@ -640,6 +640,44 @@ uint8_t CDataBaseCreate::Fsm(void)
     case DATA_BASE_CREATE_CONFIGURATION_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING:
         std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_CONFIGURATION_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
         {
+            SetFsmState(DATA_BASE_CREATE_NETWORK_ADDRESS_DATA_BASE_BLOCKS_WRITE_START);
+        }
+        break;
+
+//-------------------------------------------------------------------------------
+    case DATA_BASE_CREATE_NETWORK_ADDRESS_DATA_BASE_BLOCKS_WRITE_START:
+        std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_NETWORK_ADDRESS_DATA_BASE_BLOCKS_WRITE_START"  << std::endl;
+        {
+            memset(m_puiIntermediateBuff,
+                   0,
+                   CDataStore::MAX_BLOCK_LENGTH);
+            // установим сетевой адрес по умолчанию.
+            m_puiIntermediateBuff[0] = 1;
+
+            m_uiDataStoreId =
+                GetResources() ->
+                GetTaskIdByNameFromMap(m_sDataStoreName);
+
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            pxDataContainer -> m_uiTaskId = m_uiDataStoreId;
+            pxDataContainer -> m_uiFsmCommandState =
+                CDataStore::START_WRITE_TEMPORARY_BLOCK_DATA;
+            // сетевой адрес блок 99
+            pxDataContainer -> m_uiDataIndex = NETWORK_ADDRESS_DATA_BASE_BLOCK_OFFSET;
+            pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+            SetFsmNextStateDoneOk(DATA_BASE_CREATE_NETWORK_ADDRESS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING);
+            SetFsmNextStateReadyWaitingError(DONE_ERROR);
+            SetFsmNextStateDoneWaitingError(DONE_ERROR);
+            SetFsmNextStateDoneWaitingDoneError(DONE_ERROR);
+        }
+        break;
+
+    case DATA_BASE_CREATE_NETWORK_ADDRESS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING:
+        std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_NETWORK_ADDRESS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
+        {
             SetFsmState(DATA_BASE_CREATE_MODULE_MUVR_DATA_BASE_READ_START);
         }
         break;

@@ -174,6 +174,10 @@ public:
     uint32_t m_uiUsedAnalogueInputsBadState;
     uint8_t* m_puiReperPointsAdcBuffer;
     uint32_t m_uiUsedReperPointsAdcBuffer;
+    uint8_t* m_puiAnalogueInputDiscreteInputsState;
+    uint32_t m_uiUsedAnalogueInputDiscreteInputsState;
+    uint8_t* m_puiAnalogueInputDiscreteInputsBadState;
+    uint8_t m_uiUsedAnalogueInputDiscreteInputsBadState;
 
     CDeviceControl* m_pxDeviceControl;
     CDataStore* m_pxDataStore;

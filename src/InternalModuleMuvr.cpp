@@ -192,6 +192,28 @@ void CInternalModuleMuvr::Allocate(void)
         MUVR_ANALOG_INPUT_QUANTITY;
 
 
+    // Получим указатель на место в массиве состояний дискретных сигналов порождаемых аналоговыми входами.
+    m_puiAnalogueInputDiscreteInputsState =
+        &(GetResources() ->
+          m_puiAnalogueInputDiscreteInputsState[GetResources() ->
+                                 m_uiUsedAnalogueInputDiscreteInputsState]);
+    // Увеличим общий объём выделенной памяти.
+    GetResources() ->
+    m_uiUsedAnalogueInputDiscreteInputsState +=
+        MUVR_DISCRETE_SIGNALS_QUANTITY;
+
+
+    // Получим указатель на место в массиве флагов недостоверности состояний дискретных сигналов порождаемых аналоговыми входами.
+    m_puiAnalogueInputDiscreteInputsBadState =
+        &(GetResources() ->
+          m_puiAnalogueInputDiscreteInputsBadState[GetResources() ->
+                                 m_uiUsedAnalogueInputDiscreteInputsBadState]);
+    // Увеличим общий объём выделенной памяти.
+    GetResources() ->
+    m_uiUsedAnalogueInputDiscreteInputsBadState +=
+        MUVR_DISCRETE_SIGNALS_QUANTITY;
+
+
     // Получим указатель на место в массиве отключения аналоговых входов для текущего модуля.
     m_puiAnalogueInputsOff =
         &(GetResources() ->
@@ -322,13 +344,13 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
     // калибруем вход?(если ucCommonIndex не равен 0, то содержит номер калибруемого входа)
     if ((uiCommonIndex > 0) && (uiCommonIndex < (MUVR_TXS_INPUT_NUMBER + 1)))
     {
-        //std::cout << "CInternalModuleMuvr::DataExchange 12"  << std::endl;
+//        std::cout << "CInternalModuleMuvr::DataExchange 12"  << std::endl;
         // получим номер калибруемого входа.
         ucCalibrPlus = uiCommonIndex;
         // установим начало шкалы НШК?
         if (GetCommandControl() == MUVR_COMMAND_CONTROL_SET_BOTTOM_OF_SCALE)
         {
-            //std::cout << "CInternalModuleMuvr::DataExchange 13"  << std::endl;
+            std::cout << "CInternalModuleMuvr::DataExchange 13"  << std::endl;
             SetCommandControl(0);
             // добавим команду модулю.
             ucCalibrPlus |= MUVR_SET_BOTTOM_OF_SCALE;
@@ -336,7 +358,7 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
         // установим конец шкалы ВШК?
         else if (GetCommandControl() == MUVR_COMMAND_CONTROL_SET_TOP_OF_SCALE)
         {
-            //std::cout << "CInternalModuleMuvr::DataExchange 14"  << std::endl;
+            std::cout << "CInternalModuleMuvr::DataExchange 14"  << std::endl;
             SetCommandControl(0);
             // добавим команду модулю.
             ucCalibrPlus |= MUVR_SET_TOP_OF_SCALE;
@@ -444,13 +466,20 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                     // установим флаг недостоверности - вход недостоверен.
                     m_puiAnalogueInputsBadState[i] = 1;
                     //std::cout << "CInternalModuleMuvr::DataExchange 32"  << std::endl;
+//                    // дискретные данные входа недостоверны, обнулим их.
+//                    memset(&(m_puiDiscreteInputsState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
+//                           0,
+//                           MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
                     // дискретные данные входа недостоверны, обнулим их.
-                    memset(&(m_puiDiscreteInputsState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
+                    memset(&(m_puiAnalogueInputDiscreteInputsState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
                            0,
                            MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
                     //std::cout << "CInternalModuleMuvr::DataExchange 33"  << std::endl;
                     // установим флаги недостоверности уставок LL, L, H, HH - недостоверны.
-                    memset(&(m_puiDiscreteInputsBadState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
+//                    memset(&(m_puiDiscreteInputsBadState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
+//                           1,
+//                           MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
+                    memset(&(m_puiAnalogueInputDiscreteInputsBadState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
                            1,
                            MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
                     //std::cout << "CInternalModuleMuvr::DataExchange 34"  << std::endl;
@@ -471,12 +500,19 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                            sizeof(float));
                     // установим флаг недостоверности - вход недостоверен.
                     m_puiAnalogueInputsBadState[i] = 1;
+//                    // дискретные данные входа недостоверны, обнулим их.
+//                    memset(&(m_puiDiscreteInputsState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
+//                           0,
+//                           MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
                     // дискретные данные входа недостоверны, обнулим их.
-                    memset(&(m_puiDiscreteInputsState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
+                    memset(&(m_puiAnalogueInputDiscreteInputsState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
                            0,
                            MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
                     // установим флаги недостоверности уставок LL, L, H, HH - недостоверны.
-                    memset(&(m_puiDiscreteInputsBadState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
+//                    memset(&(m_puiDiscreteInputsBadState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
+//                           1,
+//                           MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
+                    memset(&(m_puiAnalogueInputDiscreteInputsBadState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
                            1,
                            MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
                 }
@@ -493,12 +529,19 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                                sizeof(float));
                         // установим флаг недостоверности - вход недостоверен.
                         m_puiAnalogueInputsBadState[i] = 1;
+//                        // дискретные данные входа недостоверны, обнулим их.
+//                        memset(&(m_puiDiscreteInputsState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
+//                               0,
+//                               MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
                         // дискретные данные входа недостоверны, обнулим их.
-                        memset(&(m_puiDiscreteInputsState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
+                        memset(&(m_puiAnalogueInputDiscreteInputsState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
                                0,
                                MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
                         // установим флаги недостоверности уставок LL, L, H, HH - недостоверны.
-                        memset(&(m_puiDiscreteInputsBadState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
+//                        memset(&(m_puiDiscreteInputsBadState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
+//                               1,
+//                               MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
+                        memset(&(m_puiAnalogueInputDiscreteInputsBadState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
                                1,
                                MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
                     }
@@ -514,12 +557,19 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                                sizeof(float));
                         // сбросим флаг недостоверности - вход достоверен.
                         m_puiAnalogueInputsBadState[i] = 0;
+                        //                        // сбросим флаги уставок LL, L, H, HH.
+//                        memset(&(m_puiDiscreteInputsState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
+//                               0,
+//                               MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
                         // сбросим флаги уставок LL, L, H, HH.
-                        memset(&(m_puiDiscreteInputsState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
+                        memset(&(m_puiAnalogueInputDiscreteInputsState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
                                0,
                                MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
                         // сбросим флаги недостоверности уставок LL, L, H, HH - достоверны.
-                        memset(&(m_puiDiscreteInputsBadState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
+                        //                        memset(&(m_puiDiscreteInputsBadState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
+//                               0,
+//                               MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
+                        memset(&(m_puiAnalogueInputDiscreteInputsBadState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
                                0,
                                MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
                         // нарушена уставка LL + L?
@@ -527,40 +577,40 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                                 ANALOGUE_INPUT_SET_POINT_VIOLATION_LL_L)
                         {
                             // установим флаг нарушения уставки LL.
-                            (m_puiDiscreteInputsState[(i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH) +
-                                                                                             ANALOGUE_INPUT_SET_POINT_VIOLATION_LL_L_OFFSET]) = 1;
+                            (m_puiAnalogueInputDiscreteInputsState[(i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH) +
+                                                                                                          ANALOGUE_INPUT_SET_POINT_VIOLATION_LL_L_OFFSET]) = 1;
 
                             // установим флаг нарушения уставки L.
-                            (m_puiDiscreteInputsState[(i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH) +
-                                                                                             ANALOGUE_INPUT_SET_POINT_VIOLATION_L_OFFSET]) = 1;
+                            (m_puiAnalogueInputDiscreteInputsState[(i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH) +
+                                                                                                          ANALOGUE_INPUT_SET_POINT_VIOLATION_L_OFFSET]) = 1;
                         }
                         // нарушена уставка L?
                         if ((auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_SET_POINT_VIOLATION_MASK) ==
                                 ANALOGUE_INPUT_SET_POINT_VIOLATION_L)
                         {
                             // установим флаг нарушения уставки L.
-                            (m_puiDiscreteInputsState[(i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH) +
-                                                                                             ANALOGUE_INPUT_SET_POINT_VIOLATION_L_OFFSET]) = 1;
+                            (m_puiAnalogueInputDiscreteInputsState[(i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH) +
+                                                                                                          ANALOGUE_INPUT_SET_POINT_VIOLATION_L_OFFSET]) = 1;
                         }
                         // нарушена уставка H?
                         if ((auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_SET_POINT_VIOLATION_MASK) ==
                                 ANALOGUE_INPUT_SET_POINT_VIOLATION_H)
                         {
                             // установим флаг нарушения уставки H.
-                            (m_puiDiscreteInputsState[(i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH) +
-                                                                                             ANALOGUE_INPUT_SET_POINT_VIOLATION_H_OFFSET]) = 1;
+                            (m_puiAnalogueInputDiscreteInputsState[(i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH) +
+                                                                                                          ANALOGUE_INPUT_SET_POINT_VIOLATION_H_OFFSET]) = 1;
                         }
                         // нарушена уставка HH + H?
                         if ((auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_SET_POINT_VIOLATION_MASK) ==
                                 ANALOGUE_INPUT_SET_POINT_VIOLATION_HH_H)
                         {
                             // установим флаг нарушения уставки HH.
-                            (m_puiDiscreteInputsState[(i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH) +
-                                                                                             ANALOGUE_INPUT_SET_POINT_VIOLATION_HH_H_OFFSET]) = 1;
+                            (m_puiAnalogueInputDiscreteInputsState[(i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH) +
+                                                                                                          ANALOGUE_INPUT_SET_POINT_VIOLATION_HH_H_OFFSET]) = 1;
 
                             // установим флаг нарушения уставки H.
-                            (m_puiDiscreteInputsState[(i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH) +
-                                                                                             ANALOGUE_INPUT_SET_POINT_VIOLATION_H_OFFSET]) = 1;
+                            (m_puiAnalogueInputDiscreteInputsState[(i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH) +
+                                                                                                          ANALOGUE_INPUT_SET_POINT_VIOLATION_H_OFFSET]) = 1;
                         }
                     }
                 }
@@ -604,14 +654,21 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
         memset(m_puiAnalogueInputsBadState,
                1,
                MUVR_ANALOG_INPUT_QUANTITY);
-        // дискретные данные входов модуля недостоверны, обнулим их.
-        memset(m_puiDiscreteInputsState,
-               0,
-               MUVR_ANALOG_INPUT_QUANTITY * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
+//        // дискретные данные входов модуля недостоверны, обнулим их.
+//        memset(m_puiDiscreteInputsState,
+//               0,
+//               MUVR_ANALOG_INPUT_QUANTITY * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
         // установим флаги недостоверности всех дискретных сигналов модуля.
-        memset(m_puiDiscreteInputsBadState,
+//        memset(m_puiDiscreteInputsBadState,
+//               1,
+//               (MUVR_ANALOG_INPUT_QUANTITY * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH));
+        memset(m_puiAnalogueInputDiscreteInputsBadState,
                1,
-               MUVR_ANALOG_INPUT_QUANTITY * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
+               (MUVR_ANALOG_INPUT_QUANTITY * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH));
+        // дискретные данные порождаемые аналоговыми входами недостоверны, обнулим их.
+        memset(m_puiAnalogueInputDiscreteInputsState,
+               0,
+               (MUVR_ANALOG_INPUT_QUANTITY * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH));
         //iBadModuleBuffUpdate();
     }
     else
@@ -1146,33 +1203,41 @@ uint8_t CInternalModuleMuvr::Fsm(void)
         break;
 
     case MUVR_GET_MODULE_TYPE:
-//        //std::cout << "CInternalModuleMuvr::Fsm MUVR_GET_MODULE_TYPE"  << std::endl;
+        //std::cout << "CInternalModuleMuvr::Fsm MUVR_GET_MODULE_TYPE"  << std::endl;
+    {
         GetModuleType(GetAddress());
         SetFsmState(DONE_OK);
-        break;
+    }
+    break;
 
     case MUVR_REPER_POINTS_ADC_READ:
         std::cout << "CInternalModuleMuvr::Fsm MUVR_REPER_POINTS_ADC_READ"  << std::endl;
-        ReperPointsAdcRead();
-        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-        SetFsmState(DONE_OK);
+        {
+            ReperPointsAdcRead();
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(DONE_OK);
+        }
         break;
 
     case MUVR_DATA_BASE_READ:
         std::cout << "CInternalModuleMuvr::Fsm MUVR_DATA_BASE_READ"  << std::endl;
-        DataBaseRead();
-        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-        SetFsmState(DONE_OK);
+        {
+            DataBaseRead();
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(DONE_OK);
+        }
         break;
 
     case MUVR_WRITE_DATA_BASE:
         std::cout << "CInternalModuleMuvr::Fsm MUVR_WRITE_DATA_BASE"  << std::endl;
-        DataBaseBlockWrite();
-        GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
-        // установим время периода опроса модуля для запроса результата программирования.
-        m_xWriteCompleteWaitTimer.Set(500);
-//        SetFsmState(MUVR_WRITE_DATA_BASE_CHECK);
-        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+        {
+            DataBaseBlockWrite();
+            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
+            // установим время периода опроса модуля для запроса результата программирования.
+            m_xWriteCompleteWaitTimer.Set(500);
+            //        SetFsmState(MUVR_WRITE_DATA_BASE_CHECK);
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+        }
         SetFsmState(DONE_OK);
         break;
 
@@ -1232,9 +1297,35 @@ uint8_t CInternalModuleMuvr::Fsm(void)
 
     case MUVR_DATA_EXCHANGE:
         //std::cout << "CInternalModuleMuvr::Fsm MUVR_DATA_EXCHANGE"  << std::endl;
+    {
         DataExchange();
         ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
         SetFsmState(DONE_OK);
+    }
+    break;
+
+    case MUVR_CALIBRATION_ON_OFF:
+        std::cout << "CInternalModuleMuvr::Fsm MUVR_CALIBRATION_ON_OFF"  << std::endl;
+        {
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetCustomerDataContainerPointer();
+            // установим номер калибруемого входа.
+            SetCommonIndex((pxDataContainer -> m_puiDataPointer[0]));
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(DONE_OK);
+        }
+        break;
+
+    case MUVR_INPUT_SET_TOP_OR_BOTTOM_OF_SCALE:
+        std::cout << "CInternalModuleMuvr::Fsm MUVR_INPUT_SET_TOP_OR_BOTTOM_OF_SCALE"  << std::endl;
+        {
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetCustomerDataContainerPointer();
+            // установим начало или конец шкалы.
+            SetCommandControl((pxDataContainer -> m_puiDataPointer[1]));
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(DONE_OK);
+        }
         break;
 
     default:

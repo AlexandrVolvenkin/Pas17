@@ -229,23 +229,23 @@ public:
         m_puiTxBuffer = puiTxBuffer;
     };
 
-    uint8_t* GetDiscreteInputs()
-    {
-        return m_puiDiscreteInputs;
-    };
-    void SetDiscreteInputs(uint8_t* puiDiscreteInputs)
-    {
-        m_puiDiscreteInputs = puiDiscreteInputs;
-    };
-
-    uint8_t* GetDiscreteInputsBadState()
-    {
-        return m_puiDiscreteInputsBadState;
-    };
-    void SetDiscreteInputsBadState(uint8_t* puiDiscreteInputsBadState)
-    {
-        m_puiDiscreteInputsBadState = puiDiscreteInputsBadState;
-    };
+//    uint8_t* GetDiscreteInputs()
+//    {
+//        return m_puiDiscreteInputs;
+//    };
+//    void SetDiscreteInputs(uint8_t* puiDiscreteInputs)
+//    {
+//        m_puiDiscreteInputs = puiDiscreteInputs;
+//    };
+//
+//    uint8_t* GetDiscreteInputsBadState()
+//    {
+//        return m_puiDiscreteInputsBadState;
+//    };
+//    void SetDiscreteInputsBadState(uint8_t* puiDiscreteInputsBadState)
+//    {
+//        m_puiDiscreteInputsBadState = puiDiscreteInputsBadState;
+//    };
 
     uint8_t GetBadAnswerCounter()
     {
@@ -302,8 +302,8 @@ protected:
     uint8_t m_uiErrorCode;
     uint8_t* m_puiRxBuffer;
     uint8_t* m_puiTxBuffer;
-    uint8_t* m_puiDiscreteInputs;
-    uint8_t* m_puiDiscreteInputsBadState;
+//    uint8_t* m_puiDiscreteInputs;
+//    uint8_t* m_puiDiscreteInputsBadState;
     uint8_t m_uiBadAnswerCounter;
 
 };

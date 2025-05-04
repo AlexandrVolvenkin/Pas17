@@ -54,14 +54,23 @@ void CResources::ModbusWorkingArraysCreate(uint16_t uiCoilsNumber,
         uint16_t uiInputRegistersNumber)
 {
     m_puiCoils = new uint8_t(uiCoilsNumber);
+//    memset(m_puiCoils, 0, uiCoilsNumber);
     m_puiDiscreteInputs = new uint8_t(uiDiscreteInputsNumber);
+//    memset(m_puiDiscreteInputs, 0, uiDiscreteInputsNumber);
     m_puiHoldingRegisters = new uint16_t(uiHoldingRegistersNumber);
+//    memset(m_puiHoldingRegisters, 0, (uiHoldingRegistersNumber * sizeof(uint16_t)));
     m_puiInputRegisters = new uint16_t(uiInputRegistersNumber);
+//    memset(m_puiInputRegisters, 0, (uiInputRegistersNumber * sizeof(uint16_t)));
 
     m_uiCoilsNumber = uiCoilsNumber;
     m_uiDiscreteInputsNumber = uiDiscreteInputsNumber;
     m_uiHoldingRegistersNumber = uiHoldingRegistersNumber;
     m_uiInputRegistersNumber = uiInputRegistersNumber;
+
+//    memset(m_puiCoils, 0, uiCoilsNumber);
+//    memset(m_puiDiscreteInputs, 0, uiDiscreteInputsNumber);
+//    memset(m_puiHoldingRegisters, 0, (uiHoldingRegistersNumber * sizeof(uint16_t)));
+//    memset(m_puiInputRegisters, 0, (uiInputRegistersNumber * sizeof(uint16_t)));
 }
 
 //-------------------------------------------------------------------------------
@@ -191,6 +200,11 @@ void CResources::Allocate(void)
 
     // Подготовим к отправке текущие адреса объектов системы используемых драйверами устройств.
 
+//    memset(m_puiCoils, 0, COILS_WORK_ARRAY_LENGTH);
+//    memset(m_puiDiscreteInputs, 0, DISCRETE_INPUTS_ARRAY_LENGTH);
+//    memset(m_puiHoldingRegisters, 0, (HOLDING_REGISTERS_ARRAY_LENGTH * sizeof(uint16_t)));
+//    memset(m_puiInputRegisters, 0, (INPUT_REGISTERS_ARRAY_LENGTH * sizeof(uint16_t)));
+
 //    xMemoryAllocationContext.puiRxBuffer = m_auiSpiRxBuffer;
 //    xMemoryAllocationContext.puiTxBuffer = m_auiSpiTxBuffer;
 //    xMemoryAllocationContext.puiErrorCode = &m_uiErrorCode;
@@ -236,6 +250,18 @@ void CResources::Allocate(void)
     // Подключим буфер для хранения состояний достоверности аналоговых входов.
     m_puiAnalogueInputsBadState =
         &m_puiCoils[ANALOGUE_INPUTS_BAD_STATE_OFFSET];
+
+    // Обнулим общий объём выделенной памяти.
+    m_uiUsedAnalogueInputDiscreteInputsState = 0;
+    // Подключим буфер для хранения состояний дискретных сигналов порождаемых аналоговыми входами.
+    m_puiAnalogueInputDiscreteInputsState =
+        &m_puiDiscreteInputs[DISCRETE_INPUTS_STATE_OFFSET + MUVR_DISCRETE_INPUT_QUANTITY];
+
+    // Обнулим общий объём выделенной памяти.
+    m_uiUsedAnalogueInputDiscreteInputsBadState = 0;
+    // Подключим буфер для хранения флагов недостоверности состояний дискретных сигналов порождаемых аналоговыми входами.
+    m_puiAnalogueInputDiscreteInputsBadState =
+        &m_puiCoils[ANALOGUE_INPUTS_DISCRETE_SIGNALS_BAD_STATE_OFFSET];
 
     // Обнулим общий объём выделенной памяти.
     m_uiUsedAnalogueInputsOff = 0;
