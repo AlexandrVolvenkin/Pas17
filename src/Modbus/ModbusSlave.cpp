@@ -451,13 +451,13 @@ uint16_t CModbusSlave::WriteSingleCoil(void)
             if (uiData)
             {
                 std::cout << "CModbusSlave::WriteSingleCoil 5" << std::endl;
-                m_puiIntermediateBuff[0] = 1;
+                m_puiIntermediateBuff[BIT_STATE_OFFSET] = 1;
 //                m_puiCoils[uiAddress] = 1;
             }
             else
             {
                 std::cout << "CModbusSlave::WriteSingleCoil 6" << std::endl;
-                m_puiIntermediateBuff[0] = 0;
+                m_puiIntermediateBuff[BIT_STATE_OFFSET] = 0;
 //                m_puiCoils[uiAddress] = 0;
             }
             memcpy(puiResponse, puiRequest, uiLength);
@@ -870,6 +870,7 @@ uint16_t CModbusSlave::RequestProcessing(void)
     int8_t uiFunctionCode = puiRequest[uiPduOffset];
 
     std::cout << "CModbusSlave::RequestProcessing uiSlave "  << (int)uiSlave << std::endl;
+    std::cout << "CModbusSlave::RequestProcessing m_uiOwnAddress "  << (int)m_uiOwnAddress << std::endl;
     std::cout << "CModbusSlave::RequestProcessing uiFunctionCode "  << (int)uiFunctionCode << std::endl;
 
     /* Filter on the Modbus unit identifier (slave) in RTU mode */
@@ -2069,7 +2070,7 @@ uint8_t CModbusSlave::Fsm(void)
         std::cout << "CModbusSlave::Fsm REQUEST_PROCESSING"  << std::endl;
         if (RequestProcessing())
         {
-
+            // состо€ние автомата измен€ют вызываемые методы обработчики функций модбас.
         }
         else
         {
@@ -2082,7 +2083,7 @@ uint8_t CModbusSlave::Fsm(void)
         std::cout << "CModbusSlave::Fsm EXECUTOR_ANSWER_PROCESSING"  << std::endl;
         if (AnswerProcessing())
         {
-
+            // состо€ние автомата измен€ют вызываемые методы обработчики функций модбас.
         }
         else
         {
@@ -2198,6 +2199,15 @@ uint8_t CModbusSlave::Fsm(void)
     case RESPONSE_EXCEPTION_MAX:
         std::cout << "CModbusSlave::Fsm RESPONSE_EXCEPTION_MAX"  << std::endl;
         ResponseException(MODBUS_EXCEPTION_MAX);
+        break;
+
+    case COMMUNICATION_STOP:
+        //std::cout << "CModbusSlave::Fsm COMMUNICATION_STOP"  << std::endl;
+        m_pxOperatingDataContainer -> m_uiFsmCommandState =
+            CModbusRtuSlaveLinkLayer::COMMUNICATION_STOP;
+        m_pxModbusSlaveLinkLayer ->
+        SetTaskData(m_pxOperatingDataContainer);
+        SetFsmState(READY);
         break;
 
     default:

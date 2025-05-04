@@ -35,6 +35,7 @@
 #include "AnalogueSignals.h"
 #include "SystemComponentsCreate.h"
 #include "ConfigurationCheck.h"
+#include "SettingsLoad.h"
 
 #include "MainProductionCycle.h"
 
@@ -447,6 +448,24 @@ uint8_t CMainProductionCycle::CreateTasks(void)
     m_xResources.AddCurrentlyRunningTasksList(pxConfigurationCheck);
 //    m_pxConfigurationCheck = pxConfigurationCheck;
 
+//-------------------------------------------------------------------------------
+    CSettingsLoad* pxSettingsLoad = 0;
+    pxSettingsLoad =
+        static_cast<CSettingsLoad*>(m_xResources.AddCommonTaskToMap("SettingsLoad",
+                                    std::make_shared<CSettingsLoad>()));
+    pxSettingsLoad ->
+    SetResources(&m_xResources);
+    pxSettingsLoad ->
+    SetDataStoreName("DataStoreFileSystem");
+//    pxSettingsLoad ->
+//    SetInternalModuleName("InternalModuleCommon");
+//    pxSettingsLoad ->
+//    SetInternalModuleMuvrName("InternalModuleMuvr0");
+    pxSettingsLoad ->
+    SetDeviceControlName("DeviceControlRtuUpperLevel");
+    m_xResources.AddCurrentlyRunningTasksList(pxSettingsLoad);
+//    m_pxSettingsLoad = pxSettingsLoad;
+
 }
 
 //-------------------------------------------------------------------------------
@@ -618,6 +637,10 @@ uint8_t CMainProductionCycle::Fsm(void)
             m_uiConfigurationCheckId =
                 GetResources() ->
                 GetTaskIdByNameFromMap("ConfigurationCheck");
+
+            m_uiSettingsLoadId =
+                GetResources() ->
+                GetTaskIdByNameFromMap("SettingsLoad");
 
             SetFsmState(READY);
         }
@@ -910,7 +933,7 @@ uint8_t CMainProductionCycle::Fsm(void)
 
             // текущая конфигурация и сохранённая в базе данных совпадают.
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-            SetFsmState(INTERNAL_MODULES_DATA_EXCHANGE_START);
+            SetFsmState(SETTINGS_LOAD_START);
         }
         break;
 
@@ -954,9 +977,49 @@ uint8_t CMainProductionCycle::Fsm(void)
         CurrentlyRunningTasksExecution();
 
         ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-        SetFsmState(INTERNAL_MODULES_DATA_EXCHANGE_START);
+        SetFsmState(SETTINGS_LOAD_START);
     }
     break;
+
+//-------------------------------------------------------------------------------
+    case SETTINGS_LOAD_START:
+        std::cout << "CSettingsLoad::Fsm SETTINGS_LOAD_START"  << std::endl;
+        {
+            CurrentlyRunningTasksExecution();
+
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            pxDataContainer -> m_uiTaskId = m_uiSettingsLoadId;
+            pxDataContainer -> m_uiFsmCommandState =
+                CSettingsLoad::SETTINGS_LOAD_START;
+
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+            SetFsmNextStateDoneOk(SETTINGS_LOAD_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+            SetFsmNextStateReadyWaitingError(SETTINGS_LOAD_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingError(SETTINGS_LOAD_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingDoneError(SETTINGS_LOAD_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+        }
+        break;
+
+    case SETTINGS_LOAD_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+        std::cout << "CSettingsLoad::Fsm SETTINGS_LOAD_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        {
+            CurrentlyRunningTasksExecution();
+
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(INTERNAL_MODULES_DATA_EXCHANGE_START);
+        }
+        break;
+
+    case SETTINGS_LOAD_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+        std::cout << "CSettingsLoad::Fsm SETTINGS_LOAD_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        {
+            CurrentlyRunningTasksExecution();
+
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+            SetFsmState(DONE_ERROR);
+        }
+        break;
 
 //-------------------------------------------------------------------------------
     case INTERNAL_MODULES_DATA_EXCHANGE_START:

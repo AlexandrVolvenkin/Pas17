@@ -41,6 +41,7 @@ class CConfigurationCreate;
 class CDataBaseCreate;
 class CSystemComponentsCreate;
 class CConfigurationCheck;
+class CSettingsLoad;
 
 //-------------------------------------------------------------------------------
 class CMainProductionCycle : public CTask
@@ -86,6 +87,10 @@ public:
 
         DATA_BASE_CREATE_START,
         DATA_BASE_CREATE_EXECUTOR_ANSWER_PROCESSING,
+
+        SETTINGS_LOAD_START,
+        SETTINGS_LOAD_EXECUTOR_DONE_OK_ANSWER_PROCESSING,
+        SETTINGS_LOAD_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING,
 
         MAIN_CYCLE_MODULES_INIT,
         MAIN_CYCLE_MODULES_INIT_END_WAITING,
@@ -175,6 +180,9 @@ private:
 
     std::string m_sConfigurationCheckName;
     uint8_t m_uiConfigurationCheckId;
+
+    std::string m_sSettingsLoadName;
+    uint8_t m_uiSettingsLoadId;
 
     CSpiCommunicationDevice* m_pxSpiCommunicationDevice;
     CInternalModuleInterface* m_pxInternalModule;

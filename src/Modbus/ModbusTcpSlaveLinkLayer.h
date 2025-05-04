@@ -59,6 +59,7 @@ public:
         COMMUNICATION_TRANSMIT_START,
         COMMUNICATION_FRAME_TRANSMITED,
         COMMUNICATION_RECEIVE_ERROR,
+        COMMUNICATION_STOP,
     };
 
     CModbusTcpSlaveLinkLayer();

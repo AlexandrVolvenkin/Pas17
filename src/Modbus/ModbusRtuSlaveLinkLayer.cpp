@@ -580,7 +580,14 @@ uint8_t CModbusRtuSlaveLinkLayer::Fsm(void)
 
     case COMMUNICATION_RECEIVE_ERROR:
         //std::cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_ERROR"  << std::endl;
+        m_pxCommunicationDevice -> Close();
         SetFsmState(DONE_ERROR);
+        break;
+
+    case COMMUNICATION_STOP:
+        //std::cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_STOP"  << std::endl;
+        m_pxCommunicationDevice -> Close();
+        SetFsmState(READY);
         break;
 
     default:

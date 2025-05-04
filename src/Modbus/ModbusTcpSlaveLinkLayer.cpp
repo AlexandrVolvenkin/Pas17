@@ -580,6 +580,12 @@ uint8_t CModbusTcpSlaveLinkLayer::Fsm(void)
         SetFsmState(DONE_ERROR);
         break;
 
+    case COMMUNICATION_STOP:
+        //std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_STOP"  << std::endl;
+        m_pxCommunicationDevice -> Close();
+        SetFsmState(READY);
+        break;
+
     default:
         break;
     }

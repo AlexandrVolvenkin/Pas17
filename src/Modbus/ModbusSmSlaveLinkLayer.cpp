@@ -482,20 +482,20 @@ uint8_t CModbusSmSlaveLinkLayer::Fsm(void)
     case COMMUNICATION_FRAME_CHECK:
         std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_FRAME_CHECK 1"  << std::endl;
 
+        {
+            cout << "CModbusSmSlaveLinkLayer::Fsm m_auiRxBuffer" << endl;
+            unsigned char *pucSourceTemp;
+            pucSourceTemp = (unsigned char*)m_auiRxBuffer;
+            for(int i=0; i<32; )
             {
-                cout << "CModbusSmSlaveLinkLayer::Fsm m_auiRxBuffer" << endl;
-                unsigned char *pucSourceTemp;
-                pucSourceTemp = (unsigned char*)m_auiRxBuffer;
-                for(int i=0; i<32; )
+                for(int j=0; j<8; j++)
                 {
-                    for(int j=0; j<8; j++)
-                    {
-                        cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
-                    }
-                    cout << endl;
-                    i += 8;
+                    cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
                 }
+                cout << endl;
+                i += 8;
             }
+        }
         if (FrameCheck(m_auiRxBuffer, m_uiFrameLength))
         {
             std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_FRAME_CHECK 2"  << std::endl;
@@ -542,6 +542,12 @@ uint8_t CModbusSmSlaveLinkLayer::Fsm(void)
     case COMMUNICATION_RECEIVE_ERROR:
         std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_ERROR"  << std::endl;
         SetFsmState(DONE_ERROR);
+        break;
+
+    case COMMUNICATION_STOP:
+        //std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_STOP"  << std::endl;
+        m_pxCommunicationDevice -> Close();
+        SetFsmState(READY);
         break;
 
     default:
