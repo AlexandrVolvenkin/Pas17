@@ -117,6 +117,10 @@ uint8_t CMainProductionCycle::Init(void)
 
     SetCustomerDataContainer(GetExecutorDataContainerPointer());
 //    SetCurrentCustomerDataContainer(GetExecutorDataContainerPointer());
+
+    CDataContainerDataBase* pxDataContainer =
+        (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+    pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
 }
 
 ////-------------------------------------------------------------------------------

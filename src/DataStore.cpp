@@ -198,6 +198,10 @@ uint8_t CDataStore::Init(void)
                              AddDataContainer(std::make_shared<CDataContainerDataBase>())));
 
     SetCustomerDataContainer(GetExecutorDataContainerPointer());
+
+    CDataContainerDataBase* pxDataContainer =
+        (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+    pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
 }
 
 //-------------------------------------------------------------------------------

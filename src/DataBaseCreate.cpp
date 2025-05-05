@@ -64,6 +64,10 @@ uint8_t CDataBaseCreate::Init(void)
                              AddDataContainer(std::make_shared<CDataContainerDataBase>())));
     SetCustomerDataContainer(GetExecutorDataContainerPointer());
 
+    CDataContainerDataBase* pxDataContainer =
+        (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+    pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+
     GetResources() ->
     m_pxDiscreteSygnalTextTitlesWork = new TDiscreteSygnalTextTitle[MAX_HANDLED_DISCRETE_INPUT];
 }

@@ -46,6 +46,10 @@ uint8_t CConfigurationCreate::Init(void)
     SetExecutorDataContainer(static_cast<CDataContainerDataBase*>(GetResources() ->
                              AddDataContainer(std::make_shared<CDataContainerDataBase>())));
     SetCustomerDataContainer(GetExecutorDataContainerPointer());
+
+    CDataContainerDataBase* pxDataContainer =
+        (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+    pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
 }
 
 //-----------------------------------------------------------------------------------------------------

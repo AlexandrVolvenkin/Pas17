@@ -52,6 +52,10 @@ uint8_t CDataStoreCheck::Init(void)
 
     SetCustomerDataContainer(GetExecutorDataContainerPointer());
     SetCurrentCustomerDataContainer(GetExecutorDataContainerPointer());
+
+    CDataContainerDataBase* pxDataContainer =
+        (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+    pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
 }
 
 //-------------------------------------------------------------------------------
