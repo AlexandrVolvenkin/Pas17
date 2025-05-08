@@ -172,6 +172,13 @@ void CDataBaseCreate::AnalogoueInputModuleDiscreteSignalsTextTitlesCreate(uint8_
 
     TDiscreteSygnalTextTitle axDiscreteSygnalTextTitles[] =
     {
+        {"Диск.вход.DIn1"},
+        {"Диск.вход.DIn2"},
+        {"Диск.вход.DIn3"},
+        {"Диск.вход.DIn4"},
+        {"Диск.вход.DIn5"},
+        {"Диск.вход.DIn6"},
+
         {"Изм.зн.AIn1<LL"},
         {"Изм.зн.AIn1<L "},
         {"Изм.зн.AIn1>H "},
@@ -667,8 +674,8 @@ uint8_t CDataBaseCreate::Fsm(void)
             memset(m_puiIntermediateBuff,
                    0,
                    CDataStore::MAX_BLOCK_LENGTH);
-            // установим сетевой адрес по умолчанию.
-            m_puiIntermediateBuff[0] = 1;
+            // установим сетевой адрес по умолчанию 1 в целых числах.
+            m_puiIntermediateBuff[0] = 0;
 
             CDataContainerDataBase* pxDataContainer =
                 (CDataContainerDataBase*)GetExecutorDataContainerPointer();

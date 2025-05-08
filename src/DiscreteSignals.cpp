@@ -226,7 +226,8 @@ void CDiscreteSignals::DiscreteSignalsStartDataBaseCreate(void)
 
     memset((uint8_t*)pxDiscreteSignalsDescriptionWork,
            0,
-           MAX_HANDLED_DISCRETE_INPUT);
+           (sizeof(struct TDiscreteSignalsDescriptionWork) *
+            MAX_HANDLED_DISCRETE_INPUT));
 
     // создадим первую часть стартовой базы данных дискретных сигналов.
     // для сигналов пораждаемых модулями дискретного ввода.
@@ -406,52 +407,52 @@ void CDiscreteSignals::DiscreteSignalsStartDataBaseCreate(void)
 
 
 
-    // получим указатель на буфер с вновь созданной нормализованной стартовой базой данных дискретных сигналов.
-    pxDiscreteSignalsDescriptionWork = m_pxDiscreteSignalsDescriptionWork;
-//    // получим указатель на базу данных прибора в общем формате.
-//    pxDiscreteSignalsDescriptionWorkPackOne = (TDiscreteSignalsDescriptionWorkPackOne*)&(xPlcDataBase.
-//            axPlcDataBaseBlocks[DISCRETE_INPUT_SYGNALS_DATA_BASE_BLOCK_OFFSET].
-//            auiPlcDataBaseBlockData[0]);
-    nuiBlockCounter = 0;
-    nuiBlocksInBlockCounter = 0;
-
-    // преобразуем созданную базу данных в общий формат.
-    for (int i = 0;
-            i < MAX_HANDLED_DISCRETE_INPUT;
-            i++)
-    {
-        // обработан весь блок базы данных?
-        if (nuiBlocksInBlockCounter == DISCRETE_INPUT_SYGNALS_DATA_BASE_BLOCKS_IN_BLOCK_QUANTITY)
-        {
-            // следующий блок базы данных.
-            nuiBlockCounter++;
-//            // получим указатель на следующий блок в общей базе данных прибора.
-//            pxDiscreteSignalsDescriptionWorkPackOne = (TDiscreteSignalsDescriptionWorkPackOne*)&(xPlcDataBase.
-//                    axPlcDataBaseBlocks[DISCRETE_INPUT_SYGNALS_DATA_BASE_BLOCK_OFFSET + nuiBlockCounter].
-//                    auiPlcDataBaseBlockData[0]);
-            nuiBlocksInBlockCounter = 0;
-        }
-
-        // скопируем один описатель дискретного сигнала, в буфер общего формата.
-        xDiscreteSignalsDescriptionWorkSourse.uiTalTkGrp =
-            pxDiscreteSignalsDescriptionWork[i].uiTalTkGrp;
-
-        memcpy(xDiscreteSignalsDescriptionWorkSourse.auiRelayOut,
-               pxDiscreteSignalsDescriptionWork[i].auiRelayOut,
-               8);
-
-        xDiscreteSignalsDescriptionWorkSourse.uiDelay =
-            pxDiscreteSignalsDescriptionWork[i].uiDelay;
-        xDiscreteSignalsDescriptionWorkSourse.uiCrc =
-            pxDiscreteSignalsDescriptionWork[i].uiCrc;
-
-        memcpy((uint8_t*)&pxDiscreteSignalsDescriptionWorkPackOne[nuiBlocksInBlockCounter],
-               (uint8_t*)&xDiscreteSignalsDescriptionWorkSourse,
-               sizeof(struct TDiscreteSignalsDescriptionWorkPackOne));
-
-        // следующий описатель.
-        nuiBlocksInBlockCounter++;
-    }
+//    // получим указатель на буфер с вновь созданной нормализованной стартовой базой данных дискретных сигналов.
+//    pxDiscreteSignalsDescriptionWork = m_pxDiscreteSignalsDescriptionWork;
+////    // получим указатель на базу данных прибора в общем формате.
+////    pxDiscreteSignalsDescriptionWorkPackOne = (TDiscreteSignalsDescriptionWorkPackOne*)&(xPlcDataBase.
+////            axPlcDataBaseBlocks[DISCRETE_INPUT_SYGNALS_DATA_BASE_BLOCK_OFFSET].
+////            auiPlcDataBaseBlockData[0]);
+//    nuiBlockCounter = 0;
+//    nuiBlocksInBlockCounter = 0;
+//
+//    // преобразуем созданную базу данных в общий формат.
+//    for (int i = 0;
+//            i < MAX_HANDLED_DISCRETE_INPUT;
+//            i++)
+//    {
+//        // обработан весь блок базы данных?
+//        if (nuiBlocksInBlockCounter == DISCRETE_INPUT_SYGNALS_DATA_BASE_BLOCKS_IN_BLOCK_QUANTITY)
+//        {
+//            // следующий блок базы данных.
+//            nuiBlockCounter++;
+////            // получим указатель на следующий блок в общей базе данных прибора.
+////            pxDiscreteSignalsDescriptionWorkPackOne = (TDiscreteSignalsDescriptionWorkPackOne*)&(xPlcDataBase.
+////                    axPlcDataBaseBlocks[DISCRETE_INPUT_SYGNALS_DATA_BASE_BLOCK_OFFSET + nuiBlockCounter].
+////                    auiPlcDataBaseBlockData[0]);
+//            nuiBlocksInBlockCounter = 0;
+//        }
+//
+//        // скопируем один описатель дискретного сигнала, в буфер общего формата.
+//        xDiscreteSignalsDescriptionWorkSourse.uiTalTkGrp =
+//            pxDiscreteSignalsDescriptionWork[i].uiTalTkGrp;
+//
+//        memcpy(xDiscreteSignalsDescriptionWorkSourse.auiRelayOut,
+//               pxDiscreteSignalsDescriptionWork[i].auiRelayOut,
+//               8);
+//
+//        xDiscreteSignalsDescriptionWorkSourse.uiDelay =
+//            pxDiscreteSignalsDescriptionWork[i].uiDelay;
+//        xDiscreteSignalsDescriptionWorkSourse.uiCrc =
+//            pxDiscreteSignalsDescriptionWork[i].uiCrc;
+//
+//        memcpy((uint8_t*)&pxDiscreteSignalsDescriptionWorkPackOne[nuiBlocksInBlockCounter],
+//               (uint8_t*)&xDiscreteSignalsDescriptionWorkSourse,
+//               sizeof(struct TDiscreteSignalsDescriptionWorkPackOne));
+//
+//        // следующий описатель.
+//        nuiBlocksInBlockCounter++;
+//    }
 }
 
 //-------------------------------------------------------------------------------
@@ -484,7 +485,7 @@ void CDiscreteSignals::DiscreteSignalsStartDataBlockWorkToCommonFormat(uint8_t* 
 
         memcpy(pxDiscreteSignalsDescriptionWorkPackOne[i].auiRelayOut,
                pxDiscreteSignalsDescriptionWork[i].auiRelayOut,
-               8);
+               5);
 
         pxDiscreteSignalsDescriptionWorkPackOne[i].uiDelay =
             pxDiscreteSignalsDescriptionWork[i].uiDelay;
@@ -864,9 +865,8 @@ uint8_t CDiscreteSignals::Fsm(void)
         {
             DiscreteSignalsStartDataBlockWorkToCommonFormat(m_puiIntermediateBuff,
                     // получим указатель на блок в буфере с вновь созданной нормализованной стартовой базой данных дискретных сигналов.
-                    &(m_pxDiscreteSignalsDescriptionWork[((sizeof(struct TDiscreteSignalsDescriptionWork) *
-                                                                             DISCRETE_INPUT_SYGNALS_DATA_BASE_BLOCKS_IN_BLOCK_QUANTITY) *
-                                                                             m_uiBlocksCounter)]));
+                    &(m_pxDiscreteSignalsDescriptionWork[(DISCRETE_INPUT_SYGNALS_DATA_BASE_BLOCKS_IN_BLOCK_QUANTITY *
+                            m_uiBlocksCounter)]));
 
             CDataContainerDataBase* pxDataContainer =
                 (CDataContainerDataBase*)GetExecutorDataContainerPointer();
