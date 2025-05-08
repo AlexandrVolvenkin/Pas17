@@ -94,13 +94,13 @@ int CGpio::GetLineHandler(int chipNumber,
 //}
 //
 ////-------------------------------------------------------------------------------
-//void CGpio::SetPinOutput(unsigned char ucPortN, unsigned char ucPinN)
+//void CGpio::SetPinOutput(uint8_t ucPortN, uint8_t ucPinN)
 //{
 //
 //}
 //
 ////-------------------------------------------------------------------------------
-//void CGpio::SetPinInput(unsigned char ucPortN, unsigned char ucPinN)
+//void CGpio::SetPinInput(uint8_t ucPortN, uint8_t ucPinN)
 //{
 //
 //}

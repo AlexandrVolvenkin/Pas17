@@ -5,18 +5,18 @@ using namespace std;
 
 //---------------------------------------------------------------------------
 // преобразовывает данные формата - STEP5 float 3 byte, во float IEEE754.
-float fStep5ToFloat(unsigned char *pucSource)
+float fStep5ToFloat(uint8_t *pucSource)
 {
     union Union
     {
-        unsigned char aucReseiver[4];
+        uint8_t aucReseiver[4];
         unsigned long ulIntermediate;
         float fResult;
     };
 
     unsigned long ulTemp;
     unsigned short usMantiss;
-    unsigned char ucSign = 0x00;
+    uint8_t ucSign = 0x00;
     Union xUnion;
 
     xUnion.aucReseiver[0] = 0;
@@ -54,18 +54,18 @@ float fStep5ToFloat(unsigned char *pucSource)
 
 //---------------------------------------------------------------------------
 // преобразовывает данные формата - float IEEE754, в STEP5 float 3 byte.
-void  vFloatToStep5(unsigned char *pucDestination, float fData)
+void  vFloatToStep5(uint8_t *pucDestination, float fData)
 {
     union Union
     {
-        unsigned char aucReseiver[4];
+        uint8_t aucReseiver[4];
         unsigned long ulIntermediate;
         float fResult;
     };
 
     unsigned long ulTemp;
     unsigned short usMantiss;
-    unsigned char ucSign = 0x00;
+    uint8_t ucSign = 0x00;
     Union xUnion;
 
     xUnion.fResult = fData;

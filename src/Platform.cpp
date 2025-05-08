@@ -96,25 +96,25 @@ using namespace std;
 //}
 //
 ////-------------------------------------------------------------------------------
-//void CGpio::SetPinOutput(unsigned char ucPortN, unsigned char ucPinN)
+//void CGpio::SetPinOutput(uint8_t ucPortN, uint8_t ucPinN)
 //{
 //    *(m_xGpioControl.apulGpioMmapPointers[ucPortN] + (GPIO_OE_OFFSET / 4)) &= ~(1 << ucPinN);
 //}
 //
 ////-------------------------------------------------------------------------------
-//void CGpio::SetPinInput(unsigned char ucPortN, unsigned char ucPinN)
+//void CGpio::SetPinInput(uint8_t ucPortN, uint8_t ucPinN)
 //{
 //    *(m_xGpioControl.apulGpioMmapPointers[ucPortN] + (GPIO_OE_OFFSET / 4)) |= (1 << ucPinN);
 //}
 //
 ////-------------------------------------------------------------------------------
-//void CGpio::SetPin(unsigned char ucPortN, unsigned char ucPinN)
+//void CGpio::SetPin(uint8_t ucPortN, uint8_t ucPinN)
 //{
 //    *(m_xGpioControl.apulGpioMmapPointers[ucPortN] + (GPIO_DATAOUT_OFFSET / 4)) |= (1 << ucPinN);
 //}
 //
 ////-------------------------------------------------------------------------------
-//void CGpio::ClearPin(unsigned char ucPortN, unsigned char ucPinN)
+//void CGpio::ClearPin(uint8_t ucPortN, uint8_t ucPinN)
 //{
 //    *(m_xGpioControl.apulGpioMmapPointers[ucPortN] + (GPIO_DATAOUT_OFFSET / 4)) &= ~(1 << ucPinN);
 //}

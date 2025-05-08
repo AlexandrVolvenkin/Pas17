@@ -42,6 +42,7 @@ class CDataBaseCreate;
 class CSystemComponentsCreate;
 class CConfigurationCheck;
 class CSettingsLoad;
+class CDiscreteSignals;
 
 //-------------------------------------------------------------------------------
 class CMainProductionCycle : public CTask
@@ -183,6 +184,9 @@ private:
 
     std::string m_sSettingsLoadName;
     uint8_t m_uiSettingsLoadId;
+
+    std::string m_sDiscreteSignalsName;
+    uint8_t m_uiDiscreteSignalsId;
 
     CSpiCommunicationDevice* m_pxSpiCommunicationDevice;
     CInternalModuleInterface* m_pxInternalModule;

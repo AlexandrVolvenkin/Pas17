@@ -168,7 +168,7 @@ uint16_t CModbusSmMaster::ByteToBitPack(uint16_t uiAddress,
     return uiLength;
 }
 
-//-----------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 int8_t CModbusSmMaster::ReadDiscreteInputsRequest(uint8_t uiSlaveAddress,
         uint16_t uiAddress,
         uint16_t uiNumberB)
@@ -223,8 +223,8 @@ uint16_t CModbusSmMaster::ReadDiscreteInputsAnswer(void)
 
     {
         cout << "CModbusSmMaster::ReadDiscreteInputsAnswer puiRequest" << endl;
-        unsigned char *pucSourceTemp;
-        pucSourceTemp = (unsigned char*)puiRequest;
+        uint8_t *pucSourceTemp;
+        pucSourceTemp = (uint8_t*)puiRequest;
         for(int i=0; i<32; )
         {
             for(int j=0; j<8; j++)
@@ -242,8 +242,8 @@ uint16_t CModbusSmMaster::ReadDiscreteInputsAnswer(void)
 
     {
         cout << "CModbusSmMaster::ReadDiscreteInputsAnswer m_puiDiscreteInputs" << endl;
-        unsigned char *pucSourceTemp;
-        pucSourceTemp = (unsigned char*)m_puiDiscreteInputs;
+        uint8_t *pucSourceTemp;
+        pucSourceTemp = (uint8_t*)m_puiDiscreteInputs;
         for(int i=0; i<32; )
         {
             for(int j=0; j<8; j++)

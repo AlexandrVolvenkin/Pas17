@@ -65,13 +65,13 @@ public:
     int8_t ModeSet(void);
     int8_t Close(void);
     int Exchange(uint8_t uiAddress,
-                 unsigned char *pucTxBuff,
-                 unsigned char *pucRxBuff,
+                 uint8_t *pucTxBuff,
+                 uint8_t *pucRxBuff,
                  int iLength,
                  int iSpeed);
     void ChipSelectPinSet(void);
     void ChipSelectPinDelete(void);
-    void ChipSelectAddressSet(unsigned char ucAddress);
+    void ChipSelectAddressSet(uint8_t ucAddress);
 
     static const uint8_t BUFFER_LENGTH = 64;
 private:

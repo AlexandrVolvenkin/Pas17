@@ -24,7 +24,7 @@
 // массив базы данных состоит из 100 блоков по 256 байт.
 // когда программатор запрашивает нужный ему блок, (в функции - modbus_reply() - case _FC_DATA_BASE_READ:),
 // из этого массива, по номеру, программатору выдаётся размер блока.
-const unsigned char aucDataBaseBlockLength[CDataStore::MAX_BLOCKS_NUMBER] =
+const uint8_t aucDataBaseBlockLength[CDataStore::MAX_BLOCKS_NUMBER] =
 {
     RESERVED_DATA_BASE_BLOCK_LENGTH,
     ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_LENGTH,

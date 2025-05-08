@@ -346,8 +346,8 @@ int8_t CModbusRtuSlaveLinkLayer::FrameCheck(uint8_t *puiSourse, uint16_t uiLengt
 
 //            {
 //                cout << "CModbusRtuSlaveLinkLayer::FrameCheck puiSourse" << endl;
-//                unsigned char *pucSourceTemp;
-//                pucSourceTemp = (unsigned char*)puiSourse;
+//                uint8_t *pucSourceTemp;
+//                pucSourceTemp = (uint8_t*)puiSourse;
 //                for(int i=0; i<32; )
 //                {
 //                    for(int j=0; j<8; j++)
@@ -523,8 +523,8 @@ uint8_t CModbusRtuSlaveLinkLayer::Fsm(void)
 
 //            {
 //                cout << "CModbusRtuSlaveLinkLayer::Fsm m_auiRxBuffer" << endl;
-//                unsigned char *pucSourceTemp;
-//                pucSourceTemp = (unsigned char*)m_auiRxBuffer;
+//                uint8_t *pucSourceTemp;
+//                pucSourceTemp = (uint8_t*)m_auiRxBuffer;
 //                for(int i=0; i<32; )
 //                {
 //                    for(int j=0; j<8; j++)
@@ -563,8 +563,8 @@ uint8_t CModbusRtuSlaveLinkLayer::Fsm(void)
         //std::cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_FRAME_TRANSMITED"  << std::endl;
 //        {
 //            //std::cout << "CModbusRtuSlaveLinkLayer::Fsm m_auiTxBuffer" << endl;
-//            unsigned char *pucSourceTemp;
-//            pucSourceTemp = (unsigned char*)m_auiTxBuffer;
+//            uint8_t *pucSourceTemp;
+//            pucSourceTemp = (uint8_t*)m_auiTxBuffer;
 //            for(int i=0; i<32; )
 //            {
 //                for(int j=0; j<8; j++)

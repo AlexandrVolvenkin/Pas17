@@ -35,8 +35,6 @@ CAnalogueSignals::CAnalogueSignals()
 //-------------------------------------------------------------------------------
 CAnalogueSignals::~CAnalogueSignals()
 {
-    delete[] GetResources() ->
-    m_pxAnalogueInputDescriptionWork;
     delete[] m_puiIntermediateBuff;
 }
 
@@ -47,8 +45,6 @@ uint8_t CAnalogueSignals::Init(void)
     m_pxOperatingDataContainer = static_cast<CDataContainerDataBase*>(GetResources() ->
                                  AddDataContainer(std::make_shared<CDataContainerDataBase>()));
 
-    GetResources() ->
-    m_pxAnalogueInputDescriptionWork = new TAnalogueInputDescriptionWork[6];
 }
 
 //-------------------------------------------------------------------------------
@@ -81,13 +77,13 @@ bool CAnalogueSignals::GetTaskData(CDataContainerDataBase* pxDataContainer)
     return true;
 }
 
-//-----------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 void CAnalogueSignals::Allocate(void)
 {
     std::cout << "CAnalogueSignals::Allocate 1"  << std::endl;
 }
 
-//-----------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 // преобразовывает из общего формата базы данных, в формат хранения в RAM, IEEE754.
 // с текстовым реквизитом.
 // во первых параметры описателей аналогового входа используют разные типы модулей,
@@ -96,8 +92,8 @@ void CAnalogueSignals::Allocate(void)
 void CAnalogueSignals::Exstract(void)
 {
     std::cout << "CAnalogueSignals::Exstract 1"  << std::endl;
-    unsigned char nucBlockCounter;
-    unsigned char nucBlocksInBlockCounter; // один описатель - один блок, в общем блоке.
+    uint8_t nucBlockCounter;
+    uint8_t nucBlocksInBlockCounter; // один описатель - один блок, в общем блоке.
     TAnalogueInputDescriptionDataBasePackOne *pxSourse;
 //    TAnalogueInputDescriptionWork *pxDestination;
 
@@ -173,8 +169,8 @@ void CAnalogueSignals::Exstract(void)
 
 //    {
 //        std::cout << "CAnalogueSignals::Exstract m_pxAnalogueInputDescriptionWork"  << std::endl;
-//        unsigned char *pucSourceTemp;
-//        pucSourceTemp = (unsigned char*)(GetResources() -> m_pxAnalogueInputDescriptionWork);
+//        uint8_t *pucSourceTemp;
+//        pucSourceTemp = (uint8_t*)(GetResources() -> m_pxAnalogueInputDescriptionWork);
 //        for(int i=0; i<64; )
 //        {
 //            for(int j=0; j<8; j++)
@@ -268,8 +264,8 @@ uint8_t CAnalogueSignals::Fsm(void)
 //
 //            {
 //                std::cout << "CAnalogueSignals::Fsm m_puiIntermediateBuff"  << std::endl;
-//                unsigned char *pucSourceTemp;
-//                pucSourceTemp = (unsigned char*)m_puiIntermediateBuff;
+//                uint8_t *pucSourceTemp;
+//                pucSourceTemp = (uint8_t*)m_puiIntermediateBuff;
 //                for(int i=0; i<64; )
 //                {
 //                    for(int j=0; j<8; j++)
@@ -359,8 +355,8 @@ uint8_t CAnalogueSignals::Fsm(void)
 //            std::cout << "CAnalogueSignals::Fsm m_uiDataLength "  << (int)(m_pxOperatingDataContainer -> m_uiDataLength) << std::endl;
 //            {
 //                std::cout << "CAnalogueSignals::Fsm m_puiIntermediateBuff"  << std::endl;
-//                unsigned char *pucSourceTemp;
-//                pucSourceTemp = (unsigned char*)m_puiIntermediateBuff;
+//                uint8_t *pucSourceTemp;
+//                pucSourceTemp = (uint8_t*)m_puiIntermediateBuff;
 //                for(int i=0; i<64; )
 //                {
 //                    for(int j=0; j<8; j++)
@@ -429,8 +425,8 @@ uint8_t CAnalogueSignals::Fsm(void)
 //            std::cout << "CAnalogueSignals::Fsm m_uiDataLength "  << (int)(m_pxOperatingDataContainer -> m_uiDataLength) << std::endl;
 //            {
 //                std::cout << "CAnalogueSignals::Fsm m_puiIntermediateBuff"  << std::endl;
-//                unsigned char *pucSourceTemp;
-//                pucSourceTemp = (unsigned char*)m_puiIntermediateBuff;
+//                uint8_t *pucSourceTemp;
+//                pucSourceTemp = (uint8_t*)m_puiIntermediateBuff;
 //                for(int i=0; i<64; )
 //                {
 //                    for(int j=0; j<8; j++)
@@ -503,8 +499,8 @@ uint8_t CAnalogueSignals::Fsm(void)
 //
 //            {
 //                std::cout << "CAnalogueSignals::Fsm m_puiIntermediateBuff"  << std::endl;
-//                unsigned char *pucSourceTemp;
-//                pucSourceTemp = (unsigned char*)m_puiIntermediateBuff;
+//                uint8_t *pucSourceTemp;
+//                pucSourceTemp = (uint8_t*)m_puiIntermediateBuff;
 //                for(int i=0; i<192; )
 //                {
 //                    for(int j=0; j<8; j++)
@@ -577,8 +573,8 @@ uint8_t CAnalogueSignals::Fsm(void)
 //            std::cout << "CAnalogueSignals::Fsm m_uiDataLength "  << (int)(m_pxOperatingDataContainer -> m_uiDataLength) << std::endl;
 //            {
 //                std::cout << "CAnalogueSignals::Fsm m_puiIntermediateBuff"  << std::endl;
-//                unsigned char *pucSourceTemp;
-//                pucSourceTemp = (unsigned char*)m_puiIntermediateBuff;
+//                uint8_t *pucSourceTemp;
+//                pucSourceTemp = (uint8_t*)m_puiIntermediateBuff;
 //                for(int i=0; i<192; )
 //                {
 //                    for(int j=0; j<8; j++)
@@ -664,8 +660,8 @@ uint8_t CAnalogueSignals::Fsm(void)
 ////            std::cout << "CAnalogueSignals::Fsm m_uiDataLength "  << (int)(m_pxOperatingDataContainer -> m_uiDataLength) << std::endl;
 ////            {
 ////                std::cout << "CAnalogueSignals::Fsm m_puiIntermediateBuff"  << std::endl;
-////                unsigned char *pucSourceTemp;
-////                pucSourceTemp = (unsigned char*)m_puiIntermediateBuff;
+////                uint8_t *pucSourceTemp;
+////                pucSourceTemp = (uint8_t*)m_puiIntermediateBuff;
 ////                for(int i=0; i<64; )
 ////                {
 ////                    for(int j=0; j<8; j++)

@@ -260,7 +260,7 @@ uint8_t CInternalModule::Init(void)
 //    m_uiBadAnswerCounter = uiBadAnswerCounter;
 //}
 
-//-----------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 void CInternalModule::Allocate(void)
 {
     std::cout << "CInternalModule::Allocate 1"  << std::endl;
@@ -315,8 +315,8 @@ uint8_t CInternalModule::GetModuleType(uint8_t uiAddress)
 
     {
         cout << "GET_MODULE_TYPE_COMMAND auiSpiRxBuffer" << endl;
-        unsigned char *pucSourceTemp;
-        pucSourceTemp = (unsigned char*)auiSpiRxBuffer;
+        uint8_t *pucSourceTemp;
+        pucSourceTemp = (uint8_t*)auiSpiRxBuffer;
         for(int i=0; i<16; )
         {
             for(int j=0; j<8; j++)
@@ -355,7 +355,7 @@ uint8_t CInternalModule::GetModuleType(uint8_t uiAddress)
     }
 }
 
-//-----------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 void CInternalModule::SearchModules(void)
 {
 //    std::cout << "CInternalModule::SearchModules 1"  << std::endl;
@@ -405,7 +405,7 @@ void CInternalModule::SearchModules(void)
     }
 }
 
-//-----------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 void CInternalModule::ServiceDataCreate(void)
 {
 //    std::cout << "CInternalModule::ServiceDataCreate 1"  << std::endl;
@@ -429,6 +429,8 @@ void CInternalModule::ServiceDataCreate(void)
                 (pxDeviceConfigSearch ->
                  axModulesContext[i].uiAddress + 1);
             (pxDeviceConfigSearch ->
+             uiServiceDiscreteInputModuleQuantity)++;
+            (pxDeviceConfigSearch ->
              uiServiceAnalogueInputModuleQuantity)++;
             pxDeviceConfigSearch ->
             uiLastAnalogueInputModuleIndex = i;
@@ -450,7 +452,7 @@ void CInternalModule::ServiceDataCreate(void)
     }
 }
 
-//-----------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 void CInternalModule::CreateDevices(void)
 {
     std::cout << "CInternalModule::CreateDevices 1"  << std::endl;
@@ -504,7 +506,7 @@ void CInternalModule::CreateDevices(void)
     }
 }
 
-//-----------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 void CInternalModule::ModulesDataExchange(void)
 {
     if (m_xDevicesIterator == m_vpxDevices.end())
@@ -522,7 +524,7 @@ void CInternalModule::ModulesDataExchange(void)
 //    }
 }
 
-////-----------------------------------------------------------------------------------------------------
+////-------------------------------------------------------------------------------
 //void CInternalModule::DestroyDevices(uint8_t uiLength)
 //{
 //    for (uint16_t i = 0; i < uiLength; i++)

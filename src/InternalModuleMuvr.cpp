@@ -127,7 +127,7 @@ uint8_t CInternalModuleMuvr::Init(void)
 //    return false;
 //}
 
-//-----------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 void CInternalModuleMuvr::Allocate(void)
 {
     std::cout << "CInternalModuleMuvr::Allocate 1"  << std::endl;
@@ -271,8 +271,8 @@ void CInternalModuleMuvr::Allocate(void)
 //
 //    {
 //        cout << "GET_MODULE_TYPE_COMMAND auiSpiRxBuffer" << endl;
-//        unsigned char *pucSourceTemp;
-//        pucSourceTemp = (unsigned char*)auiSpiRxBuffer;
+//        uint8_t *pucSourceTemp;
+//        pucSourceTemp = (uint8_t*)auiSpiRxBuffer;
 //        for(int i=0; i<16; )
 //        {
 //            for(int j=0; j<8; j++)
@@ -325,14 +325,14 @@ void CInternalModuleMuvr::Allocate(void)
 //    //std::cout << "CInternalModuleMuvr::GetModuleType 6"  << std::endl;
 //}
 
-//-----------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 uint8_t CInternalModuleMuvr::DataExchange(void)
 {
     //std::cout << "CInternalModuleMuvr::DataExchange 1"  << std::endl;
     unsigned short usData;
     float fData;
-    unsigned char ucCalibrPlus;
-    unsigned char ucCalibrMinus;
+    uint8_t ucCalibrPlus;
+    uint8_t ucCalibrMinus;
     uint8_t auiSpiTxBuffer[TX_RX_BUFF_SIZE];
     uint8_t auiSpiRxBuffer[TX_RX_BUFF_SIZE];
 
@@ -385,13 +385,13 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
 
     usData = usCrcSummTwoByteCalculation(&auiSpiTxBuffer[1],
                                          5);
-    auiSpiTxBuffer[6] = (unsigned char)usData;
-    auiSpiTxBuffer[7] = (unsigned char)(usData >> 8);
+    auiSpiTxBuffer[6] = (uint8_t)usData;
+    auiSpiTxBuffer[7] = (uint8_t)(usData >> 8);
 
 //    {
 //        std::cout << "CInternalModuleMuvr::DataExchange auiSpiTxBuffer"  << std::endl;
-//        unsigned char *pucSourceTemp;
-//        pucSourceTemp = (unsigned char*)&auiSpiTxBuffer[0];
+//        uint8_t *pucSourceTemp;
+//        pucSourceTemp = (uint8_t*)&auiSpiTxBuffer[0];
 //        for(int i=0; i<32 ; )
 //        {
 //            for(int j=0; j<8; j++)
@@ -414,8 +414,8 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                                         LOW_SPEED_IN_HZ);
 
 //    std::cout << "CInternalModuleMuvr::DataExchange auiSpiRxBuffer"  << std::endl;
-//    unsigned char *pucSourceTemp;
-//    pucSourceTemp = (unsigned char*)&auiSpiRxBuffer[0];
+//    uint8_t *pucSourceTemp;
+//    pucSourceTemp = (uint8_t*)&auiSpiRxBuffer[0];
 //    for(int i=0; i<32 ; )
 //    {
 //        for(int j=0; j<8; j++)
@@ -496,7 +496,7 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                                                                                (i * MUVR_ONE_ANALOG_INPUT_DATA_BYTE_QUANTITY)]);
                     // поместим его в рабочий массив.
                     memcpy(&(m_pfAnalogueInputsValue[i]),
-                           (unsigned char*)&fData,
+                           (uint8_t*)&fData,
                            sizeof(float));
                     // установим флаг недостоверности - вход недостоверен.
                     m_puiAnalogueInputsBadState[i] = 1;
@@ -553,7 +553,7 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                                                                                    (i * MUVR_ONE_ANALOG_INPUT_DATA_BYTE_QUANTITY)]);
                         // поместим его в рабочий массив.
                         memcpy(&(m_pfAnalogueInputsValue[i]),
-                               (unsigned char*)&fData,
+                               (uint8_t*)&fData,
                                sizeof(float));
                         // сбросим флаг недостоверности - вход достоверен.
                         m_puiAnalogueInputsBadState[i] = 0;
@@ -680,18 +680,18 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
     return 0;
 }
 
-//-----------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 // чтение из модуля зачений реперных точек и кода АЦП.
 uint8_t CInternalModuleMuvr::ReperPointsAdcRead(void)
 {
     //std::cout << "CInternalModuleMuvr::ReperPointsAdcRead 1"  << std::endl;
     unsigned short usData;
     int i;
-    unsigned char *pucSource;
-    unsigned char *pucDestination;
-    unsigned char aucTempArray[PLC_DATA_BASE_BLOCK_LENGTH];
-    unsigned char auiSpiTxBuffer[TX_RX_BUFF_SIZE];
-    unsigned char auiSpiRxBuffer[TX_RX_BUFF_SIZE];
+    uint8_t *pucSource;
+    uint8_t *pucDestination;
+    uint8_t aucTempArray[PLC_DATA_BASE_BLOCK_LENGTH];
+    uint8_t auiSpiTxBuffer[TX_RX_BUFF_SIZE];
+    uint8_t auiSpiRxBuffer[TX_RX_BUFF_SIZE];
 
 //    memset(&aucTempArray[0],
 //           0,
@@ -724,7 +724,7 @@ uint8_t CInternalModuleMuvr::ReperPointsAdcRead(void)
 //            // количеству блоков с данными реперных точек МВА + коды АЦП.
 //            // прибавим разницу между смещениями на блок реперных точек МВА + коды АЦП и блок модулей аналогового ввода.
 //            // и получим адрес блока реперных точек МВА + коды АЦП в базе данных.
-//            pucDestination = (unsigned char*)(pxModuleContext ->
+//            pucDestination = (uint8_t*)(pxModuleContext ->
 //                                              xModuleContextStatic.
 //                                              pucDataBasePointer +
 //                                              ((ANALOGUE_INPUT_MODULE_REPER_POINTS_ADC_DATA_BASE_BLOCK_OFFSET -
@@ -743,8 +743,8 @@ uint8_t CInternalModuleMuvr::ReperPointsAdcRead(void)
 
             {
                 std::cout << "CInternalModuleMuvr::ReperPointsAdcRead pucDestination"  << std::endl;
-                unsigned char *pucSourceTemp;
-                pucSourceTemp = (unsigned char*)pucDestination;//pxCustomerDataContainer -> m_puiDataPointer;
+                uint8_t *pucSourceTemp;
+                pucSourceTemp = (uint8_t*)pucDestination;//pxCustomerDataContainer -> m_puiDataPointer;
                 for(int i=0; i<64; )
                 {
                     for(int j=0; j<8; j++)
@@ -784,9 +784,9 @@ uint8_t CInternalModuleMuvr::DataBaseRead(void)
     uint8_t auiSpiTxBuffer[TX_RX_BUFF_SIZE];
     uint8_t auiSpiRxBuffer[TX_RX_BUFF_SIZE];
 
-    unsigned char *pucSource;
-    unsigned char *pucDestination;
-    unsigned char aucTempArray[256];
+    uint8_t *pucSource;
+    uint8_t *pucDestination;
+    uint8_t aucTempArray[256];
 
     memset(&aucTempArray[0],
            0,
@@ -804,8 +804,8 @@ uint8_t CInternalModuleMuvr::DataBaseRead(void)
 
 //    {
 //        std::cout << "CInternalModuleMuvr::DataBaseRead auiSpiRxBuffer"  << std::endl;
-//        unsigned char *pucSourceTemp;
-//        pucSourceTemp = (unsigned char*)auiSpiRxBuffer;
+//        uint8_t *pucSourceTemp;
+//        pucSourceTemp = (uint8_t*)auiSpiRxBuffer;
 //        for(int i=0; i<256; )
 //        {
 //            for(int j=0; j<8; j++)
@@ -888,8 +888,8 @@ uint8_t CInternalModuleMuvr::DataBaseRead(void)
 
 //            {
 //                std::cout << "CInternalModuleMuvr::DataBaseRead m_puiDataPointer"  << std::endl;
-//                unsigned char *pucSourceTemp;
-//                pucSourceTemp = (unsigned char*)pucDestination;//pxCustomerDataContainer -> m_puiDataPointer;
+//                uint8_t *pucSourceTemp;
+//                pucSourceTemp = (uint8_t*)pucDestination;//pxCustomerDataContainer -> m_puiDataPointer;
 //                for(int i=0; i<256; )
 //                {
 //                    for(int j=0; j<8; j++)
@@ -919,15 +919,15 @@ uint8_t CInternalModuleMuvr::DataBaseRead(void)
     }
 }
 
-//-----------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 // записывает базу данных из RAM прибора в EEPROM модуля.
 uint8_t CInternalModuleMuvr::DataBaseBlockWrite(void)
 {
     unsigned short usData;
-    unsigned char *pucSource;
-    unsigned char *pucDestination;
+    uint8_t *pucSource;
+    uint8_t *pucDestination;
     unsigned int nuiBusyTimeCounter;
-    unsigned char aucTempArray[PLC_DATA_BASE_BLOCK_LENGTH];
+    uint8_t aucTempArray[PLC_DATA_BASE_BLOCK_LENGTH];
     uint8_t auiSpiTxBuffer[TX_RX_BUFF_SIZE];
     uint8_t auiSpiRxBuffer[TX_RX_BUFF_SIZE];
 
@@ -988,8 +988,8 @@ uint8_t CInternalModuleMuvr::DataBaseBlockWrite(void)
     // получим указатель на место CRC в пакете.
     pucDestination = &aucTempArray[SPI_DATA_BYTE_OFFSET +
                                                         ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_LENGTH];
-    *pucDestination++ = (unsigned char)usData;
-    *pucDestination = (unsigned char)(usData >> 8);
+    *pucDestination++ = (uint8_t)usData;
+    *pucDestination = (uint8_t)(usData >> 8);
     // скопируем преобразованную базу данных из временного в буфер TX SPI.
     memcpy(&auiSpiTxBuffer[SPI_DATA_BYTE_OFFSET],
            pucSource,
@@ -1013,7 +1013,7 @@ uint8_t CInternalModuleMuvr::DataBaseBlockWrite(void)
     return 1;
 }
 
-////-----------------------------------------------------------------------------------------------------
+////-------------------------------------------------------------------------------
 //int CInternalModuleMuvr::DataBaseBlockWriteError(TModuleContext *pxModuleContext)
 //{
 //    // База данных не записана?
@@ -1061,15 +1061,15 @@ uint8_t CInternalModuleMuvr::DataBaseBlockWrite(void)
 //    }
 //}
 
-//-----------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 // записывает базу данных из RAM прибора в EEPROM модуля.
 uint8_t CInternalModuleMuvr::DataBaseBlockWriteCheck(void)
 {
     unsigned short usData;
-    unsigned char *pucSource;
-    unsigned char *pucDestination;
+    uint8_t *pucSource;
+    uint8_t *pucDestination;
     unsigned int nuiBusyTimeCounter;
-    unsigned char aucTempArray[PLC_DATA_BASE_BLOCK_LENGTH];
+    uint8_t aucTempArray[PLC_DATA_BASE_BLOCK_LENGTH];
     uint8_t auiSpiTxBuffer[TX_RX_BUFF_SIZE];
     uint8_t auiSpiRxBuffer[TX_RX_BUFF_SIZE];
 

@@ -355,9 +355,9 @@ const uint8_t CSpiCommunicationDevice::aui8ModuleSlotNumberToSpiAddressMatching[
 
 //-------------------------------------------------------------------------------
 // устанавливает адрес на шине SPI. зажигает и гасит светодиод контроля обмена данными.
-void CSpiCommunicationDevice::ChipSelectAddressSet(unsigned char ucAddress)
+void CSpiCommunicationDevice::ChipSelectAddressSet(uint8_t ucAddress)
 {
-    unsigned char ucAddressLocal;
+    uint8_t ucAddressLocal;
 
 //    CGpio::ClearPin(GpioLineHandler_SPI_CHIP_ENABLE_PIN);
     CGpio::SetPin(GpioLineHandler_PRD_EN_PIN);
@@ -412,8 +412,8 @@ void CSpiCommunicationDevice::ChipSelectAddressSet(unsigned char ucAddress)
 //-------------------------------------------------------------------------------
 // производит обмен данными по SPI.
 int CSpiCommunicationDevice::Exchange(uint8_t uiAddress,
-                                      unsigned char *pucTxBuff,
-                                      unsigned char *pucRxBuff,
+                                      uint8_t *pucTxBuff,
+                                      uint8_t *pucRxBuff,
                                       int iLength,
                                       int iSpeed)
 {
@@ -437,10 +437,10 @@ int CSpiCommunicationDevice::Exchange(uint8_t uiAddress,
         (unsigned long) iLength,      // len;           //the length of buffer
         (unsigned long) iSpeed,       // speed_hz;      //the speed in Hz
         (unsigned int) 0,             // delay_usecs;   //delay in us
-        (unsigned char) 8             // bits_per_word; //bits per word
-        //(unsigned char)               // cs_change;
-        //(unsigned char)               // tx_nbits;
-        //(unsigned char)               // rx_nbits;
+        (uint8_t) 8             // bits_per_word; //bits per word
+        //(uint8_t)               // cs_change;
+        //(uint8_t)               // tx_nbits;
+        //(uint8_t)               // rx_nbits;
         //(unsigned int)                // pad;
 
     };

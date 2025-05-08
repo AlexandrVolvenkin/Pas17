@@ -438,8 +438,8 @@ int16_t CSerialPortCommunicationDevice::ReceiveStart(uint8_t *puiDestination,
             {
 
 //                cout << "puiDestination" << endl;
-//                unsigned char *pucSourceTemp;
-//                pucSourceTemp = (unsigned char*)puiDestination;
+//                uint8_t *pucSourceTemp;
+//                pucSourceTemp = (uint8_t*)puiDestination;
 //                for(int i=0; i<32; )
 //                {
 //                    for(int j=0; j<8; j++)
@@ -515,8 +515,8 @@ int16_t CSerialPortCommunicationDevice::ReceiveContinue(uint8_t *puiDestination,
             {
 
 //                cout << "puiDestination" << endl;
-//                unsigned char *pucSourceTemp;
-//                pucSourceTemp = (unsigned char*)puiDestination;
+//                uint8_t *pucSourceTemp;
+//                pucSourceTemp = (uint8_t*)puiDestination;
 //                for(int i=0; i<32; )
 //                {
 //                    for(int j=0; j<8; j++)
@@ -554,8 +554,8 @@ int16_t CSerialPortCommunicationDevice::Write(uint8_t *puiSource, uint16_t uiLen
 //-------------------------------------------------------------------------------
 // производит обмен данными по SPI.
 int CSerialPortCommunicationDevice::Exchange(uint8_t uiAddress,
-        unsigned char *pucTxBuff,
-        unsigned char *pucRxBuff,
+        uint8_t *pucTxBuff,
+        uint8_t *pucRxBuff,
         int iLength,
         int iSpeed)
 {

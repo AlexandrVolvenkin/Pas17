@@ -36,6 +36,7 @@
 #include "SystemComponentsCreate.h"
 #include "ConfigurationCheck.h"
 #include "SettingsLoad.h"
+#include "DiscreteSignals.h"
 
 #include "MainProductionCycle.h"
 
@@ -153,7 +154,7 @@ uint8_t CMainProductionCycle::Init(void)
 //    return true;
 //}
 
-//-----------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 void CMainProductionCycle::Allocate(void)
 {
     std::cout << "CMainProductionCycle::Allocate 1"  << std::endl;
@@ -470,6 +471,20 @@ uint8_t CMainProductionCycle::CreateTasks(void)
     m_xResources.AddCurrentlyRunningTasksList(pxSettingsLoad);
 //    m_pxSettingsLoad = pxSettingsLoad;
 
+//-------------------------------------------------------------------------------
+    CDiscreteSignals* pxDiscreteSignals = 0;
+    pxDiscreteSignals =
+        static_cast<CDiscreteSignals*>(m_xResources.AddCommonTaskToMap("DiscreteSignals",
+                                      std::make_shared<CDiscreteSignals>()));
+    pxDiscreteSignals ->
+    SetResources(&m_xResources);
+    pxDiscreteSignals ->
+    SetDataStoreName("DataStoreFileSystem");
+    pxDiscreteSignals ->
+    SetDeviceControlName("DeviceControlRtuUpperLevel");
+    m_xResources.AddCurrentlyRunningTasksList(pxDiscreteSignals);
+//    m_pxDiscreteSignals = pxDiscreteSignals;
+
 }
 
 //-------------------------------------------------------------------------------
@@ -645,6 +660,10 @@ uint8_t CMainProductionCycle::Fsm(void)
             m_uiSettingsLoadId =
                 GetResources() ->
                 GetTaskIdByNameFromMap("SettingsLoad");
+
+            m_uiDiscreteSignalsId =
+                GetResources() ->
+                GetTaskIdByNameFromMap("DiscreteSignals");
 
             SetFsmState(READY);
         }

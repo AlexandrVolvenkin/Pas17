@@ -49,8 +49,8 @@ public:
                                     uint16_t uiLength,
                                     uint32_t uiReceiveTimeout) {};
     virtual int Exchange(uint8_t uiAddress,
-                         unsigned char* pucTxBuff,
-                         unsigned char* pucRxBuff,
+                         uint8_t* pucTxBuff,
+                         uint8_t* pucRxBuff,
                          int iLength,
                          int iSpeed) {};
 };

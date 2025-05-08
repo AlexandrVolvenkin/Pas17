@@ -30,7 +30,7 @@
 //-------------------------------------------------------------------------------
 
 
-//-----------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 // главные константы проекта. определяют размеры всех массивов.
 #define MAX_HANDLED_DISCRETE_INPUT 384 // определяется картой памяти программатора.
 #define MAX_HANDLED_DISCRETE_OUTPUT 64
@@ -180,7 +180,7 @@
 #define MODIFICATION_CODE_BYTE_QUANTITY 24
 
 // количество дискретных входов в одном модуле.
-#define DISCRETE_MODULE_INPUT_QUANTITY 12
+#define DISCRETE_MODULE_INPUT_QUANTITY 6
 #define ANALOGUE_INPUT_DI_VALUE_QUANTITY 4 // количество дискретных сигналов порождаемое одним аналоговым входом.
 #define DISCRETE_OUTPUT_MODULE_RELAY_OUTPUT_QUANTITY 64 // количество дискретных выходов управления реле.
 // количество аналоговых входов в одном модуле.
@@ -223,7 +223,7 @@
 #define MODBUS_MESSAGE_SOURCE_RTU_MASTER 4
 #define MODBUS_MESSAGE_SOURCE_TCP_MASTER 5
 
-//-----------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 #define MAIN_CYCLE_TIME 100000000 // время главного цикла - 100mc.
 //#define MAIN_CYCLE_TIME 100000 // время главного цикла - 100mc.
 #define EXTERNAL_CYCLE_STOP_SLEEP_TIME 1000 // длительность "сна", во время ожидания флага синхронизации с главным циклом.
@@ -442,8 +442,8 @@
 //#define MBM_FUNCTION_1234_BLOCK_DATA_BASE_BLOCK_QUANTITY 2
 //#define MBM_FUNCTION_1234_BLOCK_DATA_BASE_BLOCKS_IN_BLOCK_QUANTITY 16
 //#define MBM_FUNCTION_15_BLOCK_DATA_BASE_BLOCK_QUANTITY EXTERNAL_MODULE_FUNCTION_15_QUANTITY
-//#define DISCRETE_INPUT_SYGNALS_DATA_BASE_BLOCK_QUANTITY 22
-//#define DISCRETE_INPUT_SYGNALS_DATA_BASE_BLOCKS_IN_BLOCK_QUANTITY 18
+#define DISCRETE_INPUT_SYGNALS_DATA_BASE_BLOCK_QUANTITY 1
+#define DISCRETE_INPUT_SYGNALS_DATA_BASE_BLOCKS_IN_BLOCK_QUANTITY 24
 //#define CURRENT_OUTPUT_MODULE_REGULATOR_DATA_BASE_BLOCK_QUANTITY 2
 //#define CURRENT_OUTPUT_MODULE_REGULATOR_DATA_BASE_BLOCKS_IN_BLOCK_QUANTITY ANALOG_OUTPUT_MODULE_REGULATORS_QUANTITY
 #define DIMENSIONS_PARAMETERS_DATA_BLOCKS_IN_BLOCK_QUANTITY 16

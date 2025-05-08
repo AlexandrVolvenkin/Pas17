@@ -414,8 +414,8 @@ uint8_t CModbusSmMasterLinkLayer::Fsm(void)
             m_uiFrameLength = m_uiFrameLength + iBytesNumber;
 //            {
 //                cout << "CModbusSmMasterLinkLayer::Fsm m_auiRxBuffer" << endl;
-//                unsigned char *pucSourceTemp;
-//                pucSourceTemp = (unsigned char*)m_auiRxBuffer;
+//                uint8_t *pucSourceTemp;
+//                pucSourceTemp = (uint8_t*)m_auiRxBuffer;
 //                for(int i=0; i<32; )
 //                {
 //                    for(int j=0; j<8; j++)
@@ -472,8 +472,8 @@ uint8_t CModbusSmMasterLinkLayer::Fsm(void)
 
 //        {
 //            cout << "CModbusSmMasterLinkLayer::Fsm m_auiTxBuffer" << endl;
-//            unsigned char *pucSourceTemp;
-//            pucSourceTemp = (unsigned char*)m_auiTxBuffer;
+//            uint8_t *pucSourceTemp;
+//            pucSourceTemp = (uint8_t*)m_auiTxBuffer;
 //            for(int i=0; i<32; )
 //            {
 //                for(int j=0; j<8; j++)
@@ -494,8 +494,8 @@ uint8_t CModbusSmMasterLinkLayer::Fsm(void)
         SetFsmState(DONE_OK);
         {
             cout << "CModbusSmMasterLinkLayer::Fsm m_auiTxBuffer" << endl;
-            unsigned char *pucSourceTemp;
-            pucSourceTemp = (unsigned char*)m_auiTxBuffer;
+            uint8_t *pucSourceTemp;
+            pucSourceTemp = (uint8_t*)m_auiTxBuffer;
             for(int i=0; i<32; )
             {
                 for(int j=0; j<8; j++)

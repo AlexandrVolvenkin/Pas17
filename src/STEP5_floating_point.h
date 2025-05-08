@@ -7,9 +7,10 @@
 #ifndef __STEP5_FLOATING_POINT_H
 #define __STEP5_FLOATING_POINT_H
 //---------------------------------------------------------------------------
+#include <stdint.h>
 
-float fStep5ToFloat(unsigned char *pucSource);
-void  vFloatToStep5(unsigned char *pucDestination, float fData);
+float fStep5ToFloat(uint8_t *pucSource);
+void  vFloatToStep5(uint8_t *pucDestination, float fData);
 
 #endif//__STEP5_FLOATING_POINT_H
 //---------------------------------------------------------------------------

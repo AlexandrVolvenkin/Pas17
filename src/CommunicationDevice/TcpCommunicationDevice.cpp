@@ -388,8 +388,8 @@ int16_t CTcpCommunicationDevice::ReceiveStart(uint8_t *puiDestination,
             {
 
 //                cout << "ReceiveStart" << endl;
-//                unsigned char *pucSourceTemp;
-//                pucSourceTemp = (unsigned char*)puiDestination;
+//                uint8_t *pucSourceTemp;
+//                pucSourceTemp = (uint8_t*)puiDestination;
 //                for(int i=0; i<32; )
 //                {
 //                    for(int j=0; j<8; j++)
@@ -465,8 +465,8 @@ int16_t CTcpCommunicationDevice::ReceiveContinue(uint8_t *puiDestination,
             {
 
 //                cout << "ReceiveContinue" << endl;
-//                unsigned char *pucSourceTemp;
-//                pucSourceTemp = (unsigned char*)puiDestination;
+//                uint8_t *pucSourceTemp;
+//                pucSourceTemp = (uint8_t*)puiDestination;
 //                for(int i=0; i<32; )
 //                {
 //                    for(int j=0; j<8; j++)
@@ -502,8 +502,8 @@ int16_t CTcpCommunicationDevice::Write(uint8_t *puiSource, uint16_t uiLength)
 //-------------------------------------------------------------------------------
 // производит обмен данными по SPI.
 int CTcpCommunicationDevice::Exchange(uint8_t uiAddress,
-                                      unsigned char *pucTxBuff,
-                                      unsigned char *pucRxBuff,
+                                      uint8_t *pucTxBuff,
+                                      uint8_t *pucRxBuff,
                                       int iLength,
                                       int iSpeed)
 {

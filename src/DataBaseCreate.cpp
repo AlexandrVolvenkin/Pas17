@@ -72,7 +72,7 @@ uint8_t CDataBaseCreate::Init(void)
     m_pxDiscreteSygnalTextTitlesWork = new TDiscreteSygnalTextTitle[MAX_HANDLED_DISCRETE_INPUT];
 }
 
-//-----------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 // создаёт стартовую базу данных размерностей.
 void CDataBaseCreate::DimentionsParametersDataBaseCreate(uint8_t* puiBlockDataPointer)
 {
@@ -158,11 +158,11 @@ void CDataBaseCreate::DimentionsParametersDataBaseCreate(uint8_t* puiBlockDataPo
     }
 }
 
-//-----------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 // создаёт стартовую базу текстовых реквизитов модулей аналогового ввода.
 void CDataBaseCreate::AnalogoueInputModuleDiscreteSignalsTextTitlesCreate(uint8_t* puiBlockDataPointer)
 {
-//-----------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
     TDiscreteSygnalTextTitlePackOne *pxDiscreteSygnalTextTitlePackOne;
     TDiscreteSygnalTextTitle *pxDiscreteSygnalTextTitle;
 
@@ -215,11 +215,11 @@ void CDataBaseCreate::AnalogoueInputModuleDiscreteSignalsTextTitlesCreate(uint8_
     }
 }
 
-//-----------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 // создаёт стартовую базу текстовых реквизитов аналоговых сигналов модулей аналогового ввода.
 void CDataBaseCreate::AnalogoueInputModuleAnalogoueSignalsTextTitlesCreate(uint8_t* puiBlockDataPointer)
 {
-//-----------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
     TDiscreteSygnalTextTitlePackOne *pxDiscreteSygnalTextTitlePackOne;
     TDiscreteSygnalTextTitle *pxDiscreteSygnalTextTitle;
 
@@ -258,7 +258,7 @@ void CDataBaseCreate::AnalogoueInputModuleAnalogoueSignalsTextTitlesCreate(uint8
         std::cout << "TextDescriptor "  << i << " " << pxDiscreteSygnalTextTitlePackOne[i].acTextDescriptor << std::endl;
     }
 
-//-----------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
     TAnalogoueSignalsTextTitlePackOne *pxAnalogoueSignalsTextTitlePackOne;
     TAnalogoueSignalsTextTitle *pxAnalogoueSignalsTextTitle;
 
@@ -321,9 +321,13 @@ uint8_t CDataBaseCreate::Fsm(void)
             GetResources() ->
             GetTaskIdByNameFromMap(m_sInternalModuleName);
 
-//        m_uiInternalModuleMuvrId =
-//            GetResources() ->
-//            GetTaskIdByNameFromMap(m_sInternalModuleMuvrName);
+        m_uiDataStoreId =
+            GetResources() ->
+            GetTaskIdByNameFromMap(m_sDataStoreName);
+
+        m_uiInternalModuleMuvrId =
+            GetResources() ->
+            GetTaskIdByNameFromMap(m_sInternalModuleMuvrName);
 
         m_uiDeviceControlId =
             GetResources() ->
@@ -474,11 +478,6 @@ uint8_t CDataBaseCreate::Fsm(void)
                    0,
                    CDataStore::MAX_BLOCK_LENGTH);
 
-
-            m_uiDataStoreId =
-                GetResources() ->
-                GetTaskIdByNameFromMap(m_sDataStoreName);
-
             CDataContainerDataBase* pxDataContainer =
                 (CDataContainerDataBase*)GetExecutorDataContainerPointer();
             pxDataContainer -> m_uiTaskId = m_uiDataStoreId;
@@ -502,7 +501,7 @@ uint8_t CDataBaseCreate::Fsm(void)
 
             if (m_uiBlocksCounter >= CDataStore::MAX_BLOCKS_NUMBER)
             {
-                SetFsmState(DATA_BASE_CREATE_DIMENTIONS_PARAMETERS_CREATE_START);
+                SetFsmState(DATA_BASE_CREATE_DISCRETE_SIGNALS_CREATE_DATA_BASE_BLOCKS_WRITE_START);
             }
             else
             {
@@ -512,14 +511,39 @@ uint8_t CDataBaseCreate::Fsm(void)
         break;
 
 //-------------------------------------------------------------------------------
+    case DATA_BASE_CREATE_DISCRETE_SIGNALS_CREATE_DATA_BASE_BLOCKS_WRITE_START:
+        std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_DISCRETE_SIGNALS_CREATE_DATA_BASE_BLOCKS_WRITE_START"  << std::endl;
+        {
+            uint8_t uiDiscreteSignalsId =
+                GetResources() ->
+                GetTaskIdByNameFromMap("DiscreteSignals");
+
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            pxDataContainer -> m_uiTaskId = uiDiscreteSignalsId;
+            pxDataContainer -> m_uiFsmCommandState =
+                CDiscreteSignals::DISCRETE_SIGNALS_CREATE_DATA_BASE_START;
+
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+            SetFsmNextStateDoneOk(DATA_BASE_CREATE_DISCRETE_SIGNALS_CREATE_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING);
+            SetFsmNextStateReadyWaitingError(DONE_ERROR);
+            SetFsmNextStateDoneWaitingError(DONE_ERROR);
+            SetFsmNextStateDoneWaitingDoneError(DONE_ERROR);
+        }
+        break;
+
+    case DATA_BASE_CREATE_DISCRETE_SIGNALS_CREATE_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING:
+        std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_DISCRETE_SIGNALS_CREATE_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
+        {
+            SetFsmState(DATA_BASE_CREATE_DIMENTIONS_PARAMETERS_CREATE_START);
+        }
+        break;
+
+//-------------------------------------------------------------------------------
     case DATA_BASE_CREATE_DIMENTIONS_PARAMETERS_CREATE_START:
         std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_DIMENTIONS_PARAMETERS_CREATE_START"  << std::endl;
         {
             DimentionsParametersDataBaseCreate(m_puiIntermediateBuff);
-
-            m_uiDataStoreId =
-                GetResources() ->
-                GetTaskIdByNameFromMap(m_sDataStoreName);
 
             CDataContainerDataBase* pxDataContainer =
                 (CDataContainerDataBase*)GetExecutorDataContainerPointer();
@@ -551,10 +575,6 @@ uint8_t CDataBaseCreate::Fsm(void)
         {
             AnalogoueInputModuleDiscreteSignalsTextTitlesCreate(m_puiIntermediateBuff);
 
-            m_uiDataStoreId =
-                GetResources() ->
-                GetTaskIdByNameFromMap(m_sDataStoreName);
-
             CDataContainerDataBase* pxDataContainer =
                 (CDataContainerDataBase*)GetExecutorDataContainerPointer();
             pxDataContainer -> m_uiTaskId = m_uiDataStoreId;
@@ -584,10 +604,6 @@ uint8_t CDataBaseCreate::Fsm(void)
         std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_TEXT_TITLES_CREATE_ANALOGUE_SIGNALS_DATA_BASE_BLOCKS_WRITE_START"  << std::endl;
         {
             AnalogoueInputModuleAnalogoueSignalsTextTitlesCreate(m_puiIntermediateBuff);
-
-            m_uiDataStoreId =
-                GetResources() ->
-                GetTaskIdByNameFromMap(m_sDataStoreName);
 
             CDataContainerDataBase* pxDataContainer =
                 (CDataContainerDataBase*)GetExecutorDataContainerPointer();
@@ -619,10 +635,6 @@ uint8_t CDataBaseCreate::Fsm(void)
         {
             CConfigurationCreate::ConfigurationToProgrammerFormat((CConfigurationCreate::TConfigDataProgrammerPackOne*)(m_puiIntermediateBuff),
                     (GetResources() -> GetDeviceConfigSearchPointer()));
-
-            m_uiDataStoreId =
-                GetResources() ->
-                GetTaskIdByNameFromMap(m_sDataStoreName);
 
             CDataContainerDataBase* pxDataContainer =
                 (CDataContainerDataBase*)GetExecutorDataContainerPointer();
@@ -657,10 +669,6 @@ uint8_t CDataBaseCreate::Fsm(void)
                    CDataStore::MAX_BLOCK_LENGTH);
             // установим сетевой адрес по умолчанию.
             m_puiIntermediateBuff[0] = 1;
-
-            m_uiDataStoreId =
-                GetResources() ->
-                GetTaskIdByNameFromMap(m_sDataStoreName);
 
             CDataContainerDataBase* pxDataContainer =
                 (CDataContainerDataBase*)GetExecutorDataContainerPointer();
@@ -719,10 +727,6 @@ uint8_t CDataBaseCreate::Fsm(void)
     case DATA_BASE_CREATE_MODULE_MUVR_DATA_BASE_BLOCKS_WRITE_START:
         std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_MODULE_MUVR_DATA_BASE_BLOCKS_WRITE_START"  << std::endl;
         {
-            m_uiDataStoreId =
-                GetResources() ->
-                GetTaskIdByNameFromMap(m_sDataStoreName);
-
             CDataContainerDataBase* pxDataContainer =
                 (CDataContainerDataBase*)GetExecutorDataContainerPointer();
             pxDataContainer -> m_uiTaskId = m_uiDataStoreId;

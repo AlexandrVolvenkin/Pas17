@@ -52,7 +52,7 @@ uint8_t CConfigurationCreate::Init(void)
     pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
 }
 
-//-----------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 // сериализует, преобразовывает объект конфигурации из внутреннего формата в формат передачи по интерфейсам связи.
 void CConfigurationCreate::
 ConfigurationToProgrammerFormat(TConfigDataProgrammerPackOne *pxDestination,

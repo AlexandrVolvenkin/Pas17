@@ -42,8 +42,8 @@ public:
                               std::string consumerLabel);
 //    int8_t Open(void);
 //    int8_t Close(void);
-//    void SetPinOutput(unsigned char ucPortN, unsigned char ucPinN);
-//    void SetPinInput(unsigned char ucPortN, unsigned char ucPinN);
+//    void SetPinOutput(uint8_t ucPortN, uint8_t ucPinN);
+//    void SetPinInput(uint8_t ucPortN, uint8_t ucPinN);
     static void SetPin(int iLineHandler);
     static void ClearPin(int iLineHandler);
 

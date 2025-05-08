@@ -61,24 +61,24 @@ void CDeviceControl::SetInternalModuleMuvrName(std::string sName)
     m_sInternalModuleMuvrName = sName;
 }
 
-//-----------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 // обрабатывает входящие сообщения от Modbus интерфейсов по 71 функции - чтение данных онлайн, модулей аналогового ввода.
 // передаёт измеренные значения аналоговых входов, реперные точки АЦП, значения ТХС.
 void CDeviceControl::OnlineDataRead(void)
 {
     std::cout << "CDeviceControl OnlineDataRead 1"  << std::endl;
     float *pfSource;
-    unsigned char *pucSource;
-    unsigned char *pucSource2;
-    unsigned char *pucDestination;
-    unsigned char *pucTempArray;
+    uint8_t *pucSource;
+    uint8_t *pucSource2;
+    uint8_t *pucDestination;
+    uint8_t *pucTempArray;
     unsigned int nuiBusyTimeCounter;
-    unsigned char nucIndexNumber;
-    unsigned char ucTempData;
+    uint8_t nucIndexNumber;
+    uint8_t ucTempData;
     unsigned short usCrc;
-    unsigned char ucFlowControl;
-    unsigned char ucAddressLow;
-    unsigned char ucAddressHigh;
+    uint8_t ucFlowControl;
+    uint8_t ucAddressLow;
+    uint8_t ucAddressHigh;
     int i;
     int j;
     int nb;
@@ -90,8 +90,8 @@ void CDeviceControl::OnlineDataRead(void)
 
     uint16_t uiAddress =
         (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiDataOffset);
-    ucAddressLow = (unsigned char)(uiAddress);
-    ucAddressHigh = (unsigned char)((uiAddress) >> 8);
+    ucAddressLow = (uint8_t)(uiAddress);
+    ucAddressHigh = (uint8_t)((uiAddress) >> 8);
     pucDestination =
         (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer);
 
@@ -217,12 +217,12 @@ void CDeviceControl::OnlineDataRead(void)
 
 }
 
-//-----------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 // обрабатывает входящие сообщения от Modbus интерфейсов, по 5 функции.
 uint8_t CDeviceControl::ModbusFunction5Handler(void)
 {
     std::cout << "CDeviceControl ModbusFunction5Handler 1" << std::endl;
-    unsigned char nucIndexNumber;
+    uint8_t nucIndexNumber;
     int i;
 
     uint16_t uiAddress =
@@ -230,7 +230,7 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
     uint8_t* pucDestination =
         (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer);
 
-//-----------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 // Function 5
     // смотрим, по какому адресу записывается бит.
     switch(uiAddress -
@@ -303,7 +303,7 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
         break;
     };
 
-//-----------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
     // смотрим, по какому адресу записывается бит.
     switch(((uiAddress -
              COILS_ARRAY_MODBUS_BEGIN_ADDRESS) & 0xFF00))
@@ -465,7 +465,7 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
         break;
     };
 
-////-----------------------------------------------------------------------------------------------------
+////-------------------------------------------------------------------------------
 //// инкремент уставок - SP, OUT, регуляторов модулей токового вывода - MTVI5.
 //	// адрес записываемого бита находится в диапазоне инкремента уставок - SP, OUT, регуляторов модулей токового вывода?
 //	if (((pxModbusMapping -> current_message_address_bits -
@@ -498,7 +498,7 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
 //		nucIndexNumber =  ((((xPlcConfigService.xPlcConfigServiceData.ucLastAnalogueOutputModuleIndex) + 1) -
 //							((xPlcConfigService.xPlcConfigServiceData.ucServiceAnalogueOutputQuantity) /
 //							 MTVI5_ANALOG_OUTPUT_QUANTITY)) +
-//						   ((unsigned char)(((uiAddress -
+//						   ((uint8_t)(((uiAddress -
 //											  COILS_ARRAY_MODBUS_BEGIN_ADDRESS) -
 //											 INCREMENT_SP_OUT_BIT_ARRAY_OFFSET) /
 //											(MTVI5_ANALOG_OUTPUT_QUANTITY))));
@@ -511,7 +511,7 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
 //			// вычислим номер регулятора модуля токового вывода, в котором инкрементируем-декрементируем уставку.
 //			xAllModulesContext.axAllModulesContext[nucIndexNumber].
 //			xModuleContextDinamic.
-//			ucCommonIndex = (unsigned char)((((uiAddress -
+//			ucCommonIndex = (uint8_t)((((uiAddress -
 //											   COILS_ARRAY_MODBUS_BEGIN_ADDRESS) -
 //											  INCREMENT_SP_OUT_BIT_ARRAY_OFFSET) %
 //											 MTVI5_ANALOG_OUTPUT_QUANTITY) +
@@ -544,7 +544,7 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
 //		}
 //	}
 //
-////-----------------------------------------------------------------------------------------------------
+////-------------------------------------------------------------------------------
 //// декремент уставок - SP, OUT, регуляторов модулей токового вывода - MTVI5.
 //// адрес записываемого бита находится в диапазоне декремента уставок - SP, OUT, регуляторов модулей токового вывода?
 //	if (((pxModbusMapping -> current_message_address_bits -
@@ -577,7 +577,7 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
 //		nucIndexNumber =  ((((xPlcConfigService.xPlcConfigServiceData.ucLastAnalogueOutputModuleIndex) + 1) -
 //							((xPlcConfigService.xPlcConfigServiceData.ucServiceAnalogueOutputQuantity) /
 //							 MTVI5_ANALOG_OUTPUT_QUANTITY)) +
-//						   ((unsigned char)(((uiAddress -
+//						   ((uint8_t)(((uiAddress -
 //											  COILS_ARRAY_MODBUS_BEGIN_ADDRESS) -
 //											 DECREMENT_SP_OUT_BIT_ARRAY_OFFSET) /
 //											(MTVI5_ANALOG_OUTPUT_QUANTITY))));
@@ -587,7 +587,7 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
 //			// вычислим номер регулятора модуля токового вывода, в котором инкрементируем-декрементируем уставку.
 //			xAllModulesContext.axAllModulesContext[nucIndexNumber].
 //			xModuleContextDinamic.
-//			ucCommonIndex = (unsigned char)((((uiAddress -
+//			ucCommonIndex = (uint8_t)((((uiAddress -
 //											   COILS_ARRAY_MODBUS_BEGIN_ADDRESS) -
 //											  DECREMENT_SP_OUT_BIT_ARRAY_OFFSET) %
 //											 MTVI5_ANALOG_OUTPUT_QUANTITY) +
@@ -620,7 +620,7 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
 //		}
 //	}
 //
-////-----------------------------------------------------------------------------------------------------
+////-------------------------------------------------------------------------------
 //// запись дискретных сигналов регуляторов(CONT_ST), модулей токового вывода - MTVI5.
 //	// адрес записываемого бита находится в диапазоне массива дискретных сигналов регуляторов(CONT_ST) модулей токового вывода?
 //	if (((pxModbusMapping -> current_message_address_bits -
@@ -666,7 +666,7 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
 //		nucIndexNumber =  ((((xPlcConfigService.xPlcConfigServiceData.ucLastAnalogueOutputModuleIndex) + 1) -
 //							((xPlcConfigService.xPlcConfigServiceData.ucServiceAnalogueOutputQuantity) /
 //							 MTVI5_ANALOG_OUTPUT_QUANTITY)) +
-//						   ((unsigned char)(((uiAddress -
+//						   ((uint8_t)(((uiAddress -
 //											  COILS_ARRAY_MODBUS_BEGIN_ADDRESS) -
 //											 CONT_ST_BIT_ARRAY_OFFSET) /
 //											(MTVI5_STAT_BIT_QUANTITY * MTVI5_ANALOG_OUTPUT_QUANTITY))));
@@ -680,7 +680,7 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
 //		}
 //	}
 //
-////-----------------------------------------------------------------------------------------------------
+////-------------------------------------------------------------------------------
 //// запись команд управления верхнего уровня.
 //	// адрес записываемого бита находится в диапазоне массива команд управления верхнего уровня?
 //	if (((pxModbusMapping -> current_message_address_bits -
@@ -710,7 +710,7 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
 //		}
 //	}
 //
-////-----------------------------------------------------------------------------------------------------
+////-------------------------------------------------------------------------------
 //// выводит из обработки аналоговый вход.
 ////    // сообщение пришло с интерфейса ModbusRTU HMI?
 ////    if ((pxModbusMapping -> message_sourse) ==
@@ -730,7 +730,7 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
 //			// вычислим индекс модуля в массиве контекста, к которому поступила команда.
 //			nucIndexNumber =  ((((xPlcConfigService.xPlcConfigServiceData.ucLastAnalogueInputModuleIndex) + 1) -
 //								(xPlcConfigService.xPlcConfigServiceData.ucServiceAnalogueInputModuleQuantity)) +
-//							   ((unsigned char)(((uiAddress -
+//							   ((uint8_t)(((uiAddress -
 //												  COILS_ARRAY_MODBUS_BEGIN_ADDRESS) -
 //												 AIN_OFF_BIT_ARRAY_OFFSET) /
 //												(MVAI5_ANALOG_INPUT_QUANTITY))));
@@ -748,14 +748,14 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
 ////                        // вычислим индекс модуля в массиве контекста, который в текущий момент выполняет команду.
 ////                        nucIndexNumber =  ((((xPlcConfigService.xPlcConfigServiceData.ucLastAnalogueInputModuleIndex) + 1) -
 ////                                            (xPlcConfigService.xPlcConfigServiceData.ucServiceAnalogueInputModuleQuantity)) +
-////                                           ((unsigned char)((i) /
+////                                           ((uint8_t)((i) /
 ////                                                            (MVAI5_ANALOG_INPUT_QUANTITY))));
 //						// передадим драйверу модуля номер калибруемого входа. если 0, калибровка выключена.
 //						// выключим калибровку всех входов модуля;
 //						xAllModulesContext.axAllModulesContext[
 //							((((xPlcConfigService.xPlcConfigServiceData.ucLastAnalogueInputModuleIndex) + 1) -
 //							  (xPlcConfigService.xPlcConfigServiceData.ucServiceAnalogueInputModuleQuantity)) +
-//							 ((unsigned char)((i) /
+//							 ((uint8_t)((i) /
 //											  (MVAI5_ANALOG_INPUT_QUANTITY))))].
 //						xModuleContextDinamic.
 //						ucCommonIndex = 0;
@@ -774,7 +774,7 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
 //					// вычислим и передадим драйверу модуля номер калибруемого входа.
 //					xAllModulesContext.axAllModulesContext[nucIndexNumber].
 //					xModuleContextDinamic.
-//					ucCommonIndex = (unsigned char)((((uiAddress -
+//					ucCommonIndex = (uint8_t)((((uiAddress -
 //													   COILS_ARRAY_MODBUS_BEGIN_ADDRESS) -
 //													  AIN_OFF_BIT_ARRAY_OFFSET) %
 //													 MVAI5_ANALOG_INPUT_QUANTITY) +
@@ -806,7 +806,7 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
 //		}
 //	}
 //
-////-----------------------------------------------------------------------------------------------------
+////-------------------------------------------------------------------------------
 //// принимает команду - запись конфигурации.
 //	if (((pxModbusMapping -> current_message_address_bits -
 //			COILS_ARRAY_MODBUS_BEGIN_ADDRESS) ==

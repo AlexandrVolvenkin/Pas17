@@ -45,6 +45,8 @@ CResources::~CResources()
     delete[] m_puiReperPointsAdcBuffer;
     delete[] m_puiAnalogueInputsState;
     delete[] m_puiAnalogueInputsOff;
+    delete[] m_pxAnalogueInputDescriptionWork;
+    delete[] m_pxDiscreteSignalsDescriptionWork;
 }
 
 //-------------------------------------------------------------------------------
@@ -193,7 +195,7 @@ TDiscreteSygnalTextTitle* CResources::GetDiscreteSygnalTextTitlesWorkPointer(voi
     return m_pxDiscreteSygnalTextTitlesWork;
 }
 
-//-----------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 void CResources::Allocate(void)
 {
     std::cout << "CResources::Allocate 1"  << std::endl;
@@ -279,7 +281,11 @@ void CResources::Allocate(void)
 
     // Обнулим общий объём выделенной памяти.
     m_uiUsedAnalogueInputDescriptionWork = 0;
+    m_pxAnalogueInputDescriptionWork = new TAnalogueInputDescriptionWork[6];
 
+    // Обнулим общий объём выделенной памяти.
+    m_uiUsedDiscreteSignalsDescriptionWork = 0;
+    m_pxDiscreteSignalsDescriptionWork = new TDiscreteSignalsDescriptionWork[MAX_HANDLED_DISCRETE_INPUT];
 }
 
 //-------------------------------------------------------------------------------

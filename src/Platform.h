@@ -123,10 +123,10 @@ struct TGpioControl
 //    static void Init(void);
 //    static int8_t Open(void);
 //    static int8_t Close(void);
-//    static void SetPinOutput(unsigned char ucPortN, unsigned char ucPinN);
-//    static void SetPinInput(unsigned char ucPortN, unsigned char ucPinN);
-//    static void SetPin(unsigned char ucPortN, unsigned char ucPinN);
-//    static void ClearPin(unsigned char ucPortN, unsigned char ucPinN);
+//    static void SetPinOutput(uint8_t ucPortN, uint8_t ucPinN);
+//    static void SetPinInput(uint8_t ucPortN, uint8_t ucPinN);
+//    static void SetPin(uint8_t ucPortN, uint8_t ucPinN);
+//    static void ClearPin(uint8_t ucPortN, uint8_t ucPinN);
 //
 //private:
 ////    const char *m_pccDeviceName;

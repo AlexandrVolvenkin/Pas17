@@ -126,8 +126,8 @@ int16_t CSharedMemoryCommunicationDevice::ReceiveStart(uint8_t *puiDestination,
 
         {
             cout << "CSharedMemoryCommunicationDevice::ReceiveStart m_puiClientToServerBuffer" << endl;
-            unsigned char *pucSourceTemp;
-            pucSourceTemp = (unsigned char*)m_puiClientToServerBuffer;
+            uint8_t *pucSourceTemp;
+            pucSourceTemp = (uint8_t*)m_puiClientToServerBuffer;
             for(int i=0; i<32; )
             {
                 for(int j=0; j<8; j++)
@@ -168,8 +168,8 @@ int16_t CSharedMemoryCommunicationDevice::ReceiveContinue(uint8_t *puiDestinatio
         cout << "CSharedMemoryCommunicationDevice::ReceiveContinue 2" << endl;
         {
             cout << "CSharedMemoryCommunicationDevice::ReceiveContinue m_puiClientToServerBuffer" << endl;
-            unsigned char *pucSourceTemp;
-            pucSourceTemp = (unsigned char*)m_puiClientToServerBuffer;
+            uint8_t *pucSourceTemp;
+            pucSourceTemp = (uint8_t*)m_puiClientToServerBuffer;
             for(int i=0; i<32; )
             {
                 for(int j=0; j<8; j++)
@@ -209,8 +209,8 @@ int16_t CSharedMemoryCommunicationDevice::Write(uint8_t *puiSource, uint16_t uiL
 
     {
         cout << "CSharedMemoryCommunicationDevice::ReceiveContinue m_puiServerToClientBuffer" << endl;
-        unsigned char *pucSourceTemp;
-        pucSourceTemp = (unsigned char*)m_puiServerToClientBuffer;
+        uint8_t *pucSourceTemp;
+        pucSourceTemp = (uint8_t*)m_puiServerToClientBuffer;
         for(int i=0; i<32; )
         {
             for(int j=0; j<8; j++)

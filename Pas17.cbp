@@ -50,11 +50,14 @@
 		</Compiler>
 		<Unit filename="../Декомпозиция проекта/База данных.txt" />
 		<Unit filename="../Декомпозиция проекта/Декомпозиция проекта.txt" />
+		<Unit filename="../Декомпозиция проекта/Дискретные сигналы.txt" />
+		<Unit filename="../Декомпозиция проекта/Интерфейс задачи.txt" />
 		<Unit filename="../Декомпозиция проекта/Конфигурация.txt" />
 		<Unit filename="../Декомпозиция проекта/Режим онлайн.txt" />
 		<Unit filename="../Декомпозиция проекта/Система обработки ошибок.txt" />
 		<Unit filename="../Декомпозиция проекта/Система управления.txt" />
 		<Unit filename="../Декомпозиция проекта/Статистика аналоговых сигналов.txt" />
+		<Unit filename="../Декомпозиция проекта/Функциональные блоки.txt" />
 		<Unit filename="../Текущие задачиPas17.txt" />
 		<Unit filename="../протокол МВА.txt" />
 		<Unit filename="../структ и протоколы/структ и прот ПАС-17.txt" />
@@ -89,6 +92,8 @@
 		<Unit filename="src/DeviceControl.h" />
 		<Unit filename="src/Dfa.cpp" />
 		<Unit filename="src/Dfa.h" />
+		<Unit filename="src/DiscreteSignals.cpp" />
+		<Unit filename="src/DiscreteSignals.h" />
 		<Unit filename="src/Gpio.cpp" />
 		<Unit filename="src/Gpio.h" />
 		<Unit filename="src/HammingCodes.cpp" />

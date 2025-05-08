@@ -269,8 +269,8 @@ uint8_t CConfigurationCheck::Fsm(void)
 
             {
                 std::cout << "CConfigurationCheck::Fsm auiTempArray"  << std::endl;
-                unsigned char *pucSourceTemp;
-                pucSourceTemp = (unsigned char*)auiTempArray;
+                uint8_t *pucSourceTemp;
+                pucSourceTemp = (uint8_t*)auiTempArray;
                 for(int i=0; i<32; )
                 {
                     for(int j=0; j<8; j++)
@@ -285,8 +285,8 @@ uint8_t CConfigurationCheck::Fsm(void)
 
             {
                 std::cout << "CConfigurationCheck::Fsm m_puiIntermediateBuff " << (sizeof(struct CConfigurationCreate::TConfigDataProgrammerPackOne))  << std::endl;
-                unsigned char *pucSourceTemp;
-                pucSourceTemp = (unsigned char*)m_puiIntermediateBuff;
+                uint8_t *pucSourceTemp;
+                pucSourceTemp = (uint8_t*)m_puiIntermediateBuff;
                 for(int i=0; i<32; )
                 {
                     for(int j=0; j<8; j++)

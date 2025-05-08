@@ -36,34 +36,34 @@ struct TAnalogueInputDescriptionDataBase
 {
     // - биты 0 – 3 тип шкалы датчика ТШК.
     // - биты 4 – 7 – код размерности измеряемого параметра КРЗМ.
-    unsigned char ucServiseL;
+    uint8_t ucServiseL;
     // - биты 0 – 5 – код диапазона измеряемой температуры для МВСТ5, или код входного сигнала для МВПС5 и МВАО5 (для МВАИ5 значения не имеет) КДИТ.
     // - биты 6,7 – резерв.
-    unsigned char ucServiseH;
+    uint8_t ucServiseH;
     // НШК - нижний предел шкалы датчика, Формат – FLOAT, 3 байта.
-    unsigned char ucMinOfScaleMantissLsb;
-    unsigned char ucMinOfScaleMantissMsb;
-    unsigned char ucMinOfScaleExponent;
+    uint8_t ucMinOfScaleMantissLsb;
+    uint8_t ucMinOfScaleMantissMsb;
+    uint8_t ucMinOfScaleExponent;
     // ВШК - верхний предел шкалы датчика, Формат – FLOAT, 3 байта.
-    unsigned char ucMaxOfScaleMantissLsb;
-    unsigned char ucMaxOfScaleMantissMsb;
-    unsigned char ucMaxOfScaleExponent;
+    uint8_t ucMaxOfScaleMantissLsb;
+    uint8_t ucMaxOfScaleMantissMsb;
+    uint8_t ucMaxOfScaleExponent;
     // уставка LL, Формат – FLOAT, 3 байта.
-    unsigned char ucSetPointLLMantissLsb;
-    unsigned char ucSetPointLLMantissMsb;
-    unsigned char ucSetPointLLExponent;
+    uint8_t ucSetPointLLMantissLsb;
+    uint8_t ucSetPointLLMantissMsb;
+    uint8_t ucSetPointLLExponent;
     // уставка L, Формат – FLOAT, 3 байта.
-    unsigned char ucSetPointLMantissLsb;
-    unsigned char ucSetPointLMantissMsb;
-    unsigned char ucSetPointLExponent;
+    uint8_t ucSetPointLMantissLsb;
+    uint8_t ucSetPointLMantissMsb;
+    uint8_t ucSetPointLExponent;
     // уставка H, Формат – FLOAT, 3 байта.
-    unsigned char ucSetPointHMantissLsb;
-    unsigned char ucSetPointHMantissMsb;
-    unsigned char ucSetPointHExponent;
+    uint8_t ucSetPointHMantissLsb;
+    uint8_t ucSetPointHMantissMsb;
+    uint8_t ucSetPointHExponent;
     // уставка HH, Формат – FLOAT, 3 байта.
-    unsigned char ucSetPointHHMantissLsb;
-    unsigned char ucSetPointHHMantissMsb;
-    unsigned char ucSetPointHHExponent;
+    uint8_t ucSetPointHHMantissLsb;
+    uint8_t ucSetPointHHMantissMsb;
+    uint8_t ucSetPointHHExponent;
     // Текстовый реквизит входа – 8 символов ASCII.
     char acTextDescriptor[ANALOGUE_INPUT_NAME_LENGTH];
 };
@@ -76,34 +76,34 @@ struct TAnalogueInputDescriptionDataBasePackOne
 {
     // - биты 0 – 3 тип шкалы датчика ТШК.
     // - биты 4 – 7 – код размерности измеряемого параметра КРЗМ.
-    unsigned char ucServiseL;
+    uint8_t ucServiseL;
     // - биты 0 – 5 – код диапазона измеряемой температуры для МВСТ5, или код входного сигнала для МВПС5 и МВАО5 (для МВАИ5 значения не имеет) КДИТ.
     // - биты 6,7 – резерв.
-    unsigned char ucServiseH;
+    uint8_t ucServiseH;
     // НШК - нижний предел шкалы датчика, Формат – FLOAT, 3 байта.
-    unsigned char ucMinOfScaleMantissLsb;
-    unsigned char ucMinOfScaleMantissMsb;
-    unsigned char ucMinOfScaleExponent;
+    uint8_t ucMinOfScaleMantissLsb;
+    uint8_t ucMinOfScaleMantissMsb;
+    uint8_t ucMinOfScaleExponent;
     // ВШК - верхний предел шкалы датчика, Формат – FLOAT, 3 байта.
-    unsigned char ucMaxOfScaleMantissLsb;
-    unsigned char ucMaxOfScaleMantissMsb;
-    unsigned char ucMaxOfScaleExponent;
+    uint8_t ucMaxOfScaleMantissLsb;
+    uint8_t ucMaxOfScaleMantissMsb;
+    uint8_t ucMaxOfScaleExponent;
     // уставка LL, Формат – FLOAT, 3 байта.
-    unsigned char ucSetPointLLMantissLsb;
-    unsigned char ucSetPointLLMantissMsb;
-    unsigned char ucSetPointLLExponent;
+    uint8_t ucSetPointLLMantissLsb;
+    uint8_t ucSetPointLLMantissMsb;
+    uint8_t ucSetPointLLExponent;
     // уставка L, Формат – FLOAT, 3 байта.
-    unsigned char ucSetPointLMantissLsb;
-    unsigned char ucSetPointLMantissMsb;
-    unsigned char ucSetPointLExponent;
+    uint8_t ucSetPointLMantissLsb;
+    uint8_t ucSetPointLMantissMsb;
+    uint8_t ucSetPointLExponent;
     // уставка H, Формат – FLOAT, 3 байта.
-    unsigned char ucSetPointHMantissLsb;
-    unsigned char ucSetPointHMantissMsb;
-    unsigned char ucSetPointHExponent;
+    uint8_t ucSetPointHMantissLsb;
+    uint8_t ucSetPointHMantissMsb;
+    uint8_t ucSetPointHExponent;
     // уставка HH, Формат – FLOAT, 3 байта.
-    unsigned char ucSetPointHHMantissLsb;
-    unsigned char ucSetPointHHMantissMsb;
-    unsigned char ucSetPointHHExponent;
+    uint8_t ucSetPointHHMantissLsb;
+    uint8_t ucSetPointHHMantissMsb;
+    uint8_t ucSetPointHHExponent;
     // Текстовый реквизит входа – 8 символов ASCII.
     char acTextDescriptor[ANALOGUE_INPUT_NAME_LENGTH];
 };
@@ -154,11 +154,11 @@ struct TAnalogueInputDescriptionModbusPackOne
 struct TAnalogueInputDescriptionWork
 {
     // тип шкалы датчика ТШК.
-    unsigned char ucScaleType;
+    uint8_t ucScaleType;
     // код размерности измеряемого параметра КРЗМ.
-    unsigned char ucDimentionCode;
+    uint8_t ucDimentionCode;
     // код диапазона измеряемой температуры для МВСТ5, или код входного сигнала для МВПС5 и МВАО5 (для МВАИ5 значения не имеет) КДИТ.
-    unsigned char ucRangeCode;
+    uint8_t ucRangeCode;
     // НШК - нижний предел шкалы датчика, Формат – FLOAT, IEEE754.
     float fMinOfScale;
     // ВШК - верхний предел шкалы датчика, Формат – FLOAT, IEEE754.
@@ -183,11 +183,11 @@ struct TAnalogueInputDescriptionWork
 struct TAnalogueInputDescriptionWorkPackOne
 {
     // тип шкалы датчика ТШК.
-    unsigned char ucScaleType;
+    uint8_t ucScaleType;
     // код размерности измеряемого параметра КРЗМ.
-    unsigned char ucDimentionCode;
+    uint8_t ucDimentionCode;
     // код диапазона измеряемой температуры для МВСТ5, или код входного сигнала для МВПС5 и МВАО5 (для МВАИ5 значения не имеет) КДИТ.
-    unsigned char ucRangeCode;
+    uint8_t ucRangeCode;
     // НШК - нижний предел шкалы датчика, Формат – FLOAT, IEEE754.
     float fMinOfScale;
     // ВШК - верхний предел шкалы датчика, Формат – FLOAT, IEEE754.
@@ -209,7 +209,7 @@ struct TAnalogueInputDescriptionWorkPackOne
 struct TTxsData
 {
     float fTxsValue; // значение ТХС.
-    unsigned char ucTxsStat; // состояние канала ТХС.
+    uint8_t ucTxsStat; // состояние канала ТХС.
 };
 
 // для сериализации, разбора данных полученных по интерфейсам передачи данных.
@@ -219,7 +219,7 @@ struct TTxsData
 struct TTxsDataPackOne
 {
     float fTxsValue; // значение ТХС.
-    unsigned char ucTxsStat; // состояние канала ТХС.
+    uint8_t ucTxsStat; // состояние канала ТХС.
 };
 
 #pragma pack(pop)
