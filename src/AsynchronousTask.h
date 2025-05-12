@@ -1,0 +1,73 @@
+#ifndef ASYNCHRONOUSTASK_H
+#define ASYNCHRONOUSTASK_H
+//-------------------------------------------------------------------------------
+//  Sourse      : FileName.cpp
+//  Created     : 01.06.2022
+//  Author      : Alexandr Volvenkin
+//  email       : aav-36@mail.ru
+//  GitHub      : https://github.com/AlexandrVolvenkin
+//-------------------------------------------------------------------------------
+
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
+//#include <fcntl.h>
+#include <string.h>
+#include <assert.h>
+#include <time.h>
+
+
+class Timer;
+class Platform;
+class CTask;
+class CResources;
+class CCommunicationDevice;
+class CCommunicationDeviceInterface;
+class CSpiCommunicationDevice;
+class CDataContainerInterface;
+class CDataContainerDataBase;
+class CInternalModule;
+class CConfigurationCreate;
+class CDeviceControl;
+class CDataBaseCreate;
+class CConfigurationCheck;
+
+
+//-------------------------------------------------------------------------------
+class CAsynchronousTask : public CTask
+{
+public:
+    enum
+    {
+        ASYNCHRONOUS_TASK_START = NEXT_STEP,
+        ASYNCHRONOUS_TASK_CONFIGURATION_DATA_BASE_BLOCKS_READ_START,
+        ASYNCHRONOUS_TASK_CONFIGURATION_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING,
+        ASYNCHRONOUS_TASK_CONFIGURATION_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING,
+        ASYNCHRONOUS_TASK_CONFIGURATION_COMPARE_START,
+    };
+
+    CAsynchronousTask();
+    virtual ~CAsynchronousTask();
+
+    void SetInternalModuleName(std::string sName);
+    void SetDeviceControlName(std::string sName);
+
+    uint8_t Init(void);
+    uint8_t Fsm(void);
+
+private:
+
+private:
+    std::string m_sInternalModuleName;
+    uint8_t m_uiInternalModuleId;
+
+    std::string m_sDeviceControlName;
+    uint8_t m_uiDeviceControlId;
+
+    uint8_t* m_puiIntermediateBuff;
+
+};
+
+#endif // ASYNCHRONOUSTASK_H
+//-------------------------------------------------------------------------------

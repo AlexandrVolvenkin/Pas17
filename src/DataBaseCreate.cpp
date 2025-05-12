@@ -179,6 +179,8 @@ void CDataBaseCreate::AnalogoueInputModuleDiscreteSignalsTextTitlesCreate(uint8_
         {"Диск.вход.DIn5"},
         {"Диск.вход.DIn6"},
 
+
+
         {"Изм.зн.AIn1<LL"},
         {"Изм.зн.AIn1<L "},
         {"Изм.зн.AIn1>H "},
