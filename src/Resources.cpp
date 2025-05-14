@@ -357,6 +357,27 @@ CTaskInterface* CResources::AddCommonTaskToMap(std::string sTaskName, std::share
 }
 
 //-------------------------------------------------------------------------------
+CTaskInterface* CResources::CreateTaskAndLinkToOthers(std::shared_ptr<CTaskInterface> pxTask,
+        std::string sTaskName,
+        std::string sExecutorTaskName,
+        std::string sNextTaskDoneOkName,
+        std::string sNextTaskDoneErrorName,
+                                                     )
+{
+    std::cout << "CResources::AddCommonTaskToMap 1"  << std::endl;
+
+//    std::cout << "CResources::AddCommonTaskToMap this name" << " " << (this -> GetTaskNamePointer()) << std::endl;
+//    std::cout << "CResources::AddCommonTaskToMap sTaskName" << " " << (sTaskName) << std::endl;
+    pxTask -> SetTaskName(sTaskName);
+    pxTask -> SetExecutorTaskName(sExecutorTaskName);
+    pxTask -> SetNextTaskDoneOkName(sNextTaskDoneOkName);
+    pxTask -> SetNextTaskDoneErrorName(sNextTaskDoneErrorName);
+    m_mpxCommonTaskMap[sTaskName] = pxTask;
+
+    return pxTask.get();
+}
+
+//-------------------------------------------------------------------------------
 bool CResources::CheckCommonTaskMap(void)
 {
     std::cout << "CResources::CheckCommonTaskMap 1"  << std::endl;

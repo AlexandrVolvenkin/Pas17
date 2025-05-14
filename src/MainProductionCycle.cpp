@@ -485,6 +485,23 @@ uint8_t CMainProductionCycle::CreateTasks(void)
     m_xResources.AddCurrentlyRunningTasksList(pxDiscreteSignals);
 //    m_pxDiscreteSignals = pxDiscreteSignals;
 
+//-------------------------------------------------------------------------------
+    CLedBlinker* pxLedBlinker = 0;
+    pxLedBlinker =
+        static_cast<CLedBlinker*>(m_xResources.AddCommonTaskToMap("LedBlinkerMainProductionCycle",
+                                     std::make_shared<CLedBlinker>()));
+    pxLedBlinker ->
+    SetResources(&m_xResources);
+    pxLedBlinker ->
+    SetExecutorTaskName("DataStoreFileSystem");
+    pxLedBlinker ->
+    SetNextTaskDoneOkName("DataStoreFileSystem");
+    pxLedBlinker ->
+    SetNextTaskDoneErrorName("ConfigurationCreate");
+//    m_xResources.AddCurrentlyRunningTasksList(pxLedBlinker);
+
+
+
 }
 
 //-------------------------------------------------------------------------------

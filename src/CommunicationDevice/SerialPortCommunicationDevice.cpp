@@ -306,7 +306,7 @@ void CSerialPortCommunicationDevice::SetStopBit(uint8_t uiStopBit)
     /* Stop bit (1 or 2) */
     if (uiStopBit == 1)
     {
-        m_xTios.c_cflag &=~ CSTOPB;
+        m_xTios.c_cflag &= ~CSTOPB;
     }
     else /* 2 */
     {

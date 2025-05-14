@@ -68,8 +68,10 @@ uint8_t CAsynchronousTask::Fsm(void)
 //    std::cout << "CAsynchronousTask::Fsm 1" << endl;
     switch (GetFsmState())
     {
-    case IDDLE:
-//        std::cout << "CAsynchronousTask::Fsm IDDLE"  << std::endl;
+    case INIT:
+//        //std::cout << "CAsynchronousTask::Fsm INIT 1"  << std::endl;
+        Init();
+        SetFsmState(STOP);
         break;
 
     case STOP:
@@ -77,39 +79,16 @@ uint8_t CAsynchronousTask::Fsm(void)
         break;
 
     case START:
-        std::cout << "CAsynchronousTask::Fsm START"  << std::endl;
-        Init();
+        //std::cout << "CAsynchronousTask::Fsm START"  << std::endl;
         SetFsmState(INIT);
         break;
 
-    case INIT:
-        std::cout << "CAsynchronousTask::Fsm INIT 1"  << std::endl;
-        m_uiInternalModuleId =
-            GetResources() ->
-            GetTaskIdByNameFromMap(m_sInternalModuleName);
-
-        m_uiDeviceControlId =
-            GetResources() ->
-            GetTaskIdByNameFromMap(m_sDeviceControlName);
-
-        SetFsmState(READY);
-
-        break;
-
-    case READY:
-//        std::cout << "CAsynchronousTask::Fsm READY"  << std::endl;
-        break;
-
     case DONE_OK:
-//        std::cout << "CAsynchronousTask::Fsm DONE_OK"  << std::endl;
-//        SetFsmOperationStatus(DONE_OK);
-//        SetFsmState(READY);
+//        //std::cout << "CAsynchronousTask::Fsm DONE_OK"  << std::endl;
         break;
 
     case DONE_ERROR:
-//        std::cout << "CAsynchronousTask::Fsm DONE_ERROR"  << std::endl;
-//        SetFsmOperationStatus(DONE_ERROR);
-//        SetFsmState(READY);
+//        //std::cout << "CAsynchronousTask::Fsm DONE_ERROR"  << std::endl;
         break;
 
 //-------------------------------------------------------------------------------

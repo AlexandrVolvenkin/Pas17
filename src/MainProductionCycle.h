@@ -269,14 +269,7 @@ public:
 
     enum
     {
-        NO_SUBTASK = 0,
-        STOP = 1,
-        START,
-        INIT,
-        DONE_OK,
-        DONE_ERROR,
-
-        LED_ON,
+        LED_ON = NEXT_STEP,
         LED_ON_PERIOD_END_WAITING,
         LED_OFF,
         LED_OFF_PERIOD_END_WAITING,

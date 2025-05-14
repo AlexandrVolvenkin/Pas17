@@ -295,7 +295,6 @@ public:
     {
         m_sTaskName = sTaskName;
     };
-
 //-------------------------------------------------------------------------------
     virtual std::string& GetTaskName(void)
     {
@@ -303,55 +302,87 @@ public:
     };
 
 //-------------------------------------------------------------------------------
-    virtual void SetFsmNextStateDoneOk(uint8_t uiData)
+    virtual std::string GetExecutorTaskName()
     {
-        m_uiFsmNextStateDoneOk = uiData;
-    };
+        return m_sExecutorTaskName;
+    }
+    virtual void SetExecutorTaskName(std::string& sName)
+    {
+        m_sExecutorTaskName = sName;
+    }
 
-    virtual uint8_t GetFsmNextStateDoneOk(void)
+    virtual void SetExecutorTaskId(uint8_t uiData)
     {
-        return m_uiFsmNextStateDoneOk;
+        m_uiExecutorTaskId = uiData;
+    };
+    virtual uint8_t GetExecutorTaskId(void)
+    {
+        return m_uiExecutorTaskId;
     };
 
 //-------------------------------------------------------------------------------
-    virtual void SetFsmNextStateDoneError(uint8_t uiData)
+    virtual std::string GetNextTaskDoneOkName()
     {
-        m_uiFsmNextStateDoneError = uiData;
+        return m_sNextTaskDoneOkName;
+    }
+    virtual void SetNextTaskDoneOkName(std::string& sName)
+    {
+        m_sNextTaskDoneOkName = sName;
+    }
+
+    virtual void SetNextTaskDoneOkId(uint8_t uiData)
+    {
+        m_uiNextTaskDoneOkId = uiData;
+    };
+    virtual uint8_t GetNextTaskDoneOkId(void)
+    {
+        return m_uiNextTaskDoneOkId;
     };
 
-    virtual uint8_t GetFsmNextStateDoneError(void)
+//-------------------------------------------------------------------------------
+    virtual std::string GetNextTaskDoneErrorName()
     {
-        return m_uiFsmNextStateDoneError;
+        return m_sNextTaskDoneErrorName;
+    }
+    virtual void SetNextTaskDoneErrorName(std::string& sName)
+    {
+        m_sNextTaskDoneErrorName = sName;
+    }
+
+    virtual void SetNextTaskDoneErrorId(uint8_t uiData)
+    {
+        m_uiNextTaskDoneErrorId = uiData;
+    };
+    virtual uint8_t GetNextTaskDoneErrorId(void)
+    {
+        return m_uiNextTaskDoneErrorId;
     };
 
 //-------------------------------------------------------------------------------
     virtual void SetResources(CResources* pxResources);
     virtual CResources* GetResources(void);
 
-    virtual void SetCustomerDataContainer(CDataContainerInterface* pxDataContainer);
-    virtual CDataContainerInterface* GetCustomerDataContainerPointer(void);
-
-    virtual void SetExecutorDataContainer(CDataContainerInterface* pxDataContainer);
-    virtual CDataContainerInterface* GetExecutorDataContainerPointer(void);
-
-    bool SetTaskData(CDataContainerInterface* pxDataContainer);
-
     virtual uint8_t Init(void);
     uint8_t Fsm(void);
 
-
 //-------------------------------------------------------------------------------
 public:
+    // содержит имя задачи исполнителя.
     std::string m_sTaskName;
     CResources* m_pxResources;
 
-    CDataContainerInterface* m_pxCustomerDataContainer;
-    CDataContainerInterface* m_pxExecutorDataContainer;
-
-    // содержит идентификатор шага автомата, при успешном завершении подзадачи.
-    uint8_t m_uiFsmNextStateDoneOk;
-    // содержит идентификатор шага автомата, при не успешном завершении подзадачи.
-    uint8_t m_uiFsmNextStateDoneError;
+    // содержит имя задачи.
+    std::string m_sExecutorTaskName;
+    // содержит идентификатор задачи исполнителя.
+    uint8_t m_uiExecutorTaskId;
+    // содержит имя следующей задачи, при успешном завершении задачи исполнителя.
+    std::string m_sNextTaskDoneOkName;
+    // содержит идентификатор следующей задачи, при успешном завершении задачи исполнителя.
+    uint8_t m_uiNextTaskDoneOkId;
+    // содержит имя следующей задачи, при не успешном завершении задачи исполнителя.
+    std::string m_sNextTaskDoneErrorName;
+    // содержит идентификатор следующей задачи, при не успешном завершении задачи исполнителя.
+    uint8_t m_uiNextTaskDoneErrorId;
 };
 
 

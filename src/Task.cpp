@@ -269,73 +269,9 @@ CResources* CNewTask::GetResources(void)
 }
 
 //-------------------------------------------------------------------------------
-void CNewTask::SetCustomerDataContainer(CDataContainerInterface* pxDataContainer)
-{
-    m_pxCustomerDataContainer = pxDataContainer;
-}
-
-//-------------------------------------------------------------------------------
-CDataContainerInterface* CNewTask::GetCustomerDataContainerPointer(void)
-{
-    return m_pxCustomerDataContainer;
-}
-
-//-------------------------------------------------------------------------------
-void CNewTask::SetExecutorDataContainer(CDataContainerInterface* pxDataContainer)
-{
-    m_pxExecutorDataContainer = pxDataContainer;
-}
-
-//-------------------------------------------------------------------------------
-CDataContainerInterface* CNewTask::GetExecutorDataContainerPointer(void)
-{
-    return m_pxExecutorDataContainer;
-}
-
-//-------------------------------------------------------------------------------
 uint8_t CNewTask::Init(void)
 {
     std::cout << "CNewTask Init"  << std::endl;
-    SetExecutorDataContainer(static_cast<CDataContainerDataBase*>(GetResources() ->
-                             AddDataContainer(std::make_shared<CDataContainerDataBase>())));
-}
-
-//-------------------------------------------------------------------------------
-bool CNewTask::SetTaskData(CDataContainerInterface* pxDataContainer)
-{
-////    std::cout << "CNewTask::SetTaskData 1" << std::endl;
-//
-////    std::cout << "CNewTask::SetTaskData TaskId "  << (int)pxDataContainer ->
-////              GetTaskId() << std::endl;
-//    CNewTask* pxTask =
-//        GetResources() ->
-//        GetTaskPointerById(pxDataContainer ->
-//                           GetTaskId());
-//
-////    std::cout << "CNewTask::SetTaskData m_sTaskName "  << pxTask ->
-////              GetTaskName() << std::endl;
-//
-//    if (pxTask)
-//    {
-//        if (pxTask -> IsTaskReady())
-//        {
-////            std::cout << "CNewTask::SetTaskData 2" << std::endl;
-//            pxTask -> SetCustomerDataContainer(pxDataContainer);
-//            pxTask -> SetFsmState(pxDataContainer ->
-//                                  GetFsmCommandState());
-//            return true;
-//        }
-//        else
-//        {
-//            std::cout << "CNewTask::SetTaskData 3" << std::endl;
-//            return false;
-//        }
-//    }
-//    else
-//    {
-//        std::cout << "CNewTask::SetTaskData 4" << std::endl;
-//        return false;
-//    }
 }
 
 //-------------------------------------------------------------------------------
@@ -380,20 +316,20 @@ uint8_t CNewTask::Fsm(void)
     case SUBTASK_EXECUTOR_READY_CHECK_WAITING:
 //        std::cout << "CNewTask::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 1"  << std::endl;
     {
-        if (SetTaskData(GetExecutorDataContainerPointer()))
-        {
-            std::cout << "CNewTask::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 2"  << std::endl;
-            SetFsmState(SUBTASK_EXECUTOR_DONE_CHECK_START);
-        }
-        else
-        {
-            std::cout << "CNewTask::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 3"  << std::endl;
-            // ¬рем€ ожидани€ выполнени€ запроса закончилось?
-            if (GetTimerPointer() -> IsOverflow())
-            {
-                std::cout << "CNewTask::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 4"  << std::endl;
-            }
-        }
+//        if (SetTaskData(GetExecutorDataContainerPointer()))
+//        {
+//            std::cout << "CNewTask::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 2"  << std::endl;
+//            SetFsmState(SUBTASK_EXECUTOR_DONE_CHECK_START);
+//        }
+//        else
+//        {
+//            std::cout << "CNewTask::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 3"  << std::endl;
+//            // ¬рем€ ожидани€ выполнени€ запроса закончилось?
+//            if (GetTimerPointer() -> IsOverflow())
+//            {
+//                std::cout << "CNewTask::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 4"  << std::endl;
+//            }
+//        }
     }
     break;
 
@@ -409,27 +345,27 @@ uint8_t CNewTask::Fsm(void)
     case SUBTASK_EXECUTOR_DONE_CHECK_WAITING:
 //        std::cout << "CNewTask::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 1"  << std::endl;
     {
-        CDataContainerDataBase* pxDataContainer =
-            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-
-        uint8_t uiFsmState = pxDataContainer -> m_uiFsmCommandState;
-
-        if (uiFsmState == DONE_OK)
-        {
-            std::cout << "CNewTask::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 2"  << std::endl;
-        }
-        else if (uiFsmState == DONE_ERROR)
-        {
-            std::cout << "CNewTask::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 3"  << std::endl;
-        }
-        else
-        {
-            // ¬рем€ ожидани€ выполнени€ запроса закончилось?
-            if (GetTimerPointer() -> IsOverflow())
-            {
-                std::cout << "CNewTask::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 4"  << std::endl;
-            }
-        }
+//        CDataContainerDataBase* pxDataContainer =
+//            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+//
+//        uint8_t uiFsmState = pxDataContainer -> m_uiFsmCommandState;
+//
+//        if (uiFsmState == DONE_OK)
+//        {
+//            std::cout << "CNewTask::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 2"  << std::endl;
+//        }
+//        else if (uiFsmState == DONE_ERROR)
+//        {
+//            std::cout << "CNewTask::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 3"  << std::endl;
+//        }
+//        else
+//        {
+//            // ¬рем€ ожидани€ выполнени€ запроса закончилось?
+//            if (GetTimerPointer() -> IsOverflow())
+//            {
+//                std::cout << "CNewTask::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 4"  << std::endl;
+//            }
+//        }
     }
     break;
 
