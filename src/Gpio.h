@@ -34,39 +34,11 @@ class CGpio
 {
 public:
     CGpio();
-//    CGpio(int chipNumber,
-//          int lineOffset,
-//          std::string consumerLabel);
     virtual ~CGpio();
 
     static CGpio* Create(int chipNumber,
                          int lineOffset,
                          const std::string& consumerLabel);
-//    {
-//        std::cout << "CGpio::Create 1"  << std::endl;
-//
-//        class CGpio* pxGpio new CGpio();
-//
-//        if (pxGpio != nullptr)
-//        {
-//            int fd = GetLineHandler(chipNumber,
-//                                    lineOffset,
-//                                    consumerLabel);
-//            if (fd != -1)
-//            {
-//                pxGpio -> m_Fd = fd;
-//                return pxGpio;
-//            }
-//            else
-//            {
-//                return nullptr;
-//            }
-//        }
-//        else
-//        {
-//            return nullptr;
-//        }
-//    };
     static void ErrorMessage(const std::string& message, int errorCode);
     static int GetLineHandler(int chipNumber,
                               int lineOffset,
@@ -75,8 +47,6 @@ public:
 //    int8_t Close(void);
 //    void SetPinOutput(uint8_t ucPortN, uint8_t ucPinN);
 //    void SetPinInput(uint8_t ucPortN, uint8_t ucPinN);
-    static void SetPin(int iLineHandler);
-    static void ClearPin(int iLineHandler);
     void SetPin(void);
     void ClearPin(void);
 
