@@ -97,6 +97,21 @@ public:
     virtual bool IsDoneOk(void) {};
     virtual bool IsDoneError(void) {};
 
+    virtual std::string GetExecutorTaskName() {};
+    virtual void SetExecutorTaskName(std::string& sName) {};
+    virtual void SetExecutorTaskId(uint8_t uiData) {};
+    virtual uint8_t GetExecutorTaskId(void) {};
+
+    virtual std::string GetNextTaskDoneOkName() {};
+    virtual void SetNextTaskDoneOkName(std::string& sName) {};
+    virtual void SetNextTaskDoneOkId(uint8_t uiData) {};
+    virtual uint8_t GetNextTaskDoneOkId(void) {};
+
+    virtual std::string GetNextTaskDoneErrorName() {};
+    virtual void SetNextTaskDoneErrorName(std::string& sName) {};
+    virtual void SetNextTaskDoneErrorId(uint8_t uiData) {};
+    virtual uint8_t GetNextTaskDoneErrorId(void) {};
+
     virtual void SetResources(CResources* pxResources) {};
     virtual CResources* GetResources(void) {};
 };
@@ -260,7 +275,7 @@ public:
 
 
 //-------------------------------------------------------------------------------
-class CNewTask : public CDfa
+class CNewTask : public CTaskInterface
 {
 public:
     enum
@@ -305,11 +320,11 @@ public:
     virtual std::string GetExecutorTaskName()
     {
         return m_sExecutorTaskName;
-    }
+    };
     virtual void SetExecutorTaskName(std::string& sName)
     {
         m_sExecutorTaskName = sName;
-    }
+    };
 
     virtual void SetExecutorTaskId(uint8_t uiData)
     {
@@ -324,11 +339,11 @@ public:
     virtual std::string GetNextTaskDoneOkName()
     {
         return m_sNextTaskDoneOkName;
-    }
+    };
     virtual void SetNextTaskDoneOkName(std::string& sName)
     {
         m_sNextTaskDoneOkName = sName;
-    }
+    };
 
     virtual void SetNextTaskDoneOkId(uint8_t uiData)
     {
@@ -343,11 +358,11 @@ public:
     virtual std::string GetNextTaskDoneErrorName()
     {
         return m_sNextTaskDoneErrorName;
-    }
+    };
     virtual void SetNextTaskDoneErrorName(std::string& sName)
     {
         m_sNextTaskDoneErrorName = sName;
-    }
+    };
 
     virtual void SetNextTaskDoneErrorId(uint8_t uiData)
     {

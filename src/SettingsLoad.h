@@ -55,7 +55,7 @@ public:
     void SetDataStoreName(const std::string& sName)
     {
         m_sDataStoreName = sName;
-    }
+    };
 
     uint8_t Init(void);
     uint8_t Fsm(void);

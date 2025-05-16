@@ -21,6 +21,8 @@
 #include "InternalModule.h"
 #include "Gpio.h"
 
+class CGpio;
+
 using namespace std;
 
 //-------------------------------------------------------------------------------
@@ -29,10 +31,82 @@ CGpio::CGpio()
 
 }
 
+////-------------------------------------------------------------------------------
+//CGpio::CGpio(int chipNumber,
+//             int lineOffset,
+//             std::string consumerLabel)
+//{
+////    std::cout << "CGpio::GetLineHandler 1"  << std::endl;
+////    int GPIO_Handler;
+////
+////    GPIO_Handler = open((const char*)("/dev/gpiochip" + std::to_string(chipNumber)).c_str(), O_RDONLY);
+////    if (GPIO_Handler < 0)
+////    {
+////        ErrorMessage("GPIO not open!!!", GPIO_Handler);
+////        return -1;
+////    }
+////
+////    cout << "GPIO port open, GPIO_Handler = " << GPIO_Handler << endl;
+////
+////    struct gpiohandle_request Request;
+////    memset(&Request, 0x00, sizeof(Request));
+////
+////    Request.lineoffsets[0] = lineOffset;
+////    Request.lines = 1;
+//////    Request.flags = (GPIOHANDLE_REQUEST_OUTPUT | GPIOHANDLE_REQUEST_ACTIVE_LOW);
+////    Request.flags = (GPIOHANDLE_REQUEST_OUTPUT);
+////    Request.default_values[0] = 0;
+////    strcpy(Request.consumer_label, consumerLabel.c_str());
+////
+////    int Responce = ioctl(GPIO_Handler, GPIO_GET_LINEHANDLE_IOCTL, &Request);
+////    if (Responce < 0)
+////    {
+////        ErrorMessage("ERROR get line handle!!!", lineOffset);
+////        return -1;
+////    }
+////
+////    close(GPIO_Handler);
+////
+////    m_Fd = Request.fd;
+//}
+
 //-------------------------------------------------------------------------------
 CGpio::~CGpio()
 {
+    close(m_Fd);
+    delete m_pxGpio;
+}
 
+//-------------------------------------------------------------------------------
+CGpio* CGpio::Create(int chipNumber,
+                     int lineOffset,
+                     const std::string& consumerLabel)
+{
+    std::cout << "CGpio::Create 1"  << std::endl;
+
+    CGpio* pxGpio = new CGpio();
+
+    if (pxGpio != nullptr)
+    {
+        int fd = GetLineHandler(chipNumber,
+                                lineOffset,
+                                consumerLabel);
+        if (fd != -1)
+        {
+            pxGpio -> m_Fd = fd;
+            pxGpio -> m_pxGpio = pxGpio;
+            return pxGpio;
+        }
+        else
+        {
+            delete pxGpio;
+            return nullptr;
+        }
+    }
+    else
+    {
+        return nullptr;
+    }
 }
 
 //-------------------------------------------------------------------------------
@@ -125,6 +199,28 @@ void CGpio::ClearPin(int iLineHandler)
     GPIO.values[0] = 0;
 
     ioctl(iLineHandler, GPIOHANDLE_SET_LINE_VALUES_IOCTL, &GPIO);
+}
+
+//-------------------------------------------------------------------------------
+void CGpio::SetPin(void)
+{
+//    std::cout << "CGpio::SetPin 1"  << std::endl;
+    struct gpiohandle_data GPIO;
+
+    GPIO.values[0] = 1;
+
+    ioctl(m_Fd, GPIOHANDLE_SET_LINE_VALUES_IOCTL, &GPIO);
+}
+
+//-------------------------------------------------------------------------------
+void CGpio::ClearPin(void)
+{
+//    std::cout << "CGpio::ClearPin 1"  << std::endl;
+    struct gpiohandle_data GPIO;
+
+    GPIO.values[0] = 0;
+
+    ioctl(m_Fd, GPIOHANDLE_SET_LINE_VALUES_IOCTL, &GPIO);
 }
 
 //-------------------------------------------------------------------------------

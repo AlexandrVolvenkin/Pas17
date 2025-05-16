@@ -133,13 +133,13 @@ public:
     std::string GetDataStoreName() const
     {
         return m_sDataStoreName;
-    }
+    };
 
     // Сеттер для m_sDataStoreName
     void SetDataStoreName(const std::string& sName)
     {
         m_sDataStoreName = sName;
-    }
+    };
 
     void SetInternalModuleName(std::string sName);
     void SetInternalModuleMuvrName(std::string sName);

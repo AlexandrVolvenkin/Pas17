@@ -119,78 +119,72 @@ public:
     std::string GetDataStoreName() const
     {
         return m_sDataStoreName;
-    }
-
+    };
     // Сеттер для m_sDataStoreName
     void SetDataStoreName(const std::string& sName)
     {
         m_sDataStoreName = sName;
-    }
+    };
 
     // Геттер для m_pxDataStore
     CDataStore* GetDataStore() const
     {
         return m_pxDataStore;
-    }
-
+    };
     // Сеттер для m_pxDataStore
     void SetDataStore(CDataStore* pxDataStore)
     {
         m_pxDataStore = pxDataStore;
-    }
+    };
 
     // Геттер для m_sDataStoreLinkName
     std::string GetDataStoreLinkName() const
     {
         return m_sDataStoreLinkName;
-    }
-
+    };
     // Сеттер для m_sDataStoreLinkName
     void SetDataStoreLinkName(const std::string& sName)
     {
         m_sDataStoreLinkName = sName;
-    }
+    };
 
     // Геттер для m_pxDataStoreLink
     CLinkInterface* GetDataStoreLink() const
     {
         return m_pxDataStoreLink;
-    }
-
+    };
     // Сеттер для m_pxDataStoreLink
     void SetDataStoreLink(CLinkInterface* pxLink)
     {
         m_pxDataStoreLink = pxLink;
-    }
+    };
 
     // Геттер для m_pxCommandDataLink
     CLinkInterface* GetCommandDataLink() const
     {
         return m_pxCommandDataLink;
-    }
-
+    };
     // Сеттер для m_pxCommandDataLink
     void SetCommandDataLink(CLinkInterface* pxValue)
     {
         m_pxCommandDataLink = pxValue;
-    }
+    };
 
     // Геттер для m_pxOperatingDataLink
     CLinkInterface* GetOperatingDataLink() const
     {
         return m_pxOperatingDataLink;
-    }
-
+    };
     // Сеттер для m_pxOperatingDataLink
     void SetOperatingDataLink(CLinkInterface* pxValue)
     {
         m_pxOperatingDataLink = pxValue;
-    }
+    };
 
     void SetConfigurationCreateName(const std::string& sName)
     {
         m_sConfigurationCreateName = sName;
-    }
+    };
     void SetInternalModuleMuvrName(std::string sName);
 
     uint8_t Init(void);

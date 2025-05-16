@@ -163,7 +163,7 @@ public:
     void SetDataStoreName(const std::string& sName)
     {
         m_sDataStoreName = sName;
-    }
+    };
 
     void DiscreteSignalsStartDataBaseCreate(void);
     void DiscreteSignalsStartDataBlockWorkToCommonFormat(uint8_t* puiBlockDataPointer,

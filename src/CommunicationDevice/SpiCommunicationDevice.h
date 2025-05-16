@@ -85,6 +85,8 @@ private:
     CSemaphore* m_pxSpi0Semaphore;
     int GpioLineHandler_SPI_CHIP_ENABLE_PIN;
     int GpioLineHandler_PRD_EN_PIN;
+    CGpio* pxGpioSpiChipEnablePin;
+    CGpio* pxGpioPrdEnablePin;
 
 };
 //-------------------------------------------------------------------------------

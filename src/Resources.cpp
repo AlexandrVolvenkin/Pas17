@@ -361,8 +361,7 @@ CTaskInterface* CResources::CreateTaskAndLinkToOthers(std::shared_ptr<CTaskInter
         std::string sTaskName,
         std::string sExecutorTaskName,
         std::string sNextTaskDoneOkName,
-        std::string sNextTaskDoneErrorName,
-                                                     )
+        std::string sNextTaskDoneErrorName)
 {
     std::cout << "CResources::AddCommonTaskToMap 1"  << std::endl;
 
