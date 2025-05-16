@@ -35,32 +35,28 @@ CGpio::CGpio()
 CGpio::~CGpio()
 {
     close(m_Fd);
-    delete m_pxGpio;
 }
 
 //-------------------------------------------------------------------------------
-CGpio* CGpio::Create(int chipNumber,
-                     int lineOffset,
-                     const std::string& consumerLabel)
+std::unique_ptr<CGpio> CGpio::Create(int chipNumber,
+                                     int lineOffset,
+                                     const std::string& consumerLabel)
 {
-    std::cout << "CGpio::Create 1"  << std::endl;
+    std::cout << "CGpio::Create 1" << std::endl;
 
-    CGpio* pxGpio = new CGpio();
+    // Используем std::make_unique для создания инициализированного объекта
+    auto pxGpio = std::make_unique<CGpio>();
 
     if (pxGpio != nullptr)
     {
-        int fd = GetLineHandler(chipNumber,
-                                lineOffset,
-                                consumerLabel);
+        int fd = GetLineHandler(chipNumber, lineOffset, consumerLabel);
         if (fd != -1)
         {
-            pxGpio -> m_Fd = fd;
-            pxGpio -> m_pxGpio = pxGpio;
+            pxGpio->m_Fd = fd;
             return pxGpio;
         }
         else
         {
-            delete pxGpio;
             return nullptr;
         }
     }

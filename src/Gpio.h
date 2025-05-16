@@ -16,6 +16,7 @@
 #include <string.h>
 #include <assert.h>
 #include <time.h>
+#include <memory>
 
 
 class Timer;
@@ -36,9 +37,9 @@ public:
     CGpio();
     virtual ~CGpio();
 
-    static CGpio* Create(int chipNumber,
-                         int lineOffset,
-                         const std::string& consumerLabel);
+    static std::unique_ptr<CGpio> Create(int chipNumber,
+                                         int lineOffset,
+                                         const std::string& consumerLabel);
     static void ErrorMessage(const std::string& message, int errorCode);
     static int GetLineHandler(int chipNumber,
                               int lineOffset,

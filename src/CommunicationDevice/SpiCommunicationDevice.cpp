@@ -40,8 +40,6 @@ CSpiCommunicationDevice::~CSpiCommunicationDevice()
 {
     delete m_pxSpi0Semaphore;
 
-    delete pxGpioSpiChipEnablePin;
-    delete pxGpioPrdEnablePin;
 //    ChipSelectPinDelete();
     Close();
 }

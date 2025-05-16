@@ -83,8 +83,8 @@ private:
     int m_iSpi0SemaphoreId;
 //    CSemaphore xSpi0Semaphore(12345, 1);
     CSemaphore* m_pxSpi0Semaphore;
-    CGpio* pxGpioSpiChipEnablePin;
-    CGpio* pxGpioPrdEnablePin;
+    std::unique_ptr<CGpio> pxGpioSpiChipEnablePin;
+    std::unique_ptr<CGpio> pxGpioPrdEnablePin;
 
 };
 //-------------------------------------------------------------------------------
