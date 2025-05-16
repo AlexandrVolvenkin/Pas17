@@ -414,7 +414,11 @@ int CSpiCommunicationDevice::Exchange(uint8_t uiAddress,
 {
 //    std::cout << "CSpiCommunicationDevice::Exchange 1"  << std::endl;
 
-    while (m_pxSpi0Semaphore -> Acquire() == false);
+//    while (m_pxSpi0Semaphore -> Acquire() == false);
+    if (!(m_pxSpi0Semaphore -> Acquire()))
+    {
+        return -1;
+    }
 //    m_pxSpi0Semaphore -> Acquire();
 
     ModeSet();
