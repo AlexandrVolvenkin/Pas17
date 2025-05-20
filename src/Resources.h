@@ -90,6 +90,10 @@ public:
     CTaskInterface* GetTaskPointerById(uint8_t uiTaskId);
     uint8_t* CreateObjectBySize(size_t uiLength);
     CDataContainerInterface* AddDataContainer(std::shared_ptr<CDataContainerInterface> pxDataContainer);
+
+    void SendRequest(void);
+    void ReceiveAnswer(void);
+
     CConfigurationCreate::TConfigDataPackOne* GetDeviceConfigSearchPointer(void);
     TDiscreteSygnalTextTitle* GetDiscreteSygnalTextTitlesWorkPointer(void);
 

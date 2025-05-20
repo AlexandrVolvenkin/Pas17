@@ -491,4 +491,18 @@ CDataContainerInterface* CResources::AddDataContainer(std::shared_ptr<CDataConta
 }
 
 //-------------------------------------------------------------------------------
+void CResources::SendRequest(void)
+{
+    std::cout << "CResources::SendRequest 1"  << std::endl;
+
+}
+
+//-------------------------------------------------------------------------------
+void CResources::ReceiveAnswer(void)
+{
+    std::cout << "CResources::ReceiveAnswer 1"  << std::endl;
+
+}
+
+//-------------------------------------------------------------------------------
 

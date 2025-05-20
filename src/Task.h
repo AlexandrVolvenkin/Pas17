@@ -287,16 +287,11 @@ public:
     enum
     {
         NO_SUBTASK = 0,
-        STOP = 1,
-        START,
         INIT,
+        STOP,
+        START,
         DONE_OK,
         DONE_ERROR,
-
-        SUBTASK_EXECUTOR_READY_CHECK_START,
-        SUBTASK_EXECUTOR_READY_CHECK_WAITING,
-        SUBTASK_EXECUTOR_DONE_CHECK_START,
-        SUBTASK_EXECUTOR_DONE_CHECK_WAITING,
 
         NEXT_STEP,
     };

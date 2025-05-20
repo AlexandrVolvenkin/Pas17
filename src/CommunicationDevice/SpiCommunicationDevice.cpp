@@ -419,7 +419,6 @@ int CSpiCommunicationDevice::Exchange(uint8_t uiAddress,
     {
         return -1;
     }
-//    m_pxSpi0Semaphore -> Acquire();
 
     ModeSet();
     ChipSelectAddressSet(uiAddress);

@@ -340,7 +340,7 @@ uint8_t CConfigurationCreate::Fsm(void)
             CDataContainerDataBase* pxCustomerDataContainer =
                 (CDataContainerDataBase*)GetCustomerDataContainerPointer();
 
-            uint16_t  uiLength = sizeof(struct TConfigDataPackOne);
+            uint16_t  uiLength = sizeof(struct TConfigDataProgrammerPackOne);
 
             ConfigurationToProgrammerFormat((TConfigDataProgrammerPackOne*)(pxExecutorDataContainer -> m_puiDataPointer),
                                             (GetResources() -> GetDeviceConfigSearchPointer()));

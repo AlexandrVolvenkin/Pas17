@@ -38,28 +38,9 @@ CAsynchronousTask::~CAsynchronousTask()
 }
 
 //-------------------------------------------------------------------------------
-void CAsynchronousTask::SetInternalModuleName(std::string sName)
-{
-    m_sInternalModuleName = sName;
-}
-
-//-------------------------------------------------------------------------------
-void CAsynchronousTask::SetDeviceControlName(std::string sName)
-{
-    m_sDeviceControlName = sName;
-}
-
-//-------------------------------------------------------------------------------
 uint8_t CAsynchronousTask::Init(void)
 {
     std::cout << "CAsynchronousTask Init"  << std::endl;
-    SetExecutorDataContainer(static_cast<CDataContainerDataBase*>(GetResources() ->
-                             AddDataContainer(std::make_shared<CDataContainerDataBase>())));
-    SetCustomerDataContainer(GetExecutorDataContainerPointer());
-
-    CDataContainerDataBase* pxDataContainer =
-        (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-    pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
 }
 
 //-------------------------------------------------------------------------------
@@ -92,107 +73,75 @@ uint8_t CAsynchronousTask::Fsm(void)
         break;
 
 //-------------------------------------------------------------------------------
-    case SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_START:
-        std::cout << "CAsynchronousTask::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_START"  << std::endl;
+    case ASYNCHRONOUS_TASK_EXECUTOR_READY_CHECK_START:
+        std::cout << "CAsynchronousTask::Fsm ASYNCHRONOUS_TASK_EXECUTOR_READY_CHECK_START"  << std::endl;
         {
             GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
-            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING);
+            SetFsmState(ASYNCHRONOUS_TASK_EXECUTOR_READY_CHECK_WAITING);
         }
         break;
 
-    case SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING:
-//        std::cout << "CAsynchronousTask::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING 1"  << std::endl;
+    case ASYNCHRONOUS_TASK_EXECUTOR_READY_CHECK_WAITING:
+//        std::cout << "CAsynchronousTask::Fsm ASYNCHRONOUS_TASK_EXECUTOR_READY_CHECK_WAITING 1"  << std::endl;
     {
-        if (SetTaskData(GetExecutorDataContainerPointer()))
-        {
-            std::cout << "CAsynchronousTask::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING 2"  << std::endl;
-            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-            SetFsmState(GetFsmNextStateDoneOk());
-        }
-        else
-        {
-            std::cout << "CAsynchronousTask::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING 3"  << std::endl;
-            // ¬рем€ ожидани€ выполнени€ запроса закончилось?
-            if (GetTimerPointer() -> IsOverflow())
-            {
-                std::cout << "CAsynchronousTask::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING 4"  << std::endl;
-                ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
-                SetFsmState(GetFsmNextStateReadyWaitingError());
-            }
-        }
+//        if (SetTaskData(GetExecutorDataContainerPointer()))
+//        {
+//            std::cout << "CAsynchronousTask::Fsm ASYNCHRONOUS_TASK_EXECUTOR_READY_CHECK_WAITING 2"  << std::endl;
+//            SetFsmState(ASYNCHRONOUS_TASK_EXECUTOR_DONE_CHECK_START);
+//        }
+//        else
+//        {
+//            std::cout << "CAsynchronousTask::Fsm ASYNCHRONOUS_TASK_EXECUTOR_READY_CHECK_WAITING 3"  << std::endl;
+//            // ¬рем€ ожидани€ выполнени€ запроса закончилось?
+//            if (GetTimerPointer() -> IsOverflow())
+//            {
+//                std::cout << "CAsynchronousTask::Fsm ASYNCHRONOUS_TASK_EXECUTOR_READY_CHECK_WAITING 4"  << std::endl;
+////                ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+//                SetFsmState(GetFsmNextStateReadyWaitingError());
+//            }
+//        }
     }
     break;
 
-//-------------------------------------------------------------------------------
-    case SUBTASK_EXECUTOR_READY_CHECK_START:
-        std::cout << "CAsynchronousTask::Fsm SUBTASK_EXECUTOR_READY_CHECK_START"  << std::endl;
+    case ASYNCHRONOUS_TASK_EXECUTOR_DONE_CHECK_START:
+        std::cout << "CAsynchronousTask::Fsm ASYNCHRONOUS_TASK_EXECUTOR_DONE_CHECK_START 1"  << std::endl;
         {
             GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
-            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_WAITING);
-        }
-        break;
-
-    case SUBTASK_EXECUTOR_READY_CHECK_WAITING:
-//        std::cout << "CAsynchronousTask::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 1"  << std::endl;
-    {
-        if (SetTaskData(GetExecutorDataContainerPointer()))
-        {
-            std::cout << "CAsynchronousTask::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 2"  << std::endl;
-            SetFsmState(SUBTASK_EXECUTOR_DONE_CHECK_START);
-        }
-        else
-        {
-            std::cout << "CAsynchronousTask::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 3"  << std::endl;
-            // ¬рем€ ожидани€ выполнени€ запроса закончилось?
-            if (GetTimerPointer() -> IsOverflow())
-            {
-                std::cout << "CAsynchronousTask::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 4"  << std::endl;
-//                ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
-                SetFsmState(GetFsmNextStateReadyWaitingError());
-            }
-        }
-    }
-    break;
-
-    case SUBTASK_EXECUTOR_DONE_CHECK_START:
-        std::cout << "CAsynchronousTask::Fsm SUBTASK_EXECUTOR_DONE_CHECK_START 1"  << std::endl;
-        {
-            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
-            SetFsmState(SUBTASK_EXECUTOR_DONE_CHECK_WAITING);
+            SetFsmState(ASYNCHRONOUS_TASK_EXECUTOR_DONE_CHECK_WAITING);
         }
 
         break;
 
-    case SUBTASK_EXECUTOR_DONE_CHECK_WAITING:
-//        std::cout << "CAsynchronousTask::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 1"  << std::endl;
+    case ASYNCHRONOUS_TASK_EXECUTOR_DONE_CHECK_WAITING:
+//        std::cout << "CAsynchronousTask::Fsm ASYNCHRONOUS_TASK_EXECUTOR_DONE_CHECK_WAITING 1"  << std::endl;
     {
-        CDataContainerDataBase* pxDataContainer =
-            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-
-        uint8_t uiFsmState = pxDataContainer -> m_uiFsmCommandState;
-
-        if (uiFsmState == DONE_OK)
-        {
-            std::cout << "CAsynchronousTask::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 2"  << std::endl;
-//            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-            SetFsmState(GetFsmNextStateDoneOk());
-        }
-        else if (uiFsmState == DONE_ERROR)
-        {
-            std::cout << "CAsynchronousTask::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 3"  << std::endl;
-//            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
-            SetFsmState(GetFsmNextStateDoneWaitingDoneError());
-        }
-        else
-        {
-            // ¬рем€ ожидани€ выполнени€ запроса закончилось?
-            if (GetTimerPointer() -> IsOverflow())
-            {
-                std::cout << "CAsynchronousTask::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 4"  << std::endl;
-//                ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
-                SetFsmState(GetFsmNextStateDoneWaitingError());
-            }
-        }
+//        CDataContainerDataBase* pxDataContainer =
+//            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+//
+//        uint8_t uiFsmState = pxDataContainer -> m_uiFsmCommandState;
+//
+//        if (uiFsmState == DONE_OK)
+//        {
+//            std::cout << "CAsynchronousTask::Fsm ASYNCHRONOUS_TASK_EXECUTOR_DONE_CHECK_WAITING 2"  << std::endl;
+////            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+//            SetFsmState(GetFsmNextStateDoneOk());
+//        }
+//        else if (uiFsmState == DONE_ERROR)
+//        {
+//            std::cout << "CAsynchronousTask::Fsm ASYNCHRONOUS_TASK_EXECUTOR_DONE_CHECK_WAITING 3"  << std::endl;
+////            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+//            SetFsmState(GetFsmNextStateDoneWaitingDoneError());
+//        }
+//        else
+//        {
+//            // ¬рем€ ожидани€ выполнени€ запроса закончилось?
+//            if (GetTimerPointer() -> IsOverflow())
+//            {
+//                std::cout << "CAsynchronousTask::Fsm ASYNCHRONOUS_TASK_EXECUTOR_DONE_CHECK_WAITING 4"  << std::endl;
+////                ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+//                SetFsmState(GetFsmNextStateDoneWaitingError());
+//            }
+//        }
     }
     break;
 

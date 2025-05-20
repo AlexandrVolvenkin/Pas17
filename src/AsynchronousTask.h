@@ -32,26 +32,23 @@ class CConfigurationCreate;
 class CDeviceControl;
 class CDataBaseCreate;
 class CConfigurationCheck;
+class CNewTask;
 
 
 //-------------------------------------------------------------------------------
-class CAsynchronousTask : public CTask
+class CAsynchronousTask : public CNewTask
 {
 public:
     enum
     {
-        ASYNCHRONOUS_TASK_START = NEXT_STEP,
-        ASYNCHRONOUS_TASK_CONFIGURATION_DATA_BASE_BLOCKS_READ_START,
-        ASYNCHRONOUS_TASK_CONFIGURATION_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING,
-        ASYNCHRONOUS_TASK_CONFIGURATION_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING,
-        ASYNCHRONOUS_TASK_CONFIGURATION_COMPARE_START,
+        ASYNCHRONOUS_TASK_EXECUTOR_READY_CHECK_START = NEXT_STEP,
+        ASYNCHRONOUS_TASK_EXECUTOR_READY_CHECK_WAITING,
+        ASYNCHRONOUS_TASK_EXECUTOR_DONE_CHECK_START,
+        ASYNCHRONOUS_TASK_EXECUTOR_DONE_CHECK_WAITING,
     };
 
     CAsynchronousTask();
     virtual ~CAsynchronousTask();
-
-    void SetInternalModuleName(std::string sName);
-    void SetDeviceControlName(std::string sName);
 
     uint8_t Init(void);
     uint8_t Fsm(void);
@@ -59,12 +56,6 @@ public:
 private:
 
 private:
-    std::string m_sInternalModuleName;
-    uint8_t m_uiInternalModuleId;
-
-    std::string m_sDeviceControlName;
-    uint8_t m_uiDeviceControlId;
-
     uint8_t* m_puiIntermediateBuff;
 
 };
