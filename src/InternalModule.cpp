@@ -450,6 +450,9 @@ void CInternalModule::ServiceDataCreate(void)
             break;
         };
     }
+
+    pxDeviceConfigSearch ->
+    uiDisplayType = DISPLAY_MODULE_TYPE;
 }
 
 //-------------------------------------------------------------------------------
@@ -473,7 +476,8 @@ void CInternalModule::CreateDevices(void)
         {
         case MODULE_TYPE_MUVR:
         {
-            std::string sDeviceName = "InternalModuleMuvr" + std::to_string(i);
+            std::string sDeviceName = "InternalModuleMuvr0";
+//            std::string sDeviceName = "InternalModuleMuvr" + std::to_string(i);
             std::cout << "CInternalModule::CreateDevices sDeviceName " << sDeviceName << std::endl;
             CInternalModuleMuvr* pxInternalModuleMuvr = 0;
             //            pxInternalModuleMuvr =

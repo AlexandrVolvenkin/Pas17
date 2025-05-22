@@ -295,23 +295,19 @@ uint8_t CConfigurationCreate::Fsm(void)
     case CONFIGURATION_CREATE_INTERNAL_MODULES_SERVICE_DATA_CREATE_EXECUTOR_ANSWER_PROCESSING:
         std::cout << "CConfigurationCreate::Fsm CONFIGURATION_CREATE_INTERNAL_MODULES_SERVICE_DATA_CREATE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
         {
-            CDataContainerDataBase* pxExecutorDataContainer =
-                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
             CDataContainerDataBase* pxCustomerDataContainer =
                 (CDataContainerDataBase*)GetCustomerDataContainerPointer();
 
             uint16_t  uiLength = sizeof(struct TConfigDataPackOne);
-            memcpy(pxExecutorDataContainer -> m_puiDataPointer,
+            memcpy(pxCustomerDataContainer -> m_puiDataPointer,
                    (uint8_t*)(GetResources() -> GetDeviceConfigSearchPointer()),
                    uiLength);
-
-            pxExecutorDataContainer -> m_uiDataLength = uiLength;
-
-            memcpy(pxCustomerDataContainer -> m_puiDataPointer,
-                   (pxExecutorDataContainer -> m_puiDataPointer),
-                   pxExecutorDataContainer -> m_uiDataLength);
             pxCustomerDataContainer -> m_uiDataLength =
-                pxExecutorDataContainer -> m_uiDataLength;
+                uiLength;
+
+            CConfigurationCreate::TConfigDataPackOne* pxDeviceConfigSearch =
+                (CConfigurationCreate::TConfigDataPackOne*)
+                (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer);
 
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(DONE_OK);
@@ -335,23 +331,13 @@ uint8_t CConfigurationCreate::Fsm(void)
     case CONFIGURATION_REQUEST_EXECUTOR_ANSWER_PROCESSING:
         std::cout << "CConfigurationCreate::Fsm CONFIGURATION_REQUEST_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
         {
-            CDataContainerDataBase* pxExecutorDataContainer =
-                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
             CDataContainerDataBase* pxCustomerDataContainer =
                 (CDataContainerDataBase*)GetCustomerDataContainerPointer();
 
-            uint16_t  uiLength = sizeof(struct TConfigDataProgrammerPackOne);
-
-            ConfigurationToProgrammerFormat((TConfigDataProgrammerPackOne*)(pxExecutorDataContainer -> m_puiDataPointer),
+            ConfigurationToProgrammerFormat((TConfigDataProgrammerPackOne*)(pxCustomerDataContainer -> m_puiDataPointer),
                                             (GetResources() -> GetDeviceConfigSearchPointer()));
-
-            pxExecutorDataContainer -> m_uiDataLength = uiLength;
-
-            memcpy(pxCustomerDataContainer -> m_puiDataPointer,
-                   (pxExecutorDataContainer -> m_puiDataPointer),
-                   pxExecutorDataContainer -> m_uiDataLength);
             pxCustomerDataContainer -> m_uiDataLength =
-                pxExecutorDataContainer -> m_uiDataLength;
+                sizeof(struct TConfigDataProgrammerPackOne);
 
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(DONE_OK);
