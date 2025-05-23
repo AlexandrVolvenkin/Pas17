@@ -37,6 +37,7 @@
 #include "ConfigurationCheck.h"
 #include "SettingsLoad.h"
 #include "DiscreteSignals.h"
+#include "AnalogueSignalsArchiveCreate.h"
 
 #include "MainProductionCycle.h"
 
@@ -475,7 +476,7 @@ uint8_t CMainProductionCycle::CreateTasks(void)
     CDiscreteSignals* pxDiscreteSignals = 0;
     pxDiscreteSignals =
         static_cast<CDiscreteSignals*>(m_xResources.AddCommonTaskToMap("DiscreteSignals",
-                                      std::make_shared<CDiscreteSignals>()));
+                                       std::make_shared<CDiscreteSignals>()));
     pxDiscreteSignals ->
     SetResources(&m_xResources);
     pxDiscreteSignals ->
@@ -500,7 +501,15 @@ uint8_t CMainProductionCycle::CreateTasks(void)
 //    SetNextTaskDoneErrorName("ConfigurationCreate");
 ////    m_xResources.AddCurrentlyRunningTasksList(pxLedBlinker);
 
-
+//-------------------------------------------------------------------------------
+    CAnalogueSignalsArchiveCreate* pxAnalogueSignalsArchiveCreate = 0;
+    pxAnalogueSignalsArchiveCreate =
+        static_cast<CAnalogueSignalsArchiveCreate*>(m_xResources.AddCommonTaskToMap("AnalogueSignalsArchiveCreate",
+                std::make_shared<CAnalogueSignalsArchiveCreate>()));
+    pxAnalogueSignalsArchiveCreate ->
+    SetResources(&m_xResources);
+    m_xResources.AddCurrentlyRunningTasksList(pxAnalogueSignalsArchiveCreate);
+//    m_pxAnalogueSignalsArchiveCreate = pxAnalogueSignalsArchiveCreate;
 
 }
 
@@ -681,6 +690,10 @@ uint8_t CMainProductionCycle::Fsm(void)
             m_uiDiscreteSignalsId =
                 GetResources() ->
                 GetTaskIdByNameFromMap("DiscreteSignals");
+
+            m_uiAnalogueSignalsArchiveCreateId =
+                GetResources() ->
+                GetTaskIdByNameFromMap("AnalogueSignalsArchiveCreate");
 
             SetFsmState(READY);
         }
@@ -1104,8 +1117,58 @@ uint8_t CMainProductionCycle::Fsm(void)
         {
 //            std::cout << "CMainProductionCycle::Fsm INTERNAL_MODULES_DATA_EXCHANGE_MAIN_CYCLE_START_WAITING 2"  << std::endl;
             m_xMainCycle100McTimer.Set(100);
-            SetFsmState(INTERNAL_MODULES_DATA_EXCHANGE_START);
+            // время периода записи аналоговых сигналов в архив(1 секунда) не прошло?
+            if (m_uiCreateArchiveEntryCounter < 10)
+            {
+                m_uiCreateArchiveEntryCounter++;
+                SetFsmState(INTERNAL_MODULES_DATA_EXCHANGE_START);
+            }
+            else
+            {
+                m_uiCreateArchiveEntryCounter = 0;
+                SetFsmState(ANALOGUE_SIGNALS_ARCHIVE_CREATE_START);
+            }
         }
+    }
+    break;
+
+//-------------------------------------------------------------------------------
+    case ANALOGUE_SIGNALS_ARCHIVE_CREATE_START:
+//        std::cout << "CMainProductionCycle::Fsm ANALOGUE_SIGNALS_ARCHIVE_CREATE_START"  << std::endl;
+    {
+        CurrentlyRunningTasksExecution();
+
+        CDataContainerDataBase* pxDataContainer =
+            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+        pxDataContainer -> m_uiTaskId = m_uiAnalogueSignalsArchiveCreateId;
+        pxDataContainer -> m_uiFsmCommandState =
+            CAnalogueSignalsArchiveCreate::ANALOGUE_SIGNALS_ARCHIVE_CREATE_START;
+
+        SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+        SetFsmNextStateDoneOk(ANALOGUE_SIGNALS_ARCHIVE_CREATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+        SetFsmNextStateReadyWaitingError(ANALOGUE_SIGNALS_ARCHIVE_CREATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+        SetFsmNextStateDoneWaitingError(ANALOGUE_SIGNALS_ARCHIVE_CREATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+        SetFsmNextStateDoneWaitingDoneError(ANALOGUE_SIGNALS_ARCHIVE_CREATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+    }
+    break;
+
+    case ANALOGUE_SIGNALS_ARCHIVE_CREATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+//        std::cout << "CMainProductionCycle::Fsm ANALOGUE_SIGNALS_ARCHIVE_CREATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+    {
+        CurrentlyRunningTasksExecution();
+
+        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+        SetFsmState(INTERNAL_MODULES_DATA_EXCHANGE_START);
+    }
+    break;
+
+    case ANALOGUE_SIGNALS_ARCHIVE_CREATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+//        std::cout << "CMainProductionCycle::Fsm ANALOGUE_SIGNALS_ARCHIVE_CREATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+    {
+        CurrentlyRunningTasksExecution();
+
+        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+        SetFsmState(INTERNAL_MODULES_DATA_EXCHANGE_START);
     }
     break;
 

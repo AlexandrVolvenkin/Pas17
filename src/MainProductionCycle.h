@@ -43,6 +43,7 @@ class CSystemComponentsCreate;
 class CConfigurationCheck;
 class CSettingsLoad;
 class CDiscreteSignals;
+class CAnalogueSignalsArchiveCreate;
 
 //-------------------------------------------------------------------------------
 class CMainProductionCycle : public CTask
@@ -80,6 +81,10 @@ public:
         INTERNAL_MODULES_DATA_EXCHANGE_START,
         INTERNAL_MODULES_DATA_EXCHANGE_EXECUTOR_ANSWER_PROCESSING,
         INTERNAL_MODULES_DATA_EXCHANGE_MAIN_CYCLE_START_WAITING,
+
+        ANALOGUE_SIGNALS_ARCHIVE_CREATE_START,
+        ANALOGUE_SIGNALS_ARCHIVE_CREATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING,
+        ANALOGUE_SIGNALS_ARCHIVE_CREATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING,
 
         CONFIGURATION_CHECK_START,
         CONFIGURATION_CHECK_CONFIGURATION_DATA_BASE_BLOCKS_READ_START,
@@ -187,6 +192,10 @@ private:
 
     std::string m_sDiscreteSignalsName;
     uint8_t m_uiDiscreteSignalsId;
+
+    std::string m_sAnalogueSignalsArchiveCreateName;
+    uint8_t m_uiAnalogueSignalsArchiveCreateId;
+    uint8_t m_uiCreateArchiveEntryCounter = 0;
 
     CSpiCommunicationDevice* m_pxSpiCommunicationDevice;
     CInternalModuleInterface* m_pxInternalModule;

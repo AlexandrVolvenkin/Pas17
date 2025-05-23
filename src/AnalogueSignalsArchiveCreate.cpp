@@ -8,6 +8,8 @@
 #include <iostream>
 #include <string.h>
 #include <typeinfo>
+#include <fstream>
+#include <ctime>
 
 #include "Task.h"
 #include "Resources.h"
@@ -189,6 +191,68 @@ void CAnalogueSignalsArchiveCreate::Allocate(void)
 }
 
 //-------------------------------------------------------------------------------
+void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
+{
+//    std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 1"  << std::endl;
+
+    bool bIsFileExist = false;
+
+    // Получаем текущую дату
+    time_t now = time(0);
+    struct tm tstruct = *gmtime(&now);
+
+    // Форматируем дату и время
+    char dateStr[80];
+    strftime(dateStr, sizeof(dateStr), "%d-%m-%Y", &tstruct);
+
+    char timeStr[80];
+    strftime(timeStr, sizeof(timeStr), "%H:%M:%S", &tstruct);
+
+    // Создаем имя файла с датой
+    std::string filename = "AnalogueMeasure_" + std::string(dateStr) + ".csv";
+
+    // Проверяем, существует ли файл
+    if (std::ifstream(filename))
+    {
+//        std::cout << "Файл уже существует: " << filename << std::endl;
+        bIsFileExist = true;
+    }
+
+    // Открываем файл для добавления данных
+    std::ofstream file(filename, std::ios::app);
+
+    if (!file.is_open())
+    {
+        std::cerr << "Не удалось открыть файл!" << std::endl;
+        return;
+    }
+
+//    std::cout << "CreateArchiveEntry filename "  << dateStr << std::endl;
+
+    if (!bIsFileExist)
+    {
+        // Записываем заголовок
+        file << "Дата;Время;AIn1;AIn2;AIn3;AIn4" << std::endl;
+    }
+
+    // Записываем данные в файл
+    file <<
+         dateStr << ";" <<
+         timeStr << ";" <<
+         (float)(m_pfAnalogueInputsValue[0]) << ";" <<
+         (float)(m_pfAnalogueInputsValue[1]) << ";" <<
+         (float)(m_pfAnalogueInputsValue[2]) << ";" <<
+         (float)(m_pfAnalogueInputsValue[3]) <<
+         std::endl;
+
+    // Закрываем файл
+    file.close();
+
+//    std::cout << "Данные успешно записаны в data.csv" << std::endl;
+
+}
+
+//-------------------------------------------------------------------------------
 uint8_t CAnalogueSignalsArchiveCreate::Fsm(void)
 {
 //    std::cout << "CAnalogueSignalsArchiveCreate::Fsm 1" << endl;
@@ -340,35 +404,15 @@ uint8_t CAnalogueSignalsArchiveCreate::Fsm(void)
 
 //-------------------------------------------------------------------------------
     case ANALOGUE_SIGNALS_ARCHIVE_CREATE_START:
-        std::cout << "CAnalogueSignalsArchiveCreate::Fsm ANALOGUE_SIGNALS_ARCHIVE_CREATE_START"  << std::endl;
+//        std::cout << "CAnalogueSignalsArchiveCreate::Fsm ANALOGUE_SIGNALS_ARCHIVE_CREATE_START"  << std::endl;
         {
-            *(GetResources() -> GetDeviceConfigSearchPointer()) = {0};
-            SetFsmState(ANALOGUE_SIGNALS_ARCHIVE_CREATE_INTERNAL_MODULES_SEARCH_MODULES_START);
-        }
-        break;
-
-//-------------------------------------------------------------------------------
-    case ANALOGUE_SIGNALS_ARCHIVE_CREATE_INTERNAL_MODULES_SEARCH_MODULES_START:
-        std::cout << "CAnalogueSignalsArchiveCreate::Fsm ANALOGUE_SIGNALS_ARCHIVE_CREATE_INTERNAL_MODULES_SEARCH_MODULES_START"  << std::endl;
-        {
-            CDataContainerDataBase* pxDataContainer =
-                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-            pxDataContainer -> m_uiTaskId = m_uiInternalModuleId;
-            pxDataContainer -> m_uiFsmCommandState =
-                CInternalModule::SEARCH_MODULES_START;
-            pxDataContainer -> m_puiDataPointer =
-                (uint8_t*)(GetResources() -> GetDeviceConfigSearchPointer());
-
-            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
-            SetFsmNextStateDoneOk(ANALOGUE_SIGNALS_ARCHIVE_CREATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
-            SetFsmNextStateReadyWaitingError(ANALOGUE_SIGNALS_ARCHIVE_CREATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
-            SetFsmNextStateDoneWaitingError(ANALOGUE_SIGNALS_ARCHIVE_CREATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
-            SetFsmNextStateDoneWaitingDoneError(ANALOGUE_SIGNALS_ARCHIVE_CREATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            CreateArchiveEntry();
+            SetFsmState(ANALOGUE_SIGNALS_ARCHIVE_CREATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
         }
         break;
 
     case ANALOGUE_SIGNALS_ARCHIVE_CREATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
-        std::cout << "CAnalogueSignalsArchiveCreate::Fsm ANALOGUE_SIGNALS_ARCHIVE_CREATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+//        std::cout << "CAnalogueSignalsArchiveCreate::Fsm ANALOGUE_SIGNALS_ARCHIVE_CREATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
         {
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(DONE_OK);
@@ -376,7 +420,7 @@ uint8_t CAnalogueSignalsArchiveCreate::Fsm(void)
         break;
 
     case ANALOGUE_SIGNALS_ARCHIVE_CREATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
-        std::cout << "CAnalogueSignalsArchiveCreate::Fsm ANALOGUE_SIGNALS_ARCHIVE_CREATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+//        std::cout << "CAnalogueSignalsArchiveCreate::Fsm ANALOGUE_SIGNALS_ARCHIVE_CREATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
         {
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
             SetFsmState(DONE_ERROR);
