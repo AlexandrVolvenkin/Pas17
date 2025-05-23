@@ -64,6 +64,8 @@
 		<Unit filename="../структ и протоколы/структ и прот ПАС-17.txt" />
 		<Unit filename="src/AnalogueSignals.cpp" />
 		<Unit filename="src/AnalogueSignals.h" />
+		<Unit filename="src/AnalogueSignalsArchiveCreate.cpp" />
+		<Unit filename="src/AnalogueSignalsArchiveCreate.h" />
 		<Unit filename="src/AsynchronousTask.cpp" />
 		<Unit filename="src/AsynchronousTask.h" />
 		<Unit filename="src/CommunicationDevice/CommunicationDevice.cpp" />
