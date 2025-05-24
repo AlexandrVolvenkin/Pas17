@@ -195,11 +195,136 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
 {
 //    std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 1"  << std::endl;
 
+    struct Data
+    {
+        time_t currentTime; // Переменная для хранения текущего времени
+        float fAin1;       // Переменная первого входа
+        float fAin2;       // Переменная второго входа
+        float fAin3;       // Переменная третьего входа
+        float fAin4;       // Переменная четвертого входа
+    };
+
+    Data data;
+
+    // Получаем текущее время
+    time_t now = time(nullptr);
+
+    // Заполняем переменные структуры данными
+    data.currentTime = now;
+    data.fAin1 = 10.5f; // Пример значения для fAin1
+    data.fAin2 = 20.7f; // Пример значения для fAin2
+    data.fAin3 = 30.9f; // Пример значения для fAin3
+    data.fAin4 = 40.1f; // Пример значения для fAin4
+
+//    const std::string inputFile = "input.bin";
+//
+//    std::ifstream input(inputFile, std::ios::binary);
+//    if (!input.is_open())
+//    {
+//        std::cerr << "Ошибка открытия файла " << inputFile << ": " << strerror(errno) << std::endl;
+//        return;
+//    }
+//
+//    // Определение размера файла
+//    size_t fileSize = input.tellg();
+//    input.seekg(0, std::ios_base::beg);
+//
+//    // Проверка размера файла
+//    if (fileSize == 0)
+//    {
+//        std::cerr << "Файл пустой." << std::endl;
+//        input.close();
+//        return;
+//    }
+
+
+
+
+
+    // Записываем данные в файл /dev/mtd0
+    {
+////    std::ofstream output(mtdDev, std::ios::binary | std::ios_base::app);
+        std::ofstream mtdDev("/dev/mtd0", std::ios::binary | std::ios::trunc);
+        if (!mtdDev.is_open())
+        {
+            std::cerr << "Failed to open /dev/mtd0" << std::endl;
+            return;
+        }
+        mtdDev.write(reinterpret_cast<const char*>(&data), sizeof(Data));
+        mtdDev.close(); // Закрываем файл после записи
+    }
+
+    // Чтение данных из /dev/mtd0 и сохранение их в input.bin
+    Data readData;
+    {
+        std::ifstream mtdDev("/dev/mtd0", std::ios::binary);
+        if (!mtdDev.is_open())
+        {
+            std::cerr << "Failed to open /dev/mtd0" << std::endl;
+            return;
+        }
+        mtdDev.read(reinterpret_cast<char*>(&readData), sizeof(Data));
+        mtdDev.close(); // Закрываем файл после записи
+    }
+
+    std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry /dev/mtd0"  << std::endl;
+    // Выводим данные из /dev/mtd0 на экран
+    std::cout << "Read Time: " << asctime(localtime(&readData.currentTime)) << std::endl;
+    std::cout << "fAin1: " << readData.fAin1 << std::endl;
+    std::cout << "fAin2: " << readData.fAin2 << std::endl;
+    std::cout << "fAin3: " << readData.fAin3 << std::endl;
+    std::cout << "fAin4: " << readData.fAin4 << std::endl;
+
+
+    // Записываем данные в файл input.bin
+    {
+        std::ofstream inputFile("input.bin", std::ios::binary | std::ios::trunc);
+        if (!inputFile.is_open())
+        {
+            std::cerr << "Failed to open input.bin" << std::endl;
+            return;
+        }
+        inputFile.write(reinterpret_cast<const char*>(&readData), sizeof(Data));
+        inputFile.close(); // Закрываем файл после записи
+    }
+
+    // Чтение данных из input.bin
+//    Data readData;
+    {
+        std::ifstream inputFile("input.bin", std::ios::binary);
+        if (!inputFile.is_open())
+        {
+            std::cerr << "Failed to open input.bin" << std::endl;
+            return;
+        }
+        inputFile.read(reinterpret_cast<char*>(&readData), sizeof(Data));
+        inputFile.close(); // Закрываем файл после записи
+    }
+
+
+    std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry input.bin"  << std::endl;
+    // Выводим данные из input.bin на экран
+    std::cout << "Read Time: " << asctime(localtime(&readData.currentTime)) << std::endl;
+    std::cout << "fAin1: " << readData.fAin1 << std::endl;
+    std::cout << "fAin2: " << readData.fAin2 << std::endl;
+    std::cout << "fAin3: " << readData.fAin3 << std::endl;
+    std::cout << "fAin4: " << readData.fAin4 << std::endl;
+
+
+
+
+
+
+
+
+
+
     bool bIsFileExist = false;
 
-    // Получаем текущую дату
-    time_t now = time(0);
-    struct tm tstruct = *gmtime(&now);
+//    // Получаем текущую дату
+//    time_t now = time(0);
+//    struct tm tstruct = *gmtime(&now);
+    struct tm tstruct = *gmtime(&readData.currentTime);
 
     // Форматируем дату и время
     char dateStr[80];
@@ -232,17 +357,29 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
     if (!bIsFileExist)
     {
         // Записываем заголовок
+//        file << "Дата;Время;AIn1;AIn2;AIn3;AIn4" << std::endl;
+//        file << "   Дата   " << ";" << "   Время   " << ";" << "   AIn1   " << ";" << "   AIn2   " << ";" << "   AIn3   " << ";" << "   AIn4   " << std::endl;
         file << "Дата;Время;AIn1;AIn2;AIn3;AIn4" << std::endl;
     }
+
+//    // Записываем данные в файл
+//    file <<
+//         dateStr << ";" <<
+//         timeStr << ";" <<
+//         (float)(m_pfAnalogueInputsValue[0]) << ";" <<
+//         (float)(m_pfAnalogueInputsValue[1]) << ";" <<
+//         (float)(m_pfAnalogueInputsValue[2]) << ";" <<
+//         (float)(m_pfAnalogueInputsValue[3]) <<
+//         std::endl;
 
     // Записываем данные в файл
     file <<
          dateStr << ";" <<
          timeStr << ";" <<
-         (float)(m_pfAnalogueInputsValue[0]) << ";" <<
-         (float)(m_pfAnalogueInputsValue[1]) << ";" <<
-         (float)(m_pfAnalogueInputsValue[2]) << ";" <<
-         (float)(m_pfAnalogueInputsValue[3]) <<
+         readData.fAin1 << ";" <<
+         readData.fAin2 << ";" <<
+         readData.fAin3 << ";" <<
+         readData.fAin4 <<
          std::endl;
 
     // Закрываем файл
@@ -405,27 +542,27 @@ uint8_t CAnalogueSignalsArchiveCreate::Fsm(void)
 //-------------------------------------------------------------------------------
     case ANALOGUE_SIGNALS_ARCHIVE_CREATE_START:
 //        std::cout << "CAnalogueSignalsArchiveCreate::Fsm ANALOGUE_SIGNALS_ARCHIVE_CREATE_START"  << std::endl;
-        {
-            CreateArchiveEntry();
-            SetFsmState(ANALOGUE_SIGNALS_ARCHIVE_CREATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
-        }
-        break;
+    {
+        CreateArchiveEntry();
+        SetFsmState(ANALOGUE_SIGNALS_ARCHIVE_CREATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+    }
+    break;
 
     case ANALOGUE_SIGNALS_ARCHIVE_CREATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
 //        std::cout << "CAnalogueSignalsArchiveCreate::Fsm ANALOGUE_SIGNALS_ARCHIVE_CREATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
-        {
-            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-            SetFsmState(DONE_OK);
-        }
-        break;
+    {
+        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+        SetFsmState(DONE_OK);
+    }
+    break;
 
     case ANALOGUE_SIGNALS_ARCHIVE_CREATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
 //        std::cout << "CAnalogueSignalsArchiveCreate::Fsm ANALOGUE_SIGNALS_ARCHIVE_CREATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
-        {
-            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
-            SetFsmState(DONE_ERROR);
-        }
-        break;
+    {
+        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+        SetFsmState(DONE_ERROR);
+    }
+    break;
 
 //-------------------------------------------------------------------------------
     default:

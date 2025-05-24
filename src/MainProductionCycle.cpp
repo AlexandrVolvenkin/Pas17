@@ -1125,7 +1125,7 @@ uint8_t CMainProductionCycle::Fsm(void)
             }
             else
             {
-                m_uiCreateArchiveEntryCounter = 0;
+                m_uiCreateArchiveEntryCounter = 1;
                 SetFsmState(ANALOGUE_SIGNALS_ARCHIVE_CREATE_START);
             }
         }

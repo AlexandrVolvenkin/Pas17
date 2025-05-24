@@ -195,7 +195,7 @@ private:
 
     std::string m_sAnalogueSignalsArchiveCreateName;
     uint8_t m_uiAnalogueSignalsArchiveCreateId;
-    uint8_t m_uiCreateArchiveEntryCounter = 0;
+    uint8_t m_uiCreateArchiveEntryCounter = 1;
 
     CSpiCommunicationDevice* m_pxSpiCommunicationDevice;
     CInternalModuleInterface* m_pxInternalModule;
