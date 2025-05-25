@@ -61,7 +61,9 @@ private:
 //    uint8_t* m_puiAnalogueInputsBadState;
 
     uint8_t* m_puiIntermediateBuff;
-
+    uint32_t m_uiCurrentOffset = 0;
+    int m_iLastHour = 100;
+    int m_iLastDay = 100;
 };
 
 #endif // ANALOGUESIGNALSARCHIVECREATE_H
