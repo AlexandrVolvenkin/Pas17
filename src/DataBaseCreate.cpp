@@ -172,15 +172,6 @@ void CDataBaseCreate::AnalogoueInputModuleDiscreteSignalsTextTitlesCreate(uint8_
 
     TDiscreteSygnalTextTitle axDiscreteSygnalTextTitles[] =
     {
-        {"Диск.вход.DIn1"},
-        {"Диск.вход.DIn2"},
-        {"Диск.вход.DIn3"},
-        {"Диск.вход.DIn4"},
-        {"Диск.вход.DIn5"},
-        {"Диск.вход.DIn6"},
-
-
-
         {"Изм.зн.AIn1<LL"},
         {"Изм.зн.AIn1<L "},
         {"Изм.зн.AIn1>H "},
@@ -238,7 +229,6 @@ void CDataBaseCreate::AnalogoueInputModuleAnalogoueSignalsTextTitlesCreate(uint8
 
     TDiscreteSygnalTextTitle axDiscreteSygnalTextTitles[] =
     {
-        {"______________"},
         {"______________"},
         {"______________"},
         {"______________"},

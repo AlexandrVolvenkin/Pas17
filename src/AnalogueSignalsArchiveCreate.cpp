@@ -236,41 +236,26 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
         // Открываем файл для чтения
         {
             std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 3"  << std::endl;
-            std::ifstream input(mtdDev, std::ios::binary);
-            if (!input.is_open())
-            {
-                std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 4"  << std::endl;
-                std::cerr << "Не удалось открыть файл: " << mtdDev << std::endl;
-            }
-
 //            // Получаем общую длину файла
-//            input.seekg(0, std::ios::end);
-            size_t fileSize = input.tellg();
-//            input.seekg(m_uiCurrentOffset, std::ios::beg); // Возвращаемся к началу файла
-            fileSize = m_uiCurrentOffset;
+            size_t fileSize = m_uiCurrentOffset;
 
             std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 4 fileSize "  << (float)fileSize << std::endl;
             // файл пустой?
-            if (m_uiCurrentOffset == 0)
-//            if (fileSize == 0)
+            if (fileSize == 0)
             {
                 std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 5"  << std::endl;
                 std::cerr << "Файл пустой." << std::endl;
-//                input.close();
 
-                // Записываем данные в файл /dev/mtd0 перед этим его очищаем.
+                // Записываем данные в файл /dev/mtd0.
                 {
                     std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 6"  << std::endl;
-            std::ofstream output(mtdDev, std::ios::binary | std::ios::out);
-//            std::ofstream output(mtdDev, std::ios::binary | std::ios::out | std::ios::trunc);
-//                    std::ofstream output(mtdDev, std::ios::binary | std::ios_base::app | std::ios::trunc);
+                    std::ofstream output(mtdDev, std::ios::binary | std::ios::out);
                     if (!output.is_open())
                     {
                         std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 7"  << std::endl;
                         std::cerr << "Failed to open /dev/mtd0" << std::endl;
-//                        return;
                     }
-            output.seekp(m_uiCurrentOffset, std::ios::beg);
+                    output.seekp(m_uiCurrentOffset, std::ios::beg);
                     output.write(reinterpret_cast<const char*>(&data), sizeof(Data));
                     output.close(); // Закрываем файл после записи
                     m_uiCurrentOffset += sizeof(Data);
@@ -279,8 +264,15 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
             }
 
             // Вычисляем количество структур Data в файле
-            size_t numDataObjects = fileSize / sizeof(Data);
+            size_t numDataObjects = (fileSize / sizeof(Data));
             std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 7 numDataObjects "  << (float)numDataObjects << std::endl;
+
+            std::ifstream input(mtdDev, std::ios::binary);
+            if (!input.is_open())
+            {
+                std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 4"  << std::endl;
+                std::cerr << "Не удалось открыть файл: " << mtdDev << std::endl;
+            }
 
             // Открываем выходной файл для добавления данных
             std::ofstream output(inputFile, std::ios::app);
@@ -289,14 +281,13 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
             {
                 std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 8"  << std::endl;
                 std::cerr << "Не удалось открыть файл: " << inputFile << std::endl;
-//                return;
             }
 
             // Считываем и преобразуем данные
             for (size_t i = 0; i < numDataObjects; ++i)
             {
 
-            input.seekg((i * sizeof(Data)), std::ios::beg);
+                input.seekg((i * sizeof(Data)), std::ios::beg);
                 input.read(reinterpret_cast<char*>(&readData), sizeof(Data));
 
                 if (!input.gcount())
@@ -305,10 +296,6 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
                     std::cerr << "Ошибка при чтении файла: не все байты прочитаны!" << std::endl;
                     break;
                 }
-
-//                // Преобразуем даты
-//                std::string dateStr = convertTimeToString(readData.currentTime);
-//                std::string timeStr = convertTimeToString(readData.currentTime);
 
                 // Получаем текущую дату
                 struct tm tstructRead = *gmtime(&readData.currentTime);
@@ -321,8 +308,6 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
                 strftime(timeStr, sizeof(timeStr), "%H:%M:%S", &tstructRead);
 
 //    std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 15"  << std::endl;
-
-//                readData.fAin4 = 7;
 
                 // Записываем данные в файл
                 output <<
@@ -340,12 +325,13 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
             output.close();
         }
 
-        // Записываем данные в файл /dev/mtd0 перед этим его очищаем.
+        // каждый новый час начинаем запись в fram сначала.
+        m_uiCurrentOffset = 0;
+        // Записываем данные в файл /dev/mtd0.
         {
             std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 10"  << std::endl;
-            // Открытие файла в режиме бинарного записи и очистки
-            std::ofstream output(mtdDev, std::ios::binary | std::ios::out | std::ios::trunc);
-//            std::ofstream output(mtdDev, std::ios::binary | std::ios_base::app | std::ios::trunc);
+            // Открытие файла в режиме бинарного записи
+            std::ofstream output(mtdDev, std::ios::binary | std::ios::out);
             if (!output.is_open())
             {
                 std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 11"  << std::endl;
@@ -372,7 +358,8 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
         // Записываем данные в файл /dev/mtd0
         {
 //            std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 13"  << std::endl;
-            std::ofstream output(mtdDev, std::ios::binary | std::ios_base::app);
+            // Открытие файла в режиме бинарного записи
+            std::ofstream output(mtdDev, std::ios::binary | std::ios::out);
             if (!output.is_open())
             {
                 std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 14"  << std::endl;
