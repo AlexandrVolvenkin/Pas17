@@ -195,9 +195,6 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
 {
 //    std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 1"  << std::endl;
 
-    const std::string dailyArchveFlashFile = "DailyArchve.dat";
-    const std::string hourArchiveFramFile = "/dev/mtd0";
-
     struct Data
     {
         time_t currentTime; // Переменная для хранения текущего времени
@@ -207,13 +204,22 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
         float fAin4;       // Переменная четвертого входа
     };
 
-    Data data;
-    Data readData;
-
     // Получаем текущее время
     time_t now = time(nullptr);
     // Получаем текущую дату
     struct tm tstructCurrent = *gmtime(&now);
+
+    if (tstructCurrent.tm_sec == m_iLastSecond)
+    {
+        return;
+    }
+    else
+    {
+        m_iLastSecond = tstructCurrent.tm_sec;
+    }
+
+    Data data;
+    Data readData;
 
     // Заполняем переменные структуры данными
     data.currentTime = now;
@@ -221,6 +227,9 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
     data.fAin2 = (float)(m_pfAnalogueInputsValue[1]); // Пример значения для fAin2
     data.fAin3 = (float)(m_pfAnalogueInputsValue[2]); // Пример значения для fAin3
     data.fAin4 = (float)(m_pfAnalogueInputsValue[3]); // Пример значения для fAin4
+
+    const std::string dailyArchveFlashFile = "DailyArchve.dat";
+    const std::string hourArchiveFramFile = "/dev/mtd0";
 
     std::ifstream hourArchiveFramInputStream(hourArchiveFramFile, std::ios::binary | std::ios::in | std::ios::out);
     if (!hourArchiveFramInputStream.is_open())
@@ -259,8 +268,6 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
     // Если текущие часы отличаются от предыдущих,
     // значит, было наступление нового часа
     if (tstructCurrent.tm_min != m_iLastHour)
-//    if ((tstructCurrent.tm_min != m_iLastHour) &&
-//            (tstructCurrent.tm_sec == 0))
 //    if (tstructCurrent.tm_hour != m_iLastHour)
     {
         std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 2"  << std::endl;
@@ -274,22 +281,10 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
         size_t fileSize = m_uiCurrentOffset;
 
         std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 4 fileSize "  << (float)fileSize << std::endl;
-//        // файл пустой?
-//        if (fileSize == 0)
-//        {
-//            std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 5"  << std::endl;
-//            std::cerr << "Файл пустой." << std::endl;
-//
-//            std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 6"  << std::endl;
-//            hourArchiveFramOutputStream.seekp(m_uiCurrentOffset, std::ios::beg);
-//            hourArchiveFramOutputStream.write(reinterpret_cast<const char*>(&data), sizeof(Data));
-//            m_uiCurrentOffset += sizeof(Data);
-//            return;
-//        }
 
         // Вычисляем количество структур Data в файле
         size_t numDataObjects = (fileSize / sizeof(Data));
-        std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 7 numDataObjects "  << (float)numDataObjects << std::endl;
+        std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 5 numDataObjects "  << (float)numDataObjects << std::endl;
 
         // Считываем и преобразуем данные
         for (size_t i = 0; i < numDataObjects; i++)
@@ -297,12 +292,11 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
             hourArchiveFramInputStream.seekg((i * sizeof(Data)), std::ios::beg);
             hourArchiveFramInputStream.read(reinterpret_cast<char*>(&readData), sizeof(Data));
 
-//            if (!hourArchiveFramInputStream.gcount())
-//            {
-//                std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 9"  << std::endl;
-//                std::cerr << "Ошибка при чтении файла: не все байты прочитаны!" << std::endl;
-//                break;
-//            }
+            if (!hourArchiveFramInputStream.gcount())
+            {
+                std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 6"  << std::endl;
+                break;
+            }
 
             // Получаем текущую дату
             struct tm tstructRead = *gmtime(&readData.currentTime);
@@ -328,17 +322,9 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
         // каждый новый час начинаем запись в fram сначала.
         m_uiCurrentOffset = 0;
 
-//        {
-//            char timeStr[80];
-//            strftime(timeStr, sizeof(timeStr), "%H:%M:%S", &tstructCurrent);
-//            std::cout << "Время 1 : " << timeStr << std::endl;
-//        }
-
         // Записываем данные в файл /dev/mtd0
         hourArchiveFramOutputStream.seekp(m_uiCurrentOffset, std::ios::beg);
         hourArchiveFramOutputStream.write(reinterpret_cast<const char*>(&data), sizeof(Data));
-//        usleep(10000);
-//        hourArchiveFramOutputStream.flush();
         m_uiCurrentOffset += sizeof(Data);
 
         // Если текущие дни отличаются от предыдущих,
@@ -347,26 +333,18 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
 //            (tstructCurrent.tm_sec == 0))
         if (tstructCurrent.tm_mday != m_iLastDay)
         {
-            std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 12"  << std::endl;
+            std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 7"  << std::endl;
             // Обновляем значения для следующей проверки
             m_iLastDay = tstructCurrent.tm_mday;
         }
     }
     else
     {
-//        std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 13"  << std::endl;
-
-//        {
-//            char timeStr[80];
-//            strftime(timeStr, sizeof(timeStr), "%H:%M:%S", &tstructCurrent);
-//            std::cout << "Время 2 : " << timeStr << std::endl;
-//        }
+//        std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 8"  << std::endl;
 
         // Записываем данные в файл /dev/mtd0
         hourArchiveFramOutputStream.seekp(m_uiCurrentOffset, std::ios::beg);
         hourArchiveFramOutputStream.write(reinterpret_cast<const char*>(&data), sizeof(Data));
-//        usleep(10000);
-//        hourArchiveFramOutputStream.flush();
         m_uiCurrentOffset += sizeof(Data);
     }
 

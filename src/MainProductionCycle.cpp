@@ -1118,7 +1118,7 @@ uint8_t CMainProductionCycle::Fsm(void)
 //            std::cout << "CMainProductionCycle::Fsm INTERNAL_MODULES_DATA_EXCHANGE_MAIN_CYCLE_START_WAITING 2"  << std::endl;
             m_xMainCycle100McTimer.Set(100);
             // время периода записи аналоговых сигналов в архив(1 секунда) не прошло?
-            if (m_uiCreateArchiveEntryCounter < 10)
+            if (m_uiCreateArchiveEntryCounter < 5)
             {
                 m_uiCreateArchiveEntryCounter++;
                 SetFsmState(INTERNAL_MODULES_DATA_EXCHANGE_START);
