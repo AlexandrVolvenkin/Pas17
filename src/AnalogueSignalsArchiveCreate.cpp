@@ -228,7 +228,23 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
     data.fAin3 = (float)(m_pfAnalogueInputsValue[2]); // Пример значения для fAin3
     data.fAin4 = (float)(m_pfAnalogueInputsValue[3]); // Пример значения для fAin4
 
-    const std::string dailyArchveFlashFile = "DailyArchve.dat";
+    // Форматируем дату
+    char dateStr[80];
+    strftime(dateStr, sizeof(dateStr), "%d-%m-%Y", &tstructCurrent);
+
+    // Создаем имя файла с датой
+    std::string dailyArchveFlashFile = "AnalogueMeasure_" + std::string(dateStr) + ".csv";
+
+    bool bIsFileExist = false;
+    // Проверяем, существует ли файл суточного архива.
+    // если не существует, значит в первый раз при его создании запишем заголовок полей.
+    if (std::ifstream(dailyArchveFlashFile))
+    {
+//        std::cout << "Файл уже существует: " << dailyArchveFlashFile << std::endl;
+        bIsFileExist = true;
+    }
+
+//    const std::string dailyArchveFlashFile = "DailyArchve.dat";
     const std::string hourArchiveFramFile = "/dev/mtd0";
 
     std::ifstream hourArchiveFramInputStream(hourArchiveFramFile, std::ios::binary | std::ios::in | std::ios::out);
@@ -263,6 +279,14 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
         hourArchiveFramOutputStream.close();
         dailyArchveFlashInputStream.close();
         return;
+    }
+
+    if (!bIsFileExist)
+    {
+        // Записываем заголовок
+//        output << "Дата;Время;AIn1;AIn2;AIn3;AIn4" << std::endl;
+//        output << "   Дата   " << ";" << "   Время   " << ";" << "   AIn1   " << ";" << "   AIn2   " << ";" << "   AIn3   " << ";" << "   AIn4   " << std::endl;
+        dailyArchveFlashOutputStream << "Дата;Время;AIn1;AIn2;AIn3;AIn4" << std::endl;
     }
 
     // Если текущие часы отличаются от предыдущих,
