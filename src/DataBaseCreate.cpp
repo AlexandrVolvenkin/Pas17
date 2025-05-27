@@ -356,7 +356,7 @@ uint8_t CDataBaseCreate::Fsm(void)
     case SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_START:
         std::cout << "CDataBaseCreate::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_START"  << std::endl;
         {
-            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
+            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME_LONG);
             SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING);
         }
         break;
@@ -388,7 +388,7 @@ uint8_t CDataBaseCreate::Fsm(void)
     case SUBTASK_EXECUTOR_READY_CHECK_START:
         std::cout << "CDataBaseCreate::Fsm SUBTASK_EXECUTOR_READY_CHECK_START"  << std::endl;
         {
-            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
+            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME_LONG);
             SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_WAITING);
         }
         break;
@@ -418,7 +418,7 @@ uint8_t CDataBaseCreate::Fsm(void)
     case SUBTASK_EXECUTOR_DONE_CHECK_START:
         std::cout << "CDataBaseCreate::Fsm SUBTASK_EXECUTOR_DONE_CHECK_START 1"  << std::endl;
         {
-            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
+            GetTimerPointer() -> Set(TASK_READY_WAITING_TIME_LONG);
             SetFsmState(SUBTASK_EXECUTOR_DONE_CHECK_WAITING);
         }
 
