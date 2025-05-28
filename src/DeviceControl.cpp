@@ -61,6 +61,89 @@ void CDeviceControl::SetInternalModuleMuvrName(std::string sName)
     m_sInternalModuleMuvrName = sName;
 }
 
+//-----------------------------------------------------------------------------------------------------
+// устанавливает системное время Linux.
+// Байт 1 - секунда 0 – 59;
+// Байт 2 - минута 0 –59;
+// Байт 3 - час 0 – 23;
+// Байт 4 - день 1 – 31;
+// Байт 5 - месяц 1 – 12.
+// Байт 6 - год 0 – 99.
+// Байт 7 – день недели 1 – 7.
+void CDeviceControl::LinuxCurrentTimeSet(unsigned char *pucSource)
+{
+    std::cout << "CDeviceControl LinuxCurrentTimeSet 1"  << std::endl;
+
+            {
+                std::cout << "CConfigurationCheck::Fsm auiTempArray"  << std::endl;
+                uint8_t *pucSourceTemp;
+                pucSourceTemp = (uint8_t*)pucSource;
+                for(int i=0; i<32; )
+                {
+                    for(int j=0; j<8; j++)
+                    {
+                        cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+                    }
+                    cout << endl;
+                    i += 8;
+                }
+            }
+
+    time_t rawtime;
+    struct tm *timeinfo;
+    struct timeval systime;
+
+    rawtime = time(NULL);
+    time ( &rawtime );
+    timeinfo = localtime ( &rawtime );
+
+    timeinfo -> tm_sec = pucSource[CURRENT_TIME_SECOND_OFFSET];
+    timeinfo -> tm_min = pucSource[CURRENT_TIME_MINUTE_OFFSET];
+    timeinfo -> tm_hour = pucSource[CURRENT_TIME_HOUR_OFFSET];
+    timeinfo -> tm_mday = pucSource[CURRENT_TIME_MONTH_DAY_OFFSET];
+    (timeinfo -> tm_mon) = pucSource[CURRENT_TIME_MONTH_OFFSET] - 1;
+    (timeinfo -> tm_year) = pucSource[CURRENT_TIME_YEAR_OFFSET] + 100;
+    timeinfo -> tm_wday = pucSource[CURRENT_TIME_WEEK_DAY_OFFSET];
+
+    systime =
+    {
+        mktime(timeinfo),
+        0
+    };
+    settimeofday(&systime, NULL);
+//    system("sudo hwclock --systohc");
+    system("sudo hwclock -w");
+}
+
+//-----------------------------------------------------------------------------------------------------
+// обрабатывает входящие сообщения от Modbus интерфейсов по 70 функции - УСТАНОВКА ТЕКУЩЕГО ВРЕМЕНИ ВО ВСЕ ПРИБОРЫ СЕТИ .
+// источник - ПАС-05_И3_10 2013.pdf.
+// 4.3.11 ФУНКЦИЯ 70: УСТАНОВКА ТЕКУЩЕГО ВРЕМЕНИ ВО ВСЕ ПРИБОРЫ СЕТИ
+// Запрос
+// Широковещательный запрос (адрес=0), адресован всем SL сети. Передается 7
+// байтов.
+// Байт 1 - секунда 0 – 59;
+// Байт 2 - минута 0 –59;
+// Байт 3 - час 0 – 23;
+// Байт 4 - день 1 – 31;
+// Байт 5 - месяц 1 – 12.
+// Байт 6 - год 0 – 99.
+// Байт 7 – день недели 1 – 7.
+// Ответ
+// На данный запрос SL не отвечает.
+void CDeviceControl::CurrentTimeSet(void)
+{
+    std::cout << "CDeviceControl CurrentTimeSet 1"  << std::endl;
+
+    CDataContainerDataBase* pxDataContainer =
+        (CDataContainerDataBase*)GetCustomerDataContainerPointer();
+
+    LinuxCurrentTimeSet(pxDataContainer -> m_puiDataPointer);
+
+    (pxDataContainer -> m_uiDataLength) =
+        CURRENT_TIME_BYTE_QUANTITY;
+}
+
 //-------------------------------------------------------------------------------
 // обрабатывает входящие сообщения от Modbus интерфейсов по 71 функции - чтение данных онлайн, модулей аналогового ввода.
 // передаёт измеренные значения аналоговых входов, реперные точки АЦП, значения ТХС.
@@ -1438,6 +1521,42 @@ uint8_t CDeviceControl::Fsm(void)
 
     case MODBUS_FUNCTION_5_HANDLER_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
         std::cout << "CDeviceControl::Fsm MODBUS_FUNCTION_5_HANDLER_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        {
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+            SetFsmState(DONE_ERROR);
+        }
+        break;
+
+//-------------------------------------------------------------------------------
+    case TIME_SET_START:
+        std::cout << "CDeviceControl::Fsm TIME_SET_START"  << std::endl;
+        {
+            CurrentTimeSet();
+            SetFsmState(TIME_SET_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+        }
+        break;
+
+    case TIME_SET_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+        std::cout << "CDeviceControl::Fsm TIME_SET_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        {
+//            CDataContainerDataBase* pxExecutorDataContainer =
+//                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+//            CDataContainerDataBase* pxCustomerDataContainer =
+//                (CDataContainerDataBase*)GetCustomerDataContainerPointer();
+//
+//            memcpy(pxCustomerDataContainer -> m_puiDataPointer,
+//                   (pxExecutorDataContainer -> m_puiDataPointer),
+//                   pxExecutorDataContainer -> m_uiDataLength);
+//            pxCustomerDataContainer -> m_uiDataLength =
+//                pxExecutorDataContainer -> m_uiDataLength;
+//TIME_SET_MESSAGE_LENGTH
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(DONE_OK);
+        }
+        break;
+
+    case TIME_SET_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+        std::cout << "CDeviceControl::Fsm TIME_SET_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
         {
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
             SetFsmState(DONE_ERROR);

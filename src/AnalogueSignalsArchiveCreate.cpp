@@ -186,6 +186,9 @@ void CAnalogueSignalsArchiveCreate::Allocate(void)
 //    GetResources() ->
 //    m_uiUsedDiscreteSignalsDescriptionWork +=
 //        ANALOGUE_INPUT_MODULE_REPER_POINTS_ADC_DATA_BASE_BLOCK_LENGTH;
+
+    m_puiHoldingRegisters = m_pxResources -> GetHoldingRegisters();
+    m_puiInputRegisters = m_pxResources -> GetInputRegisters();
 //
 //    m_uiBadAnswerCounter = 0;
 }
@@ -209,6 +212,58 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
     // Получаем текущую дату
     struct tm tstructCurrent = *gmtime(&now);
 
+
+    unsigned short *pusDestination;
+    // получим указатель на буфер с текущим временем в рабочем массиве прибора.
+    pusDestination =
+        (unsigned short*)&m_puiInputRegisters[CURRENT_TIME_OFFSET_INPUT_REGISTERS];
+
+//    // сегодня воскресение?
+//    if ((tstructCurrent.tm_wday) == LINUX_WEEK_DAY_SUNDAY)
+//    {
+//        xCurrentTime.tm_wday = WEEK_DAY_SUNDAY;
+//    }
+//    else
+//    {
+//        xCurrentTime.tm_wday = tstructCurrent.tm_wday;
+//    }
+
+    pusDestination[CURRENT_TIME_SECOND_OFFSET] = tstructCurrent.tm_sec;
+    pusDestination[CURRENT_TIME_MINUTE_OFFSET] = tstructCurrent.tm_min;
+    pusDestination[CURRENT_TIME_HOUR_OFFSET] = tstructCurrent.tm_hour;
+    pusDestination[CURRENT_TIME_MONTH_DAY_OFFSET] = tstructCurrent.tm_mday;
+    pusDestination[CURRENT_TIME_MONTH_OFFSET] = (tstructCurrent.tm_mon) + 1;
+    pusDestination[CURRENT_TIME_YEAR_OFFSET] = (tstructCurrent.tm_year) - 100;
+
+    // сегодня воскресение?
+    if ((tstructCurrent.tm_wday) == LINUX_WEEK_DAY_SUNDAY)
+    {
+        pusDestination[CURRENT_TIME_WEEK_DAY_OFFSET] = WEEK_DAY_SUNDAY;
+    }
+    else
+    {
+        pusDestination[CURRENT_TIME_WEEK_DAY_OFFSET] = tstructCurrent.tm_wday;
+    }
+
+    memcpy(&m_puiHoldingRegisters[CURRENT_TIME_OFFSET_HOLDING_REGISTERS],
+           pusDestination,
+           (CURRENT_TIME_BYTE_QUANTITY * sizeof(short)));
+
+////    // прошла минута?
+////    if (ui8CurrentTimeSaveDelayCounter != tstructCurrent.tm_min)
+////    {
+////        ui8CurrentTimeSaveDelayCounter = tstructCurrent.tm_min;
+////        // сохраним текущее время в FRAM.
+////        iFramWrite(FRAM_LAST_SAVED_TIME_OFFSET,
+////                   (uint8_t*)&xCurrentTime,
+////                   sizeof(xCurrentTime));
+////    }
+
+
+    // архивная запись создаётся раз в секунду. этот метод вызывается с удвоенной частотой,
+    // чтобы не нарушить синхронизацию времени главного цикла и текущего времени, раз в 5 главных
+    // циклов по 100mc.
+    // не наступила новая секунда?
     if (tstructCurrent.tm_sec == m_iLastSecond)
     {
         return;

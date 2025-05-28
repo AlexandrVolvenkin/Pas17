@@ -459,7 +459,6 @@
 //#define NETWORK_ADDRESS_DATA_BASE_BLOCK_QUANTITY 1
 //#define FUNCTION_BLOCK_QUANTITY 1
 
-
 // смещени€ в массиве aucCoilsArray[].
 // начальный адрес Modbus.
 #define COILS_ARRAY_MODBUS_BEGIN_ADDRESS 0x00
@@ -473,6 +472,22 @@
 // начальный адрес Modbus.
 #define INPUT_REGISTERS_ARRAY_MODBUS_BEGIN_ADDRESS 0x00
 
+
+// 7.4.3 Ѕуфер текущего времени
+// 1000-1006  7 регистров текущего времени: секунда, минута, час, день ме-
+// с€ца, мес€ц, год (0-99), день недели (1 Ц 7);
+#define CURRENT_TIME_BYTE_ARRAY_OFFSET (1000 * sizeof(short))
+// офсеты дл€ массивов типа - short.
+#define CURRENT_TIME_SECOND_OFFSET 0
+#define CURRENT_TIME_MINUTE_OFFSET 1
+#define CURRENT_TIME_HOUR_OFFSET 2
+#define CURRENT_TIME_MONTH_DAY_OFFSET 3
+#define CURRENT_TIME_MONTH_OFFSET 4
+#define CURRENT_TIME_YEAR_OFFSET 5
+#define CURRENT_TIME_WEEK_DAY_OFFSET 6
+// в linux воскресенье - 0.
+#define LINUX_WEEK_DAY_SUNDAY 0
+#define WEEK_DAY_SUNDAY 7
 
 enum EDataBaseBlockOffsets
 {
@@ -493,8 +508,8 @@ enum
 {
     COILS_WORK_ARRAY_LENGTH = 8000,
     DISCRETE_INPUTS_ARRAY_LENGTH = 8000,
-    HOLDING_REGISTERS_ARRAY_LENGTH = 128,
-    INPUT_REGISTERS_ARRAY_LENGTH = 128,
+    HOLDING_REGISTERS_ARRAY_LENGTH = 2000,
+    INPUT_REGISTERS_ARRAY_LENGTH = 2000,
 };
 
 enum
@@ -554,11 +569,13 @@ enum EModbusFunctionDiscreteInputsDataMap
 enum EModbusFunctionHoldingRegistersDataMap
 {
     ANALOGUE_INPUTS_VALUE_OFFSET = 0,
+    CURRENT_TIME_OFFSET_HOLDING_REGISTERS = 1000,
 };
 
 enum EModbusFunctionInputRegistersDataMap
 {
 //    DISCRETE_INPUTS_STATE_OFFSET = 0,
+    CURRENT_TIME_OFFSET_INPUT_REGISTERS = 1000,
 };
 
 //-------------------------------------------------------------------------------

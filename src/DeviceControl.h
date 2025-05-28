@@ -49,6 +49,8 @@ class CConfigurationCreate;
 #define DEVICE_CONTROL_PC_KVIT  0x007E
 // сброс с верхнего уровня.
 #define DEVICE_CONTROL_PC_RESET 0x007F
+// количество байт в сообщении установки времени.
+#define CURRENT_TIME_BYTE_QUANTITY 7
 
 //-------------------------------------------------------------------------------
 class CDeviceControl : public CTask
@@ -75,6 +77,10 @@ public:
         ONLINE_DATA_READ_START,
         ONLINE_DATA_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING,
         ONLINE_DATA_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING,
+
+        TIME_SET_START,
+        TIME_SET_EXECUTOR_DONE_OK_ANSWER_PROCESSING,
+        TIME_SET_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING,
 
         DATA_BASE_BLOCK_READ,
         DATA_BASE_BLOCK_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING,
@@ -188,6 +194,8 @@ public:
     void SetInternalModuleMuvrName(std::string sName);
 
     uint8_t Init(void);
+    void LinuxCurrentTimeSet(unsigned char *pucSource);
+    void CurrentTimeSet(void);
     void OnlineDataRead(void);
     uint8_t ModbusFunction5Handler(void);
     uint16_t DataBaseBlockReadBlockRelatedAction(void);

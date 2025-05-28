@@ -801,6 +801,49 @@ uint16_t CModbusSlave::DataBaseWrite(void)
 }
 
 //-------------------------------------------------------------------------------
+uint16_t CModbusSlave::TimeSet(void)
+{
+    std::cout << "CModbusSlave::TimeSet 1" << std::endl;
+
+    uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
+    uint8_t * puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
+    uint8_t * puiResponse = m_pxModbusSlaveLinkLayer -> GetTxBuffer();
+    uint16_t  uiLength = m_pxModbusSlaveLinkLayer -> GetFrameLength();
+
+    int8_t uiSlave = puiRequest[uiPduOffset - 1];
+    int8_t uiFunctionCode = puiRequest[uiPduOffset];
+
+    std::cout << "CModbusSlave::TimeSet uiSlave "  << (int)uiSlave << std::endl;
+    std::cout << "CModbusSlave::TimeSet uiFunctionCode "  << (int)uiFunctionCode << std::endl;
+
+
+    std::cout << "CModbusSlave::TimeSet 3" << std::endl;
+
+    m_uiFunctionCode = uiFunctionCode;
+
+    memcpy(m_puiIntermediateBuff,
+           &puiRequest[uiPduOffset + 1],
+           MAX_MODBUS_MESSAGE_LENGTH);
+
+    CDataContainerDataBase* pxDataContainer =
+        (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+    pxDataContainer -> m_uiTaskId = m_uiDeviceControlId;
+    pxDataContainer -> m_uiFsmCommandState =
+        CDeviceControl::TIME_SET_START;
+    pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+
+    SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+    // не отвечаем. переходим к приёму следующего сообщения.
+    SetFsmNextStateDoneOk(COMMUNICATION_RECEIVE_CONTINUE);
+    SetFsmNextStateReadyWaitingError(RESPONSE_EXCEPTION_SLAVE_OR_SERVER_BUSY);
+    SetFsmNextStateDoneWaitingError(RESPONSE_EXCEPTION_SLAVE_OR_SERVER_BUSY);
+    SetFsmNextStateDoneWaitingDoneError(RESPONSE_EXCEPTION_SLAVE_OR_SERVER_FAILURE);
+
+    std::cout << "CModbusSlave::TimeSet 7" << std::endl;
+    return uiLength;
+}
+
+//-------------------------------------------------------------------------------
 uint16_t CModbusSlave::OnlineDataRead(void)
 {
     std::cout << "CModbusSlave::OnlineDataRead 1" << std::endl;
@@ -947,6 +990,7 @@ uint16_t CModbusSlave::RequestProcessing(void)
 //        break;
 
     case _FC_TIME_SET:
+        uiLength = TimeSet();
         break;
 
     case _FC_ONLINE_DATA_READ:
@@ -1597,6 +1641,36 @@ uint16_t CModbusSlave::DataBaseWriteAnswer(void)
 }
 
 //-------------------------------------------------------------------------------
+uint16_t CModbusSlave::TimeSetAnswer(void)
+{
+    std::cout << "CModbusSlave::TimeSetAnswer 1" << std::endl;
+
+    uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
+    uint8_t * puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
+    uint8_t * puiResponse = m_pxModbusSlaveLinkLayer -> GetTxBuffer();
+    uint16_t  uiLength = m_pxModbusSlaveLinkLayer -> GetFrameLength();
+
+    int8_t uiSlave = puiRequest[uiPduOffset - 1];
+    int8_t uiFunctionCode = puiRequest[uiPduOffset];
+
+    std::cout << "CModbusSlave::TimeSetAnswer uiSlave "  << (int)uiSlave << std::endl;
+    std::cout << "CModbusSlave::TimeSetAnswer uiFunctionCode "  << (int)uiFunctionCode << std::endl;
+
+    CDataContainerDataBase* pxDataContainer =
+        (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+    uiLength = pxDataContainer -> m_uiDataLength;
+    puiResponse[uiPduOffset + 1] = uiLength;
+    uiLength++;
+    uiLength += m_pxModbusSlaveLinkLayer ->
+                ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
+
+    SetFsmState(MESSAGE_TRANSMIT_START);
+
+    std::cout << "CModbusSlave::TimeSetAnswer 7" << std::endl;
+    return uiLength;
+}
+
+//-------------------------------------------------------------------------------
 uint16_t CModbusSlave::OnlineDataReadAnswer(void)
 {
     std::cout << "CModbusSlave::OnlineDataReadAnswer 1" << std::endl;
@@ -1656,12 +1730,12 @@ uint16_t CModbusSlave::AnswerProcessing(void)
     std::cout << "CModbusSlave::AnswerProcessing uiSlave "  << (int)uiSlave << std::endl;
     std::cout << "CModbusSlave::AnswerProcessing uiFunctionCode "  << (int)uiFunctionCode << std::endl;
 
-    /* Filter on the Modbus unit identifier (slave) in RTU mode */
-    if (uiSlave != m_uiOwnAddress && uiSlave != MODBUS_BROADCAST_ADDRESS)
-    {
-        std::cout << "CModbusSlave::AnswerProcessing 2" << std::endl;
-        return 0;
-    }
+//    /* Filter on the Modbus unit identifier (slave) in RTU mode */
+//    if (uiSlave != m_uiOwnAddress && uiSlave != MODBUS_BROADCAST_ADDRESS)
+//    {
+//        std::cout << "CModbusSlave::AnswerProcessing 2" << std::endl;
+//        return 0;
+//    }
 
     // проверяем сохранённый локально текущий код функции.
     switch (m_uiFunctionCode)
@@ -1731,6 +1805,7 @@ uint16_t CModbusSlave::AnswerProcessing(void)
 //        break;
 
     case _FC_TIME_SET:
+        uiLength = TimeSetAnswer();
         break;
 
     case _FC_ONLINE_DATA_READ:
