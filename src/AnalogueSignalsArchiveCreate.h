@@ -63,6 +63,7 @@ private:
     uint16_t *m_puiInputRegisters;
 
     uint8_t* m_puiIntermediateBuff;
+    std::string m_sLastDailyArchveFlashFile;
     std::string m_sCurrentDailyArchveFlashFile;
     bool bIsDailyArchveFlashFileExist = false;
     uint32_t m_uiCurrentOffset = 0;
