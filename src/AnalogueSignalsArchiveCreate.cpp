@@ -10,6 +10,9 @@
 #include <typeinfo>
 #include <fstream>
 #include <ctime>
+#include <cstdlib>
+#include <unistd.h>
+#include <sys/wait.h>
 
 #include "Task.h"
 #include "Resources.h"
@@ -213,20 +216,12 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
     struct tm tstructCurrent = *gmtime(&now);
 
 
+//-------------------------------------------------------------------------------
+// обновление текущего времени в массивах модбас.
     unsigned short *pusDestination;
     // получим указатель на буфер с текущим временем в рабочем массиве прибора.
     pusDestination =
         (unsigned short*)&m_puiInputRegisters[CURRENT_TIME_OFFSET_INPUT_REGISTERS];
-
-//    // сегодня воскресение?
-//    if ((tstructCurrent.tm_wday) == LINUX_WEEK_DAY_SUNDAY)
-//    {
-//        xCurrentTime.tm_wday = WEEK_DAY_SUNDAY;
-//    }
-//    else
-//    {
-//        xCurrentTime.tm_wday = tstructCurrent.tm_wday;
-//    }
 
     pusDestination[CURRENT_TIME_SECOND_OFFSET] = tstructCurrent.tm_sec;
     pusDestination[CURRENT_TIME_MINUTE_OFFSET] = tstructCurrent.tm_min;
@@ -258,6 +253,7 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
 ////                   (uint8_t*)&xCurrentTime,
 ////                   sizeof(xCurrentTime));
 ////    }
+//-------------------------------------------------------------------------------
 
 
     // архивная запись создаётся раз в секунду. этот метод вызывается с удвоенной частотой,
@@ -283,12 +279,26 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
     data.fAin3 = (float)(m_pfAnalogueInputsValue[2]); // Пример значения для fAin3
     data.fAin4 = (float)(m_pfAnalogueInputsValue[3]); // Пример значения для fAin4
 
+
     // Форматируем дату
     char dateStr[80];
-    strftime(dateStr, sizeof(dateStr), "%d-%m-%Y", &tstructCurrent);
+    strftime(dateStr, sizeof(dateStr), "%Y-%m-%d", &tstructCurrent);
 
-    // Создаем имя файла с датой
-    std::string dailyArchveFlashFile = "AnalogueMeasure_" + std::string(dateStr) + ".csv";
+    // Получаем текущий год и месяц
+    int year = tstructCurrent.tm_year + 1900;
+    int month = tstructCurrent.tm_mon + 1;
+    int hour = tstructCurrent.tm_hour;
+    int minute = tstructCurrent.tm_min;
+
+//    // Создаем пути к папкам и файлу
+//    std::string pathToYearFolder = "AnalogueMeasureArchives_" + std::to_string(year);
+//    std::string pathToMonthFolder = pathToYearFolder + "/" + std::to_string(month);
+//    std::string dailyArchveFlashFile = pathToMonthFolder + "/AnalogueMeasure_" + dateStr + ".csv";
+
+    // Создаем пути к папкам и файлу
+    std::string pathToYearFolder = "/home/debian/AnalogueMeasureArchives_" + std::to_string(year);
+    std::string pathToMonthFolder = pathToYearFolder + "/" + std::to_string(month);
+    std::string dailyArchveFlashFile = pathToMonthFolder + "/AnalogueMeasure_" + dateStr + "-" + std::to_string(minute) + ".csv";
 
     bool bIsFileExist = false;
     // Проверяем, существует ли файл суточного архива.
@@ -298,61 +308,113 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
 //        std::cout << "Файл уже существует: " << dailyArchveFlashFile << std::endl;
         bIsFileExist = true;
     }
-
-//    const std::string dailyArchveFlashFile = "DailyArchve.dat";
-    const std::string hourArchiveFramFile = "/dev/mtd0";
-
-    std::ifstream hourArchiveFramInputStream(hourArchiveFramFile, std::ios::binary | std::ios::in | std::ios::out);
-    if (!hourArchiveFramInputStream.is_open())
+    else
     {
-        std::cerr << "Failed to open for read /dev/mtd0" << std::endl;
-        return;
-    }
-    std::ofstream hourArchiveFramOutputStream(hourArchiveFramFile, std::ios::binary | std::ios::in | std::ios::out);
-    if (!hourArchiveFramOutputStream.is_open())
-    {
-        std::cerr << "Failed to open for write /dev/mtd0" << std::endl;
-        hourArchiveFramInputStream.close();
-        return;
+//        std::cout << "Файл не существует: " << dailyArchveFlashFile << std::endl;
+
+        // Проверка и создание директорий (используем POSIX функции)
+        if (mkdir(pathToYearFolder.c_str(), 0755) == -1)
+        {
+//            perror("Error creating Year Folder");
+//            if (errno == EEXIST)
+//            {
+//                std::cout << "Path to Year Folder: EEXIST" << std::endl;
+//            }
+//            else
+//            {
+//                std::cout << "Path to Year Folder: no EEXIST" << std::endl;
+//            }
+////        return;
+        }
+        else
+        {
+//            std::cout << "no error" << std::endl;
+//            if (errno == EEXIST)
+//            {
+//                std::cout << "Path to Year Folder: EEXIST" << std::endl;
+//            }
+//            else
+//            {
+//                std::cout << "Path to Year Folder: no EEXIST" << std::endl;
+//            }
+////        return;
+        }
+
+        if (mkdir(pathToMonthFolder.c_str(), 0755) == -1)
+        {
+//            perror("Error creating Month Folder");
+//            if (errno == EEXIST)
+//            {
+//                std::cout << "Path to Month Folder: EEXIST" << std::endl;
+//            }
+//            else
+//            {
+//                std::cout << "Path to Month Folder: no EEXIST" << std::endl;
+//            }
+////        return;
+        }
+        else
+        {
+//            std::cout << "no error" << std::endl;
+//            if (errno == EEXIST)
+//            {
+//                std::cout << "Path to Month Folder: EEXIST" << std::endl;
+//            }
+//            else
+//            {
+//                std::cout << "Path to Month Folder: no EEXIST" << std::endl;
+//            }
+////        return;
+        }
+
+        m_sCurrentDailyArchveFlashFile = dailyArchveFlashFile;
     }
 
-    // Открываем выходной файл для добавления данных
-    std::ifstream dailyArchveFlashInputStream(dailyArchveFlashFile, std::ios::app | std::ios::in | std::ios::out);
-    if (!dailyArchveFlashInputStream.is_open())
-    {
-        std::cerr << "Failed to open for read: " << dailyArchveFlashFile << std::endl;
-        hourArchiveFramInputStream.close();
-        hourArchiveFramOutputStream.close();
-        return;
-    }
-    // Открываем выходной файл для добавления данных
-    std::ofstream dailyArchveFlashOutputStream(dailyArchveFlashFile, std::ios::app | std::ios::in | std::ios::out);
-    if (!dailyArchveFlashOutputStream.is_open())
-    {
-        std::cerr << "Failed to open for write: " << dailyArchveFlashFile << std::endl;
-        hourArchiveFramInputStream.close();
-        hourArchiveFramOutputStream.close();
-        dailyArchveFlashInputStream.close();
-        return;
-    }
-
-    if (!bIsFileExist)
-    {
-        // Записываем заголовок
-//        output << "Дата;Время;AIn1;AIn2;AIn3;AIn4" << std::endl;
-//        output << "   Дата   " << ";" << "   Время   " << ";" << "   AIn1   " << ";" << "   AIn2   " << ";" << "   AIn3   " << ";" << "   AIn4   " << std::endl;
-        dailyArchveFlashOutputStream << "Дата;Время;AIn1;AIn2;AIn3;AIn4" << std::endl;
-    }
-
-    // Если текущие часы отличаются от предыдущих,
-    // значит, было наступление нового часа
+    // Если текущий час отличаются от предыдущего,
+    // значит, наступил новый час.
+    // наступил новый час?
     if (tstructCurrent.tm_min != m_iLastHour)
 //    if (tstructCurrent.tm_hour != m_iLastHour)
     {
-        std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 2"  << std::endl;
         // Обновляем значения для следующей проверки
         m_iLastHour = tstructCurrent.tm_min;
 //        m_iLastHour = tstructCurrent.tm_hour;
+        std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 2"  << std::endl;
+
+        const std::string hourArchiveFramFile = "/dev/mtd0";
+
+        std::ifstream hourArchiveFramInputStream(hourArchiveFramFile, std::ios::binary | std::ios::in | std::ios::out);
+        if (!hourArchiveFramInputStream.is_open())
+        {
+            std::cerr << "Failed to open for read /dev/mtd0" << std::endl;
+            return;
+        }
+        std::ofstream hourArchiveFramOutputStream(hourArchiveFramFile, std::ios::binary | std::ios::in | std::ios::out);
+        if (!hourArchiveFramOutputStream.is_open())
+        {
+            std::cerr << "Failed to open for write /dev/mtd0" << std::endl;
+            hourArchiveFramInputStream.close();
+            return;
+        }
+
+        // Открываем выходной файл для добавления данных
+        std::ofstream dailyArchveFlashOutputStream(m_sCurrentDailyArchveFlashFile, std::ios::app | std::ios::in | std::ios::out);
+        if (!dailyArchveFlashOutputStream.is_open())
+        {
+            std::cerr << "Failed to open for write: " << m_sCurrentDailyArchveFlashFile << std::endl;
+            hourArchiveFramInputStream.close();
+            hourArchiveFramOutputStream.close();
+            return;
+        }
+
+        if (!bIsFileExist)
+        {
+            // Записываем заголовок
+//        output << "Дата;Время;AIn1;AIn2;AIn3;AIn4" << std::endl;
+//        output << "   Дата   " << ";" << "   Время   " << ";" << "   AIn1   " << ";" << "   AIn2   " << ";" << "   AIn3   " << ";" << "   AIn4   " << std::endl;
+            dailyArchveFlashOutputStream << "Дата;Время;AIn1;AIn2;AIn3;AIn4" << std::endl;
+        }
+
         std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry tm_min "  << (float)tstructCurrent.tm_min << std::endl;
 
         std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 3"  << std::endl;
@@ -382,7 +444,7 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
 
             // Форматируем дату и время
             char dateStr[80];
-            strftime(dateStr, sizeof(dateStr), "%d-%m-%Y", &tstructRead);
+            strftime(dateStr, sizeof(dateStr), "%Y-%m-%d", &tstructRead);
 
             char timeStr[80];
             strftime(timeStr, sizeof(timeStr), "%H:%M:%S", &tstructRead);
@@ -406,191 +468,78 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
         hourArchiveFramOutputStream.write(reinterpret_cast<const char*>(&data), sizeof(Data));
         m_uiCurrentOffset += sizeof(Data);
 
-        // Если текущие дни отличаются от предыдущих,
-        // значит, было наступление новой сутки
-//    if ((tstructCurrent.tm_min != m_iLastHour) &&
-//            (tstructCurrent.tm_sec == 0))
-        if (tstructCurrent.tm_mday != m_iLastDay)
+        // Если текущий день отличаются от предыдущего,
+        // значит, было наступление новой сутки.
+        // наступили новые сутки?
+        if (tstructCurrent.tm_min != m_iLastDay)
+//        if (tstructCurrent.tm_mday != m_iLastDay)
         {
             std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 7"  << std::endl;
             // Обновляем значения для следующей проверки
-            m_iLastDay = tstructCurrent.tm_mday;
+            m_iLastDay = tstructCurrent.tm_min;
+//            m_iLastDay = tstructCurrent.tm_mday;
+
+            // сожмём суточный архив.
+            {
+                // Команда для gzip
+                std::string command = "gzip " + m_sCurrentDailyArchveFlashFile;
+
+                // Выполнение команды
+                int result = system(command.c_str());
+
+                if (result == 0)
+                {
+                    std::cout << "Файл успешно сжат и сохранен." << std::endl;
+                }
+                else
+                {
+                    std::cerr << "Ошибка при выполнении команды." << std::endl;
+                }
+            }
+
+            // Закрываем файл
+            hourArchiveFramInputStream.close();
+            hourArchiveFramOutputStream.close();
+            dailyArchveFlashOutputStream.close();
+
+            {
+                // удалим не сжатый файл суточного архива.
+                // Команда для rm
+                std::string command = "sudo rm -f -R " + m_sCurrentDailyArchveFlashFile;
+
+                // Выполнение команды
+                int result = system(command.c_str());
+
+                if (result == 0)
+                {
+                    std::cout << "Файл успешно удалён. " << m_sCurrentDailyArchveFlashFile << std::endl;
+                }
+                else
+                {
+                    std::cerr << "Ошибка при удалении файла. " << m_sCurrentDailyArchveFlashFile << std::endl;
+                }
+            }
         }
     }
     else
     {
-//        std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 8"  << std::endl;
+        const std::string hourArchiveFramFile = "/dev/mtd0";
+
+        std::ofstream hourArchiveFramOutputStream(hourArchiveFramFile, std::ios::binary | std::ios::in | std::ios::out);
+        if (!hourArchiveFramOutputStream.is_open())
+        {
+            std::cerr << "Failed to open for write /dev/mtd0" << std::endl;
+            return;
+        }
 
         // Записываем данные в файл /dev/mtd0
         hourArchiveFramOutputStream.seekp(m_uiCurrentOffset, std::ios::beg);
         hourArchiveFramOutputStream.write(reinterpret_cast<const char*>(&data), sizeof(Data));
         m_uiCurrentOffset += sizeof(Data);
+
+        // Закрываем файл
+        hourArchiveFramOutputStream.close();
     }
-
-// Закрываем файл
-    hourArchiveFramInputStream.close();
-    hourArchiveFramOutputStream.close();
-    dailyArchveFlashInputStream.close();
-    dailyArchveFlashOutputStream.close();
-
-
-
-
-
-
-
-
-
-//    // Записываем данные в файл /dev/mtd0
-//    {
-//////    std::ofstream output(hourArchiveFramFile, std::ios::binary | std::ios_base::app);
-//        std::ofstream output(hourArchiveFramFile, std::ios::binary | std::ios::trunc);
-//        if (!output.is_open())
-//        {
-//            std::cerr << "Failed to open /dev/mtd0" << std::endl;
-//            return;
-//        }
-//        output.write(reinterpret_cast<const char*>(&data), sizeof(Data));
-//        output.close(); // Закрываем файл после записи
-//    }
-//
-//    // Чтение данных из /dev/mtd0 и сохранение их в DailyArchve.dat
-//    {
-//        std::ifstream input(hourArchiveFramFile, std::ios::binary);
-//        if (!input.is_open())
-//        {
-//            std::cerr << "Failed to open /dev/mtd0" << std::endl;
-//            return;
-//        }
-//        input.read(reinterpret_cast<char*>(&readData), sizeof(Data));
-//        input.close(); // Закрываем файл после записи
-//    }
-//
-//    std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry /dev/mtd0"  << std::endl;
-//    // Выводим данные из /dev/mtd0 на экран
-//    std::cout << "Read Time: " << asctime(localtime(&readData.currentTime)) << std::endl;
-//    std::cout << "fAin1: " << readData.fAin1 << std::endl;
-//    std::cout << "fAin2: " << readData.fAin2 << std::endl;
-//    std::cout << "fAin3: " << readData.fAin3 << std::endl;
-//    std::cout << "fAin4: " << readData.fAin4 << std::endl;
-//
-//
-//    // Записываем данные в файл DailyArchve.dat
-//    {
-//        std::ofstream output(dailyArchveFlashFile, std::ios::binary | std::ios::trunc);
-//        if (!output.is_open())
-//        {
-//            std::cerr << "Failed to open DailyArchve.dat" << std::endl;
-//            return;
-//        }
-//        output.write(reinterpret_cast<const char*>(&readData), sizeof(Data));
-//        output.close(); // Закрываем файл после записи
-//    }
-//
-//    // Чтение данных из DailyArchve.dat
-////    Data readData;
-//    {
-//        std::ifstream input(dailyArchveFlashFile, std::ios::binary);
-//        if (!input.is_open())
-//        {
-//            std::cerr << "Failed to open DailyArchve.dat" << std::endl;
-//            return;
-//        }
-//        input.read(reinterpret_cast<char*>(&readData), sizeof(Data));
-//        input.close(); // Закрываем файл после записи
-//    }
-//
-//
-//    std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry DailyArchve.dat"  << std::endl;
-//    // Выводим данные из DailyArchve.dat на экран
-//    std::cout << "Read Time: " << asctime(localtime(&readData.currentTime)) << std::endl;
-//    std::cout << "fAin1: " << readData.fAin1 << std::endl;
-//    std::cout << "fAin2: " << readData.fAin2 << std::endl;
-//    std::cout << "fAin3: " << readData.fAin3 << std::endl;
-//    std::cout << "fAin4: " << readData.fAin4 << std::endl;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//    bool bIsFileExist = false;
-//
-////    // Получаем текущую дату
-////    time_t now = time(0);
-////    struct tm tstruct = *gmtime(&now);
-////    struct tm tstruct = *gmtime(&readData.currentTime);
-//
-////    // Форматируем дату и время
-////    char dateStr[80];
-////    strftime(dateStr, sizeof(dateStr), "%d-%m-%Y", &tstruct);
-////
-////    char timeStr[80];
-////    strftime(timeStr, sizeof(timeStr), "%H:%M:%S", &tstruct);
-//
-//    // Создаем имя файла с датой
-//    std::string filename = "AnalogueMeasure_" + std::string(dateStr) + ".csv";
-//
-//    // Проверяем, существует ли файл
-//    if (std::ifstream(filename))
-//    {
-////        std::cout << "Файл уже существует: " << filename << std::endl;
-//        bIsFileExist = true;
-//    }
-//
-//    // Открываем файл для добавления данных
-//    std::ofstream output(filename, std::ios::app);
-//
-//    if (!output.is_open())
-//    {
-//        std::cerr << "Не удалось открыть файл!" << std::endl;
-//        return;
-//    }
-//
-////    std::cout << "CreateArchiveEntry filename "  << dateStr << std::endl;
-//
-//    if (!bIsFileExist)
-//    {
-//        // Записываем заголовок
-////        output << "Дата;Время;AIn1;AIn2;AIn3;AIn4" << std::endl;
-////        output << "   Дата   " << ";" << "   Время   " << ";" << "   AIn1   " << ";" << "   AIn2   " << ";" << "   AIn3   " << ";" << "   AIn4   " << std::endl;
-//        output << "Дата;Время;AIn1;AIn2;AIn3;AIn4" << std::endl;
-//    }
-//
-////    // Записываем данные в файл
-////    output <<
-////         dateStr << ";" <<
-////         timeStr << ";" <<
-////         (float)(m_pfAnalogueInputsValue[0]) << ";" <<
-////         (float)(m_pfAnalogueInputsValue[1]) << ";" <<
-////         (float)(m_pfAnalogueInputsValue[2]) << ";" <<
-////         (float)(m_pfAnalogueInputsValue[3]) <<
-////         std::endl;
-//
-//    // Записываем данные в файл
-//    output <<
-//         dateStr << ";" <<
-//         timeStr << ";" <<
-//         readData.fAin1 << ";" <<
-//         readData.fAin2 << ";" <<
-//         readData.fAin3 << ";" <<
-//         readData.fAin4 <<
-//         std::endl;
-//
-//    // Закрываем файл
-//    output.close();
-//
-////    std::cout << "Данные успешно записаны в data.csv" << std::endl;
-
 }
 
 //-------------------------------------------------------------------------------

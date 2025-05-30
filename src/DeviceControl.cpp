@@ -74,21 +74,6 @@ void CDeviceControl::LinuxCurrentTimeSet(unsigned char *pucSource)
 {
     std::cout << "CDeviceControl LinuxCurrentTimeSet 1"  << std::endl;
 
-            {
-                std::cout << "CConfigurationCheck::Fsm auiTempArray"  << std::endl;
-                uint8_t *pucSourceTemp;
-                pucSourceTemp = (uint8_t*)pucSource;
-                for(int i=0; i<32; )
-                {
-                    for(int j=0; j<8; j++)
-                    {
-                        cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
-                    }
-                    cout << endl;
-                    i += 8;
-                }
-            }
-
     time_t rawtime;
     struct tm *timeinfo;
     struct timeval systime;
@@ -111,8 +96,8 @@ void CDeviceControl::LinuxCurrentTimeSet(unsigned char *pucSource)
         0
     };
     settimeofday(&systime, NULL);
-//    system("sudo hwclock --systohc");
-    system("sudo hwclock -w");
+    system("sudo hwclock --systohc");
+//    system("sudo hwclock -w");
 }
 
 //-----------------------------------------------------------------------------------------------------
