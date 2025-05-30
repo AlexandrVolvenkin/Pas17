@@ -286,65 +286,11 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
     if (tstructCurrent.tm_min != m_iLastHour)
 //    if (tstructCurrent.tm_hour != m_iLastHour)
     {
+        std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 2"  << std::endl;
+        std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry tm_min "  << (float)tstructCurrent.tm_min << std::endl;
         // Обновляем значения для следующей проверки
         m_iLastHour = tstructCurrent.tm_min;
 //        m_iLastHour = tstructCurrent.tm_hour;
-
-        // Если текущий день отличаются от предыдущего,
-        // значит, наступили новые сутки.
-        // наступили новые сутки?
-        if (tstructCurrent.tm_min != m_iLastDay)
-//        if (tstructCurrent.tm_mday != m_iLastDay)
-        {
-            // Обновляем значения для следующей проверки
-            m_iLastDay = tstructCurrent.tm_min;
-//            m_iLastDay = tstructCurrent.tm_mday;
-
-            // существует ли файл архива предыдущих суток?
-            if (std::ifstream(m_sLastDailyArchveFlashFile))
-            {
-                std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 2"  << std::endl;
-                // сожмём архив предыдущих суток.
-                {
-                    // Команда для gzip
-                    std::string command = "gzip " + m_sLastDailyArchveFlashFile;
-
-                    // Выполнение команды
-                    int result = system(command.c_str());
-
-                    if (result == 0)
-                    {
-                        std::cout << "Файл успешно сжат и сохранен." << std::endl;
-                    }
-                    else
-                    {
-                        std::cerr << "Ошибка при выполнении команды." << std::endl;
-                    }
-                }
-
-                {
-                    // удалим несжатый файл архива предыдущих суток.
-                    // Команда для rm
-                    std::string command = "sudo rm -f -R " + m_sLastDailyArchveFlashFile;
-
-                    // Выполнение команды
-                    int result = system(command.c_str());
-
-                    if (result == 0)
-                    {
-                        std::cout << "Файл успешно удалён. " << m_sLastDailyArchveFlashFile << std::endl;
-                    }
-                    else
-                    {
-                        std::cerr << "Ошибка при удалении файла. " << m_sLastDailyArchveFlashFile << std::endl;
-                    }
-                }
-            }
-            else
-            {
-                std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 3"  << std::endl;
-            }
-        }
 
 
         // Форматируем дату
@@ -365,7 +311,8 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
         // Создаем пути к папкам и файлу
         std::string pathToYearFolder = "/home/debian/AnalogueMeasureArchives_" + std::to_string(year);
         std::string pathToMonthFolder = pathToYearFolder + "/" + std::to_string(month);
-        std::string dailyArchveFlashFile = pathToMonthFolder + "/AnalogueMeasure_" + dateStr + "-" + std::to_string(minute) + ".csv";
+        std::string dailyArchveFlashFile = pathToMonthFolder + "/AnalogueMeasure_" + dateStr + "-" + std::to_string(hour) + ".csv";
+//        std::string dailyArchveFlashFile = pathToMonthFolder + "/AnalogueMeasure_" + dateStr + "-" + std::to_string(m_iFileNumberCounter) + ".csv";
 
         bool bIsFileExist = false;
         // Проверяем, существует ли файл текущего суточного архива.
@@ -373,11 +320,13 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
         // существует ли файл архива текущих суток?
         if (std::ifstream(dailyArchveFlashFile))
         {
+            std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 6"  << std::endl;
 //        std::cout << "Файл уже существует: " << dailyArchveFlashFile << std::endl;
             bIsFileExist = true;
         }
         else
         {
+            std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 7"  << std::endl;
 //        std::cout << "Файл не существует: " << dailyArchveFlashFile << std::endl;
 
             // Проверка и создание директорий (используем POSIX функции)
@@ -484,10 +433,11 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
 
         // Получаем общую длину файла
         size_t fileSize = m_uiCurrentOffset;
+        std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry m_uiCurrentOffset "  << (float)m_uiCurrentOffset << std::endl;
 
         // Вычисляем количество структур Data в файле
         size_t numDataObjects = (fileSize / sizeof(Data));
-        std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 5 numDataObjects "  << (float)numDataObjects << std::endl;
+        std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 8 numDataObjects "  << (float)numDataObjects << std::endl;
 
         // Считываем и преобразуем данные из fram во флеш.
         for (size_t i = 0; i < numDataObjects; i++)
@@ -500,9 +450,10 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
             // больше нет данных для чтения?
             if (!hourArchiveFramInputStream.gcount())
             {
-                std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 6"  << std::endl;
+                std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 9"  << std::endl;
                 break;
             }
+//            std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 91"  << std::endl;
 
             // Получаем текущую дату
             struct tm tstructRead = *gmtime(&readData.currentTime);
@@ -525,6 +476,69 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
                                          std::endl;
         }
 
+        // Если текущий день отличаются от предыдущего,
+        // значит, наступили новые сутки.
+        // наступили новые сутки?
+//        m_iLastDay++;
+//        if (m_iLastDay >= 3)
+        if (tstructCurrent.tm_hour != m_iLastDay)
+////        if (tstructCurrent.tm_mday != m_iLastDay)
+        {
+            std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 3"  << std::endl;
+            std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry tm_min "  << (float)tstructCurrent.tm_min << std::endl;
+            std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry tm_hour "  << (float)tstructCurrent.tm_hour << std::endl;
+            // Обновляем значения для следующей проверки
+//            m_iLastDay = 0;
+//            m_iFileNumberCounter++;
+            m_iLastDay = tstructCurrent.tm_hour;
+////            m_iLastDay = tstructCurrent.tm_mday;
+
+            // существует ли файл архива предыдущих суток?
+            if (std::ifstream(m_sLastDailyArchveFlashFile))
+            {
+                std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 4"  << std::endl;
+                // сожмём архив предыдущих суток.
+                {
+                    // Команда для gzip
+                    std::string command = "gzip " + m_sLastDailyArchveFlashFile;
+
+                    // Выполнение команды
+                    int result = system(command.c_str());
+
+                    if (result == 0)
+                    {
+                        std::cout << "Файл успешно сжат и сохранен." << std::endl;
+                    }
+                    else
+                    {
+                        std::cerr << "Ошибка при выполнении команды." << std::endl;
+                    }
+                }
+
+                {
+                    // удалим несжатый файл архива предыдущих суток.
+                    // Команда для rm
+                    std::string command = "sudo rm -f -R " + m_sLastDailyArchveFlashFile;
+
+                    // Выполнение команды
+                    int result = system(command.c_str());
+
+                    if (result == 0)
+                    {
+                        std::cout << "Файл успешно удалён. " << m_sLastDailyArchveFlashFile << std::endl;
+                    }
+                    else
+                    {
+                        std::cerr << "Ошибка при удалении файла. " << m_sLastDailyArchveFlashFile << std::endl;
+                    }
+                }
+            }
+            else
+            {
+                std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 5"  << std::endl;
+            }
+        }
+
         // каждый новый час начинаем запись в fram сначала.
         m_uiCurrentOffset = 0;
 
@@ -541,6 +555,7 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
     }
     else
     {
+//        std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 10"  << std::endl;
         const std::string hourArchiveFramFile = "/dev/mtd0";
 
         std::ofstream hourArchiveFramOutputStream(hourArchiveFramFile, std::ios::binary | std::ios::in | std::ios::out);

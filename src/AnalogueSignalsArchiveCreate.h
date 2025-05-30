@@ -70,6 +70,8 @@ private:
     int m_iLastSecond = 100;
     int m_iLastHour = 100;
     int m_iLastDay = 100;
+//    int m_iLastDay = 10;
+    int m_iFileNumberCounter = 0;
 };
 
 #endif // ANALOGUESIGNALSARCHIVECREATE_H
