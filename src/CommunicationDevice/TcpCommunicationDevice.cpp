@@ -318,7 +318,7 @@ int16_t CTcpCommunicationDevice::ReceiveStart(uint8_t *puiDestination,
         uint16_t uiLength,
         uint32_t uiReceiveTimeout)
 {
-    std::cout << "CTcpCommunicationDevice::ReceiveStart 1"  << std::endl;
+//    std::cout << "CTcpCommunicationDevice::ReceiveStart 1"  << std::endl;
 
 //    // Сделаем не блокирующим.
 //    int flags = fcntl(m_iDeviceDescriptorServer, F_GETFL, 0);
@@ -335,7 +335,7 @@ int16_t CTcpCommunicationDevice::ReceiveStart(uint8_t *puiDestination,
 
     int ready = select(m_iDeviceDescriptorServer + 1, &readfds, NULL, NULL, &tv);
 
-    cout << "CTcpCommunicationDevice::ReceiveStart 2" << endl;
+//    cout << "CTcpCommunicationDevice::ReceiveStart 2" << endl;
     if (ready < 0)
     {
         cout << "CTcpCommunicationDevice::ReceiveStart errno " << errno << endl;
@@ -412,7 +412,7 @@ int16_t CTcpCommunicationDevice::ReceiveStart(uint8_t *puiDestination,
     }
     else
     {
-        cout << "CTcpCommunicationDevice::ReceiveStart 6" << endl;
+//        cout << "CTcpCommunicationDevice::ReceiveStart 6" << endl;
         return 0;
     }
 }

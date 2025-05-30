@@ -65,7 +65,8 @@ private:
     uint8_t* m_puiIntermediateBuff;
     std::string m_sLastDailyArchveFlashFile;
     std::string m_sCurrentDailyArchveFlashFile;
-    bool bIsDailyArchveFlashFileExist = false;
+    bool m_bIsStartState = true;
+    bool m_bIsDailyArchveFlashFileExist = false;
     uint32_t m_uiCurrentOffset = 0;
     int m_iLastSecond = 100;
     int m_iLastHour = 100;

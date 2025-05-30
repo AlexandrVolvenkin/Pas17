@@ -55,14 +55,42 @@ void CResources::ModbusWorkingArraysCreate(uint16_t uiCoilsNumber,
         uint16_t uiHoldingRegistersNumber,
         uint16_t uiInputRegistersNumber)
 {
+    std::cout << "CResources::ModbusWorkingArraysCreate 1"  << std::endl;
     m_puiCoils = new uint8_t(uiCoilsNumber);
+    if (m_puiCoils == nullptr)
+    {
+        // Обработка ошибки при выделении памяти
+        std::cerr << "Failed to allocate memory m_puiCoils!" << std::endl;
+    }
 //    memset(m_puiCoils, 0, uiCoilsNumber);
     m_puiDiscreteInputs = new uint8_t(uiDiscreteInputsNumber);
+
+    if (m_puiDiscreteInputs == nullptr)
+    {
+        // Обработка ошибки при выделении памяти
+        std::cerr << "Failed to allocate memory m_puiDiscreteInputs!" << std::endl;
+    }
 //    memset(m_puiDiscreteInputs, 0, uiDiscreteInputsNumber);
+
     m_puiHoldingRegisters = new uint16_t(uiHoldingRegistersNumber);
+
+    if (m_puiHoldingRegisters == nullptr)
+    {
+        // Обработка ошибки при выделении памяти
+        std::cerr << "Failed to allocate memory m_puiHoldingRegisters!" << std::endl;
+    }
 //    memset(m_puiHoldingRegisters, 0, (uiHoldingRegistersNumber * sizeof(uint16_t)));
+
     m_puiInputRegisters = new uint16_t(uiInputRegistersNumber);
 //    memset(m_puiInputRegisters, 0, (uiInputRegistersNumber * sizeof(uint16_t)));
+//m_puiHoldingRegisters = m_puiInputRegisters;
+//    m_puiInputRegisters = m_puiHoldingRegisters;
+    if (m_puiInputRegisters == nullptr)
+    {
+        // Обработка ошибки при выделении памяти
+        std::cerr << "Failed to allocate memory m_puiInputRegisters!" << std::endl;
+    }
+
 
     m_uiCoilsNumber = uiCoilsNumber;
     m_uiDiscreteInputsNumber = uiDiscreteInputsNumber;

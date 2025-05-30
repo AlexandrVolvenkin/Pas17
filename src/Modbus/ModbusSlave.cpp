@@ -1730,12 +1730,12 @@ uint16_t CModbusSlave::AnswerProcessing(void)
     std::cout << "CModbusSlave::AnswerProcessing uiSlave "  << (int)uiSlave << std::endl;
     std::cout << "CModbusSlave::AnswerProcessing uiFunctionCode "  << (int)uiFunctionCode << std::endl;
 
-//    /* Filter on the Modbus unit identifier (slave) in RTU mode */
-//    if (uiSlave != m_uiOwnAddress && uiSlave != MODBUS_BROADCAST_ADDRESS)
-//    {
-//        std::cout << "CModbusSlave::AnswerProcessing 2" << std::endl;
-//        return 0;
-//    }
+    /* Filter on the Modbus unit identifier (slave) in RTU mode */
+    if (uiSlave != m_uiOwnAddress && uiSlave != MODBUS_BROADCAST_ADDRESS)
+    {
+        std::cout << "CModbusSlave::AnswerProcessing 2" << std::endl;
+        return 0;
+    }
 
     // проверяем сохранённый локально текущий код функции.
     switch (m_uiFunctionCode)

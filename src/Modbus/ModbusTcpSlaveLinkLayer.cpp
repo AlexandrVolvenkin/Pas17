@@ -454,7 +454,7 @@ uint8_t CModbusTcpSlaveLinkLayer::Fsm(void)
         else
         {
             //std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_START 4"  << std::endl;
-            cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_START errno " << errno << endl;
+//            cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_START errno " << errno << endl;
         }
         break;
 
