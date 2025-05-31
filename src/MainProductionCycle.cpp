@@ -645,7 +645,7 @@ uint8_t CMainProductionCycle::Fsm(void)
         Init();
         CreateTasks();
 
-//        GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
+//        GetTimerPointer() -> Set(TASK_READY_WAITING_TIME_LONG);
         SetFsmState(INIT);
         break;
 
@@ -729,7 +729,7 @@ uint8_t CMainProductionCycle::Fsm(void)
     {
         CurrentlyRunningTasksExecution();
 
-        GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
+        GetTimerPointer() -> Set(TASK_READY_WAITING_TIME_LONG);
         SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING);
     }
     break;
@@ -765,7 +765,7 @@ uint8_t CMainProductionCycle::Fsm(void)
     {
         CurrentlyRunningTasksExecution();
 
-        GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
+        GetTimerPointer() -> Set(TASK_READY_WAITING_TIME_LONG);
         SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_WAITING);
     }
     break;
@@ -799,7 +799,7 @@ uint8_t CMainProductionCycle::Fsm(void)
     {
         CurrentlyRunningTasksExecution();
 
-        GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
+        GetTimerPointer() -> Set(TASK_READY_WAITING_TIME_LONG);
         SetFsmState(SUBTASK_EXECUTOR_DONE_CHECK_WAITING);
     }
 

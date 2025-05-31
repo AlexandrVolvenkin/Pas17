@@ -480,13 +480,13 @@ uint8_t CModbusRtuSlaveLinkLayer::Fsm(void)
         else if (iBytesNumber < 0)
         {
             //std::cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_CONTINUE 3"  << std::endl;
-            cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_CONTINUE errno " << errno << endl;
+//            cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_CONTINUE errno " << errno << endl;
             SetFsmState(COMMUNICATION_RECEIVE_ERROR);
         }
         else
         {
             //std::cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_CONTINUE 4"  << std::endl;
-            cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_CONTINUE errno " << errno << endl;
+//            cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_CONTINUE errno " << errno << endl;
         }
         break;
 
