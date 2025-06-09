@@ -313,12 +313,12 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
         m_bIsStartState = false;
 
         // Обновляем значения для следующей проверки
-        m_iLastHour = tstructCurrent.tm_min;
-//        m_iLastHour = tstructCurrent.tm_hour;
+//        m_iLastHour = tstructCurrent.tm_min;
+        m_iLastHour = tstructCurrent.tm_hour;
 
         // Обновляем значения для следующей проверки
-        m_iLastDay = tstructCurrent.tm_hour;
-////            m_iLastDay = tstructCurrent.tm_mday;
+////        m_iLastDay = tstructCurrent.tm_hour;
+            m_iLastDay = tstructCurrent.tm_mday;
 
 
         // каждый новый час начинаем запись в fram сначала.
@@ -366,7 +366,8 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
             // Создаем пути к папкам и файлу
             std::string pathToYearFolder = "/home/debian/AnalogueMeasureArchives_" + std::to_string(year);
             std::string pathToMonthFolder = pathToYearFolder + "/" + std::to_string(month);
-            std::string dailyArchveFlashFile = pathToMonthFolder + "/AnalogueMeasure_" + dateStr + "-" + std::to_string(hour) + ".csv";
+            std::string dailyArchveFlashFile = pathToMonthFolder + "/AnalogueMeasure_" + dateStr + ".csv";
+//            std::string dailyArchveFlashFile = pathToMonthFolder + "/AnalogueMeasure_" + dateStr + "-" + std::to_string(hour) + ".csv";
             //        std::string dailyArchveFlashFile = pathToMonthFolder + "/AnalogueMeasure_" + dateStr + "-" + std::to_string(m_iFileNumberCounter) + ".csv";
 
             // Проверка и создание директорий (используем POSIX функции)
@@ -406,14 +407,14 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
         // Если текущий час отличаются от предыдущего,
         // значит, наступил новый час.
         // наступил новый час?
-        if (tstructCurrent.tm_min != m_iLastHour)
-//    if (tstructCurrent.tm_hour != m_iLastHour)
+//        if (tstructCurrent.tm_min != m_iLastHour)
+        if (tstructCurrent.tm_hour != m_iLastHour)
         {
             std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 4"  << std::endl;
             std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry tm_min "  << (float)tstructCurrent.tm_min << std::endl;
             // Обновляем значения для следующей проверки
-            m_iLastHour = tstructCurrent.tm_min;
-//        m_iLastHour = tstructCurrent.tm_hour;
+//            m_iLastHour = tstructCurrent.tm_min;
+            m_iLastHour = tstructCurrent.tm_hour;
 
             // блок считывания данных из fram и записи в файл текущего суточного архива.
             {
@@ -522,20 +523,16 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
             // Если текущий день отличаются от предыдущего,
             // значит, наступили новые сутки.
             // наступили новые сутки?
-            //        m_iLastDay++;
-            //        if (m_iLastDay >= 3)
-            if (tstructCurrent.tm_hour != m_iLastDay)
-                ////        if (tstructCurrent.tm_mday != m_iLastDay)
+////            if (tstructCurrent.tm_hour != m_iLastDay)
+            if (tstructCurrent.tm_mday != m_iLastDay)
             {
                 std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 6"  << std::endl;
                 std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry tm_min "  << (float)tstructCurrent.tm_min << std::endl;
                 std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry tm_hour "  << (float)tstructCurrent.tm_hour << std::endl;
 
                 // Обновляем значения для следующей проверки
-                //            m_iLastDay = 0;
-                //            m_iFileNumberCounter++;
-                m_iLastDay = tstructCurrent.tm_hour;
-                ////            m_iLastDay = tstructCurrent.tm_mday;
+////                m_iLastDay = tstructCurrent.tm_hour;
+                m_iLastDay = tstructCurrent.tm_mday;
 
                 // блок сжатия файла текущего суточного архива.
                 {
