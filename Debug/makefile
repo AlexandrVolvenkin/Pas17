@@ -8,6 +8,7 @@ RM := rm -rf
 
 # All of the sources participating in the build are defined here
 -include sources.mk
+-include src/SQLite/subdir.mk
 -include src/Modbus/subdir.mk
 -include src/CommunicationDevice/subdir.mk
 -include src/subdir.mk
@@ -57,7 +58,7 @@ main-build: Pas17
 Pas17: $(OBJS) $(USER_OBJS) makefile $(OPTIONAL_TOOL_DEPS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: Cross G++ Linker'
-	arm-linux-gnueabihf-g++ -pthread -lrt -o "Pas17" $(OBJS) $(USER_OBJS) $(LIBS)
+	arm-linux-gnueabihf-g++ -pthread -lrt -ldl -o "Pas17" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 

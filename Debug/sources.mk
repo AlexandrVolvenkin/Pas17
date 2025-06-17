@@ -26,4 +26,5 @@ SUBDIRS := \
 src \
 src/CommunicationDevice \
 src/Modbus \
+src/SQLite \
 

@@ -32,7 +32,7 @@ using namespace std;
 //-------------------------------------------------------------------------------
 CSpiCommunicationDevice::CSpiCommunicationDevice()
 {
-
+    m_pxSpi0Semaphore = new CSemaphore(12345, 1);
 }
 
 //-------------------------------------------------------------------------------
@@ -47,7 +47,7 @@ CSpiCommunicationDevice::~CSpiCommunicationDevice()
 //-------------------------------------------------------------------------------
 void CSpiCommunicationDevice::Init(void)
 {
-    Open();
+//    Open();
 //    ChipSelectPinSet();
 
     pxGpioSpiChipEnablePin =
@@ -219,14 +219,16 @@ int8_t CSpiCommunicationDevice::Open(void)
 //        std::cout << "Semaphore destroyed with ID: " << m_iSpi0SemaphoreId << "\n";
 //    }
 
-    m_pxSpi0Semaphore = new CSemaphore(12345, 1);
-//    m_pxSpi0Semaphore -> Acquire();
-//    sleep(5); // Пример работы с ресурсом
-//    m_pxSpi0Semaphore -> Release();
-//    CSemaphore xSpi0Semaphore(12345, 1);
-//    xSpi0Semaphore.Acquire();
-//    sleep(5); // Пример работы с ресурсом
-//    xSpi0Semaphore.Release();
+//    m_pxSpi0Semaphore = new CSemaphore(12345, 1);
+//
+//
+////    m_pxSpi0Semaphore -> Acquire();
+////    sleep(5); // Пример работы с ресурсом
+////    m_pxSpi0Semaphore -> Release();
+////    CSemaphore xSpi0Semaphore(12345, 1);
+////    xSpi0Semaphore.Acquire();
+////    sleep(5); // Пример работы с ресурсом
+////    xSpi0Semaphore.Release();
 
     return 0;
 }
@@ -414,13 +416,16 @@ int CSpiCommunicationDevice::Exchange(uint8_t uiAddress,
 {
 //    std::cout << "CSpiCommunicationDevice::Exchange 1"  << std::endl;
 
+//        return -1;
 //    while (m_pxSpi0Semaphore -> Acquire() == false);
     if (!(m_pxSpi0Semaphore -> Acquire()))
     {
         return -1;
     }
 
-    ModeSet();
+    Open();
+
+//    ModeSet();
     ChipSelectAddressSet(uiAddress);
 
 //    memset(aucSpiTxBuffer, 0, iLength);
@@ -442,11 +447,13 @@ int CSpiCommunicationDevice::Exchange(uint8_t uiAddress,
         //(unsigned int)                // pad;
 
     };
+            usleep(5000);
     // send the SPI message (all of the above fields, inc. buffers)
     int iStatus = ioctl(m_iDeviceDescriptorServer, SPI_IOC_MESSAGE(1), &xTransfer);
 
     pxGpioSpiChipEnablePin -> ClearPin();
 
+    Close();
     m_pxSpi0Semaphore -> Release();
 
     if (iStatus < 0)
