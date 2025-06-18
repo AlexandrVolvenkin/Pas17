@@ -328,7 +328,7 @@ void CInternalModuleMuvr::Allocate(void)
 //-------------------------------------------------------------------------------
 uint8_t CInternalModuleMuvr::DataExchange(void)
 {
-    //std::cout << "CInternalModuleMuvr::DataExchange 1"  << std::endl;
+//    std::cout << "CInternalModuleMuvr::DataExchange 1"  << std::endl;
     unsigned short usData;
     float fData;
     uint8_t ucCalibrPlus;

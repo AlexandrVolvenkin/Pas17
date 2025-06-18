@@ -95,19 +95,19 @@ CSemaphore::CSemaphore(key_t keyVal, int value)
             }
             else
             {
-                std::cout << "CSemaphore::CSemaphore 34"  << std::endl;
-                semctl(semId, 0, SETVAL, value); // Установка начального значения семафора
+                std::cout << "CSemaphore::CSemaphore 35"  << std::endl;
+//                semctl(semId, 0, SETVAL, value); // Установка начального значения семафора
             }
         }
         else
         {
-            std::cout << "CSemaphore::CSemaphore 35"  << std::endl;
+            std::cout << "CSemaphore::CSemaphore 36"  << std::endl;
         }
     }
     else
     {
         std::cout << "CSemaphore::CSemaphore 5"  << std::endl;
-        semctl(semId, 0, SETVAL, value); // Установка начального значения семафора
+//        semctl(semId, 0, SETVAL, value); // Установка начального значения семафора
     }
 }
 
@@ -126,6 +126,7 @@ bool CSemaphore::Acquire()
     sops.sem_num = 0;
     sops.sem_op = -1; // Уменьшение значения семафора на 1
     sops.sem_flg = SEM_UNDO;
+//    sops.sem_flg = IPC_NOWAIT;
 
     int result = semop(semId, &sops, 1);
     if (result == -1)
