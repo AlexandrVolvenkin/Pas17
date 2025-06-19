@@ -170,6 +170,8 @@ public:
             TDiscreteSignalsDescriptionWork *pxDiscreteSignalsDescriptionWork);
     void DiscreteSignalsDataBlockCommonFormatToWork(void);
     uint8_t DiscreteSignalsDataBaseCrcCheck(TDiscreteSignalsDescriptionWork *pxDiscreteSignalsDataBase);
+    void ProgrammedDiscreteSignalsNumberCount(void);
+    void CreateAlarms(void);
 
     uint8_t Init(void);
     uint8_t Fsm(void);

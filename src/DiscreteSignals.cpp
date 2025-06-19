@@ -522,6 +522,105 @@ uint8_t CDiscreteSignals::DiscreteSignalsDataBaseCrcCheck(
 }
 
 //-------------------------------------------------------------------------------
+// вычисляет количество запрограммированных дискретных сигналов.
+void CDiscreteSignals::ProgrammedDiscreteSignalsNumberCount(void)
+{
+//    std::cout << "CConfigurationCreate::ProgrammedDiscreteSignalsNumberCount 1" << endl;
+    unsigned char ucCheck;
+    unsigned char *pucSource;
+    TDiscreteSignalsDescriptionWork *pxDiscreteSignalsDescriptionWork;
+
+    uint16_t nucModuleCounter = 0;
+
+    // получим указатель на рабочий массив дискретных сигналов.
+    pxDiscreteSignalsDescriptionWork = m_pxDiscreteSignalsDescriptionWork;
+
+    // посчитаем количество запрограммированных, обрабатываемых дискретных входов.
+    for (int i = 0;
+            i < MAX_HANDLED_DISCRETE_INPUT;
+            i++)
+    {
+        pucSource = (unsigned char*)&pxDiscreteSignalsDescriptionWork[i];
+        ucCheck = 0;
+        // суммируем данные описателя, если, не равно нулю, то вход запрограммирован.
+        for (int j = 0;
+                j < (sizeof(struct TDiscreteSignalsDescriptionWork) - ONE_BYTE_CRC_LENGTH);
+                j++)
+        {
+            ucCheck += pucSource[j];
+        }
+
+        if (ucCheck)
+        {
+            // ещё один дискретный сигнал запрограммирован.
+            nucModuleCounter++;
+        }
+        else
+        {
+            break;
+        }
+    }
+
+    (GetResources() -> GetDeviceConfigSearchPointer()) ->
+    uiHandledDiscreteSignalsQuantity =
+        nucModuleCounter;
+}
+
+//-------------------------------------------------------------------------------
+void CDiscreteSignals::CreateAlarms(void)
+{
+    std::cout << "CDiscreteSignals::CreateDevices 1"  << std::endl;
+
+    // получим указатель на объект конфигурации.
+    CConfigurationCreate::TConfigDataPackOne* pxDeviceConfigSearch =
+        (GetResources() -> GetDeviceConfigSearchPointer());
+
+    for (uint8_t i = 0;
+            i < (pxDeviceConfigSearch ->
+                 uiHandledDiscreteSignalsQuantity);
+            i++)
+    {
+//        uint8_t uiType = pxDeviceConfigSearch ->
+//                         axModulesContext[i].uiType;
+//        switch (uiType)
+//        {
+//        case MODULE_TYPE_MUVR:
+//        {
+//            std::string sDeviceName = "InternalModuleMuvr0";
+////            std::string sDeviceName = "InternalModuleMuvr" + std::to_string(i);
+//            std::cout << "CDiscreteSignals::CreateDevices sDeviceName " << sDeviceName << std::endl;
+//            CInternalModuleMuvr* pxInternalModuleMuvr = 0;
+//            //            pxInternalModuleMuvr =
+////                static_cast<CInternalModuleMuvr*>(GetResources() ->
+////                                                  AddCommonTaskToMap("InternalModuleMuvr" + std::to_string(i),
+////                                                          std::make_shared<CInternalModuleMuvr>()));
+//            pxInternalModuleMuvr =
+//                static_cast<CInternalModuleMuvr*>(GetResources() ->
+//                                                  AddCommonTaskToMap(sDeviceName,
+//                                                          std::make_shared<CInternalModuleMuvr>()));
+//            pxInternalModuleMuvr ->
+//            SetResources(GetResources());
+//            pxInternalModuleMuvr ->
+//            SetCommunicationDeviceName("SpiCommunicationDeviceSpi0");
+////            pxInternalModuleMuvr ->
+////            Allocate();
+//            pxInternalModuleMuvr ->
+//            SetAddress(pxDeviceConfigSearch ->
+//                       axModulesContext[i].uiAddress);
+//            GetResources() -> AddCurrentlyRunningTasksList(pxInternalModuleMuvr);
+//            m_vpxDevices.push_back(pxInternalModuleMuvr);
+//            m_vuiDevicesId.push_back(GetResources() ->
+//                                     GetTaskIdByNameFromMap(sDeviceName));
+    }
+//        break;
+//
+//        default:
+//            break;
+//        }
+//    }
+}
+
+//-------------------------------------------------------------------------------
 uint8_t CDiscreteSignals::Fsm(void)
 {
 //    std::cout << "CDiscreteSignals::Fsm 1" << endl;

@@ -83,7 +83,7 @@ public:
         uint8_t uiInternalModulesQuantity;
         uint8_t uiExternalModulesQuantity;
 
-        unsigned int uiHandledDiscreteInputQuantity;
+        unsigned int uiHandledDiscreteSignalsQuantity;
         unsigned int uiHandledFunctionBlockQuantity;
 
         uint8_t uiLastDiscreteInputModuleIndex; // индексы модулей последних по порядку в своей группе.
