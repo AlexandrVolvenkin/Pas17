@@ -229,54 +229,54 @@ void CDiscreteSignals::DiscreteSignalsStartDataBaseCreate(void)
            (sizeof(struct TDiscreteSignalsDescriptionWork) *
             MAX_HANDLED_DISCRETE_INPUT));
 
-    // создадим первую часть стартовой базы данных дискретных сигналов.
-    // для сигналов пораждаемых модулями дискретного ввода.
-    for (int i = 0;
-            i < ((GetResources() ->
-                  GetDeviceConfigSearchPointer()) ->
-                 uiServiceDiscreteInputModuleQuantity);
-            i++)
-    {
-        for (int j = 0;
-                j < DISCRETE_MODULE_INPUT_QUANTITY;
-                j++)
-        {
-            // заполним номер группы. содержится в счётчике - nuiModuleCounter. для каждого модуля свой номер группы.
-            pxDiscreteSignalsDescriptionWork[nuiInputCounter].uiTalTkGrp |= (nuiModuleCounter & LIGHT_BOARD_CELL_NUMBER_DISC_MASK);
-            // тип контакта - нормально разомкнутый.
-            pxDiscreteSignalsDescriptionWork[nuiInputCounter].uiTalTkGrp |= CONTACT_TYPE_DISC_MASK;
-            // аварийная сигнализация.
-            pxDiscreteSignalsDescriptionWork[nuiInputCounter].uiTalTkGrp &= ~SIGNALING_TYPE_1_DISC_MASK;
-            pxDiscreteSignalsDescriptionWork[nuiInputCounter].uiTalTkGrp |= SIGNALING_TYPE_2_DISC_MASK;
-            // первый выход управления реле, превого модуля реле МР1.
-            pxDiscreteSignalsDescriptionWork[nuiInputCounter].auiRelayOut[0] = 1;
-            // время задержки - 5 секунд.
-            pxDiscreteSignalsDescriptionWork[nuiInputCounter].uiDelay |= (DELAY_TIME_SETPOINT_DISC_MASK & 5);
-            // дискретность времени задержки - 1 секунда.
-            pxDiscreteSignalsDescriptionWork[nuiInputCounter].uiDelay &= ~DELAY_TIME_DISCRETENESS_DISC_MASK;
-            // Не архивировать.
-            pxDiscreteSignalsDescriptionWork[nuiInputCounter].uiDelay &= ~ARCHIVE_DISC_MASK;
-
-            // вычислим CRC описателя.
-            puiSource = (uint8_t*)&pxDiscreteSignalsDescriptionWork[nuiInputCounter];
-            uiCheck = 0xFF;
-            for (int k = 0;
-                    k < (sizeof(struct TDiscreteSignalsDescriptionWork) - ONE_BYTE_CRC_LENGTH);
-                    k++)
-            {
-                uiCheck += puiSource[k];
-            }
-            pxDiscreteSignalsDescriptionWork[nuiInputCounter].uiCrc = uiCheck;
-
-            // следующий вход модуля дискретного ввода.
-            // следующий описатель.
-            nuiInputCounter++;
-
-        }
-
-        // следующий модуль.
-        nuiModuleCounter++;
-    }
+//    // создадим первую часть стартовой базы данных дискретных сигналов.
+//    // для сигналов пораждаемых модулями дискретного ввода.
+//    for (int i = 0;
+//            i < ((GetResources() ->
+//                  GetDeviceConfigSearchPointer()) ->
+//                 uiServiceDiscreteInputModuleQuantity);
+//            i++)
+//    {
+//        for (int j = 0;
+//                j < DISCRETE_MODULE_INPUT_QUANTITY;
+//                j++)
+//        {
+//            // заполним номер группы. содержится в счётчике - nuiModuleCounter. для каждого модуля свой номер группы.
+//            pxDiscreteSignalsDescriptionWork[nuiInputCounter].uiTalTkGrp |= (nuiModuleCounter & LIGHT_BOARD_CELL_NUMBER_DISC_MASK);
+//            // тип контакта - нормально разомкнутый.
+//            pxDiscreteSignalsDescriptionWork[nuiInputCounter].uiTalTkGrp |= CONTACT_TYPE_DISC_MASK;
+//            // аварийная сигнализация.
+//            pxDiscreteSignalsDescriptionWork[nuiInputCounter].uiTalTkGrp &= ~SIGNALING_TYPE_1_DISC_MASK;
+//            pxDiscreteSignalsDescriptionWork[nuiInputCounter].uiTalTkGrp |= SIGNALING_TYPE_2_DISC_MASK;
+//            // первый выход управления реле, превого модуля реле МР1.
+//            pxDiscreteSignalsDescriptionWork[nuiInputCounter].auiRelayOut[0] = 1;
+//            // время задержки - 5 секунд.
+//            pxDiscreteSignalsDescriptionWork[nuiInputCounter].uiDelay |= (DELAY_TIME_SETPOINT_DISC_MASK & 5);
+//            // дискретность времени задержки - 1 секунда.
+//            pxDiscreteSignalsDescriptionWork[nuiInputCounter].uiDelay &= ~DELAY_TIME_DISCRETENESS_DISC_MASK;
+//            // Не архивировать.
+//            pxDiscreteSignalsDescriptionWork[nuiInputCounter].uiDelay &= ~ARCHIVE_DISC_MASK;
+//
+//            // вычислим CRC описателя.
+//            puiSource = (uint8_t*)&pxDiscreteSignalsDescriptionWork[nuiInputCounter];
+//            uiCheck = 0xFF;
+//            for (int k = 0;
+//                    k < (sizeof(struct TDiscreteSignalsDescriptionWork) - ONE_BYTE_CRC_LENGTH);
+//                    k++)
+//            {
+//                uiCheck += puiSource[k];
+//            }
+//            pxDiscreteSignalsDescriptionWork[nuiInputCounter].uiCrc = uiCheck;
+//
+//            // следующий вход модуля дискретного ввода.
+//            // следующий описатель.
+//            nuiInputCounter++;
+//
+//        }
+//
+//        // следующий модуль.
+//        nuiModuleCounter++;
+//    }
 
 
 

@@ -706,8 +706,8 @@ uint8_t CMainProductionCycle::Fsm(void)
     case READY:
         std::cout << "CMainProductionCycle::Fsm READY"  << std::endl;
 //        SetFsmState(DATA_STORE_CHECK_TASK_READY_CHECK);
-        SetFsmState(CONFIGURATION_CREATE_START);
-//        SetFsmState(DATA_STORE_CHECK_START);
+//        SetFsmState(CONFIGURATION_CREATE_START);
+        SetFsmState(DATA_STORE_CHECK_START);
 
         break;
 
@@ -841,6 +841,48 @@ uint8_t CMainProductionCycle::Fsm(void)
     break;
 
 //-------------------------------------------------------------------------------
+    case DATA_STORE_CHECK_START:
+        std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_START"  << std::endl;
+        {
+            CurrentlyRunningTasksExecution();
+
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            pxDataContainer -> m_uiTaskId = m_uiDataStoreCheckId;
+            pxDataContainer -> m_uiFsmCommandState =
+                CDataStoreCheck::DATA_STORE_CHECK_START;
+
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+            SetFsmNextStateDoneOk(DATA_STORE_CHECK_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+            SetFsmNextStateReadyWaitingError(DATA_STORE_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingError(DATA_STORE_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingDoneError(DATA_STORE_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+        }
+        break;
+
+    case DATA_STORE_CHECK_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+        std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        {
+            CurrentlyRunningTasksExecution();
+
+            // текущая база данных не повреждена.
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(CONFIGURATION_CREATE_START);
+        }
+        break;
+
+    case DATA_STORE_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+        std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        {
+            CurrentlyRunningTasksExecution();
+
+            // текущая база данных повреждена.
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+            SetFsmState(DATA_BASE_CREATE_START);
+        }
+        break;
+
+//-------------------------------------------------------------------------------
     case CONFIGURATION_CREATE_START:
         std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CREATE_START"  << std::endl;
         {
@@ -901,50 +943,8 @@ uint8_t CMainProductionCycle::Fsm(void)
 
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
 //            SetFsmState(MAIN_CYCLE_MODBUS_SLAVE);
-//            SetFsmState(CONFIGURATION_CHECK_START);
-            SetFsmState(DATA_STORE_CHECK_START);
-        }
-        break;
-
-//-------------------------------------------------------------------------------
-    case DATA_STORE_CHECK_START:
-        std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_START"  << std::endl;
-        {
-            CurrentlyRunningTasksExecution();
-
-            CDataContainerDataBase* pxDataContainer =
-                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-            pxDataContainer -> m_uiTaskId = m_uiDataStoreCheckId;
-            pxDataContainer -> m_uiFsmCommandState =
-                CDataStoreCheck::DATA_STORE_CHECK_START;
-
-            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
-            SetFsmNextStateDoneOk(DATA_STORE_CHECK_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
-            SetFsmNextStateReadyWaitingError(DATA_STORE_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
-            SetFsmNextStateDoneWaitingError(DATA_STORE_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
-            SetFsmNextStateDoneWaitingDoneError(DATA_STORE_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
-        }
-        break;
-
-    case DATA_STORE_CHECK_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
-        std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
-        {
-            CurrentlyRunningTasksExecution();
-
-            // текущая база данных не повреждена.
-            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(CONFIGURATION_CHECK_START);
-        }
-        break;
-
-    case DATA_STORE_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
-        std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
-        {
-            CurrentlyRunningTasksExecution();
-
-            // текущая база данных повреждена.
-            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
-            SetFsmState(DATA_BASE_CREATE_START);
+//            SetFsmState(DATA_STORE_CHECK_START);
         }
         break;
 

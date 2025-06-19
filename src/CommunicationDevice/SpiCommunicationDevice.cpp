@@ -426,11 +426,13 @@ int CSpiCommunicationDevice::Exchange(uint8_t uiAddress,
 //    }
 
     while (m_pxSpi0Semaphore -> Acquire() == false);
+
 //    if (!(m_pxSpi0Semaphore -> Acquire()))
 //    {
 //        std::cout << "CSpiCommunicationDevice::Exchange 2"  << std::endl;
 //        return -1;
 //    }
+
 //    usleep(5000);
 //
 //    Open();
