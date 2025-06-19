@@ -66,6 +66,9 @@ CSemaphore::CSemaphore(key_t keyVal, int value)
 //        exit(EXIT_FAILURE);
 //    }
 
+// пытаемся получить семафор с ключом создать IPC_CREAT. если семафор уже существует
+// будет ошибка errno == EEXIST. в этом случае не устанавливаем значение в строке:
+// semctl(semId, 0, SETVAL, value); // Установка начального значения семафора
     semId = semget(keyVal, 1, IPC_CREAT | IPC_EXCL | S_IRUSR | S_IWUSR);
     if (semId == -1)
     {
@@ -74,29 +77,16 @@ CSemaphore::CSemaphore(key_t keyVal, int value)
         {
             std::cout << "CSemaphore::CSemaphore 3"  << std::endl;
             std::cerr << "Semaphore already exists. Try another key.\n";
-//            exit(EXIT_FAILURE);
-
+            // получаем уже существующий семафор.
             semId = semget(keyVal, 1, IPC_EXCL | S_IRUSR | S_IWUSR);
             if (semId == -1)
             {
                 std::cout << "CSemaphore::CSemaphore 32"  << std::endl;
-                if (errno == EEXIST)
-                {
-                    std::cout << "CSemaphore::CSemaphore 33"  << std::endl;
-                    std::cerr << "Semaphore already exists. Try another key.\n";
-//            exit(EXIT_FAILURE);
-                }
-                else
-                {
-                    std::cout << "CSemaphore::CSemaphore 34"  << std::endl;
-                    perror("semget");
-//            exit(EXIT_FAILURE);
-                }
+                perror("semget");
             }
             else
             {
                 std::cout << "CSemaphore::CSemaphore 35"  << std::endl;
-                semctl(semId, 0, SETVAL, value); // Установка начального значения семафора
             }
         }
         else
