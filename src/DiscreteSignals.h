@@ -168,7 +168,8 @@ public:
     void DiscreteSignalsStartDataBaseCreate(void);
     void DiscreteSignalsStartDataBlockWorkToCommonFormat(uint8_t* puiBlockDataPointer,
             TDiscreteSignalsDescriptionWork *pxDiscreteSignalsDescriptionWork);
-    void DiscreteSygnalTextDescriptorStartDataBaseCreate(uint8_t* puiBlockDataPointer);
+    void DiscreteSignalsDataBlockCommonFormatToWork(void);
+    uint8_t DiscreteSignalsDataBaseCrcCheck(TDiscreteSignalsDescriptionWork *pxDiscreteSignalsDataBase);
 
     uint8_t Init(void);
     uint8_t Fsm(void);

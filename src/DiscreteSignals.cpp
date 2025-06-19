@@ -77,7 +77,7 @@ void CDiscreteSignals::Allocate(void)
 ////    m_puiErrorCode = xMemoryAllocationContext.puiErrorCode;
 //
 //    // Получим указатель на место в массиве дискретных входов для текущего модуля.
-//    m_puiDiscreteInputsState =
+    //    m_puiDiscreteInputsState =
 //        &(GetResources() ->
 //          m_puiDiscreteInputsState[GetResources() ->
 //                                                  m_uiUsedDiscreteInputsState]);
@@ -403,56 +403,6 @@ void CDiscreteSignals::DiscreteSignalsStartDataBaseCreate(void)
         // следующий модуль.
         nuiModuleCounter++;
     }
-
-
-
-
-//    // получим указатель на буфер с вновь созданной нормализованной стартовой базой данных дискретных сигналов.
-//    pxDiscreteSignalsDescriptionWork = m_pxDiscreteSignalsDescriptionWork;
-////    // получим указатель на базу данных прибора в общем формате.
-////    pxDiscreteSignalsDescriptionWorkPackOne = (TDiscreteSignalsDescriptionWorkPackOne*)&(xPlcDataBase.
-////            axPlcDataBaseBlocks[DISCRETE_INPUT_SYGNALS_DATA_BASE_BLOCK_OFFSET].
-////            auiPlcDataBaseBlockData[0]);
-//    nuiBlockCounter = 0;
-//    nuiBlocksInBlockCounter = 0;
-//
-//    // преобразуем созданную базу данных в общий формат.
-//    for (int i = 0;
-//            i < MAX_HANDLED_DISCRETE_INPUT;
-//            i++)
-//    {
-//        // обработан весь блок базы данных?
-//        if (nuiBlocksInBlockCounter == DISCRETE_INPUT_SYGNALS_DATA_BASE_BLOCKS_IN_BLOCK_QUANTITY)
-//        {
-//            // следующий блок базы данных.
-//            nuiBlockCounter++;
-////            // получим указатель на следующий блок в общей базе данных прибора.
-////            pxDiscreteSignalsDescriptionWorkPackOne = (TDiscreteSignalsDescriptionWorkPackOne*)&(xPlcDataBase.
-////                    axPlcDataBaseBlocks[DISCRETE_INPUT_SYGNALS_DATA_BASE_BLOCK_OFFSET + nuiBlockCounter].
-////                    auiPlcDataBaseBlockData[0]);
-//            nuiBlocksInBlockCounter = 0;
-//        }
-//
-//        // скопируем один описатель дискретного сигнала, в буфер общего формата.
-//        xDiscreteSignalsDescriptionWorkSourse.uiTalTkGrp =
-//            pxDiscreteSignalsDescriptionWork[i].uiTalTkGrp;
-//
-//        memcpy(xDiscreteSignalsDescriptionWorkSourse.auiRelayOut,
-//               pxDiscreteSignalsDescriptionWork[i].auiRelayOut,
-//               8);
-//
-//        xDiscreteSignalsDescriptionWorkSourse.uiDelay =
-//            pxDiscreteSignalsDescriptionWork[i].uiDelay;
-//        xDiscreteSignalsDescriptionWorkSourse.uiCrc =
-//            pxDiscreteSignalsDescriptionWork[i].uiCrc;
-//
-//        memcpy((uint8_t*)&pxDiscreteSignalsDescriptionWorkPackOne[nuiBlocksInBlockCounter],
-//               (uint8_t*)&xDiscreteSignalsDescriptionWorkSourse,
-//               sizeof(struct TDiscreteSignalsDescriptionWorkPackOne));
-//
-//        // следующий описатель.
-//        nuiBlocksInBlockCounter++;
-//    }
 }
 
 //-------------------------------------------------------------------------------
@@ -460,13 +410,8 @@ void CDiscreteSignals::DiscreteSignalsStartDataBaseCreate(void)
 void CDiscreteSignals::DiscreteSignalsStartDataBlockWorkToCommonFormat(uint8_t* puiBlockDataPointer,
         TDiscreteSignalsDescriptionWork *pxDiscreteSignalsDescriptionWork)
 {
-//    TDiscreteSignalsDescriptionWork *pxDiscreteSignalsDescriptionWork;
     TDiscreteSignalsDescriptionWorkPackOne *pxDiscreteSignalsDescriptionWorkPackOne;
-//    // получим указатель на блок в буфере с вновь созданной нормализованной стартовой базой данных дискретных сигналов.
-//    pxDiscreteSignalsDescriptionWork =
-//        m_pxDiscreteSignalsDescriptionWork[((sizeof(struct TDiscreteSignalsDescriptionWork) *
-//    DISCRETE_INPUT_SYGNALS_DATA_BASE_BLOCKS_IN_BLOCK_QUANTITY) *
-//    uiBlockIndex)];
+
     memset(m_puiIntermediateBuff,
            0,
            CDataStore::MAX_BLOCK_LENGTH);
@@ -494,201 +439,87 @@ void CDiscreteSignals::DiscreteSignalsStartDataBlockWorkToCommonFormat(uint8_t* 
     }
 }
 
-////-------------------------------------------------------------------------------
-//// создаёт стартовую базу данных текстовых реквизитов дискретных сигналов.
-//void CDiscreteSignals::DiscreteSygnalsTextDescriptorStartDataBaseCreate(uint8_t* puiBlockDataPointer)
-//{
-//    int i;
-//    uint8_t nucBlockCounter;
-//    uint8_t nucBlocksInBlockCounter; // один описатель - один блок, в общем блоке.
-//    uint8_t nucDiscreteSignalsCounter;
-//    uint8_t nucModuleInputCounter;
-//    // количество уставок по одному входу(4 - LL, L, H, HH).
-//    uint8_t nucInputSetPointCounter;
-//    uint8_t nucModuleCounter;
-//    uint8_t ucFlowControl;
-//    TDiscreteSygnalTextDescriptorPackOne *pxDiscreteSygnalTextDescriptorPackOne;
-//    TDiscreteSygnalTextDescriptorPackOne xDiscreteSygnalTextDescriptorPackOne;
-//    TDiscreteSygnalTextDescriptor *pxDiscreteSygnalTextDescriptor;
-//
-//
-//    // получим указатель на буфер для нормализованной стартовой базы данных прибора.
-//    pxDiscreteSygnalTextDescriptor = axDiscreteSygnalTextDescriptor;
-//    // начнём с первого входа.
-//    nucDiscreteSignalsCounter = 0;
-//    nucModuleInputCounter = 0;
-//    // начнём с первого модуля.
-//    nucModuleCounter = 1;
-//    i = 0;
-//
-//    memset((uint8_t*)pxDiscreteSygnalTextDescriptor,
-//           0,
-//           (sizeof(struct TDiscreteSygnalTextDescriptor)));
-//
-//    // создадим первую часть стартовой базы данных текстовых реквизитов дискретных сигналов.
-//    // для сигналов пораждаемых модулями дискретного ввода.
-//    while (i < (xPlcConfigService.xPlcConfigServiceData.ucServiceDiscreteInputModuleQuantity *
-//                DISCRETE_MODULE_INPUT_QUANTITY))
-//    {
-//        // создадим строку текстового реквизита дискретного сигнала.
-//        sprintf((char*)(pxDiscreteSygnalTextDescriptor[i].acTextDescriptor),
-//                "%s_%02d_%02d  ",
-//                "Вх. DI",
-//                nucModuleCounter,
-//                nucDiscreteSignalsCounter + CONVERT_INTEGER_TO_NATURAL_NUMBER);
-//        // следующий вход модуля дискретного ввода.
-//        nucDiscreteSignalsCounter++;
-//        // следующий описатель.
-//        i++;
-//        // обработаны все входы модуля дискретного ввода?
-//        if (nucDiscreteSignalsCounter == DISCRETE_MODULE_INPUT_QUANTITY)
-//        {
-//            // начнём с первого входа.
-//            nucDiscreteSignalsCounter = 0;
-//            // следующий модуль.
-//            nucModuleCounter++;
-//        }
-//    }
-//
-//    // начнём с первого входа.
-//    nucDiscreteSignalsCounter = 0;
-//    nucModuleInputCounter = 0;
-//    // начнём с первой уставки - LL+L.
-//    nucInputSetPointCounter = 0;
-//    // начнём с первого модуля.
-//    nucModuleCounter = 1;
-//
-//    // создадим вторую часть стартовой базы данных текстовых реквизитов дискретных сигналов.
-//    // для сигналов пораждаемых модулями аналогового ввода.
-//    // один аналоговый вход пораждает четыре дискретных сигнала - уставки: LL, L, H, HH.
-//    // начнём с создания описателя для уставки LL+L.
-//    ucFlowControl = ANALOGUE_INPUT_SET_POINT_VIOLATION_LL_L;
-//    while (i < ((xPlcConfigService.xPlcConfigServiceData.ucServiceDiscreteInputModuleQuantity *
-//                 DISCRETE_MODULE_INPUT_QUANTITY) +
-//                (xPlcConfigService.xPlcConfigServiceData.ucServiceAnalogueInputModuleQuantity *
-//                 ANALOG_MODULE_INPUT_QUANTITY *
-//                 ANALOGUE_INPUT_DI_VALUE_QUANTITY)))
-//    {
-//        switch(ucFlowControl)
-//        {
-//        case ANALOGUE_INPUT_SET_POINT_VIOLATION_LL_L:
-//            // создадим строку текстового реквизита дискретного сигнала.
-//            sprintf((char*)(pxDiscreteSygnalTextDescriptor[i].acTextDescriptor),
-//                    "%s_%02d_%01d_LL",
-//                    "Вх. AI",
-//                    nucModuleCounter,
-//                    nucModuleInputCounter + CONVERT_INTEGER_TO_NATURAL_NUMBER);
-//            // перейдём к заполнению описателя следующей уставки.
-//            ucFlowControl = ANALOGUE_INPUT_SET_POINT_VIOLATION_L;
-//            break;
-//
-//        case ANALOGUE_INPUT_SET_POINT_VIOLATION_L:
-//            // создадим строку текстового реквизита дискретного сигнала.
-//            sprintf((char*)(pxDiscreteSygnalTextDescriptor[i].acTextDescriptor),
-//                    "%s_%02d_%01d_L ",
-//                    "Вх. AI",
-//                    nucModuleCounter,
-//                    nucModuleInputCounter + CONVERT_INTEGER_TO_NATURAL_NUMBER);
-//
-//            // перейдём к заполнению описателя следующей уставки.
-//            ucFlowControl = ANALOGUE_INPUT_SET_POINT_VIOLATION_H;
-//            break;
-//
-//        case ANALOGUE_INPUT_SET_POINT_VIOLATION_H:
-//            // создадим строку текстового реквизита дискретного сигнала.
-//            sprintf((char*)(pxDiscreteSygnalTextDescriptor[i].acTextDescriptor),
-//                    "%s_%02d_%01d_H ",
-//                    "Вх. AI",
-//                    nucModuleCounter,
-//                    nucModuleInputCounter + CONVERT_INTEGER_TO_NATURAL_NUMBER);
-//
-//            // перейдём к заполнению описателя следующей уставки.
-//            ucFlowControl = ANALOGUE_INPUT_SET_POINT_VIOLATION_HH_H;
-//            break;
-//
-//        case ANALOGUE_INPUT_SET_POINT_VIOLATION_HH_H:
-//            // создадим строку текстового реквизита дискретного сигнала.
-//            sprintf((char*)(pxDiscreteSygnalTextDescriptor[i].acTextDescriptor),
-//                    "%s_%02d_%01d_HH",
-//                    "Вх. AI",
-//                    nucModuleCounter,
-//                    nucModuleInputCounter + CONVERT_INTEGER_TO_NATURAL_NUMBER);
-//
-//            // перейдём к заполнению описателя следующей уставки.
-//            ucFlowControl = ANALOGUE_INPUT_SET_POINT_VIOLATION_LL_L;
-//            break;
-//
-//        default:
-//            break;
-//        };
-//
-//        nucDiscreteSignalsCounter++;
-//        nucInputSetPointCounter++;
-//        // количество уставок по одному входу(4 - LL, L, H, HH).
-//        // прошли по всем уставкам одного входа?
-//        if (nucInputSetPointCounter >= 4)
-//        {
-//            nucInputSetPointCounter = 0;
-//            // следующий вход.
-//            nucModuleInputCounter++;
-//        }
-//        // следующий описатель.
-//        i++;
-//
-//        // обработаны все дискретные сигналы пораждённые входами модуля аналогового ввода?
-//        if (nucDiscreteSignalsCounter == (ANALOG_MODULE_INPUT_QUANTITY *
-//                                        ANALOGUE_INPUT_DI_VALUE_QUANTITY))
-//        {
-//            // начнём с первого входа.
-//            nucDiscreteSignalsCounter = 0;
-//            nucModuleInputCounter = 0;
-//            // начнём с первой уставки - LL+L.
-//            nucInputSetPointCounter = 0;
-//            // следующий модуль.
-//            nucModuleCounter++;
-//        }
-//    }
-//
-//    // получим указатель на буфер с вновь созданной нормализованной стартовой базой данных прибора.
-//    pxDiscreteSygnalTextDescriptor = axDiscreteSygnalTextDescriptor;
-//    // получим указатель на базу данных прибора в общем формате.
-//    pxDiscreteSygnalTextDescriptorPackOne = (TDiscreteSygnalTextDescriptorPackOne*)&(xPlcDataBase.
-//                                            axPlcDataBaseBlocks[TEXT_TITLES_DATA_BASE_BLOCK_OFFSET].
-//                                            aucPlcDataBaseBlockData[0]);
-//    nucBlockCounter = 0;
-//    nucBlocksInBlockCounter = 0;
-//
-//    // преобразуем созданную базу данных в общий формат.
-//    for (int i = 0;
-//            i < MAX_HANDLED_DISCRETE_INPUT;
-//            i++)
-//    {
-//        // обработан весь блок базы данных?
-//        if (nucBlocksInBlockCounter == TEXT_TITLES_DATA_BASE_BLOCKS_IN_BLOCK_QUANTITY)
-//        {
-//            // следующий блок базы данных.
-//            nucBlockCounter++;
-//            // получим указатель на следующий блок в общей базе данных прибора.
-//            pxDiscreteSygnalTextDescriptorPackOne = (TDiscreteSygnalTextDescriptorPackOne*)&(xPlcDataBase.
-//                                                    axPlcDataBaseBlocks[TEXT_TITLES_DATA_BASE_BLOCK_OFFSET + nucBlockCounter].
-//                                                    aucPlcDataBaseBlockData[0]);
-//            nucBlocksInBlockCounter = 0;
-//        }
-//
-//        // скопируем один описатель текстовых реквизитов дискретного сигнала, в буфер общего формата.
-//        memcpy((&xDiscreteSygnalTextDescriptorPackOne.
-//                acTextDescriptor),
-//               (&pxDiscreteSygnalTextDescriptor[i].acTextDescriptor),
-//               DISCRETE_SYGNAL_NAME_LENGTH);
-//
-//        memcpy((uint8_t*)&pxDiscreteSygnalTextDescriptorPackOne[nucBlocksInBlockCounter],
-//               (uint8_t*)&xDiscreteSygnalTextDescriptorPackOne,
-//               sizeof(struct TDiscreteSygnalTextDescriptorPackOne));
-//
-//        // следующий описатель.
-//        nucBlocksInBlockCounter++;
-//    }
-//}
+
+//-----------------------------------------------------------------------------------------------------
+// преобразовывает из общего формата базы данных, в формат хранения в RAM.
+// база данных в приборе - это массив, длиной 100 блоков. каждый блок 256 байт.
+// блоки баз данных модулей, дискретных сигналов, функциональных блоков и др., имеют различный рамер.
+// базы данных модулей, дискретных сигналов, функциональных блоков и др., могут занимать несколько блоков.
+// чтобы иметь возможность "плоской" адресации к описателям объектов, делается преобразование.
+void CDiscreteSignals::DiscreteSignalsDataBlockCommonFormatToWork(void)
+{
+    std::cout << "CDiscreteSignals::DiscreteSignalsDataBlockCommonFormatToWork 1"  << std::endl;
+    unsigned char ucCheck;
+    unsigned char *pucSource;
+    TDiscreteSignalsDescriptionWork *pxDiscreteSignalsDescriptionWork;
+    TDiscreteSignalsDescriptionWorkPackOne *pxDiscreteSignalsDescriptionWorkPackOne;
+
+    // получим указатель на рабочий массив дискретных сигналов.
+    pxDiscreteSignalsDescriptionWork = m_pxDiscreteSignalsDescriptionWork;
+
+    // получим указатель на базу данных прибора в общем формате.
+    pxDiscreteSignalsDescriptionWorkPackOne =
+        (TDiscreteSignalsDescriptionWorkPackOne*)m_puiIntermediateBuff;
+
+    // преобразуем из общего формата базы данных, в формат хранения в RAM.
+    for (int i = 0;
+            i < DISCRETE_INPUT_SYGNALS_DATA_BASE_BLOCKS_IN_BLOCK_QUANTITY;
+            i++)
+    {
+        pxDiscreteSignalsDescriptionWork[i].uiTalTkGrp =
+            pxDiscreteSignalsDescriptionWorkPackOne[i].uiTalTkGrp;
+
+        memcpy(pxDiscreteSignalsDescriptionWork[i].auiRelayOut,
+               pxDiscreteSignalsDescriptionWorkPackOne[i].auiRelayOut,
+               5);
+
+        pxDiscreteSignalsDescriptionWork[i].uiDelay =
+            pxDiscreteSignalsDescriptionWorkPackOne[i].uiDelay;
+
+        // вычислим контрольную сумму описателя.
+        pucSource = (unsigned char*)&pxDiscreteSignalsDescriptionWork[i];
+        ucCheck = 0xFF;
+        for (int j = 0;
+                j < (sizeof(struct TDiscreteSignalsDescriptionWork) - ONE_BYTE_CRC_LENGTH);
+                j++)
+        {
+            ucCheck += pucSource[j];
+        }
+        pxDiscreteSignalsDescriptionWork[i].uiCrc = ucCheck;
+    }
+}
+
+//-----------------------------------------------------------------------------------------------------
+// проверяет совпадение контрольной суммы одного описателя дискретного сигнала.
+// получает указатель на один описатель дискретного сигнала в нормализованной базе данных,
+// преобразованной функцией vDiscreteSignalsDataBaseExstract().
+uint8_t CDiscreteSignals::DiscreteSignalsDataBaseCrcCheck(
+    TDiscreteSignalsDescriptionWork *pxDiscreteSignalsDataBase)
+{
+    unsigned char ucCheck;
+    unsigned char *pucSource;
+    // получим указатель на один описатель дискретного сигнала в нормализованной базе данных.
+    pucSource = (unsigned char*)pxDiscreteSignalsDataBase;
+    // начальное значение CRC. чтобы сумма не была нулевой.
+    ucCheck = 0xFF;
+    // суммируем байты структуры описателей struct TDiscreteSignalsDescriptionWork
+    // кроме байта CRC.
+    for (int i = 0;
+            i < ((sizeof(struct TDiscreteSignalsDescriptionWork)) - ONE_BYTE_CRC_LENGTH);
+            i++)
+    {
+        ucCheck += pucSource[i];
+    }
+    // CRC совпадает?
+    if (pxDiscreteSignalsDataBase -> uiCrc == ucCheck)
+    {
+        return 0;
+    }
+    else
+    {
+        return -1;
+    }
+}
 
 //-------------------------------------------------------------------------------
 uint8_t CDiscreteSignals::Fsm(void)
