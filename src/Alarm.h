@@ -6,14 +6,18 @@
 //  Author      : Alexandr Volvenkin
 //  email       : aav-36@mail.ru
 //  GitHub      : https://github.com/AlexandrVolvenkin
+
 //-------------------------------------------------------------------------------
 
-#include "Configuration.h"
-
-////#include "AM335xPlatform.h"
-//#include "Platform.h"
-//#include "PasNewConfig.h"
-//#include "SerialMT.h"
+class Timer;
+class Platform;
+class CTask;
+class CResources;
+class CDataStore;
+class CAnalogueSignals;
+class CDataContainerInterface;
+class CDataContainerDataBase;
+class CConfigurationCreate;
 
 //-----------------------------------------------------------------------------------------------------
 // 2 бита на сигнал.
@@ -46,241 +50,563 @@ typedef enum
     SOUND_SIGNAL_TYPE_NO_SOUND = 0x80,
 };
 
+#include <stdint.h>
+
+#include "Configuration.h"
+//#include "AlarmWindow.h"
+
 //-----------------------------------------------------------------------------------------------------
-class CAlarm
+class CAlarmDfa : public CTask
 {
 public:
 
-    typedef enum
+    enum DISCRETE_SIGNAL_STATE_CODE
     {
-        // длина строки содержащей имя события(текстовый реквизит).
-        EVENT_NAME_LENGTH = 14
+        // дискретный сигнал неактивен
+        DISCRETE_SIGNAL_IS_NOT_ACTIVE = 0,
+        // дискретный сигнал активен
+        DISCRETE_SIGNAL_IS_ACTIVE = 1,
+        // дискретный сигнал недостоверен
+        DISCRETE_SIGNAL_IS_NAMUR_ERROR = 2,
+        // дискретный сигнал недостоверен
+        DISCRETE_SIGNAL_IS_INVALID = 3,
     };
 
-#pragma pack(push)
-#pragma pack(1)
-    // структура данных события сигнализации - "кратко"(изменения состояния дискретных сигналов).
-    struct TAlarmEventBriefPackOne
+    enum
     {
-        // адрес сигнала (№ входа, адрес в
-        // (массив активности сигнализации дискретных сигналов - axAlarmHmi))
-        uint16_t ui16Address;
-        // состояние события.
-        // D0-D4 - ТБЛ (группа): 0,1-24(0-нет вых.на табло).
-        // D6 - ТСГ1 – тип сигнализации состояния дискретного сигнала.
-        // D7 - ТСГ2 – тип сигнализации состояния дискретного сигнала.
-        // 00 – нет сигнализации
-        // 01 – предупредительная сигнализация
-        // 10 – аварийная сигнализация
-        // 11 – индикация (ровный свет без звукового сигнала)
-        uint8_t ui8State;
-    };
-#pragma pack(pop)
-
-#pragma pack(push)
-#pragma pack(1)
-    // структура данных списка запросов журнала событий.
-    struct TAlarmEventLogQueryListPackOne
-    {
-        // индекс первого запрашиваемого события в массиве(журнал событий - AlarmEventLog).
-        uint16_t ui16Index;
-        // количество запрашиваемых событий.
-        int8_t ui8Quantity;
-    };
-#pragma pack(pop)
-
-// структура данных события сигнализации - "кратко"(изменения состояния дискретных сигналов).
-    struct TAlarmEventBrief
-    {
-        // адрес сигнала (№ входа, адрес в
-        // (массив активности сигнализации дискретных сигналов - axAlarmHmi))
-        uint16_t ui16Address;
-        // состояние события.
-        // D0-D4 - ТБЛ (группа): 0,1-24(0-нет вых.на табло).
-        // D6 - ТСГ1 – тип сигнализации состояния дискретного сигнала.
-        // D7 - ТСГ2 – тип сигнализации состояния дискретного сигнала.
-        // 00 – нет сигнализации
-        // 01 – предупредительная сигнализация
-        // 10 – аварийная сигнализация
-        // 11 – индикация (ровный свет без звукового сигнала)
-        uint8_t ui8State;
+        START = 0,
+        ACTIVE_STATE_WAITING,
+        RECEIPT_OR_RESET_WAITING,
+        RECEIPT_OR_RESET_OR_AUTOUNSET_WAITING,
+        RECEIPTED_RESET_OR_NOT_ACTIVE_STATE_WAITING,
+        RESETED_NOT_ACTIVE_STATE_WAITING,
+        RECEIPTED_RESET_WAITING,
+        NOT_ACTIVE_STATE_WAITING,
+        NAMUR_STATE_ON,
+        NAMUR_INPUT_CORRECT_STATE_WAITING,
     };
 
-#pragma pack(push)
-#pragma pack(1)
-// структура данных события сигнализации(изменения состояния дискретных сигналов).
-    struct TAlarmEventPackOne
+    enum
     {
-        // ID в таблице базы данных.
-        uint16_t ui16ID;
-        // индекс запрашиваемого события в массиве(журнал событий - AlarmEventLog).
-        uint16_t ui16Index;
-        // адрес сигнала (№ входа, адрес в
-        // (массив активности сигнализации дискретных сигналов - axAlarmHmi))
-        uint16_t ui16Address;
-        // состояние события.
-        // D0-D4 - ТБЛ (группа): 0,1-24(0-нет вых.на табло).
-        // D6 - ТСГ1 – тип сигнализации состояния дискретного сигнала.
-        // D7 - ТСГ2 – тип сигнализации состояния дискретного сигнала.
-        // 00 – нет сигнализации
-        // 01 – предупредительная сигнализация
-        // 10 – аварийная сигнализация
-        // 11 – индикация (ровный свет без звукового сигнала)
-        uint8_t ui8State;
-        // текстовый реквизит источника события.
-        char acTextDescriptor[CAlarm::EVENT_NAME_LENGTH + END_OF_STRING_LENGTH];
-        // время события.
-        uint8_t ui8Second;
-        uint8_t ui8Minute;
-        uint8_t ui8Hour;
-        uint8_t ui8MonthDay;
-        uint8_t ui8Month;
-        uint8_t ui8Year;
-    };
-#pragma pack(pop)
-
-// структура данных события сигнализации(изменения состояния дискретных сигналов).
-    struct TAlarmEvent
-    {
-        // адрес сигнала (№ входа, адрес в
-        // (массив активности сигнализации дискретных сигналов - axAlarmHmi))
-        uint16_t ui16Address;
-        // состояние события.
-        // D0-D4 - ТБЛ (группа): 0,1-24(0-нет вых.на табло).
-        // D6 - ТСГ1 – тип сигнализации состояния дискретного сигнала.
-        // D7 - ТСГ2 – тип сигнализации состояния дискретного сигнала.
-        // 00 – нет сигнализации
-        // 01 – предупредительная сигнализация
-        // 10 – аварийная сигнализация
-        // 11 – индикация (ровный свет без звукового сигнала)
-        uint8_t ui8State;
-        // текстовый реквизит источника события.
-        char acTextDescriptor[CAlarm::EVENT_NAME_LENGTH + END_OF_STRING_LENGTH];
-        // время события.
-        struct tm xCurrentTime;
+        NOT_NEW_VIOLATION = 0,
+        NEW_VIOLATION = 1,
     };
 
-    // структура данных управления событиями.
-    struct TAlarmEventsLogControl
+    virtual uint8_t ALARM_TYPE(void)
     {
-        // индекс события в массиве axAlarmEventsLog.
-        int16_t ui16AlarmEventLogIndex;
-        // индекс последнего события в массиве axAlarmEventsLog.
-        int16_t ui16AlarmEventLogLastIndex;
-        // массив состояния события(если - 0, событие новое. если - 1, событие не новое.);
-        uint8_t aui8AlarmEventsState[MAX_HANDLED_DISCRETE_INPUT + MAX_HANDLED_FUNCTION_BLOCK];
+        return NORMAL;
     };
 
-    typedef enum
+    virtual uint8_t ACTIVE_LEVEL(void)
     {
-        // длина массива "журнал событий".
-//        SHORT_EVENT_LOG_LENGTH = ((CSerialMT::SERIAL_MT_MESSAGE_BAG_MAX_LENGTH -
-//                                   CSerialMT::SERIAL_MT_HEADER_LENGTH) /
-//                                  sizeof(struct TAlarmEventBrief))
-        EVENT_LOG_LENGTH = 24,
-        SHORT_EVENT_LOG_LENGTH = 16,
-        // длина списка запросов событий.
-        ALARM_EVENT_QUERY_LIST_LENGTH = 4,
-        ALARM_EVENT_BRIEF_STRUCT_BYTE_LENGTH = 3
+        return 0;
     };
 
-    static void AlarmEvetnsLogCreate(void);
-    static void PlcOnOffEvetnsCreate(void);
+    virtual uint8_t IS_NAMUR_ON(void)
+    {
+        return 0;
+    };
 
-    // флаг журнал событий обновлён.
-    static uint8_t ui8AlarmEventLogBriefIsUpdated;
-    // длина журнала событий, в строках(событиях).
-    static uint8_t ui8AlarmEventLogLength;
-    // длина журнала событий "кратко", в строках(событиях).
-    static uint8_t ui8AlarmEventLogBriefLength;
-    // массив "журнал событий - кратко".
-    static CAlarm::TAlarmEvent axAlarmEventsLog[CAlarm::EVENT_LOG_LENGTH];
-    // объект данных управления событиями.
-    static CAlarm::TAlarmEventsLogControl xAlarmEventsLogControl;
-    // массив "журнал событий".
-    static CAlarm::TAlarmEventBrief axAlarmEventsLogBrief[CAlarm::SHORT_EVENT_LOG_LENGTH];
-    // список запросов событий.
-    static CAlarm::TAlarmEventLogQueryListPackOne xAlarmEventsQueryList;
-    // объект для очистки строки журнала событий "кратко".
-    static const  CAlarm::TAlarmEvent xAlarmEventNull;
-    // количество событий в запросе.
-    static int16_t i16AlarmEventQueryListQuantity;
+    CAlarmDfa();
+    virtual ~CAlarmDfa();
+    virtual uint8_t DiscreteSignalStateCheck(void);
+    virtual void Fsm(void);
 
+    void SetDiscreteStateIndex(uint8_t uiDiscreteStateIndex)
+    {
+        m_uiDiscreteStateIndex = uiDiscreteStateIndex;
+    };
+    uint8_t GetDiscreteStateIndex(void)
+    {
+        return m_uiDiscreteStateIndex;
+    };
+
+    void SetAlarmWindowIndex(uint8_t uiAlarmWindowIndex)
+    {
+        m_uiAlarmWindowIndex = uiAlarmWindowIndex;
+    };
+    uint8_t GetAlarmWindowIndex(void)
+    {
+        return m_uiAlarmWindowIndex;
+    };
+
+    uint8_t* GetLinkedDiscreteOutputsPointer(void)
+    {
+        return m_auiLinkedDiscreteOutputs;
+    };
+
+protected:
+private:
+    // Индекс окна извещателя - светового табло.
+    uint8_t m_uiAlarmWindowIndex;
+    // Выходы на МР.
+    uint8_t m_auiLinkedDiscreteOutputs[DISCRETE_OUTPUT_MODULE_MAX_NUMBER];
+    // Источник дискретного сигнала.
+    uint8_t m_uiDiscreteStateIndex;
+//    // Источник данных достоверности дискретного сигнала.
+//    uint8_t m_uiDiscreteInputsBadStateIndex;
+};
+//-----------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+//-----------------------------------------------------------------------------------------------------
+class CNormalAlarmDfa : public CAlarmDfa
+{
 public:
-    CAlarm()
-    {
-//        // очистим журнал событий "кратко" сигнализации дискретных сигналов.
-//        memset(CAlarm::axAlarmEventsLog,
-//               0,
-//               sizeof(CAlarm::axAlarmEventsLog));
-//        // очистим объект данных управления событиями.
-//        memset((void*)&CAlarm::xAlarmEventsLogControl,
-//               0,
-//               sizeof(CAlarm::xAlarmEventsLogControl));
-//        // установим индекс события на начало.
-//        CAlarm::xAlarmEventsLogControl.ui16AlarmEventLogIndex = 0;
-//        // установим индекс последнего события на начало.
-//        xAlarmEventsLogControl.ui16AlarmEventLogLastIndex = 0;
-//        // очистим флаг - журнал событий "кратко" обновлён.
-//        CAlarm::ui8AlarmEventLogBriefIsUpdated = 0;
-    }
-    ~CAlarm()
-    {
 
-    }
+    uint8_t ALARM_TYPE(void)
+    {
+        return NORMAL;
+    };
 
+    uint8_t ACTIVE_LEVEL(void)
+    {
+        return 0;
+    };
+
+    uint8_t IS_NAMUR_ON(void)
+    {
+        return 0;
+    };
+
+    CNormalAlarmDfa();
+    virtual ~CNormalAlarmDfa();
+
+protected:
+private:
+};
+//-----------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+//-----------------------------------------------------------------------------------------------------
+class CPreventiveAlarmLowLevelDfa : public CAlarmDfa
+{
+public:
+
+    uint8_t ALARM_TYPE(void)
+    {
+        return PREVENTIVE;
+    };
+
+    uint8_t ACTIVE_LEVEL(void)
+    {
+        return 0;
+    };
+
+    uint8_t IS_NAMUR_ON(void)
+    {
+        return 0;
+    };
+
+    CPreventiveAlarmLowLevelDfa();
+    virtual ~CPreventiveAlarmLowLevelDfa();
+
+
+protected:
+private:
+};
+//-----------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+//-----------------------------------------------------------------------------------------------------
+class CPreventiveAlarmHighLevelDfa : public CAlarmDfa
+{
+public:
+
+    uint8_t ALARM_TYPE(void)
+    {
+        return PREVENTIVE;
+    };
+
+    uint8_t ACTIVE_LEVEL(void)
+    {
+        return 1;
+    };
+
+    uint8_t IS_NAMUR_ON(void)
+    {
+        return 0;
+    };
+
+    CPreventiveAlarmHighLevelDfa();
+    virtual ~CPreventiveAlarmHighLevelDfa();
+
+protected:
+private:
+};
+//-----------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+//-----------------------------------------------------------------------------------------------------
+class CPreventiveAlarmLowLevelNamurDfa : public CAlarmDfa
+{
+public:
+
+    uint8_t ALARM_TYPE(void)
+    {
+        return PREVENTIVE;
+    };
+
+    uint8_t ACTIVE_LEVEL(void)
+    {
+        return 0;
+    };
+
+    uint8_t IS_NAMUR_ON(void)
+    {
+        return 1;
+    };
+
+    CPreventiveAlarmLowLevelNamurDfa();
+    virtual ~CPreventiveAlarmLowLevelNamurDfa();
+
+
+protected:
+private:
+};
+//-----------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+//-----------------------------------------------------------------------------------------------------
+class CPreventiveAlarmHighLevelNamurDfa : public CAlarmDfa
+{
+public:
+
+    uint8_t ALARM_TYPE(void)
+    {
+        return PREVENTIVE;
+    };
+
+    uint8_t ACTIVE_LEVEL(void)
+    {
+        return 1;
+    };
+
+    uint8_t IS_NAMUR_ON(void)
+    {
+        return 1;
+    };
+
+    CPreventiveAlarmHighLevelNamurDfa();
+    virtual ~CPreventiveAlarmHighLevelNamurDfa();
+
+protected:
+private:
+};
+//-----------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+//-----------------------------------------------------------------------------------------------------
+class CEmergencyAlarmLowLevelDfa : public CAlarmDfa
+{
+public:
+
+    uint8_t ALARM_TYPE(void)
+    {
+        return EMERGENCY;
+    };
+
+    uint8_t ACTIVE_LEVEL(void)
+    {
+        return 0;
+    };
+
+    uint8_t IS_NAMUR_ON(void)
+    {
+        return 0;
+    };
+
+    CEmergencyAlarmLowLevelDfa();
+    virtual ~CEmergencyAlarmLowLevelDfa();
+
+protected:
+private:
+};
+//-----------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+//-----------------------------------------------------------------------------------------------------
+class CEmergencyAlarmHighLevelDfa : public CAlarmDfa
+{
+public:
+
+    uint8_t ALARM_TYPE(void)
+    {
+        return EMERGENCY;
+    };
+
+    uint8_t ACTIVE_LEVEL(void)
+    {
+        return 1;
+    };
+
+    uint8_t IS_NAMUR_ON(void)
+    {
+        return 0;
+    };
+
+    CEmergencyAlarmHighLevelDfa();
+    virtual ~CEmergencyAlarmHighLevelDfa();
+
+protected:
+private:
+};
+//-----------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+//-----------------------------------------------------------------------------------------------------
+class CEmergencyAlarmLowLevelNamurDfa : public CAlarmDfa
+{
+public:
+
+    uint8_t ALARM_TYPE(void)
+    {
+        return EMERGENCY;
+    };
+
+    uint8_t ACTIVE_LEVEL(void)
+    {
+        return 0;
+    };
+
+    uint8_t IS_NAMUR_ON(void)
+    {
+        return 1;
+    };
+
+    CEmergencyAlarmLowLevelNamurDfa();
+    virtual ~CEmergencyAlarmLowLevelNamurDfa();
+
+protected:
+private:
+};
+//-----------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+//-----------------------------------------------------------------------------------------------------
+class CEmergencyAlarmHighLevelNamurDfa : public CAlarmDfa
+{
+public:
+
+    uint8_t ALARM_TYPE(void)
+    {
+        return EMERGENCY;
+    };
+
+    uint8_t ACTIVE_LEVEL(void)
+    {
+        return 1;
+    };
+
+    uint8_t IS_NAMUR_ON(void)
+    {
+        return 1;
+    };
+
+    CEmergencyAlarmHighLevelNamurDfa();
+    virtual ~CEmergencyAlarmHighLevelNamurDfa();
+
+protected:
+private:
+};
+//-----------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+//-----------------------------------------------------------------------------------------------------
+class CIndicationAlarmLowLevelDfa : public CAlarmDfa
+{
+public:
+
+    uint8_t ALARM_TYPE(void)
+    {
+        return INDICATION;
+    };
+
+    uint8_t ACTIVE_LEVEL(void)
+    {
+        return 0;
+    };
+
+    uint8_t IS_NAMUR_ON(void)
+    {
+        return 0;
+    };
+
+    CIndicationAlarmLowLevelDfa();
+    virtual ~CIndicationAlarmLowLevelDfa();
+    virtual void Fsm(void);
+
+protected:
+private:
+};
+//-----------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+//-----------------------------------------------------------------------------------------------------
+class CIndicationAlarmHighLevelDfa : public CIndicationAlarmLowLevelDfa
+{
+public:
+
+    uint8_t ALARM_TYPE(void)
+    {
+        return INDICATION;
+    };
+
+    uint8_t ACTIVE_LEVEL(void)
+    {
+        return 1;
+    };
+
+    uint8_t IS_NAMUR_ON(void)
+    {
+        return 0;
+    };
+
+    CIndicationAlarmHighLevelDfa();
+    virtual ~CIndicationAlarmHighLevelDfa();
+
+protected:
 private:
 };
 
 //-----------------------------------------------------------------------------------------------------
-class CSoundSignal
+
+
+
+
+
+
+
+
+//-----------------------------------------------------------------------------------------------------
+class CIndicationAlarmLowLevelNamurDfa : public CIndicationAlarmLowLevelDfa
 {
 public:
 
-    typedef enum
+    uint8_t ALARM_TYPE(void)
     {
-        IDDLE = 0,
-        WARNING_SIGNAL_ON,
-        WARNING_SIGNAL_OFF,
-        ALARM_SIGNAL_ON,
-        ALARM_SIGNAL_OFF,
-        ERROR_SIGNAL_ON,
-        ERROR_SIGNAL_OFF,
+        return INDICATION;
     };
 
-    typedef enum
+    uint8_t ACTIVE_LEVEL(void)
     {
-//        WARNING_SIGNAL_ON_TIME = (750 / PERIPHERY_SCAN_TIME),
-//        WARNING_SIGNAL_OFF_TIME = (250 / PERIPHERY_SCAN_TIME),
-//        ALARM_SIGNAL_ON_TIME = (250 / PERIPHERY_SCAN_TIME),
-//        ALARM_SIGNAL_OFF_TIME = (250 / PERIPHERY_SCAN_TIME),
-//        ERROR_SIGNAL_ON_TIME = (100 / PERIPHERY_SCAN_TIME),
-//        ERROR_SIGNAL_OFF_TIME = (200 / PERIPHERY_SCAN_TIME),
+        return 0;
     };
 
-//    void Scan(void);
-//    void WarningSignalOn(void);
-//    void AlarmSignalOn(void);
-//    void ErrorSignalOn(void);
-//    void SoundSignalOff(void);
-
-    // счётчик относительного времени(циклов).
-    uint8_t nui8CycleCounter;
-    // положение автомата.
-    uint8_t ui8FsmState;
-
-public:
-    CSoundSignal()
+    uint8_t IS_NAMUR_ON(void)
     {
-//        BEEP_INIT();
-        ui8FsmState = IDDLE;
-    }
-    ~CSoundSignal()
-    {
+        return 1;
+    };
 
-    }
+    CIndicationAlarmLowLevelNamurDfa();
+    virtual ~CIndicationAlarmLowLevelNamurDfa();
 
+protected:
 private:
 };
+//-----------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+//-----------------------------------------------------------------------------------------------------
+class CIndicationAlarmHighLevelNamurDfa : public CIndicationAlarmLowLevelDfa
+{
+public:
+
+    uint8_t ALARM_TYPE(void)
+    {
+        return INDICATION;
+    };
+
+    uint8_t ACTIVE_LEVEL(void)
+    {
+        return 1;
+    };
+
+    uint8_t IS_NAMUR_ON(void)
+    {
+        return 1;
+    };
+
+    CIndicationAlarmHighLevelNamurDfa();
+    virtual ~CIndicationAlarmHighLevelNamurDfa();
+
+protected:
+private:
+};
+
+//-----------------------------------------------------------------------------------------------------
+
 
 #endif // ALARM_H_INCLUDED
