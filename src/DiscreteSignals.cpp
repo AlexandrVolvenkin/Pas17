@@ -30,6 +30,8 @@ CDiscreteSignals::CDiscreteSignals()
 {
     std::cout << "CDiscreteSignals constructor"  << std::endl;
     m_puiIntermediateBuff = new uint8_t[256];
+    m_vpxAlarmHandlers.clear();
+    m_xAlarmHandlersIterator = m_vpxAlarmHandlers.begin();
     SetFsmState(START);
 }
 
@@ -567,9 +569,9 @@ void CDiscreteSignals::ProgrammedDiscreteSignalsNumberCount(void)
 }
 
 //-------------------------------------------------------------------------------
-void CDiscreteSignals::CreateAlarms(void)
+void CDiscreteSignals::CreateAlarmHandlers(void)
 {
-    std::cout << "CDiscreteSignals::CreateDevices 1"  << std::endl;
+    std::cout << "CDiscreteSignals::CreateAlarmHandlers 1"  << std::endl;
 
     // получим указатель на объект конфигурации.
     CConfigurationCreate::TConfigDataPackOne* pxDeviceConfigSearch =
@@ -588,7 +590,7 @@ void CDiscreteSignals::CreateAlarms(void)
 //        {
 //            std::string sDeviceName = "InternalModuleMuvr0";
 ////            std::string sDeviceName = "InternalModuleMuvr" + std::to_string(i);
-//            std::cout << "CDiscreteSignals::CreateDevices sDeviceName " << sDeviceName << std::endl;
+//            std::cout << "CDiscreteSignals::CreateAlarmHandlers sDeviceName " << sDeviceName << std::endl;
 //            CInternalModuleMuvr* pxInternalModuleMuvr = 0;
 //            //            pxInternalModuleMuvr =
 ////                static_cast<CInternalModuleMuvr*>(GetResources() ->
@@ -618,6 +620,18 @@ void CDiscreteSignals::CreateAlarms(void)
 //            break;
 //        }
 //    }
+}
+
+//-------------------------------------------------------------------------------
+void CDiscreteSignals::AlarmHandlersProcessing(void)
+{
+    if (m_xAlarmHandlersIterator == m_vpxAlarmHandlers.end())
+    {
+        m_xAlarmHandlersIterator = m_vpxAlarmHandlers.begin();
+    }
+
+    (*m_xAlarmHandlersIterator) -> Fsm();
+    m_xAlarmHandlersIterator++;
 }
 
 //-------------------------------------------------------------------------------

@@ -171,7 +171,8 @@ public:
     void DiscreteSignalsDataBlockCommonFormatToWork(void);
     uint8_t DiscreteSignalsDataBaseCrcCheck(TDiscreteSignalsDescriptionWork *pxDiscreteSignalsDataBase);
     void ProgrammedDiscreteSignalsNumberCount(void);
-    void CreateAlarms(void);
+    void CreateAlarmHandlers(void);
+    void AlarmHandlersProcessing(void);
 
     uint8_t Init(void);
     uint8_t Fsm(void);
@@ -188,6 +189,9 @@ private:
 
     std::string m_sDataStoreName;
     uint8_t m_uiDataStoreId;
+
+    std::vector<CTaskInterface*> m_vpxAlarmHandlers;
+    std::vector<CTaskInterface*>::iterator m_xAlarmHandlersIterator;
 
     uint8_t* m_puiIntermediateBuff;
     TDiscreteSignalsDescriptionWork *m_pxDiscreteSignalsDescriptionWork;

@@ -194,8 +194,6 @@ void CAlarmDfa::Allocate(void)
 //
 //    m_uiBadAnswerCounter = 0;
 
-//    m_puiModbusReceipt = &((uint8_t)(GetResources() -> m_fbIsAcknowledjedGlobal));
-//    m_puiModbusReset = &((uint8_t)(GetResources() -> m_fbIsResetededGlobal));
     m_puiModbusReceipt = &(GetResources() -> m_uiModbusReceipt);
     m_puiModbusReset = &(GetResources() -> m_uiModbusReset);
 }
@@ -318,13 +316,7 @@ uint8_t CAlarmDfa::Fsm(void)
         {
             // ”становим св€занные дискретный выходы - новое нарушение.
             DiscreteOutputsSet(GetLinkedDiscreteOutputsPointer(), NEW_VIOLATION);
-//            // ”становим тип сигнализации св€занному окну в массиве управлени€ окнами извещател€.
-//            CPss21::SetAlarmWindowType(GetAlarmWindowIndex(), ALARM_TYPE());
-//            CPss21::SetAlarmWindowColor(GetAlarmWindowIndex(), ALARM_TYPE());
-//            CPss21::GetAlarmWindowControlPointer(GetAlarmWindowIndex()) -> SetActivityState(1);
-
             SetFsmState(RECEIPT_OR_RESET_WAITING);
-
         }
         break;
 
@@ -339,15 +331,11 @@ uint8_t CAlarmDfa::Fsm(void)
         // —обытие сброшено?
         if (IsModbusReset())
         {
-//            // ”становим тип сигнализации св€занному окну в массиве управлени€ окнами извещател€.
-//            CPss21::SetAlarmWindowType(GetAlarmWindowIndex(), INDICATION);
             SetFsmState(RESETED_NOT_ACTIVE_STATE_WAITING);
         }
         // —обытие квитировано?
         else if (IsModbusReceipt())
         {
-//            // ”становим тип сигнализации св€занному окну в массиве управлени€ окнами извещател€.
-//            CPss21::SetAlarmWindowType(GetAlarmWindowIndex(), INDICATION);
             SetFsmState(RECEIPTED_RESET_OR_NOT_ACTIVE_STATE_WAITING);
         }
         break;
@@ -374,9 +362,6 @@ uint8_t CAlarmDfa::Fsm(void)
         // ƒискретный сигнал не активен?
         if (uiDiscreteSignalState == DISCRETE_SIGNAL_IS_NOT_ACTIVE)
         {
-//            // ”становим тип сигнализации св€занному окну в массиве управлени€ окнами извещател€.
-//            CPss21::SetAlarmWindowType(GetAlarmWindowIndex(), NORMAL);
-//            CPss21::GetAlarmWindowControlPointer(GetAlarmWindowIndex()) -> SetActivityState(0);
             SetFsmState(ACTIVE_STATE_WAITING);
         }
         else if (uiDiscreteSignalState == DISCRETE_SIGNAL_IS_ACTIVE)
@@ -397,9 +382,6 @@ uint8_t CAlarmDfa::Fsm(void)
         // —обытие сброшено?
         if (IsModbusReset())
         {
-//            // ”становим тип сигнализации св€занному окну в массиве управлени€ окнами извещател€.
-//            CPss21::SetAlarmWindowType(GetAlarmWindowIndex(), NORMAL);
-//            CPss21::GetAlarmWindowControlPointer(GetAlarmWindowIndex()) -> SetActivityState(0);
             SetFsmState(ACTIVE_STATE_WAITING);
         }
         break;
@@ -530,11 +512,6 @@ uint8_t CIndicationAlarmLowLevelDfa::Fsm(void)
         {
             // ”становим св€занные дискретный выходы - новое нарушение.
             DiscreteOutputsSet(GetLinkedDiscreteOutputsPointer(), NEW_VIOLATION);
-//            // ”становим тип сигнализации св€занному окну в массиве управлени€ окнами извещател€.
-//            CPss21::SetAlarmWindowType(GetAlarmWindowIndex(), ALARM_TYPE());
-//            CPss21::SetAlarmWindowColor(GetAlarmWindowIndex(), ALARM_TYPE());
-//            // јктивизируем окно сигнализации, дл€ отображени€ извещателем.
-//            CPss21::GetAlarmWindowControlPointer(GetAlarmWindowIndex()) -> SetActivityState(1);
             SetFsmState(NOT_ACTIVE_STATE_WAITING);
         }
 
@@ -544,10 +521,6 @@ uint8_t CIndicationAlarmLowLevelDfa::Fsm(void)
         // ƒискретный сигнал не активен?
         if (uiDiscreteSignalState == DISCRETE_SIGNAL_IS_NOT_ACTIVE)
         {
-//                // ”становим тип сигнализации св€занному окну в массиве управлени€ окнами извещател€.
-//                CPss21::SetAlarmWindowType(GetAlarmWindowIndex(), NORMAL);
-//                // ƒеактмвируем окно сигнализации, дл€ прекращени€ отображени€ извещателем.
-//                CPss21::GetAlarmWindowControlPointer(GetAlarmWindowIndex()) -> SetActivityState(0);
             SetFsmState(ACTIVE_STATE_WAITING);
         }
         else if (uiDiscreteSignalState == DISCRETE_SIGNAL_IS_ACTIVE)

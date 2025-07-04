@@ -202,9 +202,6 @@ public:
     CConfiguration* m_pxConfigurationCreate;
     CServiceMarket* m_pxServiceMarket;
 
-//    bool m_fbIsAcknowledjedGlobal = false;
-//    bool m_fbIsResetededGlobal = false;
-//    bool m_fbIsBlockededGlobal = false;
     uint8_t m_uiModbusReceipt;
     uint8_t m_uiModbusReset;
     uint8_t m_uiModbusBlockeded;
