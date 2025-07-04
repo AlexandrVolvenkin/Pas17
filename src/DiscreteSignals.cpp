@@ -857,6 +857,32 @@ uint8_t CDiscreteSignals::Fsm(void)
         break;
 
 //-------------------------------------------------------------------------------
+    case DISCRETE_SIGNALS_CREATE_ALARM_HANDLERS_START:
+        std::cout << "CDataBaseCreate::Fsm DISCRETE_SIGNALS_CREATE_ALARM_HANDLERS_START"  << std::endl;
+        {
+            CreateAlarmHandlers();
+
+            SetFsmState(DISCRETE_SIGNALS_CREATE_ALARM_HANDLERS_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+        }
+        break;
+
+    case DISCRETE_SIGNALS_CREATE_ALARM_HANDLERS_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+        std::cout << "CDataBaseCreate::Fsm DISCRETE_SIGNALS_CREATE_ALARM_HANDLERS_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        {
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(DONE_OK);
+        }
+        break;
+
+    case DISCRETE_SIGNALS_CREATE_ALARM_HANDLERS_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+        std::cout << "CDiscreteSignals::Fsm DISCRETE_SIGNALS_CREATE_ALARM_HANDLERS_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        {
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+            SetFsmState(DONE_ERROR);
+        }
+        break;
+
+//-------------------------------------------------------------------------------
     default:
         break;
     }
