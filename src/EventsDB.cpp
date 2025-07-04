@@ -15,11 +15,11 @@
 #include <unistd.h>
 #include <cstdlib>
 
-#include "Events.h"
-#include "EventsDB.h"
 #include "iconvlite.h"
 #include <iconv.h>
 #include "Configuration.h"
+#include "Events.h"
+#include "EventsDB.h"
 
 using namespace std;
 

@@ -50,13 +50,13 @@ void CInternalModuleMuvr::SetCommunicationDevice(CCommunicationDeviceInterface* 
 uint8_t CInternalModuleMuvr::Init(void)
 {
     //std::cout << "CInternalModuleMuvr Init"  << std::endl;
-//    m_pxCommandDataContainer = static_cast<CDataContainerDataBase*>(GetResources() ->
-//                               AddDataContainer(std::make_shared<CDataContainerDataBase>()));
-    m_pxOperatingDataContainer = static_cast<CDataContainerDataBase*>(GetResources() ->
-                                 AddDataContainer(std::make_shared<CDataContainerDataBase>()));
     SetExecutorDataContainer(static_cast<CDataContainerDataBase*>(GetResources() ->
                              AddDataContainer(std::make_shared<CDataContainerDataBase>())));
     SetCustomerDataContainer(GetExecutorDataContainerPointer());
+
+    CDataContainerDataBase* pxDataContainer =
+        (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+    pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
 
     Allocate();
 }

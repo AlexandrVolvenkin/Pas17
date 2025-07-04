@@ -96,6 +96,7 @@
 		<Unit filename="src/DataStore.h" />
 		<Unit filename="src/DataStoreCheck.cpp" />
 		<Unit filename="src/DataStoreCheck.h" />
+		<Unit filename="src/DataTypes.h" />
 		<Unit filename="src/DeviceControl.cpp" />
 		<Unit filename="src/DeviceControl.h" />
 		<Unit filename="src/Dfa.cpp" />

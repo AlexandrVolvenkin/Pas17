@@ -314,11 +314,11 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
         {
             // если установлен - сбросим.
             (pxDataContainer -> m_puiDataPointer[BIT_STATE_OFFSET]) = 0;
-            (GetResources() -> m_fbIsAcknowledjedGlobal) = true;
+            (GetResources() -> m_uiModbusReceipt) = 1;
         }
         else
         {
-            (GetResources() -> m_fbIsAcknowledjedGlobal) = false;
+            (GetResources() -> m_uiModbusReceipt) = 0;
         }
         SetFsmState(MODBUS_FUNCTION_5_HANDLER_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
         return 1;
@@ -335,11 +335,11 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
         {
             // если установлен - сбросим.
             (pxDataContainer -> m_puiDataPointer[BIT_STATE_OFFSET]) = 0;
-            (GetResources() -> m_fbIsResetededGlobal) = true;
+            (GetResources() -> m_uiModbusReset) = 1;
         }
         else
         {
-            (GetResources() -> m_fbIsResetededGlobal) = false;
+            (GetResources() -> m_uiModbusReset) = 0;
         }
         SetFsmState(MODBUS_FUNCTION_5_HANDLER_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
         return 1;
@@ -356,11 +356,11 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
         {
             // если установлен - сбросим.
             (pxDataContainer -> m_puiDataPointer[BIT_STATE_OFFSET]) = 0;
-            (GetResources() -> m_fbIsBlockededGlobal) = true;
+            (GetResources() -> m_uiModbusBlockeded) = 1;
         }
         else
         {
-            (GetResources() -> m_fbIsBlockededGlobal) = false;
+            (GetResources() -> m_uiModbusBlockeded) = 0;
         }
         SetFsmState(MODBUS_FUNCTION_5_HANDLER_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
         return 1;

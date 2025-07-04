@@ -14,6 +14,7 @@
 #include <memory>
 #include <string>
 
+#include "DataTypes.h"
 //#include "Dfa.h"
 #include "Task.h"
 #include "ConfigurationCreate.h"
@@ -144,6 +145,9 @@ public:
     TDiscreteSygnalTextTitle *m_pxDiscreteSygnalTextTitlesWork;
     uint32_t m_uiUsedDiscreteSygnalTextTitlesWork;
 
+    // Массив управления модулями дискретных выходов(реле).
+    TDiscreteOutputControl* m_pxDiscreteOutputControl;
+
 
     // Создаем std::map, где ключ - строка, значение - указатель на объект
     std::map<std::string, std::shared_ptr<CTaskInterface>> m_mpxCommonTaskMap;
@@ -175,7 +179,7 @@ public:
     uint8_t m_uiUsedDiscreteInputsBadState;
     uint8_t* m_puiDiscreteOutputState;
     uint8_t m_uiUsedDiscreteOutputState;
-    uint8_t* m_puiDiscreteOutputControl;
+//    uint8_t* m_puiDiscreteOutputControl;
     uint8_t m_uiUsedDiscreteOutputControl;
 
     float* m_pfAnalogueInputsValue;
@@ -198,10 +202,14 @@ public:
     CConfiguration* m_pxConfigurationCreate;
     CServiceMarket* m_pxServiceMarket;
 
-    bool m_fbIsAcknowledjedGlobal = false;
-    bool m_fbIsResetededGlobal = false;
-    bool m_fbIsBlockededGlobal = false;
+//    bool m_fbIsAcknowledjedGlobal = false;
+//    bool m_fbIsResetededGlobal = false;
+//    bool m_fbIsBlockededGlobal = false;
+    uint8_t m_uiModbusReceipt;
+    uint8_t m_uiModbusReset;
+    uint8_t m_uiModbusBlockeded;
     uint8_t m_uiAinOffProcessOwnerIndex = 0;
+
 };
 
 //-------------------------------------------------------------------------------

@@ -430,7 +430,7 @@ void CDiscreteSignals::DiscreteSignalsStartDataBlockWorkToCommonFormat(uint8_t* 
 
         memcpy(pxDiscreteSignalsDescriptionWorkPackOne[i].auiRelayOut,
                pxDiscreteSignalsDescriptionWork[i].auiRelayOut,
-               5);
+               DISCRETE_OUTPUT_MODULE_MAX_NUMBER);
 
         pxDiscreteSignalsDescriptionWorkPackOne[i].uiDelay =
             pxDiscreteSignalsDescriptionWork[i].uiDelay;
@@ -471,7 +471,7 @@ void CDiscreteSignals::DiscreteSignalsDataBlockCommonFormatToWork(void)
 
         memcpy(pxDiscreteSignalsDescriptionWork[i].auiRelayOut,
                pxDiscreteSignalsDescriptionWorkPackOne[i].auiRelayOut,
-               5);
+               DISCRETE_OUTPUT_MODULE_MAX_NUMBER);
 
         pxDiscreteSignalsDescriptionWork[i].uiDelay =
             pxDiscreteSignalsDescriptionWorkPackOne[i].uiDelay;

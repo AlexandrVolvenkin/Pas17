@@ -182,7 +182,9 @@
 // количество дискретных входов в одном модуле.
 #define DISCRETE_MODULE_INPUT_QUANTITY 6
 #define ANALOGUE_INPUT_DI_VALUE_QUANTITY 4 // количество дискретных сигналов порождаемое одним аналоговым входом.
-#define DISCRETE_OUTPUT_MODULE_RELAY_OUTPUT_QUANTITY 64 // количество дискретных выходов управления реле.
+#define DISCRETE_OUTPUT_MODULE_MAX_NUMBER 5 // количество модулей дискретных выходов управления реле.
+#define MUVR_MR_DISCRETE_OUTPUT_NUMBER 4 // количество дискретных выходов управления реле.
+#define DISCRETE_OUTPUT_NUMBER (MUVR_MR_DISCRETE_OUTPUT_NUMBER * DISCRETE_OUTPUT_MODULE_MAX_NUMBER) // количество дискретных выходов управления реле.
 // количество аналоговых входов в одном модуле.
 #define ANALOG_MODULE_INPUT_QUANTITY 4
 // длина строки текстового реквизита аналогового измерения.
@@ -410,7 +412,7 @@
 
 // (sizeof(struct TAnalogueInputDescriptionDataBase) * ANALOG_MODULE_INPUT_QUANTITY)// 28х6=168.
 #define ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_LENGTH 168
-// (sizeof(struct TMrXXOneChannelDataBase) * DISCRETE_OUTPUT_MODULE_RELAY_OUTPUT_QUANTITY)// 3х64=192.
+// (sizeof(struct TMrXXOneChannelDataBase) * DISCRETE_OUTPUT_NUMBER)// 3х64=192.
 #define DISCRETE_OUTPUT_MODULE_DATA_BASE_BLOCK_LENGTH 192
 // (sizeof(struct TMbmFunction1234PackOne) * EXTERNAL_MODULE_FUNCTION_1234_QUANTITY) + 1// 13х16=208.
 #define MBM_FUNCTION_1234_BLOCK_DATA_BASE_BLOCK_LENGTH (208 + 1)
@@ -576,6 +578,39 @@ enum EModbusFunctionInputRegistersDataMap
 {
 //    DISCRETE_INPUTS_STATE_OFFSET = 0,
     CURRENT_TIME_OFFSET_INPUT_REGISTERS = 1000,
+};
+
+enum TYPE_INDICATION
+{
+    NORMAL		 = 0,			// Нет отображения
+    INDICATION	 = 1,			// Индикация
+    PREVENTIVE	 = 2,			// Предупредительная сигнализация
+    EMERGENCY	 = 3,			// Аварийная сигнализация
+
+    IND_PREVENTIVE = 4,			// Индикация + предупредительная сигнализация
+    IND_EMERGENCY  = 5,			// Индикация + аварийная сигнализация
+    NAMUR_INDICATION = 6,			// Индикация недостоверности сигнала namur.
+    ERROR  = 7,			// Звук нажатия кнопок.
+    BEEP_SIGNAL  = 8,			// Звук нажатия кнопок.
+};
+
+enum Errors
+{
+    NO_ERROR	= 0,
+    IMD_ERROR	= 1,		// Ошибка связи с модулями ввода
+    OMD_ERROR	= 2,		// Ошибка связи с модулями вывода
+    CFG_ERROR	= 3,		// Ошибка конфигурации
+    DB_ERROR	= 4,		// Ошибка БД
+    MBS_ERROR	= 5,		// Ошибка канала связи
+};
+
+enum INPUT_STATE_CODE
+{
+    OFF		= 0x00,			// Дективация датчика
+    ON		= 0x01,			// Срабатывание датчика
+    WIRE_BREAK	= 0x02,			// Обрыв линии
+    SHORT_CIRCUIT	= 0x03,			// Короткое замыкание
+    INPUT_IS_INVALID	= 0x04,			// вход недостоверен
 };
 
 //-------------------------------------------------------------------------------

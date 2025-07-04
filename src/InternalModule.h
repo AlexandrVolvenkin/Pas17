@@ -306,6 +306,8 @@ protected:
 //    uint8_t* m_puiDiscreteInputsBadState;
     uint8_t m_uiBadAnswerCounter;
 
+    uint8_t* m_puiIntermediateBuff;
+
 };
 
 #endif // CINTERNALMODULE_H

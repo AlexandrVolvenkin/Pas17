@@ -9,6 +9,18 @@
 
 //-------------------------------------------------------------------------------
 
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
+//#include <fcntl.h>
+#include <string.h>
+#include <assert.h>
+#include <time.h>
+
+#include "Configuration.h"
+#include "DataTypes.h"
+
 class Timer;
 class Platform;
 class CTask;
@@ -18,6 +30,7 @@ class CAnalogueSignals;
 class CDataContainerInterface;
 class CDataContainerDataBase;
 class CConfigurationCreate;
+class CAlarmDfa;
 
 //-----------------------------------------------------------------------------------------------------
 // 2 бита на сигнал.
@@ -49,11 +62,6 @@ typedef enum
     SOUND_SIGNAL_TYPE_ERROR,
     SOUND_SIGNAL_TYPE_NO_SOUND = 0x80,
 };
-
-#include <stdint.h>
-
-#include "Configuration.h"
-//#include "AlarmWindow.h"
 
 //-----------------------------------------------------------------------------------------------------
 class CAlarmDfa : public CTask
@@ -102,15 +110,13 @@ public:
         return 0;
     };
 
-    virtual uint8_t IS_NAMUR_ON(void)
-    {
-        return 0;
-    };
-
     CAlarmDfa();
     virtual ~CAlarmDfa();
+    uint8_t Init(void);
+    void Allocate(void);
+    void DiscreteOutputsSet(uint8_t *puiLinkedDiscreteOutputs, uint8_t uiNewViolation);
     virtual uint8_t DiscreteSignalStateCheck(void);
-    virtual void Fsm(void);
+    virtual uint8_t Fsm(void);
 
     void SetDiscreteStateIndex(uint8_t uiDiscreteStateIndex)
     {
@@ -135,6 +141,48 @@ public:
         return m_auiLinkedDiscreteOutputs;
     };
 
+    uint8_t* GetDiscreteInputsState()
+    {
+        return m_puiDiscreteInputsState;
+    };
+    void SetDiscreteInputsState(uint8_t* puiDiscreteInputsState)
+    {
+        m_puiDiscreteInputsState = puiDiscreteInputsState;
+    };
+
+    uint8_t* GetDiscreteInputsBadState()
+    {
+        return m_puiDiscreteInputsBadState;
+    };
+    void SetDiscreteInputsBadState(uint8_t* puiDiscreteInputsBadState)
+    {
+        m_puiDiscreteInputsBadState = puiDiscreteInputsBadState;
+    };
+
+    bool IsModbusReceipt()
+    {
+        if (*m_puiModbusReceipt)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    };
+
+    bool IsModbusReset()
+    {
+        if (*m_puiModbusReset)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    };
+
 protected:
 private:
     // Индекс окна извещателя - светового табло.
@@ -143,8 +191,25 @@ private:
     uint8_t m_auiLinkedDiscreteOutputs[DISCRETE_OUTPUT_MODULE_MAX_NUMBER];
     // Источник дискретного сигнала.
     uint8_t m_uiDiscreteStateIndex;
-//    // Источник данных достоверности дискретного сигнала.
-//    uint8_t m_uiDiscreteInputsBadStateIndex;
+
+    uint8_t* m_puiDiscreteInputsState;
+    uint8_t* m_puiDiscreteInputsBadState;
+////    uint8_t* m_puiDiscreteOutputState;
+////    float* m_pfAnalogueInputsValue;
+////    uint8_t* m_puiAnalogueInputsState;
+////    uint8_t* m_puiAnalogueInputsOff;
+////    uint8_t* m_puiAnalogueInputsBadState;
+////    uint8_t* m_puiReperPointsAdcBuffer;
+////    uint8_t* m_puiAnalogueInputDiscreteInputsState;
+////    uint8_t* m_puiAnalogueInputDiscreteInputsBadState;
+//    TAnalogueInputDescriptionWork* m_pxAnalogueInputDescriptionWork;
+//    TDiscreteSignalsDescriptionWork *m_pxDiscreteSignalsDescriptionWork;
+    TDiscreteOutputControl* m_pxDiscreteOutputControl;
+
+    uint8_t* m_puiModbusReceipt;
+    uint8_t* m_puiModbusReset;
+
+    uint8_t* m_puiIntermediateBuff;
 };
 //-----------------------------------------------------------------------------------------------------
 
@@ -166,11 +231,6 @@ public:
     };
 
     uint8_t ACTIVE_LEVEL(void)
-    {
-        return 0;
-    };
-
-    uint8_t IS_NAMUR_ON(void)
     {
         return 0;
     };
@@ -201,11 +261,6 @@ public:
     };
 
     uint8_t ACTIVE_LEVEL(void)
-    {
-        return 0;
-    };
-
-    uint8_t IS_NAMUR_ON(void)
     {
         return 0;
     };
@@ -241,84 +296,8 @@ public:
         return 1;
     };
 
-    uint8_t IS_NAMUR_ON(void)
-    {
-        return 0;
-    };
-
     CPreventiveAlarmHighLevelDfa();
     virtual ~CPreventiveAlarmHighLevelDfa();
-
-protected:
-private:
-};
-//-----------------------------------------------------------------------------------------------------
-
-
-
-
-
-
-
-
-//-----------------------------------------------------------------------------------------------------
-class CPreventiveAlarmLowLevelNamurDfa : public CAlarmDfa
-{
-public:
-
-    uint8_t ALARM_TYPE(void)
-    {
-        return PREVENTIVE;
-    };
-
-    uint8_t ACTIVE_LEVEL(void)
-    {
-        return 0;
-    };
-
-    uint8_t IS_NAMUR_ON(void)
-    {
-        return 1;
-    };
-
-    CPreventiveAlarmLowLevelNamurDfa();
-    virtual ~CPreventiveAlarmLowLevelNamurDfa();
-
-
-protected:
-private:
-};
-//-----------------------------------------------------------------------------------------------------
-
-
-
-
-
-
-
-
-//-----------------------------------------------------------------------------------------------------
-class CPreventiveAlarmHighLevelNamurDfa : public CAlarmDfa
-{
-public:
-
-    uint8_t ALARM_TYPE(void)
-    {
-        return PREVENTIVE;
-    };
-
-    uint8_t ACTIVE_LEVEL(void)
-    {
-        return 1;
-    };
-
-    uint8_t IS_NAMUR_ON(void)
-    {
-        return 1;
-    };
-
-    CPreventiveAlarmHighLevelNamurDfa();
-    virtual ~CPreventiveAlarmHighLevelNamurDfa();
 
 protected:
 private:
@@ -343,11 +322,6 @@ public:
     };
 
     uint8_t ACTIVE_LEVEL(void)
-    {
-        return 0;
-    };
-
-    uint8_t IS_NAMUR_ON(void)
     {
         return 0;
     };
@@ -382,11 +356,6 @@ public:
         return 1;
     };
 
-    uint8_t IS_NAMUR_ON(void)
-    {
-        return 0;
-    };
-
     CEmergencyAlarmHighLevelDfa();
     virtual ~CEmergencyAlarmHighLevelDfa();
 
@@ -394,77 +363,6 @@ protected:
 private:
 };
 //-----------------------------------------------------------------------------------------------------
-
-
-
-
-
-
-
-
-//-----------------------------------------------------------------------------------------------------
-class CEmergencyAlarmLowLevelNamurDfa : public CAlarmDfa
-{
-public:
-
-    uint8_t ALARM_TYPE(void)
-    {
-        return EMERGENCY;
-    };
-
-    uint8_t ACTIVE_LEVEL(void)
-    {
-        return 0;
-    };
-
-    uint8_t IS_NAMUR_ON(void)
-    {
-        return 1;
-    };
-
-    CEmergencyAlarmLowLevelNamurDfa();
-    virtual ~CEmergencyAlarmLowLevelNamurDfa();
-
-protected:
-private:
-};
-//-----------------------------------------------------------------------------------------------------
-
-
-
-
-
-
-
-
-//-----------------------------------------------------------------------------------------------------
-class CEmergencyAlarmHighLevelNamurDfa : public CAlarmDfa
-{
-public:
-
-    uint8_t ALARM_TYPE(void)
-    {
-        return EMERGENCY;
-    };
-
-    uint8_t ACTIVE_LEVEL(void)
-    {
-        return 1;
-    };
-
-    uint8_t IS_NAMUR_ON(void)
-    {
-        return 1;
-    };
-
-    CEmergencyAlarmHighLevelNamurDfa();
-    virtual ~CEmergencyAlarmHighLevelNamurDfa();
-
-protected:
-private:
-};
-//-----------------------------------------------------------------------------------------------------
-
 
 
 
@@ -487,14 +385,9 @@ public:
         return 0;
     };
 
-    uint8_t IS_NAMUR_ON(void)
-    {
-        return 0;
-    };
-
     CIndicationAlarmLowLevelDfa();
     virtual ~CIndicationAlarmLowLevelDfa();
-    virtual void Fsm(void);
+    virtual uint8_t Fsm(void);
 
 protected:
 private:
@@ -523,11 +416,6 @@ public:
         return 1;
     };
 
-    uint8_t IS_NAMUR_ON(void)
-    {
-        return 0;
-    };
-
     CIndicationAlarmHighLevelDfa();
     virtual ~CIndicationAlarmHighLevelDfa();
 
@@ -536,75 +424,6 @@ private:
 };
 
 //-----------------------------------------------------------------------------------------------------
-
-
-
-
-
-
-
-
-//-----------------------------------------------------------------------------------------------------
-class CIndicationAlarmLowLevelNamurDfa : public CIndicationAlarmLowLevelDfa
-{
-public:
-
-    uint8_t ALARM_TYPE(void)
-    {
-        return INDICATION;
-    };
-
-    uint8_t ACTIVE_LEVEL(void)
-    {
-        return 0;
-    };
-
-    uint8_t IS_NAMUR_ON(void)
-    {
-        return 1;
-    };
-
-    CIndicationAlarmLowLevelNamurDfa();
-    virtual ~CIndicationAlarmLowLevelNamurDfa();
-
-protected:
-private:
-};
-//-----------------------------------------------------------------------------------------------------
-
-
-
-
-
-
-
-
-//-----------------------------------------------------------------------------------------------------
-class CIndicationAlarmHighLevelNamurDfa : public CIndicationAlarmLowLevelDfa
-{
-public:
-
-    uint8_t ALARM_TYPE(void)
-    {
-        return INDICATION;
-    };
-
-    uint8_t ACTIVE_LEVEL(void)
-    {
-        return 1;
-    };
-
-    uint8_t IS_NAMUR_ON(void)
-    {
-        return 1;
-    };
-
-    CIndicationAlarmHighLevelNamurDfa();
-    virtual ~CIndicationAlarmHighLevelNamurDfa();
-
-protected:
-private:
-};
 
 //-----------------------------------------------------------------------------------------------------
 

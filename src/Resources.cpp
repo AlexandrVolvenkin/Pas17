@@ -47,6 +47,8 @@ CResources::~CResources()
     delete[] m_puiAnalogueInputsOff;
     delete[] m_pxAnalogueInputDescriptionWork;
     delete[] m_pxDiscreteSignalsDescriptionWork;
+    delete[] m_pxDiscreteOutputControl;
+
 }
 
 //-------------------------------------------------------------------------------
@@ -257,11 +259,12 @@ void CResources::Allocate(void)
 //    m_puiDiscreteOutputState =
 //        &m_puiDiscreteInputs[DISCRETE_OUTPUT_BIT_ARRAY_OFFSET];
 //
-//    // Обнулим общий объём выделенной памяти.
-//    m_uiUsedDiscreteOutputControl = 0;
-//    // Подключим буфер для управления дискретными выходами.
-//    m_puiDiscreteOutputControl =
-//        &m_puiDiscreteInputs[DISCRETE_OUTPUT_BIT_ARRAY_OFFSET];
+    // Обнулим общий объём выделенной памяти.
+    m_uiUsedDiscreteOutputControl = 0;
+    // Подключим буфер для управления дискретными выходами.
+    m_pxDiscreteOutputControl =
+        new TDiscreteOutputControl[DISCRETE_OUTPUT_NUMBER];
+
 
     // Обнулим общий объём выделенной памяти.
     m_uiUsedAnalogueInputsValue = 0;

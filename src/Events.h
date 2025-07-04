@@ -10,8 +10,9 @@
 
 #include "Configuration.h"
 
-class CEventsDB;
-class CAlarm;
+//class CEventsDB;
+//class CAlarm;
+//class CAlarmDfa;
 
 //-----------------------------------------------------------------------------------------------------
 class CEvents
