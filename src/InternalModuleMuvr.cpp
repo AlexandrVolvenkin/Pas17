@@ -392,8 +392,18 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
     auiSpiTxBuffer[2] = 0;
     auiSpiTxBuffer[3] = 0;
     auiSpiTxBuffer[4] = 0;
+
+    uint8_t uiData = 0;
+    // заполним требования включения для каждого реле.
+    for (uint8_t i = 0; i < MUVR_MR_DISCRETE_OUTPUT_NUMBER; i++)
+    {
+        if (m_pxDiscreteOutputControl[i].uiRelayActivationRequest)
+        {
+            uiData |= (1 << i);
+        }
+    }
     // Управление реле для МУВР (1б)
-    auiSpiTxBuffer[5] = m_pxDiscreteOutputControl[0].uiRelayActivationRequest;
+    auiSpiTxBuffer[5] = uiData;
 
     usData = usCrcSummTwoByteCalculation(&auiSpiTxBuffer[1],
                                          5);
