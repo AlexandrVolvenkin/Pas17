@@ -159,6 +159,17 @@ void CInternalModuleMuvr::Allocate(void)
         MUVR_DISCRETE_SIGNALS_QUANTITY;
 
 
+    // Подключим буфер для управления дискретными выходами.
+    m_pxDiscreteOutputControl =
+        &(GetResources() ->
+          m_pxDiscreteOutputControl[GetResources() ->
+                                                   m_uiUsedDiscreteOutputControl]);
+    // Увеличим общий объём выделенной памяти.
+    GetResources() ->
+    m_uiUsedDiscreteOutputControl +=
+        MUVR_MR_DISCRETE_OUTPUT_NUMBER;
+
+
     // Получим указатель на место в массиве аналоговых входов для текущего модуля.
     m_pfAnalogueInputsValue =
         &(GetResources() ->
@@ -376,12 +387,13 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                     MUVR_GET_MEASURE_DATA_COMMAND_ANSWER_LENGTH + 2)] = 0x7e;
 
     auiSpiTxBuffer[0] = MUVR_GET_MEASURE_DATA_COMMAND;
+    // выходы токовые 0-16383 (4б)
     auiSpiTxBuffer[1] = 0;
-
     auiSpiTxBuffer[2] = 0;
     auiSpiTxBuffer[3] = 0;
     auiSpiTxBuffer[4] = 0;
-    auiSpiTxBuffer[5] = 0;
+    // Управление реле для МУВР (1б)
+    auiSpiTxBuffer[5] = m_pxDiscreteOutputControl[0].uiRelayActivationRequest;
 
     usData = usCrcSummTwoByteCalculation(&auiSpiTxBuffer[1],
                                          5);

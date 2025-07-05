@@ -13,6 +13,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "Configuration.h"
+#include "DataTypes.h"
 #include "InternalModule.h"
 
 // MUVR
@@ -224,6 +226,7 @@ private:
     uint8_t* m_puiAnalogueInputDiscreteInputsBadState;
 //    uint8_t m_uiBadAnswerCounter;
     TAnalogueInputDescriptionWork* m_pxAnalogueInputDescriptionWork;
+    TDiscreteOutputControl* m_pxDiscreteOutputControl;
 
     CTimer m_xWriteCompleteWaitTimer;
 };
