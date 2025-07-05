@@ -216,18 +216,26 @@ uint8_t CSystemComponentsCreate::Fsm(void)
                 (uint8_t*)(GetResources() -> GetDeviceConfigSearchPointer());
 
             SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
-            SetFsmNextStateDoneOk(SYSTEM_COMPONENTS_CREATE_INTERNAL_MODULES_HANDLERS_CREATE_EXECUTOR_ANSWER_PROCESSING);
-            SetFsmNextStateReadyWaitingError(DONE_ERROR);
-            SetFsmNextStateDoneWaitingError(DONE_ERROR);
-            SetFsmNextStateDoneWaitingDoneError(DONE_ERROR);
+            SetFsmNextStateDoneOk(SYSTEM_COMPONENTS_CREATE_INTERNAL_MODULES_HANDLERS_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+            SetFsmNextStateReadyWaitingError(SYSTEM_COMPONENTS_CREATE_INTERNAL_MODULES_HANDLERS_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingError(SYSTEM_COMPONENTS_CREATE_INTERNAL_MODULES_HANDLERS_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingDoneError(SYSTEM_COMPONENTS_CREATE_INTERNAL_MODULES_HANDLERS_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
         }
         break;
 
-    case SYSTEM_COMPONENTS_CREATE_INTERNAL_MODULES_HANDLERS_CREATE_EXECUTOR_ANSWER_PROCESSING:
-        std::cout << "CSystemComponentsCreate::Fsm SYSTEM_COMPONENTS_CREATE_INTERNAL_MODULES_HANDLERS_CREATE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
+    case SYSTEM_COMPONENTS_CREATE_INTERNAL_MODULES_HANDLERS_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+        std::cout << "CDataBaseCreate::Fsm SYSTEM_COMPONENTS_CREATE_INTERNAL_MODULES_HANDLERS_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
         {
-            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-            SetFsmState(DONE_OK);
+//            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(SYSTEM_COMPONENTS_CREATE_DISCRETE_SIGNALS_ALARM_HANDLERS_CREATE_START);
+        }
+        break;
+
+    case SYSTEM_COMPONENTS_CREATE_INTERNAL_MODULES_HANDLERS_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+        std::cout << "CDiscreteSignals::Fsm SYSTEM_COMPONENTS_CREATE_INTERNAL_MODULES_HANDLERS_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        {
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+            SetFsmState(DONE_ERROR);
         }
         break;
 
@@ -235,9 +243,13 @@ uint8_t CSystemComponentsCreate::Fsm(void)
     case SYSTEM_COMPONENTS_CREATE_DISCRETE_SIGNALS_ALARM_HANDLERS_CREATE_START:
         std::cout << "CSystemComponentsCreate::Fsm SYSTEM_COMPONENTS_CREATE_DISCRETE_SIGNALS_ALARM_HANDLERS_CREATE_START"  << std::endl;
         {
+            uint8_t uiDiscreteSignalsId =
+                GetResources() ->
+                GetTaskIdByNameFromMap("DiscreteSignals");
+
             CDataContainerDataBase* pxDataContainer =
                 (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-            pxDataContainer -> m_uiTaskId = m_uiInternalModuleId;
+            pxDataContainer -> m_uiTaskId = uiDiscreteSignalsId;
             pxDataContainer -> m_uiFsmCommandState =
                 CDiscreteSignals::DISCRETE_SIGNALS_CREATE_ALARM_HANDLERS_START;
 
