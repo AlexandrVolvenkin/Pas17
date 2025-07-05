@@ -232,6 +232,40 @@ uint8_t CSystemComponentsCreate::Fsm(void)
         break;
 
 //-------------------------------------------------------------------------------
+    case SYSTEM_COMPONENTS_CREATE_DISCRETE_SIGNALS_ALARM_HANDLERS_CREATE_START:
+        std::cout << "CSystemComponentsCreate::Fsm SYSTEM_COMPONENTS_CREATE_DISCRETE_SIGNALS_ALARM_HANDLERS_CREATE_START"  << std::endl;
+        {
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            pxDataContainer -> m_uiTaskId = m_uiInternalModuleId;
+            pxDataContainer -> m_uiFsmCommandState =
+                CDiscreteSignals::DISCRETE_SIGNALS_CREATE_ALARM_HANDLERS_START;
+
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+            SetFsmNextStateDoneOk(SYSTEM_COMPONENTS_CREATE_DISCRETE_SIGNALS_ALARM_HANDLERS_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+            SetFsmNextStateReadyWaitingError(SYSTEM_COMPONENTS_CREATE_DISCRETE_SIGNALS_ALARM_HANDLERS_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingError(SYSTEM_COMPONENTS_CREATE_DISCRETE_SIGNALS_ALARM_HANDLERS_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingDoneError(SYSTEM_COMPONENTS_CREATE_DISCRETE_SIGNALS_ALARM_HANDLERS_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+        }
+        break;
+
+    case SYSTEM_COMPONENTS_CREATE_DISCRETE_SIGNALS_ALARM_HANDLERS_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+        std::cout << "CDataBaseCreate::Fsm SYSTEM_COMPONENTS_CREATE_DISCRETE_SIGNALS_ALARM_HANDLERS_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        {
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(DONE_OK);
+        }
+        break;
+
+    case SYSTEM_COMPONENTS_CREATE_DISCRETE_SIGNALS_ALARM_HANDLERS_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+        std::cout << "CDiscreteSignals::Fsm SYSTEM_COMPONENTS_CREATE_DISCRETE_SIGNALS_ALARM_HANDLERS_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        {
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+            SetFsmState(DONE_ERROR);
+        }
+        break;
+
+//-------------------------------------------------------------------------------
     default:
         break;
     }

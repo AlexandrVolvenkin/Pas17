@@ -911,40 +911,7 @@ uint8_t CMainProductionCycle::Fsm(void)
             CurrentlyRunningTasksExecution();
 
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-            SetFsmState(SYSTEM_COMPONENTS_CREATE_START);
-        }
-        break;
-
-//-------------------------------------------------------------------------------
-    case SYSTEM_COMPONENTS_CREATE_START:
-        std::cout << "CMainProductionCycle::Fsm SYSTEM_COMPONENTS_CREATE_START"  << std::endl;
-        {
-            CurrentlyRunningTasksExecution();
-
-            CDataContainerDataBase* pxDataContainer =
-                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-            pxDataContainer -> m_uiTaskId = m_uiSystemComponentsCreateId;
-            pxDataContainer -> m_uiFsmCommandState =
-                CSystemComponentsCreate::SYSTEM_COMPONENTS_CREATE_INTERNAL_MODULES_HANDLERS_CREATE_START;
-            pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
-
-            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
-            SetFsmNextStateDoneOk(SYSTEM_COMPONENTS_CREATE_EXECUTOR_ANSWER_PROCESSING);
-            SetFsmNextStateReadyWaitingError(DONE_ERROR);
-            SetFsmNextStateDoneWaitingError(DONE_ERROR);
-            SetFsmNextStateDoneWaitingDoneError(DONE_ERROR);
-        }
-        break;
-
-    case SYSTEM_COMPONENTS_CREATE_EXECUTOR_ANSWER_PROCESSING:
-        std::cout << "CMainProductionCycle::Fsm SYSTEM_COMPONENTS_CREATE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
-        {
-            CurrentlyRunningTasksExecution();
-
-            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-//            SetFsmState(MAIN_CYCLE_MODBUS_SLAVE);
             SetFsmState(CONFIGURATION_CHECK_START);
-//            SetFsmState(DATA_STORE_CHECK_START);
         }
         break;
 
@@ -986,7 +953,7 @@ uint8_t CMainProductionCycle::Fsm(void)
 
             // текущая конфигурация и сохранённая в базе данных совпадают.
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-            SetFsmState(SETTINGS_LOAD_START);
+            SetFsmState(SYSTEM_COMPONENTS_CREATE_START);
         }
         break;
 
@@ -1030,9 +997,40 @@ uint8_t CMainProductionCycle::Fsm(void)
         CurrentlyRunningTasksExecution();
 
         ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-        SetFsmState(SETTINGS_LOAD_START);
+        SetFsmState(SYSTEM_COMPONENTS_CREATE_START);
     }
     break;
+
+//-------------------------------------------------------------------------------
+    case SYSTEM_COMPONENTS_CREATE_START:
+        std::cout << "CMainProductionCycle::Fsm SYSTEM_COMPONENTS_CREATE_START"  << std::endl;
+        {
+            CurrentlyRunningTasksExecution();
+
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            pxDataContainer -> m_uiTaskId = m_uiSystemComponentsCreateId;
+            pxDataContainer -> m_uiFsmCommandState =
+                CSystemComponentsCreate::SYSTEM_COMPONENTS_CREATE_INTERNAL_MODULES_HANDLERS_CREATE_START;
+            pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+            SetFsmNextStateDoneOk(SYSTEM_COMPONENTS_CREATE_EXECUTOR_ANSWER_PROCESSING);
+            SetFsmNextStateReadyWaitingError(DONE_ERROR);
+            SetFsmNextStateDoneWaitingError(DONE_ERROR);
+            SetFsmNextStateDoneWaitingDoneError(DONE_ERROR);
+        }
+        break;
+
+    case SYSTEM_COMPONENTS_CREATE_EXECUTOR_ANSWER_PROCESSING:
+        std::cout << "CMainProductionCycle::Fsm SYSTEM_COMPONENTS_CREATE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
+        {
+            CurrentlyRunningTasksExecution();
+
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(SETTINGS_LOAD_START);
+        }
+        break;
 
 //-------------------------------------------------------------------------------
     case SETTINGS_LOAD_START:
