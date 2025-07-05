@@ -527,7 +527,13 @@ uint8_t CDiscreteSignals::DiscreteSignalsDataBaseCrcCheck(
 // вычисляет количество запрограммированных дискретных сигналов.
 void CDiscreteSignals::ProgrammedDiscreteSignalsNumberCount(void)
 {
-//    std::cout << "CConfigurationCreate::ProgrammedDiscreteSignalsNumberCount 1" << endl;
+    std::cout << "CConfigurationCreate::ProgrammedDiscreteSignalsNumberCount 1" << endl;
+
+    // получим указатель на объект конфигурации.
+    CConfigurationCreate::TConfigDataPackOne* pxDeviceConfigSearch =
+        (CConfigurationCreate::TConfigDataPackOne*)
+        (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer);
+
     unsigned char ucCheck;
     unsigned char *pucSource;
     TDiscreteSignalsDescriptionWork *pxDiscreteSignalsDescriptionWork;
@@ -563,9 +569,21 @@ void CDiscreteSignals::ProgrammedDiscreteSignalsNumberCount(void)
         }
     }
 
-    (GetResources() -> GetDeviceConfigSearchPointer()) ->
-    uiHandledDiscreteSignalsQuantity =
-        nucModuleCounter;
+    std::cout << "CConfigurationCreate::ProgrammedDiscreteSignalsNumberCount nucModuleCounter " << nucModuleCounter << endl;
+    pxDeviceConfigSearch ->
+    uiHandledDiscreteSignalsQuantity = nucModuleCounter;
+
+//    (GetResources() -> GetDeviceConfigSearchPointer()) ->
+//    uiHandledDiscreteSignalsQuantity =
+//        nucModuleCounter;
+}
+
+//-------------------------------------------------------------------------------
+void CDiscreteSignals::ServiceDataCreate(void)
+{
+//    std::cout << "CInternalModule::CDiscreteSignals 1"  << std::endl;
+
+    ProgrammedDiscreteSignalsNumberCount();
 }
 
 //-------------------------------------------------------------------------------
@@ -850,6 +868,51 @@ uint8_t CDiscreteSignals::Fsm(void)
 
     case DISCRETE_SIGNALS_CREATE_DATA_BASE_BLOCKS_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
         std::cout << "CDiscreteSignals::Fsm DISCRETE_SIGNALS_CREATE_DATA_BASE_BLOCKS_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        {
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+            SetFsmState(DONE_ERROR);
+        }
+        break;
+
+//-------------------------------------------------------------------------------
+    case DISCRETE_SIGNALS_CREATE_SERVICE_DATA_CREATE_START:
+        std::cout << "CDataBaseCreate::Fsm DISCRETE_SIGNALS_CREATE_SERVICE_DATA_CREATE_START"  << std::endl;
+        {
+            uint8_t uiDataStoreId =
+                GetResources() ->
+                GetTaskIdByNameFromMap("DataStoreFileSystem");
+
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            pxDataContainer -> m_uiTaskId = uiDataStoreId;
+            pxDataContainer -> m_uiFsmCommandState =
+                CDataStore::READ_BLOCK_DATA_START;
+            // стартовые описатели дискретных сигналов блок 12
+            pxDataContainer -> m_uiDataIndex = NETWORK_ADDRESS_DATA_BASE_BLOCK_OFFSET;
+//            pxDataContainer -> m_uiDataIndex = DISCRETE_INPUT_SYGNALS_DATA_BASE_BLOCK_OFFSET;
+            pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+            SetFsmNextStateDoneOk(DISCRETE_SIGNALS_CREATE_SERVICE_DATA_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+            SetFsmNextStateReadyWaitingError(DISCRETE_SIGNALS_CREATE_SERVICE_DATA_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingError(DISCRETE_SIGNALS_CREATE_SERVICE_DATA_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingDoneError(DISCRETE_SIGNALS_CREATE_SERVICE_DATA_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+        }
+        break;
+
+    case DISCRETE_SIGNALS_CREATE_SERVICE_DATA_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+        std::cout << "CDataBaseCreate::Fsm DISCRETE_SIGNALS_CREATE_SERVICE_DATA_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        {
+            DiscreteSignalsDataBlockCommonFormatToWork();
+            ServiceDataCreate();
+
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(DONE_OK);
+        }
+        break;
+
+    case DISCRETE_SIGNALS_CREATE_SERVICE_DATA_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+        std::cout << "CDiscreteSignals::Fsm DISCRETE_SIGNALS_CREATE_SERVICE_DATA_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
         {
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
             SetFsmState(DONE_ERROR);
