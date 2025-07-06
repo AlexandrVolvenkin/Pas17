@@ -997,7 +997,7 @@ uint8_t CMainProductionCycle::Fsm(void)
         CurrentlyRunningTasksExecution();
 
         ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-        SetFsmState(SYSTEM_COMPONENTS_CREATE_START);
+        SetFsmState(ERROR_HANDLER_START);
     }
     break;
 
@@ -1183,6 +1183,35 @@ uint8_t CMainProductionCycle::Fsm(void)
         CurrentlyRunningTasksExecution();
 
         SetFsmState(MAIN_CYCLE_START_WAITING);
+        break;
+
+//-------------------------------------------------------------------------------
+    case ERROR_HANDLER_START:
+//        std::cout << "CSettingsLoad::Fsm ERROR_HANDLER_START"  << std::endl;
+        {
+            CurrentlyRunningTasksExecution();
+
+        }
+        break;
+
+    case ERROR_HANDLER_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+        std::cout << "CSettingsLoad::Fsm ERROR_HANDLER_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        {
+            CurrentlyRunningTasksExecution();
+
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(DONE_OK);
+        }
+        break;
+
+    case ERROR_HANDLER_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+        std::cout << "CSettingsLoad::Fsm ERROR_HANDLER_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        {
+            CurrentlyRunningTasksExecution();
+
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+            SetFsmState(DONE_ERROR);
+        }
         break;
 
     default:
