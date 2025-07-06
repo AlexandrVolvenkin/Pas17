@@ -127,6 +127,15 @@ public:
         return m_uiDiscreteStateIndex;
     };
 
+    void SetAlarmHandlerIndex(uint8_t uiAlarmHandlerIndex)
+    {
+        m_uiAlarmHandlerIndex = uiAlarmHandlerIndex;
+    };
+    uint8_t GetAlarmHandlerIndex(void)
+    {
+        return m_uiAlarmHandlerIndex;
+    };
+
 //    void SetAlarmWindowIndex(uint8_t uiAlarmWindowIndex)
 //    {
 //        m_uiAlarmWindowIndex = uiAlarmWindowIndex;
@@ -185,6 +194,7 @@ public:
 
 protected:
 private:
+    uint16_t m_uiAlarmHandlerIndex;
 //    // Индекс окна извещателя - светового табло.
 //    uint8_t m_uiAlarmWindowIndex;
     // Выходы на МР.

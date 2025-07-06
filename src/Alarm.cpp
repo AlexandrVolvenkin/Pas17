@@ -260,14 +260,14 @@ uint8_t CAlarmDfa::DiscreteSignalStateCheck(void)
     uint8_t uiDiscreteSignalState = DISCRETE_SIGNAL_IS_INVALID;
 
     // дискретный вход недостоверен?
-    if (GetDiscreteInputsBadState())
+    if (*GetDiscreteInputsBadState())
     {
         uiDiscreteSignalState = DISCRETE_SIGNAL_IS_INVALID;
     }
     else
     {
         // Дискретный сигнал активен?
-        if (GetDiscreteInputsState())
+        if (*GetDiscreteInputsState())
         {
             if (ACTIVE_LEVEL())
             {

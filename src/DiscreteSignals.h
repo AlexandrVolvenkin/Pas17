@@ -192,30 +192,6 @@ public:
     void CreateAlarmHandler(CResources* res,
                             uint16_t uiAlarmHandlerIndex,
                             std::string sDeviceName);
-//    template <typename T>
-//    std::unique_ptr<T> CreateAlarmHandler(CResources* res,
-//                                          uint16_t uiAlarmHandlerIndex,
-//                                          std::string sDeviceName);
-//    {
-//        std::string sDeviceName = "CNormalAlarmDfa" + std::to_string(i);
-//        std::cout << "CDiscreteSignals::CreateAlarmHandlers sDeviceName " << sDeviceName << std::endl;
-//        T* pxAlarmHandler = nullptr;
-//        pxAlarmHandler =
-//            static_cast<T*>(res ->
-//                            AddCommonTaskToMap(sDeviceName,
-//                                               std::make_shared<T>()));
-//        pxAlarmHandler ->
-//        SetResources(res);
-//
-////        CDiscreteSignalsDescriptionWork& work = pxAlarmHandler->GetLinkedDiscreteOutputsPointer();
-//        for (uint8_t j = 0; j < DISCRETE_OUTPUT_MODULE_MAX_NUMBER; j++)
-//        {
-////            pxAlarmHandler -> GetLinkedDiscreteOutputsPointer()[j] =
-////                (pxDiscreteSignalsDescriptionWork[i].auiRelayOut[j]);
-//        }
-//
-//        return std::unique_ptr<T>(pxAlarmHandler);
-//    }
 
 private:
 
