@@ -17,6 +17,7 @@
 #include "AnalogueSignals.h"
 #include "ConfigurationCreate.h"
 #include "InternalModuleMuvr.h"
+#include "DiscreteSignals.h"
 #include "Resources.h"
 
 //-------------------------------------------------------------------------------

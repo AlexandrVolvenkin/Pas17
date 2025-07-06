@@ -67,26 +67,24 @@ void CAlarmDfa::Allocate(void)
 ////    m_puiTxBuffer = xMemoryAllocationContext.puiTxBuffer;
 ////    m_puiErrorCode = xMemoryAllocationContext.puiErrorCode;
 //
-//    // Получим указатель на место в массиве дискретных входов для текущего модуля.
-    //    m_puiDiscreteInputsState =
-//        &(GetResources() ->
-//          m_puiDiscreteInputsState[GetResources() ->
-//                                                  m_uiUsedDiscreteInputsState]);
-//    // Увеличим общий объём выделенной памяти.
-//    GetResources() ->
-//    m_uiUsedDiscreteInputsState +=
-//        MUVR_DISCRETE_SIGNALS_QUANTITY;
-//
-//
-//    // Получим указатель на место в массиве достоверности дискретных входов для текущего модуля.
-//    m_puiDiscreteInputsBadState =
-//        &(GetResources() ->
-//          m_puiDiscreteInputsBadState[GetResources() ->
-//                                                     m_uiUsedDiscreteInputsBadState]);
-//    // Увеличим общий объём выделенной памяти.
-//    GetResources() ->
-//    m_uiUsedDiscreteInputsBadState +=
-//        MUVR_DISCRETE_SIGNALS_QUANTITY;
+    // Получим указатель на место в массиве дискретных входов для текущего обработчика.
+    m_puiDiscreteInputsState =
+        &(GetResources() ->
+          m_puiDiscreteInputsState[GetResources() ->
+                                                  m_uiUsedDiscreteInputsState]);
+    // Увеличим общий объём выделенной памяти.
+    GetResources() ->
+    m_uiUsedDiscreteInputsState += 1;
+
+
+    // Получим указатель на место в массиве достоверности дискретных входов для текущего обработчика.
+    m_puiDiscreteInputsBadState =
+        &(GetResources() ->
+          m_puiDiscreteInputsBadState[GetResources() ->
+                                                     m_uiUsedDiscreteInputsBadState]);
+    // Увеличим общий объём выделенной памяти.
+    GetResources() ->
+    m_uiUsedDiscreteInputsBadState += 1;
 
 
     // Подключим буфер для управления дискретными выходами.
@@ -191,7 +189,7 @@ void CAlarmDfa::Allocate(void)
 //    GetResources() ->
 //    m_uiUsedDiscreteSignalsDescriptionWork +=
 //        ANALOGUE_INPUT_MODULE_REPER_POINTS_ADC_DATA_BASE_BLOCK_LENGTH;
-//
+
 //    m_uiBadAnswerCounter = 0;
 
     m_puiModbusReceipt = &(GetResources() -> m_uiModbusReceipt);

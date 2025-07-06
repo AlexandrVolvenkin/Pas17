@@ -21,6 +21,7 @@
 #include "ConfigurationCheck.h"
 #include "ModbusSlave.h"
 #include "SettingsLoad.h"
+#include "Alarm.h"
 #include "DiscreteSignals.h"
 
 using namespace std;
@@ -581,10 +582,24 @@ void CDiscreteSignals::ProgrammedDiscreteSignalsNumberCount(void)
 //-------------------------------------------------------------------------------
 void CDiscreteSignals::ServiceDataCreate(void)
 {
-//    std::cout << "CInternalModule::CDiscreteSignals 1"  << std::endl;
+    std::cout << "CInternalModule::CDiscreteSignals 1"  << std::endl;
 
     ProgrammedDiscreteSignalsNumberCount();
 }
+
+////-------------------------------------------------------------------------------
+//void SetLinkedDiscreteOutputs(uint16_t uiAlarmHandlerIndex)
+//{
+//    std::cout << "SetLinkedDiscreteOutputs 1"  << std::endl;
+//    // копируем массив с требованиями включения реле из описателя базы данных
+//    // в массив созданного объекта обработчика сигнализации.
+//    for (uint8_t j = 0; j < DISCRETE_OUTPUT_MODULE_MAX_NUMBER; j++)
+//    {
+//        pxAlarmHandler ->
+//        GetLinkedDiscreteOutputsPointer()[j] =
+//            (pxDiscreteSignalsDescriptionWork[i].auiRelayOut[j]);
+//    }
+//}
 
 //-------------------------------------------------------------------------------
 void CDiscreteSignals::CreateAlarmHandlers(void)
@@ -595,49 +610,275 @@ void CDiscreteSignals::CreateAlarmHandlers(void)
     CConfigurationCreate::TConfigDataPackOne* pxDeviceConfigSearch =
         (GetResources() -> GetDeviceConfigSearchPointer());
 
+    TDiscreteSignalsDescriptionWork *pxDiscreteSignalsDescriptionWork;
+    // получим указатель на рабочий массив дискретных сигналов.
+    pxDiscreteSignalsDescriptionWork = m_pxDiscreteSignalsDescriptionWork;
+
     for (uint8_t i = 0;
             i < (pxDeviceConfigSearch ->
                  uiHandledDiscreteSignalsQuantity);
             i++)
     {
-//        uint8_t uiType = pxDeviceConfigSearch ->
-//                         axModulesContext[i].uiType;
-//        switch (uiType)
-//        {
-//        case MODULE_TYPE_MUVR:
-//        {
-//            std::string sDeviceName = "InternalModuleMuvr0";
-////            std::string sDeviceName = "InternalModuleMuvr" + std::to_string(i);
-//            std::cout << "CDiscreteSignals::CreateAlarmHandlers sDeviceName " << sDeviceName << std::endl;
-//            CInternalModuleMuvr* pxInternalModuleMuvr = 0;
-//            //            pxInternalModuleMuvr =
-////                static_cast<CInternalModuleMuvr*>(GetResources() ->
-////                                                  AddCommonTaskToMap("InternalModuleMuvr" + std::to_string(i),
-////                                                          std::make_shared<CInternalModuleMuvr>()));
-//            pxInternalModuleMuvr =
-//                static_cast<CInternalModuleMuvr*>(GetResources() ->
-//                                                  AddCommonTaskToMap(sDeviceName,
-//                                                          std::make_shared<CInternalModuleMuvr>()));
-//            pxInternalModuleMuvr ->
-//            SetResources(GetResources());
-//            pxInternalModuleMuvr ->
-//            SetCommunicationDeviceName("SpiCommunicationDeviceSpi0");
-////            pxInternalModuleMuvr ->
-////            Allocate();
-//            pxInternalModuleMuvr ->
-//            SetAddress(pxDeviceConfigSearch ->
-//                       axModulesContext[i].uiAddress);
-//            GetResources() -> AddCurrentlyRunningTasksList(pxInternalModuleMuvr);
-//            m_vpxDevices.push_back(pxInternalModuleMuvr);
-//            m_vuiDevicesId.push_back(GetResources() ->
-//                                     GetTaskIdByNameFromMap(sDeviceName));
+        // Какой тип сигнализации связан с дискретным сигналом?
+        switch ((pxDiscreteSignalsDescriptionWork[i].uiTalTkGrp >> 6) & 0x03)
+        {
+        case NORMAL:
+        {
+//                CreateAlarmHandler<CNormalAlarmDfa>(GetResources(), i++);
+
+            std::string sDeviceName = "CNormalAlarmDfa" + std::to_string(i);
+            std::cout << "CDiscreteSignals::CreateAlarmHandlers sDeviceName " << sDeviceName << std::endl;
+            CNormalAlarmDfa* pxAlarmHandler = 0;
+            pxAlarmHandler =
+                static_cast<CNormalAlarmDfa*>(GetResources() ->
+                                              AddCommonTaskToMap(sDeviceName,
+                                                      std::make_shared<CNormalAlarmDfa>()));
+            pxAlarmHandler ->
+            SetResources(GetResources());
+            // копируем массив с требованиями включения реле из описателя базы данных
+            // в массив созданного объекта обработчика сигнализации.
+            for (uint8_t j = 0; j < DISCRETE_OUTPUT_MODULE_MAX_NUMBER; j++)
+            {
+                pxAlarmHandler ->
+                GetLinkedDiscreteOutputsPointer()[j] =
+                    (pxDiscreteSignalsDescriptionWork[i].auiRelayOut[j]);
+            }
+
+            m_vpxAlarmHandlers.push_back(pxAlarmHandler);
+            m_vuiAlarmHandlersId.push_back(GetResources() ->
+                                           GetTaskIdByNameFromMap(sDeviceName));
+        }
+        break;
+
+        case INDICATION:
+            // Уровень дискретного сигнала интерпретируемый как активный - высокий?
+            if ((pxDiscreteSignalsDescriptionWork[i].uiTalTkGrp >> 5) & 0x01)
+            {
+                std::string sDeviceName = "CIndicationAlarmHighLevelDfa" + std::to_string(i);
+                std::cout << "CDiscreteSignals::CreateAlarmHandlers sDeviceName " << sDeviceName << std::endl;
+                CIndicationAlarmHighLevelDfa* pxAlarmHandler = 0;
+                pxAlarmHandler =
+                    static_cast<CIndicationAlarmHighLevelDfa*>(GetResources() ->
+                            AddCommonTaskToMap(sDeviceName,
+                                               std::make_shared<CIndicationAlarmHighLevelDfa>()));
+                pxAlarmHandler ->
+                SetResources(GetResources());
+                // копируем массив с требованиями включения реле из описателя базы данных
+                // в массив созданного объекта обработчика сигнализации.
+                for (uint8_t j = 0; j < DISCRETE_OUTPUT_MODULE_MAX_NUMBER; j++)
+                {
+                    pxAlarmHandler ->
+                    GetLinkedDiscreteOutputsPointer()[j] =
+                        (pxDiscreteSignalsDescriptionWork[i].auiRelayOut[j]);
+                }
+                m_vpxAlarmHandlers.push_back(pxAlarmHandler);
+                m_vuiAlarmHandlersId.push_back(GetResources() ->
+                                               GetTaskIdByNameFromMap(sDeviceName));
+            }
+            else
+            {
+                std::string sDeviceName = "CIndicationAlarmLowLevelDfa" + std::to_string(i);
+                std::cout << "CDiscreteSignals::CreateAlarmHandlers sDeviceName " << sDeviceName << std::endl;
+                CIndicationAlarmLowLevelDfa* pxAlarmHandler = 0;
+                pxAlarmHandler =
+                    static_cast<CIndicationAlarmLowLevelDfa*>(GetResources() ->
+                            AddCommonTaskToMap(sDeviceName,
+                                               std::make_shared<CIndicationAlarmLowLevelDfa>()));
+                pxAlarmHandler ->
+                SetResources(GetResources());
+                // копируем массив с требованиями включения реле из описателя базы данных
+                // в массив созданного объекта обработчика сигнализации.
+                for (uint8_t j = 0; j < DISCRETE_OUTPUT_MODULE_MAX_NUMBER; j++)
+                {
+                    pxAlarmHandler ->
+                    GetLinkedDiscreteOutputsPointer()[j] =
+                        (pxDiscreteSignalsDescriptionWork[i].auiRelayOut[j]);
+                }
+                m_vpxAlarmHandlers.push_back(pxAlarmHandler);
+                m_vuiAlarmHandlersId.push_back(GetResources() ->
+                                               GetTaskIdByNameFromMap(sDeviceName));
+            }
+            break;
+
+        case PREVENTIVE:
+            // Уровень дискретного сигнала интерпретируемый как активный - высокий?
+            if ((pxDiscreteSignalsDescriptionWork[i].uiTalTkGrp >> 5) & 0x01)
+            {
+                std::string sDeviceName = "CPreventiveAlarmHighLevelDfa" + std::to_string(i);
+                std::cout << "CDiscreteSignals::CreateAlarmHandlers sDeviceName " << sDeviceName << std::endl;
+                CPreventiveAlarmHighLevelDfa* pxAlarmHandler = 0;
+                pxAlarmHandler =
+                    static_cast<CPreventiveAlarmHighLevelDfa*>(GetResources() ->
+                            AddCommonTaskToMap(sDeviceName,
+                                               std::make_shared<CPreventiveAlarmHighLevelDfa>()));
+                pxAlarmHandler ->
+                SetResources(GetResources());
+                // копируем массив с требованиями включения реле из описателя базы данных
+                // в массив созданного объекта обработчика сигнализации.
+                for (uint8_t j = 0; j < DISCRETE_OUTPUT_MODULE_MAX_NUMBER; j++)
+                {
+                    pxAlarmHandler ->
+                    GetLinkedDiscreteOutputsPointer()[j] =
+                        (pxDiscreteSignalsDescriptionWork[i].auiRelayOut[j]);
+                }
+                m_vpxAlarmHandlers.push_back(pxAlarmHandler);
+                m_vuiAlarmHandlersId.push_back(GetResources() ->
+                                               GetTaskIdByNameFromMap(sDeviceName));
+            }
+            else
+            {
+                std::string sDeviceName = "CPreventiveAlarmLowLevelDfa" + std::to_string(i);
+                std::cout << "CDiscreteSignals::CreateAlarmHandlers sDeviceName " << sDeviceName << std::endl;
+                CPreventiveAlarmLowLevelDfa* pxAlarmHandler = 0;
+                pxAlarmHandler =
+                    static_cast<CPreventiveAlarmLowLevelDfa*>(GetResources() ->
+                            AddCommonTaskToMap(sDeviceName,
+                                               std::make_shared<CPreventiveAlarmLowLevelDfa>()));
+                pxAlarmHandler ->
+                SetResources(GetResources());
+                // копируем массив с требованиями включения реле из описателя базы данных
+                // в массив созданного объекта обработчика сигнализации.
+                for (uint8_t j = 0; j < DISCRETE_OUTPUT_MODULE_MAX_NUMBER; j++)
+                {
+                    pxAlarmHandler ->
+                    GetLinkedDiscreteOutputsPointer()[j] =
+                        (pxDiscreteSignalsDescriptionWork[i].auiRelayOut[j]);
+                }
+                m_vpxAlarmHandlers.push_back(pxAlarmHandler);
+                m_vuiAlarmHandlersId.push_back(GetResources() ->
+                                               GetTaskIdByNameFromMap(sDeviceName));
+            }
+            break;
+
+        case EMERGENCY:
+            // Уровень дискретного сигнала интерпретируемый как активный - высокий?
+            if ((pxDiscreteSignalsDescriptionWork[i].uiTalTkGrp >> 5) & 0x01)
+            {
+                std::string sDeviceName = "CEmergencyAlarmHighLevelDfa" + std::to_string(i);
+                std::cout << "CDiscreteSignals::CreateAlarmHandlers sDeviceName " << sDeviceName << std::endl;
+                CEmergencyAlarmHighLevelDfa* pxAlarmHandler = 0;
+                pxAlarmHandler =
+                    static_cast<CEmergencyAlarmHighLevelDfa*>(GetResources() ->
+                            AddCommonTaskToMap(sDeviceName,
+                                               std::make_shared<CEmergencyAlarmHighLevelDfa>()));
+                pxAlarmHandler ->
+                SetResources(GetResources());
+                // копируем массив с требованиями включения реле из описателя базы данных
+                // в массив созданного объекта обработчика сигнализации.
+                for (uint8_t j = 0; j < DISCRETE_OUTPUT_MODULE_MAX_NUMBER; j++)
+                {
+                    pxAlarmHandler ->
+                    GetLinkedDiscreteOutputsPointer()[j] =
+                        (pxDiscreteSignalsDescriptionWork[i].auiRelayOut[j]);
+                }
+                m_vpxAlarmHandlers.push_back(pxAlarmHandler);
+                m_vuiAlarmHandlersId.push_back(GetResources() ->
+                                               GetTaskIdByNameFromMap(sDeviceName));
+            }
+            else
+            {
+                std::string sDeviceName = "CEmergencyAlarmLowLevelDfa" + std::to_string(i);
+                std::cout << "CDiscreteSignals::CreateAlarmHandlers sDeviceName " << sDeviceName << std::endl;
+                CEmergencyAlarmLowLevelDfa* pxAlarmHandler = 0;
+                pxAlarmHandler =
+                    static_cast<CEmergencyAlarmLowLevelDfa*>(GetResources() ->
+                            AddCommonTaskToMap(sDeviceName,
+                                               std::make_shared<CEmergencyAlarmLowLevelDfa>()));
+                pxAlarmHandler ->
+                SetResources(GetResources());
+                // копируем массив с требованиями включения реле из описателя базы данных
+                // в массив созданного объекта обработчика сигнализации.
+                for (uint8_t j = 0; j < DISCRETE_OUTPUT_MODULE_MAX_NUMBER; j++)
+                {
+                    pxAlarmHandler ->
+                    GetLinkedDiscreteOutputsPointer()[j] =
+                        (pxDiscreteSignalsDescriptionWork[i].auiRelayOut[j]);
+                }
+                m_vpxAlarmHandlers.push_back(pxAlarmHandler);
+                m_vuiAlarmHandlersId.push_back(GetResources() ->
+                                               GetTaskIdByNameFromMap(sDeviceName));
+            }
+            break;
+
+        case IND_PREVENTIVE:
+        {
+            std::string sDeviceName = "CNormalAlarmDfa" + std::to_string(i);
+            std::cout << "CDiscreteSignals::CreateAlarmHandlers sDeviceName " << sDeviceName << std::endl;
+            CNormalAlarmDfa* pxAlarmHandler = 0;
+            pxAlarmHandler =
+                static_cast<CNormalAlarmDfa*>(GetResources() ->
+                                              AddCommonTaskToMap(sDeviceName,
+                                                      std::make_shared<CNormalAlarmDfa>()));
+            pxAlarmHandler ->
+            SetResources(GetResources());
+            // копируем массив с требованиями включения реле из описателя базы данных
+            // в массив созданного объекта обработчика сигнализации.
+            for (uint8_t j = 0; j < DISCRETE_OUTPUT_MODULE_MAX_NUMBER; j++)
+            {
+                pxAlarmHandler ->
+                GetLinkedDiscreteOutputsPointer()[j] =
+                    (pxDiscreteSignalsDescriptionWork[i].auiRelayOut[j]);
+            }
+            m_vpxAlarmHandlers.push_back(pxAlarmHandler);
+            m_vuiAlarmHandlersId.push_back(GetResources() ->
+                                           GetTaskIdByNameFromMap(sDeviceName));
+        }
+
+        break;
+
+        case IND_EMERGENCY:
+        {
+            std::string sDeviceName = "CNormalAlarmDfa" + std::to_string(i);
+            std::cout << "CDiscreteSignals::CreateAlarmHandlers sDeviceName " << sDeviceName << std::endl;
+            CNormalAlarmDfa* pxAlarmHandler = 0;
+            pxAlarmHandler =
+                static_cast<CNormalAlarmDfa*>(GetResources() ->
+                                              AddCommonTaskToMap(sDeviceName,
+                                                      std::make_shared<CNormalAlarmDfa>()));
+            pxAlarmHandler ->
+            SetResources(GetResources());
+            // копируем массив с требованиями включения реле из описателя базы данных
+            // в массив созданного объекта обработчика сигнализации.
+            for (uint8_t j = 0; j < DISCRETE_OUTPUT_MODULE_MAX_NUMBER; j++)
+            {
+                pxAlarmHandler ->
+                GetLinkedDiscreteOutputsPointer()[j] =
+                    (pxDiscreteSignalsDescriptionWork[i].auiRelayOut[j]);
+            }
+            m_vpxAlarmHandlers.push_back(pxAlarmHandler);
+            m_vuiAlarmHandlersId.push_back(GetResources() ->
+                                           GetTaskIdByNameFromMap(sDeviceName));
+        }
+
+        break;
+
+        default:
+        {
+            std::string sDeviceName = "CNormalAlarmDfa" + std::to_string(i);
+            std::cout << "CDiscreteSignals::CreateAlarmHandlers sDeviceName " << sDeviceName << std::endl;
+            CNormalAlarmDfa* pxAlarmHandler = 0;
+            pxAlarmHandler =
+                static_cast<CNormalAlarmDfa*>(GetResources() ->
+                                              AddCommonTaskToMap(sDeviceName,
+                                                      std::make_shared<CNormalAlarmDfa>()));
+            pxAlarmHandler ->
+            SetResources(GetResources());
+            // копируем массив с требованиями включения реле из описателя базы данных
+            // в массив созданного объекта обработчика сигнализации.
+            for (uint8_t j = 0; j < DISCRETE_OUTPUT_MODULE_MAX_NUMBER; j++)
+            {
+                pxAlarmHandler ->
+                GetLinkedDiscreteOutputsPointer()[j] =
+                    (pxDiscreteSignalsDescriptionWork[i].auiRelayOut[j]);
+            }
+            m_vpxAlarmHandlers.push_back(pxAlarmHandler);
+            m_vuiAlarmHandlersId.push_back(GetResources() ->
+                                           GetTaskIdByNameFromMap(sDeviceName));
+        }
+
+        break;
+        }
     }
-//        break;
-//
-//        default:
-//            break;
-//        }
-//    }
 }
 
 //-------------------------------------------------------------------------------
@@ -888,7 +1129,6 @@ uint8_t CDiscreteSignals::Fsm(void)
             pxDataContainer -> m_uiFsmCommandState =
                 CDataStore::READ_BLOCK_DATA_START;
             // стартовые описатели дискретных сигналов блок 12
-//            pxDataContainer -> m_uiDataIndex = NETWORK_ADDRESS_DATA_BASE_BLOCK_OFFSET;
             pxDataContainer -> m_uiDataIndex = DISCRETE_INPUT_SYGNALS_DATA_BASE_BLOCK_OFFSET;
             pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
 

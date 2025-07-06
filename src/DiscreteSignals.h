@@ -31,6 +31,7 @@ class CInternalModule;
 class CConfigurationCreate;
 class CDeviceControl;
 class CDataBaseCreate;
+class CAlarmDfa;
 class CDiscreteSignals;
 
 #define DISCRETE_INPUT_RELAY_OUTPUT_QUANTITY 4//DO_VALUE_BIT_ARRAY_LENGTH
@@ -187,6 +188,29 @@ public:
     uint8_t Fsm(void);
     void Allocate(void);
 
+//    template <typename T>
+//    std::unique_ptr<T> CreateAlarmHandler(CResources* res, uint8_t i)
+//    {
+//        std::string sDeviceName = "CNormalAlarmDfa" + std::to_string(i);
+//        std::cout << "CDiscreteSignals::CreateAlarmHandlers sDeviceName " << sDeviceName << std::endl;
+//        T* pxAlarmHandler = nullptr;
+//        pxAlarmHandler =
+//            static_cast<T*>(res ->
+//                            AddCommonTaskToMap(sDeviceName,
+//                                               std::make_shared<T>()));
+//        pxAlarmHandler ->
+//        SetResources(res);
+//
+////        CDiscreteSignalsDescriptionWork& work = pxAlarmHandler->GetLinkedDiscreteOutputsPointer();
+//        for (uint8_t j = 0; j < DISCRETE_OUTPUT_MODULE_MAX_NUMBER; j++)
+//        {
+////            pxAlarmHandler -> GetLinkedDiscreteOutputsPointer()[j] =
+////                (pxDiscreteSignalsDescriptionWork[i].auiRelayOut[j]);
+//        }
+//
+//        return std::unique_ptr<T>(pxAlarmHandler);
+//    }
+
 private:
 
 private:
@@ -201,6 +225,8 @@ private:
 
     std::vector<CTaskInterface*> m_vpxAlarmHandlers;
     std::vector<CTaskInterface*>::iterator m_xAlarmHandlersIterator;
+    std::vector<uint8_t> m_vuiAlarmHandlersId;
+    std::vector<uint8_t>::iterator m_xAlarmHandlersIdIterator;
 
     uint8_t* m_puiIntermediateBuff;
     TDiscreteSignalsDescriptionWork *m_pxDiscreteSignalsDescriptionWork;

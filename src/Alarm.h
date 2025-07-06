@@ -127,14 +127,14 @@ public:
         return m_uiDiscreteStateIndex;
     };
 
-    void SetAlarmWindowIndex(uint8_t uiAlarmWindowIndex)
-    {
-        m_uiAlarmWindowIndex = uiAlarmWindowIndex;
-    };
-    uint8_t GetAlarmWindowIndex(void)
-    {
-        return m_uiAlarmWindowIndex;
-    };
+//    void SetAlarmWindowIndex(uint8_t uiAlarmWindowIndex)
+//    {
+//        m_uiAlarmWindowIndex = uiAlarmWindowIndex;
+//    };
+//    uint8_t GetAlarmWindowIndex(void)
+//    {
+//        return m_uiAlarmWindowIndex;
+//    };
 
     uint8_t* GetLinkedDiscreteOutputsPointer(void)
     {
@@ -185,8 +185,8 @@ public:
 
 protected:
 private:
-    // Индекс окна извещателя - светового табло.
-    uint8_t m_uiAlarmWindowIndex;
+//    // Индекс окна извещателя - светового табло.
+//    uint8_t m_uiAlarmWindowIndex;
     // Выходы на МР.
     uint8_t m_auiLinkedDiscreteOutputs[DISCRETE_OUTPUT_MODULE_MAX_NUMBER];
     // Источник дискретного сигнала.

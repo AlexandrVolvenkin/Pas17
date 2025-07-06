@@ -583,9 +583,9 @@ enum EModbusFunctionInputRegistersDataMap
 enum TYPE_INDICATION
 {
     NORMAL		 = 0,			// Нет отображения
-    INDICATION	 = 1,			// Индикация
-    PREVENTIVE	 = 2,			// Предупредительная сигнализация
-    EMERGENCY	 = 3,			// Аварийная сигнализация
+    PREVENTIVE	 = 1,			// Предупредительная сигнализация
+    EMERGENCY	 = 2,			// Аварийная сигнализация
+    INDICATION	 = 3,			// Индикация
 
     IND_PREVENTIVE = 4,			// Индикация + предупредительная сигнализация
     IND_EMERGENCY  = 5,			// Индикация + аварийная сигнализация

@@ -33,7 +33,7 @@ class CAnalogueSignals;
 //class CConfigurationCreate;
 struct TAnalogueInputDescriptionWork;
 //struct TConfigDataPackOne;
-//struct CDiscreteSignals;
+//class CDiscreteSignals;
 
 //-------------------------------------------------------------------------------
 class CResourcesInterface : public CTask
