@@ -188,8 +188,14 @@ public:
     uint8_t Fsm(void);
     void Allocate(void);
 
+    template <typename T>
+    void CreateAlarmHandler(CResources* res,
+                            uint16_t uiAlarmHandlerIndex,
+                            std::string sDeviceName);
 //    template <typename T>
-//    std::unique_ptr<T> CreateAlarmHandler(CResources* res, uint8_t i)
+//    std::unique_ptr<T> CreateAlarmHandler(CResources* res,
+//                                          uint16_t uiAlarmHandlerIndex,
+//                                          std::string sDeviceName);
 //    {
 //        std::string sDeviceName = "CNormalAlarmDfa" + std::to_string(i);
 //        std::cout << "CDiscreteSignals::CreateAlarmHandlers sDeviceName " << sDeviceName << std::endl;

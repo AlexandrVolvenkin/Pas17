@@ -28,6 +28,7 @@ class CSpiCommunicationDevice;
 class CDataContainerInterface;
 class CDataContainerDataBase;
 class CInternalModule;
+class CDiscreteSignals;
 
 //-------------------------------------------------------------------------------
 class CConfigurationCreate : public CTask

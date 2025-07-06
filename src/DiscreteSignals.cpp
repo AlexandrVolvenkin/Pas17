@@ -601,6 +601,39 @@ void CDiscreteSignals::ServiceDataCreate(void)
 //    }
 //}
 
+template <typename T>
+void CDiscreteSignals::CreateAlarmHandler(CResources* res,
+        uint16_t uiAlarmHandlerIndex,
+        std::string sDeviceName)
+//template <typename T>
+//std::unique_ptr<T> CDiscreteSignals::CreateAlarmHandler(CResources* res,
+//        uint16_t uiAlarmHandlerIndex,
+//        std::string sDeviceName)
+{
+    sDeviceName = sDeviceName + std::to_string(uiAlarmHandlerIndex);
+    std::cout << "CDiscreteSignals::CreateAlarmHandler sDeviceName " << sDeviceName << std::endl;
+    T* pxAlarmHandler = nullptr;
+    pxAlarmHandler =
+        static_cast<T*>(res ->
+                        AddCommonTaskToMap(sDeviceName,
+                                           std::make_shared<T>()));
+    pxAlarmHandler ->
+    SetResources(res);
+
+//        CDiscreteSignalsDescriptionWork& work = pxAlarmHandler->GetLinkedDiscreteOutputsPointer();
+    for (uint8_t j = 0; j < DISCRETE_OUTPUT_MODULE_MAX_NUMBER; j++)
+    {
+//            pxAlarmHandler -> GetLinkedDiscreteOutputsPointer()[j] =
+//                (pxDiscreteSignalsDescriptionWork[i].auiRelayOut[j]);
+    }
+
+    m_vpxAlarmHandlers.push_back(pxAlarmHandler);
+    m_vuiAlarmHandlersId.push_back(GetResources() ->
+                                   GetTaskIdByNameFromMap(sDeviceName));
+
+//    return std::unique_ptr<T>(pxAlarmHandler);
+}
+
 //-------------------------------------------------------------------------------
 void CDiscreteSignals::CreateAlarmHandlers(void)
 {
@@ -614,7 +647,7 @@ void CDiscreteSignals::CreateAlarmHandlers(void)
     // получим указатель на рабочий массив дискретных сигналов.
     pxDiscreteSignalsDescriptionWork = m_pxDiscreteSignalsDescriptionWork;
 
-    for (uint8_t i = 0;
+    for (uint16_t i = 0;
             i < (pxDeviceConfigSearch ->
                  uiHandledDiscreteSignalsQuantity);
             i++)
@@ -624,9 +657,11 @@ void CDiscreteSignals::CreateAlarmHandlers(void)
         {
         case NORMAL:
         {
-//                CreateAlarmHandler<CNormalAlarmDfa>(GetResources(), i++);
 
             std::string sDeviceName = "CNormalAlarmDfa" + std::to_string(i);
+            CreateAlarmHandler<CNormalAlarmDfa>(GetResources(),
+                                                i,
+                                                ("CNormalAlarmDfa" + std::to_string(i)));
             std::cout << "CDiscreteSignals::CreateAlarmHandlers sDeviceName " << sDeviceName << std::endl;
             CNormalAlarmDfa* pxAlarmHandler = 0;
             pxAlarmHandler =

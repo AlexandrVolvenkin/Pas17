@@ -15,6 +15,7 @@
 #include "DataStore.h"
 #include "DataContainer.h"
 #include "InternalModule.h"
+#include "DiscreteSignals.h"
 #include "ConfigurationCreate.h"
 
 using namespace std;

@@ -16,6 +16,7 @@
 #include "DataContainer.h"
 #include "InternalModule.h"
 #include "ConfigurationCreate.h"
+#include "DiscreteSignals.h"
 #include "SystemComponentsCreate.h"
 
 using namespace std;

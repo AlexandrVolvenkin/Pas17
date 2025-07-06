@@ -18,6 +18,7 @@
 #include "InternalModule.h"
 #include "InternalModuleMuvr.h"
 #include "ConfigurationCreate.h"
+#include "DiscreteSignals.h"
 #include "DataBaseCreate.h"
 
 using namespace std;

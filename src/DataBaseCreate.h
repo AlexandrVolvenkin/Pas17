@@ -30,6 +30,7 @@ class CDataContainerDataBase;
 class CInternalModule;
 class CConfigurationCreate;
 class CDeviceControl;
+class CDiscreteSignals;
 
 
 //-------------------------------------------------------------------------------

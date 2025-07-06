@@ -19,7 +19,7 @@
 #include "Task.h"
 #include "ConfigurationCreate.h"
 #include "DataBaseCreate.h"
-#include "DiscreteSignals.h"
+//#include "DiscreteSignals.h"
 
 class CDfa;
 //class CTaskInterface;
@@ -33,7 +33,7 @@ class CAnalogueSignals;
 //class CConfigurationCreate;
 struct TAnalogueInputDescriptionWork;
 //struct TConfigDataPackOne;
-//class CDiscreteSignals;
+class CDiscreteSignals;
 
 //-------------------------------------------------------------------------------
 class CResourcesInterface : public CTask
@@ -139,7 +139,7 @@ public:
 //    uint8_t* m_puiAnalogueInputDescriptionWork;
     uint32_t m_uiUsedAnalogueInputDescriptionWork;
 
-    TDiscreteSignalsDescriptionWork *m_pxDiscreteSignalsDescriptionWork;
+    struct TDiscreteSignalsDescriptionWork *m_pxDiscreteSignalsDescriptionWork;
     uint32_t m_uiUsedDiscreteSignalsDescriptionWork;
 
     TDiscreteSygnalTextTitle *m_pxDiscreteSygnalTextTitlesWork;
