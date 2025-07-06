@@ -888,6 +888,9 @@ uint8_t CMainProductionCycle::Fsm(void)
         {
             CurrentlyRunningTasksExecution();
 
+            // при старте нужно прочитать из хранилища в поле класса сервиный блок.
+            m_pxDataStoreFileSystem -> ReadServiceSection();
+
             CDataContainerDataBase* pxDataContainer =
                 (CDataContainerDataBase*)GetExecutorDataContainerPointer();
             pxDataContainer -> m_uiTaskId = m_uiConfigurationCreateId;
@@ -921,8 +924,8 @@ uint8_t CMainProductionCycle::Fsm(void)
         {
             CurrentlyRunningTasksExecution();
 
-            // при старте нужно прочитать из хранилища в поле класса сервиный блок.
-            m_pxDataStoreFileSystem -> ReadServiceSection();
+//            // при старте нужно прочитать из хранилища в поле класса сервиный блок.
+//            m_pxDataStoreFileSystem -> ReadServiceSection();
             SetFsmState(CONFIGURATION_CHECK_CONFIGURATION_DATA_BASE_BLOCKS_READ_START);
         }
         break;

@@ -813,7 +813,7 @@ uint8_t CDiscreteSignals::Fsm(void)
 
 //-------------------------------------------------------------------------------
     case DISCRETE_SIGNALS_CREATE_DATA_BASE_START:
-        std::cout << "CDataBaseCreate::Fsm DISCRETE_SIGNALS_CREATE_DATA_BASE_START"  << std::endl;
+        std::cout << "CDiscreteSignals::Fsm DISCRETE_SIGNALS_CREATE_DATA_BASE_START"  << std::endl;
         {
             // создадим стартовую базу данных дискретных сигналов в рабочем формате.
             DiscreteSignalsStartDataBaseCreate();
@@ -823,7 +823,7 @@ uint8_t CDiscreteSignals::Fsm(void)
         break;
 
     case DISCRETE_SIGNALS_CREATE_DATA_BASE_BLOCKS_WRITE_START:
-        std::cout << "CDataBaseCreate::Fsm DISCRETE_SIGNALS_CREATE_DATA_BASE_BLOCKS_WRITE_START"  << std::endl;
+        std::cout << "CDiscreteSignals::Fsm DISCRETE_SIGNALS_CREATE_DATA_BASE_BLOCKS_WRITE_START"  << std::endl;
         {
             DiscreteSignalsStartDataBlockWorkToCommonFormat(m_puiIntermediateBuff,
                     // получим указатель на блок в буфере с вновь созданной нормализованной стартовой базой данных дискретных сигналов.
@@ -850,7 +850,7 @@ uint8_t CDiscreteSignals::Fsm(void)
         break;
 
     case DISCRETE_SIGNALS_CREATE_DATA_BASE_BLOCKS_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
-        std::cout << "CDataBaseCreate::Fsm DISCRETE_SIGNALS_CREATE_DATA_BASE_BLOCKS_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        std::cout << "CDiscreteSignals::Fsm DISCRETE_SIGNALS_CREATE_DATA_BASE_BLOCKS_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
         {
             m_uiBlocksCounter++;
 
@@ -876,7 +876,7 @@ uint8_t CDiscreteSignals::Fsm(void)
 
 //-------------------------------------------------------------------------------
     case DISCRETE_SIGNALS_CREATE_SERVICE_DATA_CREATE_START:
-        std::cout << "CDataBaseCreate::Fsm DISCRETE_SIGNALS_CREATE_SERVICE_DATA_CREATE_START"  << std::endl;
+        std::cout << "CDiscreteSignals::Fsm DISCRETE_SIGNALS_CREATE_SERVICE_DATA_CREATE_START"  << std::endl;
         {
             uint8_t uiDataStoreId =
                 GetResources() ->
@@ -888,8 +888,8 @@ uint8_t CDiscreteSignals::Fsm(void)
             pxDataContainer -> m_uiFsmCommandState =
                 CDataStore::READ_BLOCK_DATA_START;
             // стартовые описатели дискретных сигналов блок 12
-            pxDataContainer -> m_uiDataIndex = NETWORK_ADDRESS_DATA_BASE_BLOCK_OFFSET;
-//            pxDataContainer -> m_uiDataIndex = DISCRETE_INPUT_SYGNALS_DATA_BASE_BLOCK_OFFSET;
+//            pxDataContainer -> m_uiDataIndex = NETWORK_ADDRESS_DATA_BASE_BLOCK_OFFSET;
+            pxDataContainer -> m_uiDataIndex = DISCRETE_INPUT_SYGNALS_DATA_BASE_BLOCK_OFFSET;
             pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
 
             SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
@@ -901,7 +901,7 @@ uint8_t CDiscreteSignals::Fsm(void)
         break;
 
     case DISCRETE_SIGNALS_CREATE_SERVICE_DATA_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
-        std::cout << "CDataBaseCreate::Fsm DISCRETE_SIGNALS_CREATE_SERVICE_DATA_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        std::cout << "CDiscreteSignals::Fsm DISCRETE_SIGNALS_CREATE_SERVICE_DATA_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
         {
             DiscreteSignalsDataBlockCommonFormatToWork();
             ServiceDataCreate();
@@ -921,7 +921,7 @@ uint8_t CDiscreteSignals::Fsm(void)
 
 //-------------------------------------------------------------------------------
     case DISCRETE_SIGNALS_CREATE_ALARM_HANDLERS_START:
-        std::cout << "CDataBaseCreate::Fsm DISCRETE_SIGNALS_CREATE_ALARM_HANDLERS_START"  << std::endl;
+        std::cout << "CDiscreteSignals::Fsm DISCRETE_SIGNALS_CREATE_ALARM_HANDLERS_START"  << std::endl;
         {
             CreateAlarmHandlers();
 
@@ -930,7 +930,7 @@ uint8_t CDiscreteSignals::Fsm(void)
         break;
 
     case DISCRETE_SIGNALS_CREATE_ALARM_HANDLERS_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
-        std::cout << "CDataBaseCreate::Fsm DISCRETE_SIGNALS_CREATE_ALARM_HANDLERS_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        std::cout << "CDiscreteSignals::Fsm DISCRETE_SIGNALS_CREATE_ALARM_HANDLERS_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
         {
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(DONE_OK);

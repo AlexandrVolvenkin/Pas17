@@ -309,9 +309,9 @@ uint8_t CConfigurationCreate::Fsm(void)
                 (CConfigurationCreate::TConfigDataPackOne*)
                 (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer);
 
-            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-            SetFsmState(DONE_OK);
-//            SetFsmState(CONFIGURATION_CREATE_DISCRETE_SIGNALS_SERVICE_DATA_CREATE_START);
+//            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+//            SetFsmState(DONE_OK);
+            SetFsmState(CONFIGURATION_CREATE_DISCRETE_SIGNALS_SERVICE_DATA_CREATE_START);
         }
         break;
 
@@ -342,19 +342,19 @@ uint8_t CConfigurationCreate::Fsm(void)
     case CONFIGURATION_CREATE_DISCRETE_SIGNALS_SERVICE_DATA_CREATE_EXECUTOR_ANSWER_PROCESSING:
         std::cout << "CConfigurationCreate::Fsm CONFIGURATION_CREATE_DISCRETE_SIGNALS_SERVICE_DATA_CREATE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
         {
-//            CDataContainerDataBase* pxCustomerDataContainer =
-//                (CDataContainerDataBase*)GetCustomerDataContainerPointer();
-//
-//            uint16_t  uiLength = sizeof(struct TConfigDataPackOne);
-//            memcpy(pxCustomerDataContainer -> m_puiDataPointer,
-//                   (uint8_t*)(GetResources() -> GetDeviceConfigSearchPointer()),
-//                   uiLength);
-//            pxCustomerDataContainer -> m_uiDataLength =
-//                uiLength;
-//
-//            CConfigurationCreate::TConfigDataPackOne* pxDeviceConfigSearch =
-//                (CConfigurationCreate::TConfigDataPackOne*)
-//                (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer);
+            CDataContainerDataBase* pxCustomerDataContainer =
+                (CDataContainerDataBase*)GetCustomerDataContainerPointer();
+
+            uint16_t  uiLength = sizeof(struct TConfigDataPackOne);
+            memcpy(pxCustomerDataContainer -> m_puiDataPointer,
+                   (uint8_t*)(GetResources() -> GetDeviceConfigSearchPointer()),
+                   uiLength);
+            pxCustomerDataContainer -> m_uiDataLength =
+                uiLength;
+
+            CConfigurationCreate::TConfigDataPackOne* pxDeviceConfigSearch =
+                (CConfigurationCreate::TConfigDataPackOne*)
+                (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer);
 
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(DONE_OK);
