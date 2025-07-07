@@ -624,11 +624,6 @@ void CDiscreteSignals::CreateAlarmHandler(CResources* res,
         pxAlarmHandler ->
         SetRelayOnDelay(((m_pxDiscreteSignalsDescriptionWork[uiAlarmHandlerIndex].uiDelay) & 0x3f));
     }
-//    pxAlarmHandler ->
-//    SetRelayOnDelay(((m_pxDiscreteSignalsDescriptionWork[uiAlarmHandlerIndex].uiDelay) & 0x3f));
-//
-//    pxAlarmHandler ->
-//    SetTimeDiscreteness(((m_pxDiscreteSignalsDescriptionWork[uiAlarmHandlerIndex].uiDelay >> 6) & 0x01));
 
     m_vpxAlarmHandlers.push_back(pxAlarmHandler);
     m_vuiAlarmHandlersId.push_back(GetResources() ->

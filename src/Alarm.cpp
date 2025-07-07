@@ -547,11 +547,49 @@ uint8_t CIndicationAlarmLowLevelDfa::Fsm(void)
         // Дискретный сигнал активен?
         if (uiDiscreteSignalState == DISCRETE_SIGNAL_IS_ACTIVE)
         {
-            // Установим связанные дискретный выходы - новое нарушение.
-            DiscreteOutputsSet(GetLinkedDiscreteOutputsPointer(), NEW_VIOLATION);
-            SetFsmState(NOT_ACTIVE_STATE_WAITING);
+            // есть задержка включения реле?
+            if (m_uiRelayOnDelay)
+            {
+                m_uiDelay = 0;
+                // Установим время ожидания 1 секунда.
+                GetTimerPointer() -> Set(RELAY_ON_DELAY_ONE_SECOND);
+                SetFsmState(RELAY_ON_DELAY_END_WAITING);
+            }
+            else
+            {
+                // Установим связанные дискретный выходы - новое нарушение.
+                DiscreteOutputsSet(GetLinkedDiscreteOutputsPointer(), NEW_VIOLATION);
+                SetFsmState(NOT_ACTIVE_STATE_WAITING);
+            }
         }
+        break;
 
+    case RELAY_ON_DELAY_END_WAITING:
+        // Дискретный сигнал активен?
+        if (uiDiscreteSignalState == DISCRETE_SIGNAL_IS_ACTIVE)
+        {
+            // Время ожидания 1 секунды закончилось?
+            if (GetTimerPointer() -> IsOverflow())
+            {
+                // задержка закончилась?
+                if (m_uiDelay < m_uiRelayOnDelay)
+                {
+                    m_uiDelay++;
+                    // Установим время ожидания 1 секунда.
+                    GetTimerPointer() -> Set(RELAY_ON_DELAY_ONE_SECOND);
+                }
+                else
+                {
+                    // Установим связанные дискретный выходы - новое нарушение.
+                    DiscreteOutputsSet(GetLinkedDiscreteOutputsPointer(), NEW_VIOLATION);
+                    SetFsmState(NOT_ACTIVE_STATE_WAITING);
+                }
+            }
+        }
+        else
+        {
+            SetFsmState(ACTIVE_STATE_WAITING);
+        }
         break;
 
     case NOT_ACTIVE_STATE_WAITING:

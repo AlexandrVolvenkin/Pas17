@@ -124,15 +124,6 @@ public:
     virtual uint8_t DiscreteSignalStateCheck(void);
     virtual uint8_t Fsm(void);
 
-    void SetDiscreteStateIndex(uint8_t uiDiscreteStateIndex)
-    {
-        m_uiDiscreteStateIndex = uiDiscreteStateIndex;
-    };
-    uint8_t GetDiscreteStateIndex(void)
-    {
-        return m_uiDiscreteStateIndex;
-    };
-
     void SetAlarmHandlerIndex(uint8_t uiAlarmHandlerIndex)
     {
         m_uiAlarmHandlerIndex = uiAlarmHandlerIndex;
@@ -141,15 +132,6 @@ public:
     {
         return m_uiAlarmHandlerIndex;
     };
-
-//    void SetAlarmWindowIndex(uint8_t uiAlarmWindowIndex)
-//    {
-//        m_uiAlarmWindowIndex = uiAlarmWindowIndex;
-//    };
-//    uint8_t GetAlarmWindowIndex(void)
-//    {
-//        return m_uiAlarmWindowIndex;
-//    };
 
     uint8_t* GetLinkedDiscreteOutputsPointer(void)
     {
@@ -164,15 +146,6 @@ public:
     {
         return m_uiRelayOnDelay;
     };
-
-//    void SetTimeDiscreteness(uint8_t uiTimeDiscreteness)
-//    {
-//        m_uiTimeDiscreteness = uiTimeDiscreteness;
-//    };
-//    uint8_t GetTimeDiscreteness(void)
-//    {
-//        return m_uiTimeDiscreteness;
-//    };
 
     uint8_t* GetDiscreteInputsState()
     {
@@ -217,34 +190,18 @@ public:
     };
 
 protected:
-private:
+//private:
     uint16_t m_uiAlarmHandlerIndex;
-//    // Индекс окна извещателя - светового табло.
-//    uint8_t m_uiAlarmWindowIndex;
     // Выходы на МР.
     uint8_t m_auiLinkedDiscreteOutputs[DISCRETE_OUTPUT_MODULE_MAX_NUMBER];
     // время задержки включения реле
     // УВЗ:уставка времени задержки выхода в ед.ДВЗ(0-60).
     uint16_t m_uiRelayOnDelay;
-//    // дискретность времени задержки включения реле
-//    // ДВЗ:0-задерж.в сек,1-в дес.сек.
-//    uint8_t m_uiTimeDiscreteness;
+    // секундный счётчик времени задержки
     uint16_t m_uiDelay;
-    // Источник дискретного сигнала.
-    uint8_t m_uiDiscreteStateIndex;
 
     uint8_t* m_puiDiscreteInputsState;
     uint8_t* m_puiDiscreteInputsBadState;
-////    uint8_t* m_puiDiscreteOutputState;
-////    float* m_pfAnalogueInputsValue;
-////    uint8_t* m_puiAnalogueInputsState;
-////    uint8_t* m_puiAnalogueInputsOff;
-////    uint8_t* m_puiAnalogueInputsBadState;
-////    uint8_t* m_puiReperPointsAdcBuffer;
-////    uint8_t* m_puiAnalogueInputDiscreteInputsState;
-////    uint8_t* m_puiAnalogueInputDiscreteInputsBadState;
-//    TAnalogueInputDescriptionWork* m_pxAnalogueInputDescriptionWork;
-//    TDiscreteSignalsDescriptionWork *m_pxDiscreteSignalsDescriptionWork;
     TDiscreteOutputControl* m_pxDiscreteOutputControl;
 
     uint8_t* m_puiModbusReceipt;
