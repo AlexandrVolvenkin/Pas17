@@ -290,60 +290,6 @@ void CAlarmDfa::DiscreteOutputsSet(uint8_t *puiLinkedDiscreteOutputs, uint8_t ui
     default:
         break;
     }
-
-//    // Дискретный сигнал был активен на предыдущем шаге?
-//    if (!uiNewViolation)
-//    {
-//        // Не новое нарушение.
-//        // установим флаги - требования включения, для запрограммированных реле,
-//        // в буфере выходов требований включения реле - блокировка.
-//        // цикл выбора модуля.
-//        for (int j = 0;
-//                j < DISCRETE_OUTPUT_MODULE_MAX_NUMBER;
-//                j++)
-//        {
-//            // цикл выбора реле.
-//            for (int k = 0;
-//                    k < MUVR_MR_DISCRETE_OUTPUT_NUMBER;
-//                    k++)
-//            {
-//                // Текущий - (j, k) дискретный выход(реле) привязан?
-//                if (puiLinkedDiscreteOutputs[j] & (0x01 << k))
-//                {
-//                    // установим флаг - требование включения реле.
-//                    m_pxDiscreteOutputControl[(j * MUVR_MR_DISCRETE_OUTPUT_NUMBER) + k].uiRelayActivationRequest = 1;
-//                }
-//            }
-//        }
-//    }
-//    else
-//    {
-//        // новое нарушение.
-//        // установим флаги - новое нарушение, для запрограммированных реле
-//        // в буфере выходов управления реле - новое нарушение.
-//        // установим флаги - требования включения, для запрограммированных реле,
-//        // в буфере выходов требований включения реле - блокировка.
-//        // цикл выбора модуля.
-//        for (int j = 0;
-//                j < DISCRETE_OUTPUT_MODULE_MAX_NUMBER;
-//                j++)
-//        {
-//            // цикл выбора реле.
-//            for (int k = 0;
-//                    k < MUVR_MR_DISCRETE_OUTPUT_NUMBER;
-//                    k++)
-//            {
-//                // Текущий - (j, k) дискретный выход(реле) привязан?
-//                if (puiLinkedDiscreteOutputs[j] & (0x01 << k))
-//                {
-//                    // установим флаг - новое нарушение.
-//                    m_pxDiscreteOutputControl[(j * MUVR_MR_DISCRETE_OUTPUT_NUMBER) + k].uiNewActivation = 1;
-//                    // установим флаг - требование включения реле.
-//                    m_pxDiscreteOutputControl[(j * MUVR_MR_DISCRETE_OUTPUT_NUMBER) + k].uiRelayActivationRequest = 1;
-//                }
-//            }
-//        }
-//    }
 }
 
 //-----------------------------------------------------------------------------------------------------
@@ -695,6 +641,8 @@ uint8_t CIndicationAlarmLowLevelDfa::Fsm(void)
         // Дискретный сигнал не активен?
         if (uiDiscreteSignalState == DISCRETE_SIGNAL_IS_NOT_ACTIVE)
         {
+            // сбросим связанные дискретный выходы - всё в норму.
+            DiscreteOutputsSet(GetLinkedDiscreteOutputsPointer(), NORMA);
             SetFsmState(ACTIVE_STATE_WAITING);
         }
         else if (uiDiscreteSignalState == DISCRETE_SIGNAL_IS_ACTIVE)

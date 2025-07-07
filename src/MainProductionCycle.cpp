@@ -1061,7 +1061,7 @@ uint8_t CMainProductionCycle::Fsm(void)
             CurrentlyRunningTasksExecution();
 
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-            SetFsmState(INTERNAL_MODULES_DATA_EXCHANGE_START);
+            SetFsmState(MAIN_CYCLE_START);
         }
         break;
 
@@ -1073,6 +1073,14 @@ uint8_t CMainProductionCycle::Fsm(void)
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
             SetFsmState(DONE_ERROR);
         }
+        break;
+
+//-------------------------------------------------------------------------------
+    case MAIN_CYCLE_START:
+        std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_START"  << std::endl;
+        CurrentlyRunningTasksExecution();
+
+        SetFsmState(INTERNAL_MODULES_DATA_EXCHANGE_START);
         break;
 
 //-------------------------------------------------------------------------------
@@ -1159,7 +1167,7 @@ uint8_t CMainProductionCycle::Fsm(void)
         CurrentlyRunningTasksExecution();
 
         ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-        SetFsmState(INTERNAL_MODULES_DATA_EXCHANGE_START);
+        SetFsmState(MAIN_CYCLE_END);
     }
     break;
 
@@ -1169,7 +1177,7 @@ uint8_t CMainProductionCycle::Fsm(void)
         CurrentlyRunningTasksExecution();
 
         ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
-        SetFsmState(INTERNAL_MODULES_DATA_EXCHANGE_START);
+        SetFsmState(MAIN_CYCLE_END);
     }
     break;
 
@@ -1181,21 +1189,64 @@ uint8_t CMainProductionCycle::Fsm(void)
         SetFsmState(MAIN_CYCLE_END);
         break;
 
+//-------------------------------------------------------------------------------
+    case MAIN_CYCLE_DISCRETE_SIGNALS_PROCESSING_ALARM_HANDLERS_START:
+        std::cout << "CSystemComponentsCreate::Fsm MAIN_CYCLE_DISCRETE_SIGNALS_PROCESSING_ALARM_HANDLERS_START"  << std::endl;
+        {
+            CurrentlyRunningTasksExecution();
+
+            uint8_t uiDiscreteSignalsId =
+                GetResources() ->
+                GetTaskIdByNameFromMap("DiscreteSignals");
+
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            pxDataContainer -> m_uiTaskId = uiDiscreteSignalsId;
+            pxDataContainer -> m_uiFsmCommandState =
+                CDiscreteSignals::DISCRETE_SIGNALS_PROCESSING_ALARM_HANDLERS_START;
+
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+            SetFsmNextStateDoneOk(MAIN_CYCLE_DISCRETE_SIGNALS_PROCESSING_ALARM_HANDLERS_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+            SetFsmNextStateReadyWaitingError(MAIN_CYCLE_DISCRETE_SIGNALS_PROCESSING_ALARM_HANDLERS_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingError(MAIN_CYCLE_DISCRETE_SIGNALS_PROCESSING_ALARM_HANDLERS_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingDoneError(MAIN_CYCLE_DISCRETE_SIGNALS_PROCESSING_ALARM_HANDLERS_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+        }
+        break;
+
+    case MAIN_CYCLE_DISCRETE_SIGNALS_PROCESSING_ALARM_HANDLERS_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+        std::cout << "CDataBaseCreate::Fsm MAIN_CYCLE_DISCRETE_SIGNALS_PROCESSING_ALARM_HANDLERS_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        {
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(MAIN_CYCLE_END);
+//            SetFsmState(DONE_OK);
+        }
+        break;
+
+    case MAIN_CYCLE_DISCRETE_SIGNALS_PROCESSING_ALARM_HANDLERS_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+        std::cout << "CDiscreteSignals::Fsm MAIN_CYCLE_DISCRETE_SIGNALS_PROCESSING_ALARM_HANDLERS_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        {
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+            SetFsmState(MAIN_CYCLE_END);
+//            SetFsmState(DONE_ERROR);
+        }
+        break;
+
+//-------------------------------------------------------------------------------
     case MAIN_CYCLE_END:
-//        std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_END"  << std::endl;
+        std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_END"  << std::endl;
         CurrentlyRunningTasksExecution();
 
-        SetFsmState(MAIN_CYCLE_START_WAITING);
+        SetFsmState(MAIN_CYCLE_START);
         break;
 
 //-------------------------------------------------------------------------------
     case ERROR_HANDLER_START:
 //        std::cout << "CSettingsLoad::Fsm ERROR_HANDLER_START"  << std::endl;
-        {
-            CurrentlyRunningTasksExecution();
+    {
+        CurrentlyRunningTasksExecution();
 
-        }
-        break;
+    }
+    break;
 
     case ERROR_HANDLER_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
         std::cout << "CSettingsLoad::Fsm ERROR_HANDLER_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
