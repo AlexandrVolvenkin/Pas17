@@ -312,6 +312,9 @@ uint8_t CAlarmDfa::Fsm(void)
         // Дискретный сигнал активен?
         if (uiDiscreteSignalState == DISCRETE_SIGNAL_IS_ACTIVE)
         {
+            // Установим связанные дискретный выходы - новое нарушение.
+            DiscreteOutputsSet(GetLinkedDiscreteOutputsPointer(), NEW_VIOLATION);
+
             // есть задержка включения реле?
             if (m_uiRelayOnDelay)
             {
@@ -322,8 +325,6 @@ uint8_t CAlarmDfa::Fsm(void)
             }
             else
             {
-                // Установим связанные дискретный выходы - новое нарушение.
-                DiscreteOutputsSet(GetLinkedDiscreteOutputsPointer(), NEW_VIOLATION);
                 SetFsmState(RECEIPT_OR_RESET_WAITING);
             }
         }
@@ -345,9 +346,8 @@ uint8_t CAlarmDfa::Fsm(void)
                 }
                 else
                 {
-                    // Установим связанные дискретный выходы - новое нарушение.
-                    DiscreteOutputsSet(GetLinkedDiscreteOutputsPointer(), NEW_VIOLATION);
-                    SetFsmState(RECEIPT_OR_RESET_WAITING);
+                    // Установим связанные дискретный выходы - не новое нарушение.
+                    DiscreteOutputsSet(GetLinkedDiscreteOutputsPointer(), NOT_NEW_VIOLATION);
                 }
             }
         }
@@ -547,6 +547,9 @@ uint8_t CIndicationAlarmLowLevelDfa::Fsm(void)
         // Дискретный сигнал активен?
         if (uiDiscreteSignalState == DISCRETE_SIGNAL_IS_ACTIVE)
         {
+            // Установим связанные дискретный выходы - новое нарушение.
+            DiscreteOutputsSet(GetLinkedDiscreteOutputsPointer(), NEW_VIOLATION);
+
             // есть задержка включения реле?
             if (m_uiRelayOnDelay)
             {
@@ -557,8 +560,6 @@ uint8_t CIndicationAlarmLowLevelDfa::Fsm(void)
             }
             else
             {
-                // Установим связанные дискретный выходы - новое нарушение.
-                DiscreteOutputsSet(GetLinkedDiscreteOutputsPointer(), NEW_VIOLATION);
                 SetFsmState(NOT_ACTIVE_STATE_WAITING);
             }
         }
@@ -580,8 +581,8 @@ uint8_t CIndicationAlarmLowLevelDfa::Fsm(void)
                 }
                 else
                 {
-                    // Установим связанные дискретный выходы - новое нарушение.
-                    DiscreteOutputsSet(GetLinkedDiscreteOutputsPointer(), NEW_VIOLATION);
+                    // Установим связанные дискретный выходы - не новое нарушение.
+                    DiscreteOutputsSet(GetLinkedDiscreteOutputsPointer(), NOT_NEW_VIOLATION);
                     SetFsmState(NOT_ACTIVE_STATE_WAITING);
                 }
             }
