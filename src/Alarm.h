@@ -84,6 +84,7 @@ public:
     {
         START = 0,
         ACTIVE_STATE_WAITING,
+        RELAY_ON_DELAY_END_WAITING,
         RECEIPT_OR_RESET_WAITING,
         RECEIPT_OR_RESET_OR_AUTOUNSET_WAITING,
         RECEIPTED_RESET_OR_NOT_ACTIVE_STATE_WAITING,
@@ -98,6 +99,11 @@ public:
     {
         NOT_NEW_VIOLATION = 0,
         NEW_VIOLATION = 1,
+    };
+
+    enum
+    {
+        RELAY_ON_DELAY_ONE_SECOND = 1000,
     };
 
     virtual uint8_t ALARM_TYPE(void)
@@ -159,14 +165,14 @@ public:
         return m_uiRelayOnDelay;
     };
 
-    void SetTimeDiscreteness(uint8_t uiTimeDiscreteness)
-    {
-        m_uiTimeDiscreteness = uiTimeDiscreteness;
-    };
-    uint8_t GetTimeDiscreteness(void)
-    {
-        return m_uiTimeDiscreteness;
-    };
+//    void SetTimeDiscreteness(uint8_t uiTimeDiscreteness)
+//    {
+//        m_uiTimeDiscreteness = uiTimeDiscreteness;
+//    };
+//    uint8_t GetTimeDiscreteness(void)
+//    {
+//        return m_uiTimeDiscreteness;
+//    };
 
     uint8_t* GetDiscreteInputsState()
     {
@@ -223,6 +229,7 @@ private:
 //    // дискретность времени задержки включения реле
 //    // ДВЗ:0-задерж.в сек,1-в дес.сек.
 //    uint8_t m_uiTimeDiscreteness;
+    uint16_t m_uiDelay;
     // Источник дискретного сигнала.
     uint8_t m_uiDiscreteStateIndex;
 
