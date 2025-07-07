@@ -740,7 +740,7 @@ void CDiscreteSignals::CreateAlarmHandlers(void)
 //-------------------------------------------------------------------------------
 void CDiscreteSignals::AlarmHandlersProcessing(void)
 {
-    std::cout << "CDiscreteSignals::AlarmHandlersProcessing 1" << endl;
+//    std::cout << "CDiscreteSignals::AlarmHandlersProcessing 1" << endl;
 //    if (m_xAlarmHandlersIterator == m_vpxAlarmHandlers.end())
 //    {
 //        m_xAlarmHandlersIterator = m_vpxAlarmHandlers.begin();

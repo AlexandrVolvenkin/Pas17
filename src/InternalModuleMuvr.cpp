@@ -387,11 +387,12 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                     MUVR_GET_MEASURE_DATA_COMMAND_ANSWER_LENGTH + 2)] = 0x7e;
 
     auiSpiTxBuffer[0] = MUVR_GET_MEASURE_DATA_COMMAND;
-    // выходы токовые 0-16383 (4б)
     auiSpiTxBuffer[1] = 0;
-    auiSpiTxBuffer[2] = 0;
-    auiSpiTxBuffer[3] = 0;
-    auiSpiTxBuffer[4] = 0;
+    // выходы токовые 0-16383 (4б)
+    auiSpiTxBuffer[2] = 0xff;
+    auiSpiTxBuffer[3] = 0xff;
+    auiSpiTxBuffer[4] = 0xff;
+    auiSpiTxBuffer[5] = 0xff;
 
     uint8_t uiData = 0;
     // заполним требования включения для каждого реле.
@@ -403,12 +404,12 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
         }
     }
     // Управление реле для МУВР (1б)
-    auiSpiTxBuffer[5] = uiData;
+    auiSpiTxBuffer[6] = uiData;
+    std::cout << "CInternalModuleMuvr::DataExchange uiData " << (int)uiData << std::endl;
 
-    usData = usCrcSummTwoByteCalculation(&auiSpiTxBuffer[1],
-                                         5);
-    auiSpiTxBuffer[6] = (uint8_t)usData;
-    auiSpiTxBuffer[7] = (uint8_t)(usData >> 8);
+    usData = usCrcSummTwoByteCalculation(&auiSpiTxBuffer[2],                                        5);
+    auiSpiTxBuffer[7] = (uint8_t)usData;
+    auiSpiTxBuffer[8] = (uint8_t)(usData >> 8);
 
 //    {
 //        std::cout << "CInternalModuleMuvr::DataExchange auiSpiTxBuffer"  << std::endl;

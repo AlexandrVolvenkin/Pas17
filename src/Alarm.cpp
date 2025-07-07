@@ -201,12 +201,12 @@ void CAlarmDfa::Allocate(void)
 //-----------------------------------------------------------------------------------------------------
 void CAlarmDfa::DiscreteOutputsSet(uint8_t *puiLinkedDiscreteOutputs, uint8_t uiNewViolation)
 {
-    std::cout << "CAlarmDfa::DiscreteOutputsSet 1"  << std::endl;
+//    std::cout << "CAlarmDfa::DiscreteOutputsSet 1"  << std::endl;
     switch (uiNewViolation)
     {
     case NORMA:
     {
-        std::cout << "CAlarmDfa::DiscreteOutputsSet NORMA"  << std::endl;
+//        std::cout << "CAlarmDfa::DiscreteOutputsSet NORMA"  << std::endl;
         // норма.
         // сбросим флаги - новое нарушение, для запрограммированных реле
         // в буфере выходов управления реле - новое нарушение.
@@ -237,7 +237,7 @@ void CAlarmDfa::DiscreteOutputsSet(uint8_t *puiLinkedDiscreteOutputs, uint8_t ui
 
     case NEW_VIOLATION:
     {
-        std::cout << "CAlarmDfa::DiscreteOutputsSet NEW_VIOLATION"  << std::endl;
+//        std::cout << "CAlarmDfa::DiscreteOutputsSet NEW_VIOLATION"  << std::endl;
         // новое нарушение.
         // установим флаги - новое нарушение, для запрограммированных реле
         // в буфере выходов управления реле - новое нарушение.
@@ -268,7 +268,7 @@ void CAlarmDfa::DiscreteOutputsSet(uint8_t *puiLinkedDiscreteOutputs, uint8_t ui
 
     case NOT_NEW_VIOLATION:
     {
-        std::cout << "CAlarmDfa::DiscreteOutputsSet NOT_NEW_VIOLATION"  << std::endl;
+//        std::cout << "CAlarmDfa::DiscreteOutputsSet NOT_NEW_VIOLATION"  << std::endl;
         // Не новое нарушение.
         // установим флаги - требования включения, для запрограммированных реле,
         // в буфере выходов требований включения реле - блокировка.
@@ -301,7 +301,7 @@ void CAlarmDfa::DiscreteOutputsSet(uint8_t *puiLinkedDiscreteOutputs, uint8_t ui
 //-----------------------------------------------------------------------------------------------------
 uint8_t CAlarmDfa::DiscreteSignalStateCheck(void)
 {
-    std::cout << "CAlarmDfa::DiscreteSignalStateCheck 1"  << std::endl;
+//    std::cout << "CAlarmDfa::DiscreteSignalStateCheck 1"  << std::endl;
     uint8_t uiDiscreteSignalState = DISCRETE_SIGNAL_IS_INVALID;
 
     // дискретный вход недостоверен?
@@ -312,11 +312,11 @@ uint8_t CAlarmDfa::DiscreteSignalStateCheck(void)
     }
     else
     {
-        std::cout << "CAlarmDfa::DiscreteSignalStateCheck 3"  << std::endl;
+//        std::cout << "CAlarmDfa::DiscreteSignalStateCheck 3"  << std::endl;
         // Дискретный сигнал активен?
         if (*GetDiscreteInputsState())
         {
-            std::cout << "CAlarmDfa::DiscreteSignalStateCheck 4"  << std::endl;
+//            std::cout << "CAlarmDfa::DiscreteSignalStateCheck 4"  << std::endl;
             if (ACTIVE_LEVEL())
             {
                 uiDiscreteSignalState = DISCRETE_SIGNAL_IS_ACTIVE;
@@ -328,7 +328,7 @@ uint8_t CAlarmDfa::DiscreteSignalStateCheck(void)
         }
         else
         {
-            std::cout << "CAlarmDfa::DiscreteSignalStateCheck 5"  << std::endl;
+//            std::cout << "CAlarmDfa::DiscreteSignalStateCheck 5"  << std::endl;
             if (ACTIVE_LEVEL())
             {
                 uiDiscreteSignalState = DISCRETE_SIGNAL_IS_NOT_ACTIVE;
@@ -347,7 +347,7 @@ uint8_t CAlarmDfa::DiscreteSignalStateCheck(void)
 // Автомат обработки сигнализации дискретного сигнала.
 uint8_t CAlarmDfa::Fsm(void)
 {
-    std::cout << "CAlarmDfa::Fsm 1"  << std::endl;
+//    std::cout << "CAlarmDfa::Fsm 1"  << std::endl;
 
     switch (GetFsmState())
     {
