@@ -740,13 +740,20 @@ void CDiscreteSignals::CreateAlarmHandlers(void)
 //-------------------------------------------------------------------------------
 void CDiscreteSignals::AlarmHandlersProcessing(void)
 {
-    if (m_xAlarmHandlersIterator == m_vpxAlarmHandlers.end())
-    {
-        m_xAlarmHandlersIterator = m_vpxAlarmHandlers.begin();
-    }
+    std::cout << "CDiscreteSignals::AlarmHandlersProcessing 1" << endl;
+//    if (m_xAlarmHandlersIterator == m_vpxAlarmHandlers.end())
+//    {
+//        m_xAlarmHandlersIterator = m_vpxAlarmHandlers.begin();
+//    }
+//
+//    (*m_xAlarmHandlersIterator) -> Fsm();
+//    m_xAlarmHandlersIterator++;
 
-    (*m_xAlarmHandlersIterator) -> Fsm();
-    m_xAlarmHandlersIterator++;
+    for (auto m_xAlarmHandlersIterator = m_vpxAlarmHandlers.begin();
+            m_xAlarmHandlersIterator != m_vpxAlarmHandlers.end(); ++m_xAlarmHandlersIterator)
+    {
+        (*m_xAlarmHandlersIterator) -> Fsm();
+    }
 }
 
 //-------------------------------------------------------------------------------
@@ -1043,7 +1050,7 @@ uint8_t CDiscreteSignals::Fsm(void)
 
 //-------------------------------------------------------------------------------
     case DISCRETE_SIGNALS_PROCESSING_ALARM_HANDLERS_START:
-        std::cout << "CDiscreteSignals::Fsm DISCRETE_SIGNALS_PROCESSING_ALARM_HANDLERS_START"  << std::endl;
+//        std::cout << "CDiscreteSignals::Fsm DISCRETE_SIGNALS_PROCESSING_ALARM_HANDLERS_START"  << std::endl;
         {
             AlarmHandlersProcessing();
 
@@ -1052,7 +1059,7 @@ uint8_t CDiscreteSignals::Fsm(void)
         break;
 
     case DISCRETE_SIGNALS_PROCESSING_ALARM_HANDLERS_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
-        std::cout << "CDiscreteSignals::Fsm DISCRETE_SIGNALS_PROCESSING_ALARM_HANDLERS_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+//        std::cout << "CDiscreteSignals::Fsm DISCRETE_SIGNALS_PROCESSING_ALARM_HANDLERS_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
         {
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(DONE_OK);

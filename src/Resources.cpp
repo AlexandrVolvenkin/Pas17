@@ -458,7 +458,7 @@ CTaskInterface* CResources::GetTaskPointerByNameFromMap(std::string sTaskName)
 //-------------------------------------------------------------------------------
 uint8_t CResources::GetTaskIdByNameFromMap(std::string sTaskName)
 {
-    std::cout << "CResources::GetTaskIdByNameFromMap 1"  << std::endl;
+//    std::cout << "CResources::GetTaskIdByNameFromMap 1"  << std::endl;
     CTaskInterface* pxTask = GetTaskPointerByNameFromMap(sTaskName);
 
     if (pxTask != nullptr)
@@ -467,7 +467,7 @@ uint8_t CResources::GetTaskIdByNameFromMap(std::string sTaskName)
 //        std::cout << "CResources::GetTaskIdByNameFromMap 2"  << std::endl;
         if (m_uiUsedCommonTaskPointersCounter < MAX_TASK_NUMBER)
         {
-            std::cout << "CResources::GetTaskIdByNameFromMap 3"  << std::endl;
+//            std::cout << "CResources::GetTaskIdByNameFromMap 3"  << std::endl;
             m_ppxCommonTaskPointers[m_uiUsedCommonTaskPointersCounter] = pxTask;
             m_uiUsedCommonTaskPointersCounter++;
             // Вернем индекс на указатель в массиве плюс 1. это будет id задачи в системе.

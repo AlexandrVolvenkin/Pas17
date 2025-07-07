@@ -55,12 +55,14 @@ uint8_t CAlarmDfa::Init(void)
     CDataContainerDataBase* pxDataContainer =
         (CDataContainerDataBase*)GetExecutorDataContainerPointer();
     pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+
+    Allocate();
 }
 
 //-------------------------------------------------------------------------------
 void CAlarmDfa::Allocate(void)
 {
-    std::cout << "CDiscreteSignals::Allocate 1"  << std::endl;
+    std::cout << "CAlarmDfa::Allocate 1"  << std::endl;
 
 ////    m_uiAddress = xMemoryAllocationContext.uiAddress;
 ////    m_puiRxBuffer = xMemoryAllocationContext.puiRxBuffer;
@@ -199,10 +201,12 @@ void CAlarmDfa::Allocate(void)
 //-----------------------------------------------------------------------------------------------------
 void CAlarmDfa::DiscreteOutputsSet(uint8_t *puiLinkedDiscreteOutputs, uint8_t uiNewViolation)
 {
+    std::cout << "CAlarmDfa::DiscreteOutputsSet 1"  << std::endl;
     switch (uiNewViolation)
     {
     case NORMA:
     {
+        std::cout << "CAlarmDfa::DiscreteOutputsSet NORMA"  << std::endl;
         // норма.
         // сбросим флаги - новое нарушение, для запрограммированных реле
         // в буфере выходов управления реле - новое нарушение.
@@ -233,6 +237,7 @@ void CAlarmDfa::DiscreteOutputsSet(uint8_t *puiLinkedDiscreteOutputs, uint8_t ui
 
     case NEW_VIOLATION:
     {
+        std::cout << "CAlarmDfa::DiscreteOutputsSet NEW_VIOLATION"  << std::endl;
         // новое нарушение.
         // установим флаги - новое нарушение, для запрограммированных реле
         // в буфере выходов управления реле - новое нарушение.
@@ -263,6 +268,7 @@ void CAlarmDfa::DiscreteOutputsSet(uint8_t *puiLinkedDiscreteOutputs, uint8_t ui
 
     case NOT_NEW_VIOLATION:
     {
+        std::cout << "CAlarmDfa::DiscreteOutputsSet NOT_NEW_VIOLATION"  << std::endl;
         // Не новое нарушение.
         // установим флаги - требования включения, для запрограммированных реле,
         // в буфере выходов требований включения реле - блокировка.
@@ -295,18 +301,22 @@ void CAlarmDfa::DiscreteOutputsSet(uint8_t *puiLinkedDiscreteOutputs, uint8_t ui
 //-----------------------------------------------------------------------------------------------------
 uint8_t CAlarmDfa::DiscreteSignalStateCheck(void)
 {
+    std::cout << "CAlarmDfa::DiscreteSignalStateCheck 1"  << std::endl;
     uint8_t uiDiscreteSignalState = DISCRETE_SIGNAL_IS_INVALID;
 
     // дискретный вход недостоверен?
     if (*GetDiscreteInputsBadState())
     {
+        std::cout << "CAlarmDfa::DiscreteSignalStateCheck 2"  << std::endl;
         uiDiscreteSignalState = DISCRETE_SIGNAL_IS_INVALID;
     }
     else
     {
+        std::cout << "CAlarmDfa::DiscreteSignalStateCheck 3"  << std::endl;
         // Дискретный сигнал активен?
         if (*GetDiscreteInputsState())
         {
+            std::cout << "CAlarmDfa::DiscreteSignalStateCheck 4"  << std::endl;
             if (ACTIVE_LEVEL())
             {
                 uiDiscreteSignalState = DISCRETE_SIGNAL_IS_ACTIVE;
@@ -318,6 +328,7 @@ uint8_t CAlarmDfa::DiscreteSignalStateCheck(void)
         }
         else
         {
+            std::cout << "CAlarmDfa::DiscreteSignalStateCheck 5"  << std::endl;
             if (ACTIVE_LEVEL())
             {
                 uiDiscreteSignalState = DISCRETE_SIGNAL_IS_NOT_ACTIVE;
@@ -336,17 +347,21 @@ uint8_t CAlarmDfa::DiscreteSignalStateCheck(void)
 // Автомат обработки сигнализации дискретного сигнала.
 uint8_t CAlarmDfa::Fsm(void)
 {
-    uint8_t uiDiscreteSignalState = DiscreteSignalStateCheck();
+    std::cout << "CAlarmDfa::Fsm 1"  << std::endl;
 
     switch (GetFsmState())
     {
     case START:
+        Init();
+        SetFsmState(ACTIVE_STATE_WAITING);
         break;
 
 //    case ACTIVE_STATE_CHECK:
 //        break;
 
     case ACTIVE_STATE_WAITING:
+    {
+        uint8_t uiDiscreteSignalState = DiscreteSignalStateCheck();
         // Дискретный сигнал активен?
         if (uiDiscreteSignalState == DISCRETE_SIGNAL_IS_ACTIVE)
         {
@@ -361,14 +376,17 @@ uint8_t CAlarmDfa::Fsm(void)
                 GetTimerPointer() -> Set(RELAY_ON_DELAY_ONE_SECOND);
                 SetFsmState(RELAY_ON_DELAY_END_WAITING);
             }
-            else
-            {
-                SetFsmState(RECEIPT_OR_RESET_WAITING);
-            }
         }
-        break;
+        else
+        {
+            SetFsmState(RECEIPT_OR_RESET_WAITING);
+        }
+    }
+    break;
 
     case RELAY_ON_DELAY_END_WAITING:
+    {
+        uint8_t uiDiscreteSignalState = DiscreteSignalStateCheck();
         // Дискретный сигнал активен?
         if (uiDiscreteSignalState == DISCRETE_SIGNAL_IS_ACTIVE)
         {
@@ -393,9 +411,12 @@ uint8_t CAlarmDfa::Fsm(void)
         {
             SetFsmState(ACTIVE_STATE_WAITING);
         }
-        break;
+    }
+    break;
 
     case RECEIPT_OR_RESET_WAITING:
+    {
+        uint8_t uiDiscreteSignalState = DiscreteSignalStateCheck();
         // Дискретный сигнал активен?
         if (uiDiscreteSignalState == DISCRETE_SIGNAL_IS_ACTIVE)
         {
@@ -413,9 +434,12 @@ uint8_t CAlarmDfa::Fsm(void)
         {
             SetFsmState(RECEIPTED_RESET_OR_NOT_ACTIVE_STATE_WAITING);
         }
-        break;
+    }
+    break;
 
     case RECEIPTED_RESET_OR_NOT_ACTIVE_STATE_WAITING:
+    {
+        uint8_t uiDiscreteSignalState = DiscreteSignalStateCheck();
         // Событие сброшено?
         if (IsModbusReset())
         {
@@ -431,9 +455,12 @@ uint8_t CAlarmDfa::Fsm(void)
             // Установим связанные дискретный выходы - не новое нарушение.
             DiscreteOutputsSet(GetLinkedDiscreteOutputsPointer(), NOT_NEW_VIOLATION);
         }
-        break;
+    }
+    break;
 
     case RESETED_NOT_ACTIVE_STATE_WAITING:
+    {
+        uint8_t uiDiscreteSignalState = DiscreteSignalStateCheck();
         // Дискретный сигнал не активен?
         if (uiDiscreteSignalState == DISCRETE_SIGNAL_IS_NOT_ACTIVE)
         {
@@ -444,11 +471,14 @@ uint8_t CAlarmDfa::Fsm(void)
         else if (uiDiscreteSignalState == DISCRETE_SIGNAL_IS_ACTIVE)
         {
             // Установим связанные дискретный выходы - не новое нарушение.
-            DiscreteOutputsSet(GetLinkedDiscreteOutputsPointer(), NOT_NEW_VIOLATION);
         }
-        break;
+        DiscreteOutputsSet(GetLinkedDiscreteOutputsPointer(), NOT_NEW_VIOLATION);
+    }
+    break;
 
     case RECEIPTED_RESET_WAITING:
+    {
+        uint8_t uiDiscreteSignalState = DiscreteSignalStateCheck();
         // Дискретный сигнал активен?
         if (uiDiscreteSignalState == DISCRETE_SIGNAL_IS_ACTIVE)
         {
@@ -461,9 +491,10 @@ uint8_t CAlarmDfa::Fsm(void)
         {
             // сбросим связанные дискретный выходы - всё в норму.
             DiscreteOutputsSet(GetLinkedDiscreteOutputsPointer(), NORMA);
-            SetFsmState(ACTIVE_STATE_WAITING);
         }
-        break;
+        SetFsmState(ACTIVE_STATE_WAITING);
+    }
+    break;
 
     default:
         break;
@@ -502,7 +533,7 @@ CNormalAlarmDfa::~CNormalAlarmDfa()
 //-----------------------------------------------------------------------------------------------------
 CPreventiveAlarmLowLevelDfa::CPreventiveAlarmLowLevelDfa()
 {
-    SetFsmState(ACTIVE_STATE_WAITING);
+    SetFsmState(START);
 }
 
 //-----------------------------------------------------------------------------------------------------
@@ -514,7 +545,7 @@ CPreventiveAlarmLowLevelDfa::~CPreventiveAlarmLowLevelDfa()
 //-----------------------------------------------------------------------------------------------------
 CPreventiveAlarmHighLevelDfa::CPreventiveAlarmHighLevelDfa()
 {
-    SetFsmState(ACTIVE_STATE_WAITING);
+    SetFsmState(START);
 }
 
 //-----------------------------------------------------------------------------------------------------
@@ -533,7 +564,7 @@ CPreventiveAlarmHighLevelDfa::~CPreventiveAlarmHighLevelDfa()
 //-----------------------------------------------------------------------------------------------------
 CEmergencyAlarmLowLevelDfa::CEmergencyAlarmLowLevelDfa()
 {
-    SetFsmState(ACTIVE_STATE_WAITING);
+    SetFsmState(START);
 }
 
 //-----------------------------------------------------------------------------------------------------
@@ -545,7 +576,7 @@ CEmergencyAlarmLowLevelDfa::~CEmergencyAlarmLowLevelDfa()
 //-----------------------------------------------------------------------------------------------------
 CEmergencyAlarmHighLevelDfa::CEmergencyAlarmHighLevelDfa()
 {
-    SetFsmState(ACTIVE_STATE_WAITING);
+    SetFsmState(START);
 }
 
 //-----------------------------------------------------------------------------------------------------
@@ -565,7 +596,7 @@ CEmergencyAlarmHighLevelDfa::~CEmergencyAlarmHighLevelDfa()
 //-----------------------------------------------------------------------------------------------------
 CIndicationAlarmLowLevelDfa::CIndicationAlarmLowLevelDfa()
 {
-    SetFsmState(ACTIVE_STATE_WAITING);
+    SetFsmState(START);
 }
 
 //-----------------------------------------------------------------------------------------------------
@@ -578,14 +609,19 @@ CIndicationAlarmLowLevelDfa::~CIndicationAlarmLowLevelDfa()
 // Автомат обработки сигнализации дискретного сигнала.
 uint8_t CIndicationAlarmLowLevelDfa::Fsm(void)
 {
+    std::cout << "CIndicationAlarmLowLevelDfa::Fsm 1"  << std::endl;
     uint8_t uiDiscreteSignalState = DiscreteSignalStateCheck();
 
     switch (GetFsmState())
     {
     case START:
+        Init();
+        SetFsmState(ACTIVE_STATE_WAITING);
         break;
 
     case ACTIVE_STATE_WAITING:
+    {
+        uint8_t uiDiscreteSignalState = DiscreteSignalStateCheck();
         // Дискретный сигнал активен?
         if (uiDiscreteSignalState == DISCRETE_SIGNAL_IS_ACTIVE)
         {
@@ -600,14 +636,17 @@ uint8_t CIndicationAlarmLowLevelDfa::Fsm(void)
                 GetTimerPointer() -> Set(RELAY_ON_DELAY_ONE_SECOND);
                 SetFsmState(RELAY_ON_DELAY_END_WAITING);
             }
-            else
-            {
-                SetFsmState(NOT_ACTIVE_STATE_WAITING);
-            }
         }
-        break;
+        else
+        {
+            SetFsmState(NOT_ACTIVE_STATE_WAITING);
+        }
+    }
+    break;
 
     case RELAY_ON_DELAY_END_WAITING:
+    {
+        uint8_t uiDiscreteSignalState = DiscreteSignalStateCheck();
         // Дискретный сигнал активен?
         if (uiDiscreteSignalState == DISCRETE_SIGNAL_IS_ACTIVE)
         {
@@ -632,12 +671,15 @@ uint8_t CIndicationAlarmLowLevelDfa::Fsm(void)
         else
         {
             // сбросим связанные дискретный выходы - всё в норму.
-            DiscreteOutputsSet(GetLinkedDiscreteOutputsPointer(), NORMA);
-            SetFsmState(ACTIVE_STATE_WAITING);
         }
-        break;
+        DiscreteOutputsSet(GetLinkedDiscreteOutputsPointer(), NORMA);
+        SetFsmState(ACTIVE_STATE_WAITING);
+    }
+    break;
 
     case NOT_ACTIVE_STATE_WAITING:
+    {
+        uint8_t uiDiscreteSignalState = DiscreteSignalStateCheck();
         // Дискретный сигнал не активен?
         if (uiDiscreteSignalState == DISCRETE_SIGNAL_IS_NOT_ACTIVE)
         {
@@ -648,9 +690,10 @@ uint8_t CIndicationAlarmLowLevelDfa::Fsm(void)
         else if (uiDiscreteSignalState == DISCRETE_SIGNAL_IS_ACTIVE)
         {
             // Установим связанные дискретный выходы - не новое нарушение.
-            DiscreteOutputsSet(GetLinkedDiscreteOutputsPointer(), NOT_NEW_VIOLATION);
         }
-        break;
+        DiscreteOutputsSet(GetLinkedDiscreteOutputsPointer(), NOT_NEW_VIOLATION);
+    }
+    break;
 
     default:
         break;
@@ -668,7 +711,7 @@ uint8_t CIndicationAlarmLowLevelDfa::Fsm(void)
 //-----------------------------------------------------------------------------------------------------
 CIndicationAlarmHighLevelDfa::CIndicationAlarmHighLevelDfa()
 {
-    SetFsmState(ACTIVE_STATE_WAITING);
+    SetFsmState(START);
 }
 
 //-----------------------------------------------------------------------------------------------------
