@@ -97,8 +97,9 @@ public:
 
     enum
     {
-        NOT_NEW_VIOLATION = 0,
+        NORMA = 0,
         NEW_VIOLATION = 1,
+        NOT_NEW_VIOLATION = 2,
     };
 
     enum
