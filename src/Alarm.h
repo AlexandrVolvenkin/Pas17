@@ -150,6 +150,24 @@ public:
         return m_auiLinkedDiscreteOutputs;
     };
 
+    void SetRelayOnDelay(uint8_t uiRelayOnDelay)
+    {
+        m_uiRelayOnDelay = uiRelayOnDelay;
+    };
+    uint8_t GetRelayOnDelay(void)
+    {
+        return m_uiRelayOnDelay;
+    };
+
+    void SetTimeDiscreteness(uint8_t uiTimeDiscreteness)
+    {
+        m_uiTimeDiscreteness = uiTimeDiscreteness;
+    };
+    uint8_t GetTimeDiscreteness(void)
+    {
+        return m_uiTimeDiscreteness;
+    };
+
     uint8_t* GetDiscreteInputsState()
     {
         return m_puiDiscreteInputsState;
@@ -199,6 +217,12 @@ private:
 //    uint8_t m_uiAlarmWindowIndex;
     // Выходы на МР.
     uint8_t m_auiLinkedDiscreteOutputs[DISCRETE_OUTPUT_MODULE_MAX_NUMBER];
+    // время задержки включения реле
+    // УВЗ:уставка времени задержки выхода в ед.ДВЗ(0-60).
+    uint16_t m_uiRelayOnDelay;
+//    // дискретность времени задержки включения реле
+//    // ДВЗ:0-задерж.в сек,1-в дес.сек.
+//    uint8_t m_uiTimeDiscreteness;
     // Источник дискретного сигнала.
     uint8_t m_uiDiscreteStateIndex;
 

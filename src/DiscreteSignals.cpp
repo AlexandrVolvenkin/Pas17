@@ -442,7 +442,6 @@ void CDiscreteSignals::DiscreteSignalsStartDataBlockWorkToCommonFormat(uint8_t* 
     }
 }
 
-
 //-----------------------------------------------------------------------------------------------------
 // преобразовывает из общего формата базы данных, в формат хранения в RAM.
 // база данных в приборе - это массив, длиной 100 блоков. каждый блок 256 байт.
@@ -612,6 +611,24 @@ void CDiscreteSignals::CreateAlarmHandler(CResources* res,
             (m_pxDiscreteSignalsDescriptionWork[uiAlarmHandlerIndex].
              auiRelayOut[j]);
     }
+
+    // дискретность времени задержки включения реле 10 секунд?
+    if (((m_pxDiscreteSignalsDescriptionWork[uiAlarmHandlerIndex].uiDelay >> 6) & 0x01))
+    {
+        pxAlarmHandler ->
+        SetRelayOnDelay(((m_pxDiscreteSignalsDescriptionWork[uiAlarmHandlerIndex].uiDelay) & 0x3f) * 10);
+    }
+    else
+    {
+        // дискретность времени задержки включения реле 1 секунда.
+        pxAlarmHandler ->
+        SetRelayOnDelay(((m_pxDiscreteSignalsDescriptionWork[uiAlarmHandlerIndex].uiDelay) & 0x3f));
+    }
+//    pxAlarmHandler ->
+//    SetRelayOnDelay(((m_pxDiscreteSignalsDescriptionWork[uiAlarmHandlerIndex].uiDelay) & 0x3f));
+//
+//    pxAlarmHandler ->
+//    SetTimeDiscreteness(((m_pxDiscreteSignalsDescriptionWork[uiAlarmHandlerIndex].uiDelay >> 6) & 0x01));
 
     m_vpxAlarmHandlers.push_back(pxAlarmHandler);
     m_vuiAlarmHandlersId.push_back(GetResources() ->
