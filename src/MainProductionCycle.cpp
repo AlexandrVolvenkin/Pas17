@@ -968,7 +968,9 @@ uint8_t CMainProductionCycle::Fsm(void)
 
             // текуща€ конфигураци€ и сохранЄнна€ в базе данных не совпадают.
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
-            SetFsmState(DATA_BASE_CREATE_CONFIGURATION_DATA_BASE_BLOCKS_WRITE_START);
+            //            SetFsmState(DATA_BASE_CREATE_CONFIGURATION_DATA_BASE_BLOCKS_WRITE_START);
+            SetFsmState(DATA_BASE_CREATE_START);
+
         }
         break;
 
@@ -977,9 +979,6 @@ uint8_t CMainProductionCycle::Fsm(void)
         std::cout << "CMainProductionCycle::Fsm DATA_BASE_CREATE_CONFIGURATION_DATA_BASE_BLOCKS_WRITE_START"  << std::endl;
         {
             CurrentlyRunningTasksExecution();
-//            // дл€ создани€ новой базы данных нужно создать новый сервисный блок в хранилище,
-//            // чтобы стереть прошлую информацию о сохранЄнных блоках.
-//            m_pxDataStoreFileSystem -> CreateServiceSection();
 
             CDataContainerDataBase* pxDataContainer =
                 (CDataContainerDataBase*)GetExecutorDataContainerPointer();
