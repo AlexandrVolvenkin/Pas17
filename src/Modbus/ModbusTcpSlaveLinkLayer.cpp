@@ -516,20 +516,20 @@ uint8_t CModbusTcpSlaveLinkLayer::Fsm(void)
     case COMMUNICATION_FRAME_CHECK:
         //std::cout << "CModbusTcpSlaveLinkLayer::Fsm COMMUNICATION_FRAME_CHECK 1"  << std::endl;
 
-            {
-                cout << "CModbusTcpSlaveLinkLayer::Fsm m_auiRxBuffer" << endl;
-                uint8_t *pucSourceTemp;
-                pucSourceTemp = (uint8_t*)m_auiRxBuffer;
-                for(int i=0; i<32; )
-                {
-                    for(int j=0; j<8; j++)
-                    {
-                        cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
-                    }
-                    cout << endl;
-                    i += 8;
-                }
-            }
+//            {
+//                cout << "CModbusTcpSlaveLinkLayer::Fsm m_auiRxBuffer" << endl;
+//                uint8_t *pucSourceTemp;
+//                pucSourceTemp = (uint8_t*)m_auiRxBuffer;
+//                for(int i=0; i<32; )
+//                {
+//                    for(int j=0; j<8; j++)
+//                    {
+//                        cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+//                    }
+//                    cout << endl;
+//                    i += 8;
+//                }
+//            }
 
         if (FrameCheck(m_auiRxBuffer, m_uiFrameLength))
         {

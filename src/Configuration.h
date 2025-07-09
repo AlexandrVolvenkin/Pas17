@@ -63,7 +63,7 @@
 #define MAX_HANDLED_FUNCTION_BLOCK 120 // определяется картой памяти программатора.
 
 #define ALARM_GROUP_QUANTITY 16 // определяется картой памяти программатора.
-#define MAX_HANDLED_ANALOGUE_INPUT 6
+#define MAX_HANDLED_ANALOGUE_INPUT 4
 #define MAX_HANDLED_ANALOGUE_OUTPUT 2
 // HMI панель.
 #define DISPLAY_MODULE_TYPE 2
@@ -560,7 +560,9 @@ enum EModbusFunctionCoilsDataMap
 {
     ANALOGUE_INPUTS_BAD_STATE_OFFSET = 544,
     DISCRETE_INPUTS_BAD_STATE_OFFSET = 1056,
-    ANALOGUE_INPUTS_DISCRETE_SIGNALS_BAD_STATE_OFFSET = 1062,
+    // в мувр отсутствуют дискретные входы поэтому адреса недостоверности дискретных входов
+    // и адреса недостоверности дискретных сигналов порождаемых аналоговыми входами совпадают
+    ANALOGUE_INPUTS_DISCRETE_SIGNALS_BAD_STATE_OFFSET = 1056,
 };
 
 enum EModbusFunctionDiscreteInputsDataMap

@@ -214,9 +214,12 @@ private:
     std::vector<uint8_t> m_vuiAlarmHandlersId;
     std::vector<uint8_t>::iterator m_xAlarmHandlersIdIterator;
 
-    uint8_t* m_puiIntermediateBuff;
+    uint8_t* m_puiDiscreteInputsState;
+    uint8_t* m_puiDiscreteInputsBadState;
     TDiscreteSignalsDescriptionWork *m_pxDiscreteSignalsDescriptionWork;
     uint8_t m_uiBlocksCounter;
+
+    uint8_t* m_puiIntermediateBuff;
 };
 
 #endif // DISCRETESIGNALS_H

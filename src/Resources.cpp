@@ -20,6 +20,8 @@
 #include "DiscreteSignals.h"
 #include "Resources.h"
 
+using namespace std;
+
 //-------------------------------------------------------------------------------
 CResources::CResources()
 {
@@ -59,40 +61,38 @@ void CResources::ModbusWorkingArraysCreate(uint16_t uiCoilsNumber,
         uint16_t uiInputRegistersNumber)
 {
     std::cout << "CResources::ModbusWorkingArraysCreate 1"  << std::endl;
-    m_puiCoils = new uint8_t(uiCoilsNumber);
+    m_puiCoils = new uint8_t[uiCoilsNumber];
     if (m_puiCoils == nullptr)
     {
         // Обработка ошибки при выделении памяти
         std::cerr << "Failed to allocate memory m_puiCoils!" << std::endl;
     }
-//    memset(m_puiCoils, 0, uiCoilsNumber);
-    m_puiDiscreteInputs = new uint8_t(uiDiscreteInputsNumber);
+    memset(m_puiCoils, 0, uiCoilsNumber);
+    m_puiDiscreteInputs = new uint8_t[uiDiscreteInputsNumber];
 
     if (m_puiDiscreteInputs == nullptr)
     {
         // Обработка ошибки при выделении памяти
         std::cerr << "Failed to allocate memory m_puiDiscreteInputs!" << std::endl;
     }
-//    memset(m_puiDiscreteInputs, 0, uiDiscreteInputsNumber);
+    memset(m_puiDiscreteInputs, 0, uiDiscreteInputsNumber);
 
-    m_puiHoldingRegisters = new uint16_t(uiHoldingRegistersNumber);
+    m_puiHoldingRegisters = new uint16_t[uiHoldingRegistersNumber];
 
     if (m_puiHoldingRegisters == nullptr)
     {
         // Обработка ошибки при выделении памяти
         std::cerr << "Failed to allocate memory m_puiHoldingRegisters!" << std::endl;
     }
-//    memset(m_puiHoldingRegisters, 0, (uiHoldingRegistersNumber * sizeof(uint16_t)));
+    memset(m_puiHoldingRegisters, 0, (uiHoldingRegistersNumber * sizeof(uint16_t)));
 
-    m_puiInputRegisters = new uint16_t(uiInputRegistersNumber);
-//    memset(m_puiInputRegisters, 0, (uiInputRegistersNumber * sizeof(uint16_t)));
-//m_puiHoldingRegisters = m_puiInputRegisters;
-//    m_puiInputRegisters = m_puiHoldingRegisters;
+    m_puiInputRegisters = new uint16_t[uiInputRegistersNumber];
     if (m_puiInputRegisters == nullptr)
     {
         // Обработка ошибки при выделении памяти
         std::cerr << "Failed to allocate memory m_puiInputRegisters!" << std::endl;
     }
+    memset(m_puiInputRegisters, 0, (uiInputRegistersNumber * sizeof(uint16_t)));
 
 
     m_uiCoilsNumber = uiCoilsNumber;
@@ -246,7 +246,7 @@ void CResources::Allocate(void)
     m_uiUsedDiscreteInputsState = 0;
     // Подключим буфер для хранения состояний дискретных входов.
     m_puiDiscreteInputsState =
-        &m_puiDiscreteInputs[DISCRETE_INPUTS_STATE_OFFSET];
+        &m_puiDiscreteInputs[DISCRETE_INPUTS_STATE_OFFSET + MUVR_DISCRETE_INPUT_QUANTITY];
 
     // Обнулим общий объём выделенной памяти.
     m_uiUsedDiscreteInputsBadState = 0;
@@ -265,6 +265,9 @@ void CResources::Allocate(void)
     // Подключим буфер для управления дискретными выходами.
     m_pxDiscreteOutputControl =
         new TDiscreteOutputControl[DISCRETE_OUTPUT_NUMBER];
+    memset(m_pxDiscreteOutputControl,
+           0,
+           (sizeof(struct TDiscreteOutputControl) * DISCRETE_OUTPUT_NUMBER));
 
 
     // Обнулим общий объём выделенной памяти.

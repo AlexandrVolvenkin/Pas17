@@ -602,6 +602,7 @@ uint8_t CMainProductionCycle::InitTasks(void)
 
 //-------------------------------------------------------------------------------
     GetResources() -> Allocate();
+
 }
 
 //-------------------------------------------------------------------------------
@@ -967,9 +968,42 @@ uint8_t CMainProductionCycle::Fsm(void)
 
             // текуща€ конфигураци€ и сохранЄнна€ в базе данных не совпадают.
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
-            SetFsmState(DATA_BASE_CREATE_START);
+            SetFsmState(DATA_BASE_CREATE_CONFIGURATION_DATA_BASE_BLOCKS_WRITE_START);
         }
         break;
+
+//-------------------------------------------------------------------------------
+    case DATA_BASE_CREATE_CONFIGURATION_DATA_BASE_BLOCKS_WRITE_START:
+        std::cout << "CMainProductionCycle::Fsm DATA_BASE_CREATE_CONFIGURATION_DATA_BASE_BLOCKS_WRITE_START"  << std::endl;
+        {
+            CurrentlyRunningTasksExecution();
+//            // дл€ создани€ новой базы данных нужно создать новый сервисный блок в хранилище,
+//            // чтобы стереть прошлую информацию о сохранЄнных блоках.
+//            m_pxDataStoreFileSystem -> CreateServiceSection();
+
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            pxDataContainer -> m_uiTaskId = m_uiDataBaseCreateId;
+            pxDataContainer -> m_uiFsmCommandState =
+                CDataBaseCreate::DATA_BASE_CREATE_CONFIGURATION_DATA_BASE_BLOCKS_WRITE_START;
+
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+            SetFsmNextStateDoneOk(DATA_BASE_CREATE_CONFIGURATION_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING);
+            SetFsmNextStateReadyWaitingError(DONE_ERROR);
+            SetFsmNextStateDoneWaitingError(DONE_ERROR);
+            SetFsmNextStateDoneWaitingDoneError(DONE_ERROR);
+        }
+        break;
+
+    case DATA_BASE_CREATE_CONFIGURATION_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING:
+//        std::cout << "CMainProductionCycle::Fsm DATA_BASE_CREATE_CONFIGURATION_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
+    {
+        CurrentlyRunningTasksExecution();
+
+        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+        SetFsmState(SYSTEM_COMPONENTS_CREATE_START);
+    }
+    break;
 
 //-------------------------------------------------------------------------------
     case DATA_BASE_CREATE_START:
@@ -1241,6 +1275,8 @@ uint8_t CMainProductionCycle::Fsm(void)
 //        std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_END"  << std::endl;
         CurrentlyRunningTasksExecution();
 
+        (GetResources() -> m_uiModbusReceipt) = 0;
+        (GetResources() -> m_uiModbusReset) = 0;
         SetFsmState(MAIN_CYCLE_START);
         break;
 

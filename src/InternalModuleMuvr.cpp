@@ -449,6 +449,30 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
 //        i += 8;
 //    }
 
+//    memset(&(m_puiAnalogueInputDiscreteInputsState[0]),
+//           0,
+//           16);
+//
+//    memcpy(&(m_puiAnalogueInputDiscreteInputsState[0]),
+//           &(GetResources() -> m_puiCoils[0]),
+//           16);
+
+
+//    {
+//        std::cout << "CInternalModuleMuvr::AlarmHandlersProcessing m_puiAnalogueInputDiscreteInputsState beg"  << std::endl;
+//        uint8_t *pucSourceTemp;
+//        pucSourceTemp = (uint8_t*)(m_puiAnalogueInputDiscreteInputsState);
+//        for(int i=0; i<32 ; )
+//        {
+//            for(int j=0; j<8; j++)
+//            {
+//                cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+//            }
+//            cout << endl;
+//            i += 8;
+//        }
+//    }
+
     // что ответил модуль?
     switch(auiSpiRxBuffer[SPI_COMMAND_BYTE_OFFSET])
     {
@@ -489,19 +513,10 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                     // установим флаг недостоверности - вход недостоверен.
                     m_puiAnalogueInputsBadState[i] = 1;
                     //std::cout << "CInternalModuleMuvr::DataExchange 32"  << std::endl;
-//                    // дискретные данные входа недостоверны, обнулим их.
-//                    memset(&(m_puiDiscreteInputsState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
-//                           0,
-//                           MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
-                    // дискретные данные входа недостоверны, обнулим их.
                     memset(&(m_puiAnalogueInputDiscreteInputsState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
                            0,
                            MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
                     //std::cout << "CInternalModuleMuvr::DataExchange 33"  << std::endl;
-                    // установим флаги недостоверности уставок LL, L, H, HH - недостоверны.
-//                    memset(&(m_puiDiscreteInputsBadState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
-//                           1,
-//                           MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
                     memset(&(m_puiAnalogueInputDiscreteInputsBadState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
                            1,
                            MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
@@ -523,18 +538,11 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                            sizeof(float));
                     // установим флаг недостоверности - вход недостоверен.
                     m_puiAnalogueInputsBadState[i] = 1;
-//                    // дискретные данные входа недостоверны, обнулим их.
-//                    memset(&(m_puiDiscreteInputsState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
-//                           0,
-//                           MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
                     // дискретные данные входа недостоверны, обнулим их.
                     memset(&(m_puiAnalogueInputDiscreteInputsState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
                            0,
                            MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
                     // установим флаги недостоверности уставок LL, L, H, HH - недостоверны.
-//                    memset(&(m_puiDiscreteInputsBadState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
-//                           1,
-//                           MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
                     memset(&(m_puiAnalogueInputDiscreteInputsBadState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
                            1,
                            MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
@@ -552,18 +560,11 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                                sizeof(float));
                         // установим флаг недостоверности - вход недостоверен.
                         m_puiAnalogueInputsBadState[i] = 1;
-//                        // дискретные данные входа недостоверны, обнулим их.
-//                        memset(&(m_puiDiscreteInputsState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
-//                               0,
-//                               MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
                         // дискретные данные входа недостоверны, обнулим их.
                         memset(&(m_puiAnalogueInputDiscreteInputsState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
                                0,
                                MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
                         // установим флаги недостоверности уставок LL, L, H, HH - недостоверны.
-//                        memset(&(m_puiDiscreteInputsBadState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
-//                               1,
-//                               MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
                         memset(&(m_puiAnalogueInputDiscreteInputsBadState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
                                1,
                                MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
@@ -580,18 +581,11 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                                sizeof(float));
                         // сбросим флаг недостоверности - вход достоверен.
                         m_puiAnalogueInputsBadState[i] = 0;
-                        //                        // сбросим флаги уставок LL, L, H, HH.
-//                        memset(&(m_puiDiscreteInputsState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
-//                               0,
-//                               MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
                         // сбросим флаги уставок LL, L, H, HH.
                         memset(&(m_puiAnalogueInputDiscreteInputsState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
                                0,
                                MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
                         // сбросим флаги недостоверности уставок LL, L, H, HH - достоверны.
-                        //                        memset(&(m_puiDiscreteInputsBadState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
-//                               0,
-//                               MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);
                         memset(&(m_puiAnalogueInputDiscreteInputsBadState[i * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH]),
                                0,
                                MUVR_DI_VALUE_ONE_CHANNEL_LENGTH);

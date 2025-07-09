@@ -292,7 +292,7 @@ int8_t CTcpCommunicationDevice::Connect(void)
 //-------------------------------------------------------------------------------
 void CTcpCommunicationDevice::CloseClient(void)
 {
-    std::cout << "CTcpCommunicationDevice::CloseClient 1"  << std::endl;
+    //std::cout << "CTcpCommunicationDevice::CloseClient 1"  << std::endl;
     shutdown(m_iDeviceDescriptorClient, SHUT_RDWR);
     close(m_iDeviceDescriptorClient);
 }
@@ -300,7 +300,7 @@ void CTcpCommunicationDevice::CloseClient(void)
 //-------------------------------------------------------------------------------
 int8_t CTcpCommunicationDevice::Close(void)
 {
-    std::cout << "CTcpCommunicationDevice::Close 1"  << std::endl;
+    //std::cout << "CTcpCommunicationDevice::Close 1"  << std::endl;
     close(m_iDeviceDescriptorServer);
     close(m_iDeviceDescriptorClient);
 }
@@ -308,7 +308,7 @@ int8_t CTcpCommunicationDevice::Close(void)
 //-------------------------------------------------------------------------------
 int16_t CTcpCommunicationDevice::Read(uint8_t *puiDestination, uint16_t uiLength)
 {
-//    std::cout << "CTcpCommunicationDevice::Read 1"  << std::endl;
+//    //std::cout << "CTcpCommunicationDevice::Read 1"  << std::endl;
 //    return read(m_iDeviceDescriptorClient, puiDestination, uiLength);
     return recv(m_iDeviceDescriptorClient, (char*)puiDestination, uiLength, 0);
 }
@@ -318,7 +318,7 @@ int16_t CTcpCommunicationDevice::ReceiveStart(uint8_t *puiDestination,
         uint16_t uiLength,
         uint32_t uiReceiveTimeout)
 {
-//    std::cout << "CTcpCommunicationDevice::ReceiveStart 1"  << std::endl;
+//    //std::cout << "CTcpCommunicationDevice::ReceiveStart 1"  << std::endl;
 
 //    // Сделаем не блокирующим.
 //    int flags = fcntl(m_iDeviceDescriptorServer, F_GETFL, 0);
@@ -379,7 +379,7 @@ int16_t CTcpCommunicationDevice::ReceiveStart(uint8_t *puiDestination,
 
         if (rc < 0)
         {
-            std::cout << "CTcpCommunicationDevice::ReceiveStart recv error"  << std::endl;
+            //std::cout << "CTcpCommunicationDevice::ReceiveStart recv error"  << std::endl;
             return rc;
         }
         else
@@ -400,12 +400,12 @@ int16_t CTcpCommunicationDevice::ReceiveStart(uint8_t *puiDestination,
 //                    i += 8;
 //                }
 
-                std::cout << "CTcpCommunicationDevice::ReceiveStart recv rc "  << (int)rc  << std::endl;
+                //std::cout << "CTcpCommunicationDevice::ReceiveStart recv rc "  << (int)rc  << std::endl;
                 return rc;
             }
             else
             {
-                std::cout << "CTcpCommunicationDevice::ReceiveStart recv 0 " << std::endl;
+                //std::cout << "CTcpCommunicationDevice::ReceiveStart recv 0 " << std::endl;
                 return -1;
             }
         }
@@ -422,7 +422,7 @@ int16_t CTcpCommunicationDevice::ReceiveContinue(uint8_t *puiDestination,
         uint16_t uiLength,
         uint32_t uiReceiveTimeout)
 {
-//    std::cout << "CTcpCommunicationDevice::ReceiveContinue 1"  << std::endl;
+//    //std::cout << "CTcpCommunicationDevice::ReceiveContinue 1"  << std::endl;
 
     int rc;
     fd_set rfds;
@@ -441,22 +441,22 @@ int16_t CTcpCommunicationDevice::ReceiveContinue(uint8_t *puiDestination,
     {
         if (errno == ETIMEDOUT)
         {
-            cout << "CTcpCommunicationDevice::ReceiveStart ETIMEDOUT" << endl;
+            //std::cout << "CTcpCommunicationDevice::ReceiveStart ETIMEDOUT" << std::endl;
             return 0;
         }
 
-        std::cout << "CTcpCommunicationDevice::ReceiveContinue timeout"  << std::endl;
+        //std::cout << "CTcpCommunicationDevice::ReceiveContinue timeout"  << std::endl;
         return rc;
     }
     else if( FD_ISSET( m_iDeviceDescriptorClient, &rfds ) )
     {
-        std::cout << "CTcpCommunicationDevice::ReceiveContinue FD_ISSET"  << std::endl;
+        //std::cout << "CTcpCommunicationDevice::ReceiveContinue FD_ISSET"  << std::endl;
         rc = read(m_iDeviceDescriptorClient, (char*)puiDestination, uiLength);
 //        rc = recv(m_iDeviceDescriptorClient, (char*)puiDestination, uiLength, 0);
 
         if (rc < 0)
         {
-            std::cout << "CTcpCommunicationDevice::ReceiveContinue recv error"  << std::endl;
+            //std::cout << "CTcpCommunicationDevice::ReceiveContinue recv error"  << std::endl;
             return rc;
         }
         else
@@ -477,18 +477,18 @@ int16_t CTcpCommunicationDevice::ReceiveContinue(uint8_t *puiDestination,
 //                    i += 8;
 //                }
 
-                std::cout << "CTcpCommunicationDevice::ReceiveContinue recv rc "  << (int)rc  << std::endl;
+                //std::cout << "CTcpCommunicationDevice::ReceiveContinue recv rc "  << (int)rc  << std::endl;
                 return rc;
             }
             else
             {
-                std::cout << "CTcpCommunicationDevice::ReceiveContinue recv 0 " << std::endl;
+                //std::cout << "CTcpCommunicationDevice::ReceiveContinue recv 0 " << std::endl;
                 return -1;
             }
         }
     }
 
-    std::cout << "CTcpCommunicationDevice::ReceiveContinue return 0"  << std::endl;
+    //std::cout << "CTcpCommunicationDevice::ReceiveContinue return 0"  << std::endl;
     return 0;
 }
 

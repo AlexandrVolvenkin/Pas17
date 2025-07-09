@@ -430,9 +430,9 @@ uint16_t CModbusSlave::WriteSingleCoil(void)
     uint16_t uiAddress = ((static_cast<uint16_t>(puiRequest[uiPduOffset + 1]) << 8) |
                           (static_cast<uint16_t>(puiRequest[uiPduOffset + 2])));
 
-    std::cout << "CModbusSlave::DataBaseRead uiSlave "  << (int)uiSlave << std::endl;
-    std::cout << "CModbusSlave::DataBaseRead uiFunctionCode "  << (int)uiFunctionCode << std::endl;
-    std::cout << "CModbusSlave::DataBaseRead uiAddress "  << (int)uiAddress << std::endl;
+    std::cout << "CModbusSlave::WriteSingleCoil uiSlave "  << (int)uiSlave << std::endl;
+    std::cout << "CModbusSlave::WriteSingleCoil uiFunctionCode "  << (int)uiFunctionCode << std::endl;
+    std::cout << "CModbusSlave::WriteSingleCoil uiAddress "  << (int)uiAddress << std::endl;
 
     if (uiAddress >= m_uiCoilsNumber)
     {

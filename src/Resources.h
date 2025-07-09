@@ -70,7 +70,7 @@ class CResources : public CResourcesInterface
 public:
     enum
     {
-        MAX_TASK_NUMBER = 256,
+        MAX_TASK_NUMBER = 1024,
     };
 
     CResources();
@@ -153,7 +153,7 @@ public:
     std::map<std::string, std::shared_ptr<CTaskInterface>> m_mpxCommonTaskMap;
     std::string m_sTaskName;
     CTaskInterface** m_ppxCommonTaskPointers;
-    uint8_t m_uiUsedCommonTaskPointersCounter;
+    uint16_t m_uiUsedCommonTaskPointersCounter;
 
     // объект с конфигурацией во внутреннем формате.
     CConfigurationCreate::TConfigDataPackOne m_xDeviceConfigSearch;

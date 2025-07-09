@@ -79,22 +79,21 @@ void CDiscreteSignals::Allocate(void)
 ////    m_puiTxBuffer = xMemoryAllocationContext.puiTxBuffer;
 ////    m_puiErrorCode = xMemoryAllocationContext.puiErrorCode;
 //
-//    // Получим указатель на место в массиве дискретных входов для текущего модуля.
-    //    m_puiDiscreteInputsState =
-//        &(GetResources() ->
-//          m_puiDiscreteInputsState[GetResources() ->
-//                                                  m_uiUsedDiscreteInputsState]);
+    // Получим указатель на место в массиве дискретных входов для текущего модуля.
+    m_puiDiscreteInputsState =
+        (GetResources() ->
+         m_puiDiscreteInputsState);
 //    // Увеличим общий объём выделенной памяти.
 //    GetResources() ->
 //    m_uiUsedDiscreteInputsState +=
 //        MUVR_DISCRETE_SIGNALS_QUANTITY;
+//    memset(m_puiDiscreteInputsState, 0, 16);
 //
 //
-//    // Получим указатель на место в массиве достоверности дискретных входов для текущего модуля.
-//    m_puiDiscreteInputsBadState =
-//        &(GetResources() ->
-//          m_puiDiscreteInputsBadState[GetResources() ->
-//                                                     m_uiUsedDiscreteInputsBadState]);
+    // Получим указатель на место в массиве достоверности дискретных входов для текущего модуля.
+    m_puiDiscreteInputsBadState =
+        (GetResources() ->
+         m_puiDiscreteInputsBadState);
 //    // Увеличим общий объём выделенной памяти.
 //    GetResources() ->
 //    m_uiUsedDiscreteInputsBadState +=
@@ -456,6 +455,23 @@ void CDiscreteSignals::DiscreteSignalsDataBlockCommonFormatToWork(void)
     TDiscreteSignalsDescriptionWork *pxDiscreteSignalsDescriptionWork;
     TDiscreteSignalsDescriptionWorkPackOne *pxDiscreteSignalsDescriptionWorkPackOne;
 
+
+
+    {
+        std::cout << "CDiscreteSignals::CreateAlarmHandler m_puiIntermediateBuff 1"  << std::endl;
+        uint8_t *pucSourceTemp;
+        pucSourceTemp = (uint8_t*)(m_puiIntermediateBuff);
+        for(int i=0; i<128 ; )
+        {
+            for(int j=0; j<8; j++)
+            {
+                cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+            }
+            cout << endl;
+            i += 8;
+        }
+    }
+
     // получим указатель на рабочий массив дискретных сигналов.
     pxDiscreteSignalsDescriptionWork = m_pxDiscreteSignalsDescriptionWork;
 
@@ -488,6 +504,23 @@ void CDiscreteSignals::DiscreteSignalsDataBlockCommonFormatToWork(void)
             ucCheck += pucSource[j];
         }
         pxDiscreteSignalsDescriptionWork[i].uiCrc = ucCheck;
+    }
+
+
+
+    {
+        std::cout << "CDiscreteSignals::CreateAlarmHandler DiscreteSignalsDataBlockCommonFormatToWork 1"  << std::endl;
+        uint8_t *pucSourceTemp;
+        pucSourceTemp = (uint8_t*)(pxDiscreteSignalsDescriptionWorkPackOne[8].auiRelayOut);
+        for(int i=0; i<32 ; )
+        {
+            for(int j=0; j<8; j++)
+            {
+                cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+            }
+            cout << endl;
+            i += 8;
+        }
     }
 }
 
@@ -625,6 +658,11 @@ void CDiscreteSignals::CreateAlarmHandler(CResources* res,
         SetRelayOnDelay(((m_pxDiscreteSignalsDescriptionWork[uiAlarmHandlerIndex].uiDelay) & 0x3f));
     }
 
+    pxAlarmHandler ->
+    SetDiscreteInputsState(&m_puiDiscreteInputsState[uiAlarmHandlerIndex]);
+    pxAlarmHandler ->
+    SetDiscreteInputsBadState(&m_puiDiscreteInputsBadState[uiAlarmHandlerIndex]);
+
     m_vpxAlarmHandlers.push_back(pxAlarmHandler);
     m_vuiAlarmHandlersId.push_back(GetResources() ->
                                    GetTaskIdByNameFromMap(sDeviceName));
@@ -749,11 +787,73 @@ void CDiscreteSignals::AlarmHandlersProcessing(void)
 //    (*m_xAlarmHandlersIterator) -> Fsm();
 //    m_xAlarmHandlersIterator++;
 
+
+//    {
+//        std::cout << "CDiscreteSignals::AlarmHandlersProcessing m_puiDiscreteInputsState"  << std::endl;
+//        uint8_t *pucSourceTemp;
+//        pucSourceTemp = (uint8_t*)(m_puiDiscreteInputsState);
+//        for(int i=0; i<32 ; )
+//        {
+//            for(int j=0; j<8; j++)
+//            {
+//                cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+//            }
+//            cout << endl;
+//            i += 8;
+//        }
+//    }
+
+//    {
+//        std::cout << "CDiscreteSignals::AlarmHandlersProcessing m_puiDiscreteInputsBadState"  << std::endl;
+//        uint8_t *pucSourceTemp;
+//        pucSourceTemp = (uint8_t*)(m_puiDiscreteInputsBadState);
+//        for(int i=0; i<32 ; )
+//        {
+//            for(int j=0; j<8; j++)
+//            {
+//                cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+//            }
+//            cout << endl;
+//            i += 8;
+//        }
+//
+//    }
+
+//    {
+//        std::cout << "CDiscreteSignals::AlarmHandlersProcessing m_pxDiscreteOutputControl 1"  << std::endl;
+//        uint8_t *pucSourceTemp;
+//        pucSourceTemp = (uint8_t*)(GetResources() -> m_pxDiscreteOutputControl);
+//        for(int i=0; i<32 ; )
+//        {
+//            for(int j=0; j<8; j++)
+//            {
+//                cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+//            }
+//            cout << endl;
+//            i += 8;
+//        }
+//    }
+
     for (auto m_xAlarmHandlersIterator = m_vpxAlarmHandlers.begin();
             m_xAlarmHandlersIterator != m_vpxAlarmHandlers.end(); ++m_xAlarmHandlersIterator)
     {
         (*m_xAlarmHandlersIterator) -> Fsm();
     }
+
+//    {
+//        std::cout << "CDiscreteSignals::AlarmHandlersProcessing m_pxDiscreteOutputControl 2"  << std::endl;
+//        uint8_t *pucSourceTemp;
+//        pucSourceTemp = (uint8_t*)(GetResources() -> m_pxDiscreteOutputControl);
+//        for(int i=0; i<32 ; )
+//        {
+//            for(int j=0; j<8; j++)
+//            {
+//                cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+//            }
+//            cout << endl;
+//            i += 8;
+//        }
+//    }
 }
 
 //-------------------------------------------------------------------------------
@@ -1019,6 +1119,8 @@ uint8_t CDiscreteSignals::Fsm(void)
         {
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
             SetFsmState(DONE_ERROR);
+//            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+//            SetFsmState(DONE_OK);
         }
         break;
 
@@ -1051,20 +1153,20 @@ uint8_t CDiscreteSignals::Fsm(void)
 //-------------------------------------------------------------------------------
     case DISCRETE_SIGNALS_PROCESSING_ALARM_HANDLERS_START:
 //        std::cout << "CDiscreteSignals::Fsm DISCRETE_SIGNALS_PROCESSING_ALARM_HANDLERS_START"  << std::endl;
-        {
-            AlarmHandlersProcessing();
+    {
+        AlarmHandlersProcessing();
 
-            SetFsmState(DISCRETE_SIGNALS_PROCESSING_ALARM_HANDLERS_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
-        }
-        break;
+        SetFsmState(DISCRETE_SIGNALS_PROCESSING_ALARM_HANDLERS_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+    }
+    break;
 
     case DISCRETE_SIGNALS_PROCESSING_ALARM_HANDLERS_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
 //        std::cout << "CDiscreteSignals::Fsm DISCRETE_SIGNALS_PROCESSING_ALARM_HANDLERS_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
-        {
-            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-            SetFsmState(DONE_OK);
-        }
-        break;
+    {
+        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+        SetFsmState(DONE_OK);
+    }
+    break;
 
     case DISCRETE_SIGNALS_PROCESSING_ALARM_HANDLERS_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
         std::cout << "CDiscreteSignals::Fsm DISCRETE_SIGNALS_PROCESSING_ALARM_HANDLERS_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;

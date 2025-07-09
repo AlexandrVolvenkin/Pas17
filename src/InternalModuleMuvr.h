@@ -41,7 +41,7 @@ enum
 // количество дискретных сигналов порождаемое одним аналоговым входом.
 #define MUVR_DI_VALUE_ONE_CHANNEL_LENGTH 4
 // количество дискретных входов одного модуля.
-#define MUVR_DISCRETE_INPUT_QUANTITY 6
+#define MUVR_DISCRETE_INPUT_QUANTITY 0
 // количество дискретных сигналов одного модуля.
 #define MUVR_DISCRETE_SIGNALS_QUANTITY (MUVR_ANALOG_INPUT_QUANTITY * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH)
 // количество байт занимаемое одним модулем в рабочих массивах Modbus.

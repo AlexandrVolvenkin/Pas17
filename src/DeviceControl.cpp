@@ -307,6 +307,7 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
     // квитирование с верхнего уровня.
     case DEVICE_CONTROL_PC_KVIT:
     {
+        std::cout << "CDeviceControl ModbusFunction5Handler 2" << std::endl;
         CDataContainerDataBase* pxDataContainer =
             (CDataContainerDataBase*)GetCustomerDataContainerPointer();
         // бит установлен?
@@ -328,6 +329,7 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
     // сброс с верхнего уровня.
     case DEVICE_CONTROL_PC_RESET:
     {
+        std::cout << "CDeviceControl ModbusFunction5Handler 3" << std::endl;
         CDataContainerDataBase* pxDataContainer =
             (CDataContainerDataBase*)GetCustomerDataContainerPointer();
         // бит установлен?
@@ -368,6 +370,23 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
     break;
 
     default:
+//    {
+//        CDataContainerDataBase* pxDataContainer =
+//            (CDataContainerDataBase*)GetCustomerDataContainerPointer();
+//        // бит установлен?
+//        if ((pxDataContainer -> m_puiDataPointer[BIT_STATE_OFFSET]))
+//        {
+//            // если установлен - сбросим.
+//            (pxDataContainer -> m_puiDataPointer[BIT_STATE_OFFSET]) = 0;
+////            (GetResources() -> m_puiCoils[uiAddress]) = 1;
+//        }
+//        else
+//        {
+////            (GetResources() -> m_puiCoils[uiAddress]) = 0;
+//        }
+//        SetFsmState(MODBUS_FUNCTION_5_HANDLER_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+//        return 1;
+//    }
         break;
     };
 
@@ -1476,7 +1495,7 @@ uint8_t CDeviceControl::Fsm(void)
         {
             if (ModbusFunction5Handler())
             {
-//                SetFsmState(MODBUS_FUNCTION_5_HANDLER_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+                SetFsmState(MODBUS_FUNCTION_5_HANDLER_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
             }
             else
             {
@@ -1499,8 +1518,8 @@ uint8_t CDeviceControl::Fsm(void)
 //            pxCustomerDataContainer -> m_uiDataLength =
 //                pxExecutorDataContainer -> m_uiDataLength;
 
-//            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-//            SetFsmState(DONE_OK);
+        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+        SetFsmState(DONE_OK);
     }
     break;
 
