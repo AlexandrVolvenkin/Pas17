@@ -656,6 +656,45 @@ uint8_t CDataBaseCreate::Fsm(void)
     case DATA_BASE_CREATE_CONFIGURATION_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING:
         std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_CONFIGURATION_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
         {
+            SetFsmState(DATA_BASE_CREATE_SERIAL_AND_ID_DATA_BASE_BLOCKS_WRITE_START);
+        }
+        break;
+
+//-------------------------------------------------------------------------------
+    case DATA_BASE_CREATE_SERIAL_AND_ID_DATA_BASE_BLOCKS_WRITE_START:
+        std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_SERIAL_AND_ID_DATA_BASE_BLOCKS_WRITE_START"  << std::endl;
+        {
+            const char* cSerialAndIdStr = "00000-ПАС-17А___";
+            // Получаем серийный номер и идентификатор
+            memcpy(m_puiIntermediateBuff,
+                   cSerialAndIdStr,
+                   SERIAL_AND_ID_DATA_BASE_BLOCK_LENGTH);
+//            // установим все символы как подчёркивание
+//            memset(m_puiIntermediateBuff,
+//                   // В ASCII коде подчеркивание (underscore) имеет значение 95.
+//                   0x5F,
+//                   SERIAL_AND_ID_DATA_BASE_BLOCK_LENGTH);
+
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            pxDataContainer -> m_uiTaskId = m_uiDataStoreId;
+            pxDataContainer -> m_uiFsmCommandState =
+                CDataStore::START_WRITE_TEMPORARY_BLOCK_DATA;
+            // серийный номер и технологическая позиция блок 97
+            pxDataContainer -> m_uiDataIndex = SERIAL_AND_ID_DATA_BASE_BLOCK_LENGTH;
+            pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+            SetFsmNextStateDoneOk(DATA_BASE_CREATE_SERIAL_AND_ID_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING);
+            SetFsmNextStateReadyWaitingError(DONE_ERROR);
+            SetFsmNextStateDoneWaitingError(DONE_ERROR);
+            SetFsmNextStateDoneWaitingDoneError(DONE_ERROR);
+        }
+        break;
+
+    case DATA_BASE_CREATE_SERIAL_AND_ID_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING:
+        std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_SERIAL_AND_ID_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
+        {
             SetFsmState(DATA_BASE_CREATE_NETWORK_ADDRESS_DATA_BASE_BLOCKS_WRITE_START);
         }
         break;

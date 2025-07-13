@@ -363,13 +363,17 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
             int hour = tstructCurrent.tm_hour;
             int minute = tstructCurrent.tm_min;
 
+            std::string cSerialAndIdStr;
+            // Копируем данные из m_puiSerialAndId в cSerialAndIdStr
+            cSerialAndIdStr.assign((const char*)m_puiSerialAndId, SERIAL_AND_ID_DATA_BASE_BLOCK_LENGTH);
+
             //    // Создаем пути к папкам и файлу
             //    std::string pathToYearFolder = "AnalogueMeasureArchives_" + std::to_string(year);
             //    std::string pathToMonthFolder = pathToYearFolder + "/" + std::to_string(month);
             //    std::string dailyArchveFlashFile = pathToMonthFolder + "/AnalogueMeasure_" + dateStr + ".csv";
-//SERIAL_AND_ID_DATA_BASE_BLOCK_LENGTH
+
             // Создаем пути к папкам и файлу
-            std::string pathToYearFolder = "/home/debian/AnalogueMeasureArchives_" + std::to_string(year);
+            std::string pathToYearFolder = "/home/debian/AnalogueMeasureArchives_" + cSerialAndIdStr + "_" + std::to_string(year);
             std::string pathToMonthFolder = pathToYearFolder + "/" + std::to_string(month);
             std::string dailyArchveFlashFile = pathToMonthFolder + "/AnalogueMeasure_" + dateStr + ".csv";
 //            std::string dailyArchveFlashFile = pathToMonthFolder + "/AnalogueMeasure_" + dateStr + "-" + std::to_string(hour) + ".csv";
@@ -591,13 +595,18 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
                     int hour = tstructCurrent.tm_hour;
                     int minute = tstructCurrent.tm_min;
 
+                    // Получаем серийный номер и идентификатор
+                    std::string cSerialAndIdStr;
+                    // Копируем данные из m_puiSerialAndId в cSerialAndIdStr
+                    cSerialAndIdStr.assign((const char*)m_puiSerialAndId, SERIAL_AND_ID_DATA_BASE_BLOCK_LENGTH);
+
                     //    // Создаем пути к папкам и файлу
                     //    std::string pathToYearFolder = "AnalogueMeasureArchives_" + std::to_string(year);
                     //    std::string pathToMonthFolder = pathToYearFolder + "/" + std::to_string(month);
                     //    std::string dailyArchveFlashFile = pathToMonthFolder + "/AnalogueMeasure_" + dateStr + ".csv";
 
                     // Создаем пути к папкам и файлу
-                    std::string pathToYearFolder = "/home/debian/AnalogueMeasureArchives_" + std::to_string(year);
+                    std::string pathToYearFolder = "/home/debian/AnalogueMeasureArchives_" + cSerialAndIdStr + "_" + std::to_string(year);
                     std::string pathToMonthFolder = pathToYearFolder + "/" + std::to_string(month);
                     std::string dailyArchveFlashFile = pathToMonthFolder + "/AnalogueMeasure_" + dateStr + "-" + std::to_string(hour) + ".csv";
                     //        std::string dailyArchveFlashFile = pathToMonthFolder + "/AnalogueMeasure_" + dateStr + "-" + std::to_string(m_iFileNumberCounter) + ".csv";
