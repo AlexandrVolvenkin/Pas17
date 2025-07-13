@@ -366,7 +366,6 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
             std::string cSerialAndIdStr;
             // Копируем данные из m_puiSerialAndId в cSerialAndIdStr
             cSerialAndIdStr.assign((const char*)m_puiSerialAndId, SERIAL_AND_ID_DATA_BASE_BLOCK_LENGTH);
-
             //    // Создаем пути к папкам и файлу
             //    std::string pathToYearFolder = "AnalogueMeasureArchives_" + std::to_string(year);
             //    std::string pathToMonthFolder = pathToYearFolder + "/" + std::to_string(month);
