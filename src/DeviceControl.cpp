@@ -1941,6 +1941,47 @@ uint8_t CDeviceControl::Fsm(void)
         }
         break;
 
+////-------------------------------------------------------------------------------
+//    case DATA_BASE_BLOCK_SERIAL_AND_ID_WRITE_START:
+//        std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_SERIAL_AND_ID_WRITE_START"  << std::endl;
+//        {
+//            uint8_t uiAddress =
+//                ((((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer)[0] +
+//                 CONVERT_INTEGER_TO_NATURAL_NUMBER);
+//            std::cout << "CDeviceControl::Fsm uiAddress "  << (int)uiAddress << std::endl;
+//
+//            CModbusSlave* pxModbusRtuSlaveUpperLevel =
+//                (CModbusSlave*)(GetResources() ->
+//                                GetTaskPointerByNameFromMap("ModbusRtuSlaveUpperLevel"));
+//            pxModbusRtuSlaveUpperLevel ->
+//            SetOwnAddress(uiAddress);
+//
+//            CModbusSlave* pxModbusTcpSlaveUpperLevel =
+//                (CModbusSlave*)(GetResources() ->
+//                                GetTaskPointerByNameFromMap("ModbusTcpSlaveUpperLevel"));
+//            pxModbusTcpSlaveUpperLevel ->
+//            SetOwnAddress(uiAddress);
+//
+//            SetFsmState(DATA_BASE_BLOCK_SERIAL_AND_ID_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+//        }
+//        break;
+//
+//    case DATA_BASE_BLOCK_SERIAL_AND_ID_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+//        std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_SERIAL_AND_ID_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+//        {
+////            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+//            SetFsmState(DONE_OK);
+//        }
+//        break;
+//
+//    case DATA_BASE_BLOCK_SERIAL_AND_ID_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+//        std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_SERIAL_AND_ID_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+//        {
+//            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+//            SetFsmState(DONE_ERROR);
+//        }
+//        break;
+
 //-------------------------------------------------------------------------------
     case DATA_BASE_BLOCK_NETWORK_ADDRESS_WRITE_START:
         std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_NETWORK_ADDRESS_WRITE_START"  << std::endl;

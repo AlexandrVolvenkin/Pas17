@@ -846,7 +846,7 @@ uint8_t CAnalogueSignalsArchiveCreate::Fsm(void)
             pxDataContainer -> m_uiFsmCommandState =
                 CDataStore::READ_BLOCK_DATA_START;
             // серийный номер и технологическая позиция блок 97
-            pxDataContainer -> m_uiDataIndex = SERIAL_AND_ID_DATA_BASE_BLOCK_LENGTH;
+            pxDataContainer -> m_uiDataIndex = SERIAL_AND_ID_DATA_BASE_BLOCK_OFFSET;
             pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
 
             SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
