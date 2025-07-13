@@ -271,7 +271,7 @@ uint8_t CSettingsLoad::Fsm(void)
             uint8_t uiAddress =
                 (m_puiIntermediateBuff[0] +
                  CONVERT_INTEGER_TO_NATURAL_NUMBER);
-            std::cout << "CDeviceControl::Fsm uiAddress "  << (int)uiAddress << std::endl;
+            std::cout << "CSettingsLoad::Fsm uiAddress "  << (int)uiAddress << std::endl;
 
             CModbusSlave* pxModbusRtuSlaveUpperLevel =
                 (CModbusSlave*)(GetResources() ->

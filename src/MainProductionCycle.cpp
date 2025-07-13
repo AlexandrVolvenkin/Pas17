@@ -1064,7 +1064,47 @@ uint8_t CMainProductionCycle::Fsm(void)
             CurrentlyRunningTasksExecution();
 
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(SERIAL_AND_ID_LOAD_START);
+        }
+        break;
+
+//-------------------------------------------------------------------------------
+    case SERIAL_AND_ID_LOAD_START:
+        std::cout << "CSettingsLoad::Fsm SERIAL_AND_ID_LOAD_START"  << std::endl;
+        {
+            CurrentlyRunningTasksExecution();
+
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            pxDataContainer -> m_uiTaskId = m_uiAnalogueSignalsArchiveCreateId;
+            pxDataContainer -> m_uiFsmCommandState =
+                CAnalogueSignalsArchiveCreate::ANALOGUE_SIGNALS_SERIAL_AND_ID_LOAD_START;
+
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+            SetFsmNextStateDoneOk(SERIAL_AND_ID_LOAD_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+            SetFsmNextStateReadyWaitingError(SERIAL_AND_ID_LOAD_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingError(SERIAL_AND_ID_LOAD_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingDoneError(SERIAL_AND_ID_LOAD_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+        }
+        break;
+
+    case SERIAL_AND_ID_LOAD_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+        std::cout << "CSettingsLoad::Fsm SERIAL_AND_ID_LOAD_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        {
+            CurrentlyRunningTasksExecution();
+
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(SETTINGS_LOAD_START);
+        }
+        break;
+
+    case SERIAL_AND_ID_LOAD_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+        std::cout << "CSettingsLoad::Fsm SERIAL_AND_ID_LOAD_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        {
+            CurrentlyRunningTasksExecution();
+
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+            SetFsmState(DONE_ERROR);
         }
         break;
 

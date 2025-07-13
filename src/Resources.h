@@ -197,6 +197,9 @@ public:
     uint8_t* m_puiAnalogueInputDiscreteInputsBadState;
     uint8_t m_uiUsedAnalogueInputDiscreteInputsBadState;
 
+    uint8_t* m_puiSerialAndId;
+    uint8_t m_uiUsedSerialAndId;
+
     CDeviceControl* m_pxDeviceControl;
     CDataStore* m_pxDataStore;
     CConfiguration* m_pxConfigurationCreate;

@@ -113,6 +113,7 @@ void CResources::ModbusWorkingArraysDestroy(void)
     delete[] m_puiDiscreteInputs;
     delete[] m_puiHoldingRegisters;
     delete[] m_puiInputRegisters;
+    delete[] m_puiSerialAndId;
 }
 
 //-------------------------------------------------------------------------------
@@ -321,6 +322,13 @@ void CResources::Allocate(void)
     // Обнулим общий объём выделенной памяти.
     m_uiUsedDiscreteSignalsDescriptionWork = 0;
     m_pxDiscreteSignalsDescriptionWork = new TDiscreteSignalsDescriptionWork[MAX_HANDLED_DISCRETE_INPUT];
+
+
+    // Обнулим общий объём выделенной памяти.
+    m_uiUsedSerialAndId = 0;
+    // Подключим буфер с серийным номером и идентификатором прибора.
+    m_puiSerialAndId =
+        new uint8_t[SERIAL_AND_ID_DATA_BASE_BLOCK_LENGTH];
 }
 
 //-------------------------------------------------------------------------------

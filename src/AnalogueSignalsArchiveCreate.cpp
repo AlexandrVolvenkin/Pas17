@@ -193,7 +193,12 @@ void CAnalogueSignalsArchiveCreate::Allocate(void)
 //    m_puiHoldingRegisters = m_pxResources -> GetInputRegisters();
     m_puiHoldingRegisters = m_pxResources -> GetHoldingRegisters();
     m_puiInputRegisters = m_pxResources -> GetInputRegisters();
-//
+
+
+    // Получим указатель на буфер с серийным номером и идентификатором прибора.
+    m_puiSerialAndId =
+        (GetResources() -> m_puiSerialAndId);
+
 //    m_uiBadAnswerCounter = 0;
 }
 
@@ -318,7 +323,7 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
 
         // Обновляем значения для следующей проверки
 ////        m_iLastDay = tstructCurrent.tm_hour;
-            m_iLastDay = tstructCurrent.tm_mday;
+        m_iLastDay = tstructCurrent.tm_mday;
 
 
         // каждый новый час начинаем запись в fram сначала.
@@ -362,7 +367,7 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
             //    std::string pathToYearFolder = "AnalogueMeasureArchives_" + std::to_string(year);
             //    std::string pathToMonthFolder = pathToYearFolder + "/" + std::to_string(month);
             //    std::string dailyArchveFlashFile = pathToMonthFolder + "/AnalogueMeasure_" + dateStr + ".csv";
-
+//SERIAL_AND_ID_DATA_BASE_BLOCK_LENGTH
             // Создаем пути к папкам и файлу
             std::string pathToYearFolder = "/home/debian/AnalogueMeasureArchives_" + std::to_string(year);
             std::string pathToMonthFolder = pathToYearFolder + "/" + std::to_string(month);
@@ -807,6 +812,71 @@ uint8_t CAnalogueSignalsArchiveCreate::Fsm(void)
         }
     }
     break;
+
+//-------------------------------------------------------------------------------
+    case ANALOGUE_SIGNALS_SERIAL_AND_ID_LOAD_START:
+        std::cout << "CAnalogueSignalsArchiveCreate::Fsm ANALOGUE_SIGNALS_SERIAL_AND_ID_LOAD_START"  << std::endl;
+        {
+            SetFsmState(ANALOGUE_SIGNALS_SERIAL_AND_ID_LOAD_DATA_BASE_BLOCKS_READ_START);
+        }
+        break;
+
+    case ANALOGUE_SIGNALS_SERIAL_AND_ID_LOAD_DATA_BASE_BLOCKS_READ_START:
+        std::cout << "CAnalogueSignalsArchiveCreate::Fsm ANALOGUE_SIGNALS_SERIAL_AND_ID_LOAD_DATA_BASE_BLOCKS_READ_START"  << std::endl;
+        {
+//            m_uiDataStoreId =
+//                GetResources() ->
+//                GetTaskIdByNameFromMap(m_sDataStoreName);
+            uint8_t uiDataStoreId =
+                GetResources() ->
+                GetTaskIdByNameFromMap("DataStoreFileSystem");
+
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            pxDataContainer -> m_uiTaskId = uiDataStoreId;
+            pxDataContainer -> m_uiFsmCommandState =
+                CDataStore::READ_BLOCK_DATA_START;
+            // серийный номер и технологическая позиция блок 97
+            pxDataContainer -> m_uiDataIndex = SERIAL_AND_ID_DATA_BASE_BLOCK_LENGTH;
+            pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+            SetFsmNextStateDoneOk(ANALOGUE_SIGNALS_SERIAL_AND_ID_LOAD_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+            SetFsmNextStateReadyWaitingError(ANALOGUE_SIGNALS_SERIAL_AND_ID_LOAD_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingError(ANALOGUE_SIGNALS_SERIAL_AND_ID_LOAD_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingDoneError(ANALOGUE_SIGNALS_SERIAL_AND_ID_LOAD_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+        }
+        break;
+
+    case ANALOGUE_SIGNALS_SERIAL_AND_ID_LOAD_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+        std::cout << "CAnalogueSignalsArchiveCreate::Fsm ANALOGUE_SIGNALS_SERIAL_AND_ID_LOAD_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        {
+            SetFsmState(ANALOGUE_SIGNALS_SERIAL_AND_ID_SET_START);
+        }
+        break;
+
+    case ANALOGUE_SIGNALS_SERIAL_AND_ID_LOAD_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+        std::cout << "CAnalogueSignalsArchiveCreate::Fsm ANALOGUE_SIGNALS_SERIAL_AND_ID_LOAD_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        {
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+            SetFsmState(DONE_ERROR);
+        }
+        break;
+
+    case ANALOGUE_SIGNALS_SERIAL_AND_ID_SET_START:
+        std::cout << "CAnalogueSignalsArchiveCreate::Fsm ANALOGUE_SIGNALS_SERIAL_AND_ID_SET_START"  << std::endl;
+        {
+            CDataContainerDataBase* pxExecutorDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+
+            memcpy(m_puiSerialAndId,
+                   (pxExecutorDataContainer -> m_puiDataPointer),
+                   pxExecutorDataContainer -> m_uiDataLength);
+
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(DONE_OK);
+        }
+        break;
 
 //-------------------------------------------------------------------------------
     case ANALOGUE_SIGNALS_ARCHIVE_CREATE_START:
