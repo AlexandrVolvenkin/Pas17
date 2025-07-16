@@ -27,6 +27,7 @@
 
 #include "ModbusSmSlave.h"
 #include "ModbusSmSlaveLinkLayer.h"
+//#include "Events.h"
 
 class CTask;
 //class CResources;
@@ -44,6 +45,9 @@ class CConfigurationCheck;
 class CSettingsLoad;
 class CDiscreteSignals;
 class CAnalogueSignalsArchiveCreate;
+class CEvents;
+class CEventsDB;
+class CArchiveEventsDB;
 
 //-------------------------------------------------------------------------------
 class CMainProductionCycle : public CTask
@@ -163,6 +167,7 @@ public:
 //    };
 
     uint8_t CreateTasks(void);
+    static void PlcOnOffEvetnsCreate(void);
     uint8_t InitTasks(void);
     void CurrentlyRunningTasksExecution(void);
     uint8_t Fsm(void);

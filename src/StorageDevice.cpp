@@ -287,3 +287,103 @@ uint8_t CStorageDeviceFileSystem::Fsm(void)
 }
 
 //-------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+//-------------------------------------------------------------------------------
+CStorageDeviceSpiFram::CStorageDeviceSpiFram()
+{
+    std::cout << "CStorageDeviceSpiFram constructor"  << std::endl;
+//    // получим им€ класса.
+//    sprintf(GetTaskNamePointer(),
+//            "%s",
+//            typeid(*this).name());
+//    SetFsmState(START);
+}
+
+//-------------------------------------------------------------------------------
+CStorageDeviceSpiFram::~CStorageDeviceSpiFram()
+{
+
+}
+
+//-------------------------------------------------------------------------------
+// «аписывает блок данных в устройство хранени€.
+uint8_t CStorageDeviceSpiFram::Write(uint8_t* puiDataPointer,
+                                     uint16_t uiOffset,
+                                     uint16_t uiLength)
+{
+    std::cout << "CStorageDeviceSpiFram Write"  << std::endl;
+
+    if ((uiOffset + uiLength) < MAX_BUFFER_LENGTH)
+    {
+//        // им€ устройства fram пам€ти.
+//        const std::string hourArchiveFramFile = "/dev/mtd0";
+
+        std::ofstream FramOutputStream(sFileName, std::ios::binary | std::ios::in | std::ios::out);
+        if (!FramOutputStream.is_open())
+        {
+            std::cerr << "Failed to open for write /dev/mtd0" << std::endl;
+            return 0;
+        }
+
+        // «аписываем данные в файл fram
+        // установим указатель на данные новой ежесекундной записи.
+        FramOutputStream.seekp(uiOffset, std::ios::beg);
+        FramOutputStream.write(reinterpret_cast<char*>(puiDataPointer), uiLength);
+        // «акрываем файл
+        FramOutputStream.close();
+
+        return 1;
+    }
+    else
+    {
+        std::cout << "CStorageDeviceSpiFram Write 7"  << std::endl;
+        return 0;
+    }
+}
+
+//-------------------------------------------------------------------------------
+// —читывает блок данных из устройства хранени€.
+uint8_t CStorageDeviceSpiFram::Read(uint8_t* puiDataPointer,
+                                    uint16_t uiOffset,
+                                    uint16_t uiLength)
+{
+    std::cout << "CStorageDeviceSpiFram Read 1"  << std::endl;
+
+//    cout << "CStorageDeviceSpiFram::Read uiOffset" << " " << (int)uiOffset << endl;
+//    cout << "CStorageDeviceSpiFram::Read uiLength" << " " << (int)uiLength << endl;
+    if ((uiOffset + uiLength) < MAX_BUFFER_LENGTH)
+    {
+//        // им€ устройства fram пам€ти.
+//        const std::string hourArchiveFramFile = "/dev/mtd0";
+
+        std::ifstream FramInputStream(sFileName, std::ios::binary | std::ios::in | std::ios::out);
+        if (!FramInputStream.is_open())
+        {
+            std::cerr << "Failed to open for read /dev/mtd0" << std::endl;
+            return 0;
+        }
+
+        // установим указатель на данные.
+        FramInputStream.seekg(uiOffset, std::ios::beg);
+        FramInputStream.read(reinterpret_cast<char*>(puiDataPointer), uiLength);
+        FramInputStream.close();
+
+        return 1;
+    }
+    else
+    {
+        std::cout << "CStorageDeviceSpiFram Read 5"  << std::endl;
+        return 0;
+    }
+}
+
+//-------------------------------------------------------------------------------

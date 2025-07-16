@@ -369,14 +369,14 @@ public:
     static void EventsHandler(void);
 
 //-----------------------------------------------------------------------------------------------------
-    // количество обрабатываемых событий одного типа.
-    int16_t ui16HandledEventsQuantity;
+//    // количество обрабатываемых событий одного типа.
+//    int16_t ui16HandledEventsQuantity;
     // количество фиксируемых событий одного типа.
     int16_t ui16RecordedEventsQuantity;
     // список запросов событий.
     static CEvents::TEventsLogQueryListPackOne xEventsLogQueryList;
-    // количество событий в запросе.
-    static int16_t i16EventsLogQueryListQuantity;
+//    // количество событий в запросе.
+//    static int16_t i16EventsLogQueryListQuantity;
 
     // массив состояния событий(если - 0, событие новое. если - 1, событие не новое.);
     uint8_t aui8EventsControlState[HANDLED_EVENTS_QUANTITY];

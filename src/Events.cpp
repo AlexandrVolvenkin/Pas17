@@ -29,7 +29,7 @@ CInfoEvent xCInfoEvent;
 
 //-----------------------------------------------------------------------------------------------------
 CEvents::TEventsLogQueryListPackOne CEvents::xEventsLogQueryList;
-int16_t CEvents::i16EventsLogQueryListQuantity;
+//int16_t CEvents::i16EventsLogQueryListQuantity;
 CEvents::TOccuredEventsControl CEvents::xOccuredEventsControl;
 
 //-----------------------------------------------------------------------------------------------------

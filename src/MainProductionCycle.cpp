@@ -38,6 +38,8 @@
 #include "SettingsLoad.h"
 #include "DiscreteSignals.h"
 #include "AnalogueSignalsArchiveCreate.h"
+#include "Events.h"
+#include "EventsDB.h"
 
 #include "MainProductionCycle.h"
 
@@ -511,6 +513,135 @@ uint8_t CMainProductionCycle::CreateTasks(void)
     m_xResources.AddCurrentlyRunningTasksList(pxAnalogueSignalsArchiveCreate);
 //    m_pxAnalogueSignalsArchiveCreate = pxAnalogueSignalsArchiveCreate;
 
+}
+
+//-------------------------------------------------------------------------------
+// создаёт события: время включения и выключения.
+void CMainProductionCycle::PlcOnOffEvetnsCreate(void)
+{
+    CEvents::TEventDataCommon *pxEventData;
+    struct tm xCurrentTime;
+
+    // получим указатель на место в кольцевом буфере журнала событий.
+    pxEventData = xCAlarmEvent.EventDataPush();
+// сохраним данные события.
+    // установим id события.
+    (pxEventData -> ui16ID) =
+        1;
+    // установим тип события.
+    (pxEventData -> ui8Type) =
+        CEvents::HANDLED_EVENTS_SYSTEM_EVENTS_TYPE;
+    // установим адрес источника события.
+    (pxEventData -> ui16Address) = 0;
+    // установим код события.
+    (pxEventData -> ui8State) =
+        0;
+
+//	// получим последнее сохранённое время в FRAM.
+//	iFramRead((uint8_t*)&xCurrentTime,
+//			  FRAM_LAST_SAVED_TIME_OFFSET,
+//			  sizeof(xCurrentTime));
+
+    // установим время события.
+    (pxEventData -> xCurrentTime) =
+        xCurrentTime;
+    // создадим строку текстового реквизита.
+    sprintf((char*)(pxEventData -> acTextDescriptor),
+            "%s",
+            "Окончание работы");
+    // создадим пустую строку в поле дополнительных текстовых данных таблицы архива в базе данных.
+    sprintf((char*)(pxEventData -> acTextDescriptorAdditional),
+            "%s",
+            " ");
+//    xCArchiveEventsDB.DataBaseDataPush(pxEventData);
+
+    // модуль индикации МИНД последовательно запрашивает данные событий из кольцевого буфера.
+    // когда МИНД получает данные события с маркером - нет события, он перестаёт посылать
+    // запросы. на дисплее появляется информация о том, что событий больше нет.
+    // чтобы сообщить модулю индикации МИНД о том, что событий больше нет - вытесним из
+    // кольцевого буфера самое давнее событие. пометим его маркером - нет события(ui16ID = 0).
+    // установим индекс (ui16EventDataCommonPopIndex) на место следующего в кольцевом буфере самого давнего события.
+    xCAlarmEvent.EventDataPopIndexSet(0);
+    // получим указатель на место следующего в кольцевом буфере самого давнего события.
+    pxEventData = xCAlarmEvent.EventDataPop();
+    // пометим событие маркером - нет события.
+    pxEventData -> ui16ID = 0;
+
+
+//    time_t xLocalLastTime;
+//    uint32_t ui32Seconds;
+//
+//    // преобразуем в целочисленный формат последнее сохранённое время в FRAM.
+//    xLocalLastTime = mktime(&xCurrentTime);
+////	// обновим текущее время в переменную xCurrentTime.
+////	vCurrentTimeUpdate();CTimer::
+//    // получим разницу в секундах между временем выключения
+//    // и временем включения.
+//    ui32Seconds = (uint32_t)difftime(mktime(&xCurrentTime), xLocalLastTime);
+
+//	// предыдущее выключение было больше чем 1 минуту назад?
+//	if (ui32Seconds > 60)
+//	{
+//		// найдём модули МТВИ5, чтобы отправить им команду - перезагрузка больше чем через одну минуту.
+//		// выставить OSF и перейти в режим «РУЧНОЙ».
+//		// пройдём по всем имеющимся в конфигурации модулям.
+//		for (int i = 0; i < (xPlcConfigService.
+//							 xPlcConfigServiceData.
+//							 ucInternalModulesQuantity); i++)
+//		{
+//			// найден модуль МТВИ5?
+//			if (xAllModulesContext.axAllModulesContext[i].
+//					xModuleContextStatic.ucModuleType == MODULE_TYPE_MTVI5)
+//			{
+//				// отправим команду модулю МТВИ5 - перезагрузка больше чем через одну минуту.
+//				// выставить OSF и перейти в режим «РУЧНОЙ».
+//				xAllModulesContext.axAllModulesContext[i].
+//				xModuleContextDinamic.
+//				ucCommandControl = DEVICE_CONTROL_MTVI5_LOAD_OUTS_OSF;
+//			}
+//		}
+//	}
+
+    // получим указатель на место в кольцевом буфере журнала событий.
+    pxEventData = xCAlarmEvent.EventDataPush();
+
+    // сохраним данные события.
+    // установим id события.
+    (pxEventData -> ui16ID) =
+        1;
+    // установим тип события.
+    (pxEventData -> ui8Type) =
+        CEvents::HANDLED_EVENTS_SYSTEM_EVENTS_TYPE;
+    // установим адрес источника события.
+    (pxEventData -> ui16Address) = 0;
+    // установим код события.
+    (pxEventData -> ui8State) =
+        0;
+
+    // установим время события.
+    (pxEventData -> xCurrentTime) =
+        xCurrentTime;
+    // создадим строку текстового реквизита.
+    sprintf((char*)(pxEventData -> acTextDescriptor),
+            "%s",
+            "Начало работы");
+    // создадим пустую строку в поле дополнительных текстовых данных таблицы архива в базе данных.
+    sprintf((char*)(pxEventData -> acTextDescriptorAdditional),
+            "%s",
+            " ");
+//    xCArchiveEventsDB.DataBaseDataPush(pxEventData);
+
+    // модуль индикации МИНД последовательно запрашивает данные событий из кольцевого буфера.
+    // когда МИНД получает данные события с маркером - нет события, он перестаёт посылать
+    // запросы. на дисплее появляется информация о том, что событий больше нет.
+    // чтобы сообщить модулю индикации МИНД о том, что событий больше нет - вытесним из
+    // кольцевого буфера самое давнее событие. пометим его маркером - нет события(ui16ID = 0).
+    // установим индекс (ui16EventDataCommonPopIndex) на место следующего в кольцевом буфере самого давнего события.
+    xCAlarmEvent.EventDataPopIndexSet(0);
+    // получим указатель на место следующего в кольцевом буфере самого давнего события.
+    pxEventData = xCAlarmEvent.EventDataPop();
+    // пометим событие маркером - нет события.
+    pxEventData -> ui16ID = 0;
 }
 
 //-------------------------------------------------------------------------------
