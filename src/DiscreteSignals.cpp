@@ -294,8 +294,8 @@ void CDiscreteSignals::DiscreteSignalsStartDataBaseCreate(void)
                  uiServiceAnalogueInputModuleQuantity);
             i++)
     {
-        for (int j = 0;
-                j < (ANALOG_MODULE_INPUT_QUANTITY *
+        for (int j = 0, k = 0;
+                j < ((ANALOG_MODULE_INPUT_QUANTITY / 2) *
                      ANALOGUE_INPUT_DI_VALUE_QUANTITY);
                 j++)
         {
@@ -351,6 +351,118 @@ void CDiscreteSignals::DiscreteSignalsStartDataBaseCreate(void)
                 pxDiscreteSignalsDescriptionWork[nuiInputCounter].uiTalTkGrp &= ~SIGNALING_TYPE_2_DISC_MASK;
                 // нет выхода управления реле, превого модуля реле МР1.
                 pxDiscreteSignalsDescriptionWork[nuiInputCounter].auiRelayOut[0] = 0;
+                // нет задержки.
+                pxDiscreteSignalsDescriptionWork[nuiInputCounter].uiDelay = 0;
+                // дискретность времени задержки - 1 секунда.
+                pxDiscreteSignalsDescriptionWork[nuiInputCounter].uiDelay = 0;
+                // Не архивировать.
+                pxDiscreteSignalsDescriptionWork[nuiInputCounter].uiDelay &= ~ARCHIVE_DISC_MASK;
+                // перейдём к заполнению описателя следующей уставки.
+                uiFlowControl = ANALOGUE_INPUT_SET_POINT_VIOLATION_HH_H;
+                break;
+
+            case ANALOGUE_INPUT_SET_POINT_VIOLATION_HH_H:
+                // заполним номер группы. содержится в счётчике - nuiModuleCounter. для каждого модуля свой номер группы.
+                pxDiscreteSignalsDescriptionWork[nuiInputCounter].uiTalTkGrp |= (nuiModuleCounter & LIGHT_BOARD_CELL_NUMBER_DISC_MASK);
+                // тип контакта - нормально разомкнутый.
+                pxDiscreteSignalsDescriptionWork[nuiInputCounter].uiTalTkGrp |= CONTACT_TYPE_DISC_MASK;
+                // аварийная сигнализация.
+                pxDiscreteSignalsDescriptionWork[nuiInputCounter].uiTalTkGrp &= ~SIGNALING_TYPE_1_DISC_MASK;
+                pxDiscreteSignalsDescriptionWork[nuiInputCounter].uiTalTkGrp |= SIGNALING_TYPE_2_DISC_MASK;
+                // нет выхода управления реле, превого модуля реле МР1.
+                pxDiscreteSignalsDescriptionWork[nuiInputCounter].auiRelayOut[0] = 0;
+                // нет задержки.
+                pxDiscreteSignalsDescriptionWork[nuiInputCounter].uiDelay = 0;
+                // дискретность времени задержки - 1 секунда.
+                pxDiscreteSignalsDescriptionWork[nuiInputCounter].uiDelay = 0;
+                // Не архивировать.
+                pxDiscreteSignalsDescriptionWork[nuiInputCounter].uiDelay &= ~ARCHIVE_DISC_MASK;
+                // перейдём к заполнению описателя следующей уставки.
+                uiFlowControl = ANALOGUE_INPUT_SET_POINT_VIOLATION_LL_L;
+                break;
+
+            default:
+                break;
+            };
+
+            // вычислим CRC описателя.
+            puiSource = (uint8_t*)&pxDiscreteSignalsDescriptionWork[nuiInputCounter];
+            uiCheck = 0xFF;
+            for (int k = 0;
+                    k < (sizeof(struct TDiscreteSignalsDescriptionWork) - ONE_BYTE_CRC_LENGTH);
+                    k++)
+            {
+                uiCheck += puiSource[k];
+            }
+            pxDiscreteSignalsDescriptionWork[nuiInputCounter].uiCrc = uiCheck;
+
+            // следующий вход модуля дискретного ввода.
+            // следующий описатель.
+            nuiInputCounter++;
+
+        }
+
+
+
+        for (int j = 0, k = 0;
+                j < ((ANALOG_MODULE_INPUT_QUANTITY / 2) *
+                     ANALOGUE_INPUT_DI_VALUE_QUANTITY);
+                j++)
+        {
+            switch(uiFlowControl)
+            {
+            case ANALOGUE_INPUT_SET_POINT_VIOLATION_LL_L:
+                // заполним номер группы. содержится в счётчике - nuiModuleCounter. для каждого модуля свой номер группы.
+                pxDiscreteSignalsDescriptionWork[nuiInputCounter].uiTalTkGrp |= (nuiModuleCounter & LIGHT_BOARD_CELL_NUMBER_DISC_MASK);
+                // тип контакта - нормально разомкнутый.
+                pxDiscreteSignalsDescriptionWork[nuiInputCounter].uiTalTkGrp |= CONTACT_TYPE_DISC_MASK;
+                // аварийная сигнализация.
+                pxDiscreteSignalsDescriptionWork[nuiInputCounter].uiTalTkGrp &= ~SIGNALING_TYPE_1_DISC_MASK;
+                pxDiscreteSignalsDescriptionWork[nuiInputCounter].uiTalTkGrp |= SIGNALING_TYPE_2_DISC_MASK;
+                // нет выхода управления реле, превого модуля реле МР1.
+                pxDiscreteSignalsDescriptionWork[nuiInputCounter].auiRelayOut[0] = 0;
+                // нет задержки.
+                pxDiscreteSignalsDescriptionWork[nuiInputCounter].uiDelay = 0;
+                // дискретность времени задержки - 1 секунда.
+                pxDiscreteSignalsDescriptionWork[nuiInputCounter].uiDelay = 0;
+                // Не архивировать.
+                pxDiscreteSignalsDescriptionWork[nuiInputCounter].uiDelay &= ~ARCHIVE_DISC_MASK;
+                // перейдём к заполнению описателя следующей уставки.
+                uiFlowControl = ANALOGUE_INPUT_SET_POINT_VIOLATION_L;
+                break;
+
+            case ANALOGUE_INPUT_SET_POINT_VIOLATION_L:
+                // заполним номер группы. содержится в счётчике - nuiModuleCounter. для каждого модуля свой номер группы.
+                pxDiscreteSignalsDescriptionWork[nuiInputCounter].uiTalTkGrp |= (nuiModuleCounter & LIGHT_BOARD_CELL_NUMBER_DISC_MASK);
+                // тип контакта - нормально разомкнутый.
+                pxDiscreteSignalsDescriptionWork[nuiInputCounter].uiTalTkGrp |= CONTACT_TYPE_DISC_MASK;
+                // предупредительная сигнализация.
+                pxDiscreteSignalsDescriptionWork[nuiInputCounter].uiTalTkGrp |= SIGNALING_TYPE_1_DISC_MASK;
+                pxDiscreteSignalsDescriptionWork[nuiInputCounter].uiTalTkGrp &= ~SIGNALING_TYPE_2_DISC_MASK;
+                // нет выхода управления реле, превого модуля реле МР1.
+                pxDiscreteSignalsDescriptionWork[nuiInputCounter].auiRelayOut[0] = (1 << (k));
+                k++;
+                // нет задержки.
+                pxDiscreteSignalsDescriptionWork[nuiInputCounter].uiDelay = 0;
+                // дискретность времени задержки - 1 секунда.
+                pxDiscreteSignalsDescriptionWork[nuiInputCounter].uiDelay = 0;
+                // Не архивировать.
+                pxDiscreteSignalsDescriptionWork[nuiInputCounter].uiDelay &= ~ARCHIVE_DISC_MASK;
+                // перейдём к заполнению описателя следующей уставки.
+                uiFlowControl = ANALOGUE_INPUT_SET_POINT_VIOLATION_H;
+                break;
+
+            case ANALOGUE_INPUT_SET_POINT_VIOLATION_H:
+                // заполним номер группы. содержится в счётчике - nuiModuleCounter. для каждого модуля свой номер группы.
+                pxDiscreteSignalsDescriptionWork[nuiInputCounter].uiTalTkGrp |= (nuiModuleCounter & LIGHT_BOARD_CELL_NUMBER_DISC_MASK);
+                // тип контакта - нормально разомкнутый.
+                pxDiscreteSignalsDescriptionWork[nuiInputCounter].uiTalTkGrp |= CONTACT_TYPE_DISC_MASK;
+                // предупредительная сигнализация.
+                pxDiscreteSignalsDescriptionWork[nuiInputCounter].uiTalTkGrp |= SIGNALING_TYPE_1_DISC_MASK;
+                pxDiscreteSignalsDescriptionWork[nuiInputCounter].uiTalTkGrp &= ~SIGNALING_TYPE_2_DISC_MASK;
+                // нет выхода управления реле, превого модуля реле МР1.
+                pxDiscreteSignalsDescriptionWork[nuiInputCounter].auiRelayOut[0] = (1 << (k));
+                k++;
                 // нет задержки.
                 pxDiscreteSignalsDescriptionWork[nuiInputCounter].uiDelay = 0;
                 // дискретность времени задержки - 1 секунда.
