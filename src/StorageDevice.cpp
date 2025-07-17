@@ -320,12 +320,12 @@ uint8_t CStorageDeviceSpiFram::Write(uint8_t* puiDataPointer,
                                      uint16_t uiOffset,
                                      uint16_t uiLength)
 {
-    std::cout << "CStorageDeviceSpiFram Write"  << std::endl;
+//    std::cout << "CStorageDeviceSpiFram Write"  << std::endl;
 
     if ((uiOffset + uiLength) < MAX_BUFFER_LENGTH)
     {
-//        // имя устройства fram памяти.
-//        const std::string hourArchiveFramFile = "/dev/mtd0";
+        // имя устройства fram памяти.
+        const std::string sFileName = "/dev/mtd0";
 
         std::ofstream FramOutputStream(sFileName, std::ios::binary | std::ios::in | std::ios::out);
         if (!FramOutputStream.is_open())
@@ -356,14 +356,14 @@ uint8_t CStorageDeviceSpiFram::Read(uint8_t* puiDataPointer,
                                     uint16_t uiOffset,
                                     uint16_t uiLength)
 {
-    std::cout << "CStorageDeviceSpiFram Read 1"  << std::endl;
+//    std::cout << "CStorageDeviceSpiFram Read 1"  << std::endl;
 
 //    cout << "CStorageDeviceSpiFram::Read uiOffset" << " " << (int)uiOffset << endl;
 //    cout << "CStorageDeviceSpiFram::Read uiLength" << " " << (int)uiLength << endl;
     if ((uiOffset + uiLength) < MAX_BUFFER_LENGTH)
     {
-//        // имя устройства fram памяти.
-//        const std::string hourArchiveFramFile = "/dev/mtd0";
+        // имя устройства fram памяти.
+        const std::string sFileName = "/dev/mtd0";
 
         std::ifstream FramInputStream(sFileName, std::ios::binary | std::ios::in | std::ios::out);
         if (!FramInputStream.is_open())

@@ -38,6 +38,7 @@
 #include "SettingsLoad.h"
 #include "DiscreteSignals.h"
 #include "AnalogueSignalsArchiveCreate.h"
+#include "StorageDevice.h"
 #include "Events.h"
 #include "EventsDB.h"
 
@@ -537,10 +538,10 @@ void CMainProductionCycle::PlcOnOffEvetnsCreate(void)
     (pxEventData -> ui8State) =
         0;
 
-//	// получим последнее сохранённое время в FRAM.
-//	iFramRead((uint8_t*)&xCurrentTime,
-//			  FRAM_LAST_SAVED_TIME_OFFSET,
-//			  sizeof(xCurrentTime));
+    // получим последнее сохранённое время в FRAM.
+    CStorageDeviceSpiFram::Read((uint8_t*)&xCurrentTime,
+                                FRAM_LAST_SAVED_TIME_OFFSET,
+                                sizeof(xCurrentTime));
 
     // установим время события.
     (pxEventData -> xCurrentTime) =
@@ -553,7 +554,7 @@ void CMainProductionCycle::PlcOnOffEvetnsCreate(void)
     sprintf((char*)(pxEventData -> acTextDescriptorAdditional),
             "%s",
             " ");
-//    xCArchiveEventsDB.DataBaseDataPush(pxEventData);
+    xCArchiveEventsDB.DataBaseDataPush(pxEventData);
 
     // модуль индикации МИНД последовательно запрашивает данные событий из кольцевого буфера.
     // когда МИНД получает данные события с маркером - нет события, он перестаёт посылать
@@ -629,7 +630,7 @@ void CMainProductionCycle::PlcOnOffEvetnsCreate(void)
     sprintf((char*)(pxEventData -> acTextDescriptorAdditional),
             "%s",
             " ");
-//    xCArchiveEventsDB.DataBaseDataPush(pxEventData);
+    xCArchiveEventsDB.DataBaseDataPush(pxEventData);
 
     // модуль индикации МИНД последовательно запрашивает данные событий из кольцевого буфера.
     // когда МИНД получает данные события с маркером - нет события, он перестаёт посылать

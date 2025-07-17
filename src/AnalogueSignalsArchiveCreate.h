@@ -29,6 +29,7 @@ class CDataContainerInterface;
 class CDataContainerDataBase;
 class CInternalModule;
 class CConfigurationCreate;
+class CStorageDeviceSpiFram;
 
 //-------------------------------------------------------------------------------
 class CAnalogueSignalsArchiveCreate : public CTask

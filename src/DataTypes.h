@@ -28,4 +28,13 @@ struct TDiscreteOutputControl
     uint8_t uiRelayActivationRequest;
 };
 
+struct TAnalogueSignalsArchiveHourData
+{
+    float fAin1;       // Переменная первого входа
+    float fAin2;       // Переменная второго входа
+    float fAin3;       // Переменная третьего входа
+    float fAin4;       // Переменная четвертого входа
+    time_t currentTime; // Переменная для хранения текущего времени
+};
+
 #endif // DATATYPES_H_INCLUDED

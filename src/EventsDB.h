@@ -80,6 +80,9 @@ public:
     bool bDataBaseIsFull;
 
 //-----------------------------------------------------------------------------------------------------
+    CEventsDB();
+    virtual ~CEventsDB();
+
     static int Callback(void *, int, char **, char **);
     int Connect(void);
     void Close(void);
@@ -123,20 +126,6 @@ public:
 //                                          EVENTS_DB_QUERY_ROW_QUANTITY)];
 //    // массив даных получаемых по запросу от СУБД, для отображения на МИНД.
 //    CEvents::TEventData axQueryDataCommon[EVENTS_DB_QUERY_ROW_QUANTITY];
-
-//    static int Callback(void *, int, char **, char **);
-//    int Connect(void);
-//    void Close(void);
-//    int SendQuery(char *);
-    int DataBaseDataPush(CEvents::TEventDataCommon *);
-//    int DataBaseDataPush(void);
-//    int DataBaseRingCreate(void);
-//    bool DataBaseIsFull(void);
-//    void DataBaseIsFullReset(void);
-//    int DataBaseDataGet(void);
-//    uint8_t LastQueryRecordsQuantityGet(void);
-//    static int DateAtoi(struct tm *pxDateInt, char *pcDateString);
-//    static int TimeAtoi(struct tm *pxTimeInt, char *pcTimeString);
 
 //-----------------------------------------------------------------------------------------------------
 

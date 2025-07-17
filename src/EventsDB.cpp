@@ -31,6 +31,18 @@ uint16_t CEventsDB::ui16QueryDataExchangeIndex;
 uint8_t CEventsDB::ui8QueryGetRowQuantity;
 uint8_t CEventsDB::ui8QueryGetColumnQuantity;
 
+//-------------------------------------------------------------------------------
+CEventsDB::CEventsDB()
+{
+
+}
+
+//-------------------------------------------------------------------------------
+CEventsDB::~CEventsDB()
+{
+
+}
+
 //-----------------------------------------------------------------------------------------------------
 int CEventsDB::Callback(void *NotUsed, int argc, char **argv, char **azColName)
 {
@@ -171,80 +183,80 @@ int CEventsDB::SendQuery(char *pcQuery)
     return atoi(&acQueryDataExchange[0]);
 }
 
-////-----------------------------------------------------------------------------------------------------
-//// помещает событие в базу данных.
-//int CEventsDB::DataBaseDataPush(CEvents::TEventDataCommon *pxSource)
-//{
-////    if (Connect())
-////    {
-////        return 1;
-////    }
-//
-//    int rc;
-//    char* zErrMsg = 0;
-//    char acQuery[512];
-//    char accDateStr[16];
-//    char accTimeStr[16];
-//
-//    // запросим количество записей в таблице базы данных.
-//    // количество записей в таблице базы данных больше или равно 2000?
-//    if (SendQuery("SELECT COUNT(*) FROM Events;") >= 2000)
+//-----------------------------------------------------------------------------------------------------
+// помещает событие в базу данных.
+int CEventsDB::DataBaseDataPush(CEvents::TEventDataCommon *pxSource)
+{
+//    if (Connect())
 //    {
-//        // установим флаг - размер базы данных достиг максимума.
-//        bDataBaseIsFull = true;
+//        return 1;
 //    }
-//
-//    // преобразуем дату и время в нужный формат.
-//    strftime(accDateStr, 100, "%Y-%m-%d", &(pxSource -> xCurrentTime));// date;
-//    strftime(accTimeStr, 100, "%H:%M:%S", &(pxSource -> xCurrentTime));// time
-//
-//    // создадим запрос для записи в таблицу базы данных.
-//    sprintf((char*)acQuery,
-//            "%s ('%s', '%s', '%s', '%s', '%s', '%s', '%s') %s ('%s', '%s', '%d', '%s', '%s', '%d', '%d');",
-//            "INSERT INTO Events",
-//            "TextData",
-//            "StateText",
-//            "Address",
-//            "Date",
-//            "Time",
-//            "Type",
-//            "State",
-//            "VALUES",
-//            pxSource -> acTextDescriptor,
-//            pxSource -> acTextDescriptorAdditional,
-//            pxSource -> ui16Address,
-//            accDateStr,
-//            accTimeStr,
-//            pxSource -> ui8Type,
-//            pxSource -> ui8State
-//           );
-//
-//    rc = sqlite3_exec(db,
-//                      (const char*)Cp1251ToUtf8(acQuery, acQuery),
-//                      Callback,
-//                      0,
-//                      &zErrMsg);
-//
-//    if( rc != SQLITE_OK )
-//    {
-//        cout << "SQLite error: " << zErrMsg << endl;
-//        sqlite3_free(zErrMsg);
-//    }
-//    else
-//    {
-//        cout << "Records created successfully" << endl;
-//
-////        printf("SELECT last_insert_rowid %d\n\r", (SendQuery("SELECT last_insert_rowid();")));
-////        printf("SELECT last_insert_rowid %d\n\r", (SendQuery("SELECT rowid FROM Events ORDER BY ROWID ASC LIMIT 1;")));
-////        printf("SELECT last_insert_rowid %d\n\r", (SendQuery("SELECT rowid FROM Events ORDER BY ROWID DESC LIMIT 1;")));
-//
-//
-//
-//    }
-//
-////    Close();
-//    return 0;
-//}
+
+    int rc;
+    char* zErrMsg = 0;
+    char acQuery[512];
+    char accDateStr[16];
+    char accTimeStr[16];
+
+    // запросим количество записей в таблице базы данных.
+    // количество записей в таблице базы данных больше или равно 2000?
+    if (SendQuery("SELECT COUNT(*) FROM Events;") >= 2000)
+    {
+        // установим флаг - размер базы данных достиг максимума.
+        bDataBaseIsFull = true;
+    }
+
+    // преобразуем дату и время в нужный формат.
+    strftime(accDateStr, 100, "%Y-%m-%d", &(pxSource -> xCurrentTime));// date;
+    strftime(accTimeStr, 100, "%H:%M:%S", &(pxSource -> xCurrentTime));// time
+
+    // создадим запрос для записи в таблицу базы данных.
+    sprintf((char*)acQuery,
+            "%s ('%s', '%s', '%s', '%s', '%s', '%s', '%s') %s ('%s', '%s', '%d', '%s', '%s', '%d', '%d');",
+            "INSERT INTO Events",
+            "TextData",
+            "StateText",
+            "Address",
+            "Date",
+            "Time",
+            "Type",
+            "State",
+            "VALUES",
+            pxSource -> acTextDescriptor,
+            pxSource -> acTextDescriptorAdditional,
+            pxSource -> ui16Address,
+            accDateStr,
+            accTimeStr,
+            pxSource -> ui8Type,
+            pxSource -> ui8State
+           );
+
+    rc = sqlite3_exec(db,
+                      (const char*)Cp1251ToUtf8(acQuery, acQuery),
+                      Callback,
+                      0,
+                      &zErrMsg);
+
+    if( rc != SQLITE_OK )
+    {
+        cout << "SQLite error: " << zErrMsg << endl;
+        sqlite3_free(zErrMsg);
+    }
+    else
+    {
+        cout << "Records created successfully" << endl;
+
+//        printf("SELECT last_insert_rowid %d\n\r", (SendQuery("SELECT last_insert_rowid();")));
+//        printf("SELECT last_insert_rowid %d\n\r", (SendQuery("SELECT rowid FROM Events ORDER BY ROWID ASC LIMIT 1;")));
+//        printf("SELECT last_insert_rowid %d\n\r", (SendQuery("SELECT rowid FROM Events ORDER BY ROWID DESC LIMIT 1;")));
+
+
+
+    }
+
+//    Close();
+    return 0;
+}
 
 //-----------------------------------------------------------------------------------------------------
 // закольцовывает базу данных.

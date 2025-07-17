@@ -21,6 +21,7 @@
 #include "DataContainer.h"
 #include "InternalModule.h"
 #include "ConfigurationCreate.h"
+#include "StorageDevice.h"
 #include "AnalogueSignalsArchiveCreate.h"
 
 using namespace std;
@@ -206,15 +207,15 @@ void CAnalogueSignalsArchiveCreate::Allocate(void)
 void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
 {
 //    std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 1"  << std::endl;
-
-    struct Data
-    {
-        time_t currentTime; // Переменная для хранения текущего времени
-        float fAin1;       // Переменная первого входа
-        float fAin2;       // Переменная второго входа
-        float fAin3;       // Переменная третьего входа
-        float fAin4;       // Переменная четвертого входа
-    };
+//
+//    struct TAnalogueSignalsArchiveHourData
+//    {
+//        time_t currentTime; // Переменная для хранения текущего времени
+//        float fAin1;       // Переменная первого входа
+//        float fAin2;       // Переменная второго входа
+//        float fAin3;       // Переменная третьего входа
+//        float fAin4;       // Переменная четвертого входа
+//    };
 
     // Получаем текущее время
     time_t now = time(nullptr);
@@ -300,7 +301,7 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
         m_iLastSecond = tstructCurrent.tm_sec;
     }
 
-    Data data;
+    TAnalogueSignalsArchiveHourData data;
 
     // Заполняем переменные структуры данными
     data.currentTime = now;
@@ -344,10 +345,16 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
             // Записываем данные в файл fram
             // установим указатель на данные новой ежесекундной записи.
             hourArchiveFramOutputStream.seekp(m_uiCurrentOffset, std::ios::beg);
-            hourArchiveFramOutputStream.write(reinterpret_cast<const char*>(&data), sizeof(Data));
-            m_uiCurrentOffset += sizeof(Data);
+            hourArchiveFramOutputStream.write(reinterpret_cast<const char*>(&data), sizeof(TAnalogueSignalsArchiveHourData));
             // Закрываем файл
             hourArchiveFramOutputStream.close();
+            m_uiCurrentOffset += sizeof(TAnalogueSignalsArchiveHourData);
+
+//            // Записываем данные в файл fram
+//            CStorageDeviceSpiFram::Write((uint8_t*)(&data),
+//                                         m_uiCurrentOffset,
+//                                         sizeof(TAnalogueSignalsArchiveHourData));
+//            m_uiCurrentOffset += sizeof(TAnalogueSignalsArchiveHourData);
         }
 
         // блок создания нового файла суточного архива.
@@ -457,17 +464,17 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
                 size_t fileSize = m_uiCurrentOffset;
                 std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry m_uiCurrentOffset "  << (float)m_uiCurrentOffset << std::endl;
 
-                // Вычисляем количество структур Data в файле
-                size_t numDataObjects = (fileSize / sizeof(Data));
+                // Вычисляем количество структур TAnalogueSignalsArchiveHourData в файле
+                size_t numDataObjects = (fileSize / sizeof(TAnalogueSignalsArchiveHourData));
                 std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry numDataObjects "  << (float)numDataObjects << std::endl;
 
                 // Считываем и преобразуем данные из fram во флеш.
                 for (size_t i = 0; i < numDataObjects; i++)
                 {
-                    Data readData;
+                    TAnalogueSignalsArchiveHourData readData;
                     // установим указатель на данные ежесекундной записи.
-                    hourArchiveFramInputStream.seekg((i * sizeof(Data)), std::ios::beg);
-                    hourArchiveFramInputStream.read(reinterpret_cast<char*>(&readData), sizeof(Data));
+                    hourArchiveFramInputStream.seekg((i * sizeof(TAnalogueSignalsArchiveHourData)), std::ios::beg);
+                    hourArchiveFramInputStream.read(reinterpret_cast<char*>(&readData), sizeof(TAnalogueSignalsArchiveHourData));
 
                     // больше нет данных для чтения?
                     if (!hourArchiveFramInputStream.gcount())
@@ -521,10 +528,16 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
                 // Записываем данные в файл fram
                 // установим указатель на данные новой ежесекундной записи.
                 hourArchiveFramOutputStream.seekp(m_uiCurrentOffset, std::ios::beg);
-                hourArchiveFramOutputStream.write(reinterpret_cast<const char*>(&data), sizeof(Data));
-                m_uiCurrentOffset += sizeof(Data);
+                hourArchiveFramOutputStream.write(reinterpret_cast<const char*>(&data), sizeof(TAnalogueSignalsArchiveHourData));
                 // Закрываем файл
                 hourArchiveFramOutputStream.close();
+                m_uiCurrentOffset += sizeof(TAnalogueSignalsArchiveHourData);
+
+//                // Записываем данные в файл fram
+//                CStorageDeviceSpiFram::Write((uint8_t*)(&data),
+//                                             m_uiCurrentOffset,
+//                                             sizeof(TAnalogueSignalsArchiveHourData));
+//                m_uiCurrentOffset += sizeof(TAnalogueSignalsArchiveHourData);
             }
 
 
@@ -661,11 +674,17 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
                 // Записываем данные в файл fram
                 // установим указатель на данные новой ежесекундной записи.
                 hourArchiveFramOutputStream.seekp(m_uiCurrentOffset, std::ios::beg);
-                hourArchiveFramOutputStream.write(reinterpret_cast<const char*>(&data), sizeof(Data));
-                m_uiCurrentOffset += sizeof(Data);
-
+                hourArchiveFramOutputStream.write(reinterpret_cast<const char*>(&data), sizeof(TAnalogueSignalsArchiveHourData));
                 // Закрываем файл
                 hourArchiveFramOutputStream.close();
+                m_uiCurrentOffset += sizeof(TAnalogueSignalsArchiveHourData);
+
+
+//                // Записываем данные в файл fram
+//                CStorageDeviceSpiFram::Write((uint8_t*)(&data),
+//                                             m_uiCurrentOffset,
+//                                             sizeof(TAnalogueSignalsArchiveHourData));
+//                m_uiCurrentOffset += sizeof(TAnalogueSignalsArchiveHourData);
             }
         }
     }

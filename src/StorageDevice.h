@@ -175,19 +175,19 @@ public:
     virtual ~CStorageDeviceSpiFram();
 
 //    bool WriteBlock(CDataContainerDataBase* pxDataContainer);
-    uint8_t Write(uint8_t* puiDataPointer,
-                  uint16_t uiOffset,
-                  uint16_t uiLength);
+    static uint8_t Write(uint8_t* puiDataPointer,
+                         uint16_t uiOffset,
+                         uint16_t uiLength);
 //    bool ReadBlock(CDataContainerDataBase* pxDataContainer);
-    uint8_t Read(uint8_t* puiDataPointer,
-                 uint16_t uiOffset,
-                 uint16_t uiLength);
+    static uint8_t Read(uint8_t* puiDataPointer,
+                        uint16_t uiOffset,
+                        uint16_t uiLength);
 //    uint8_t Fsm(void);
 
 private:
 //    const char *pccFileName = "StorageDeviceData.dat";
     // имя устройства fram памяти.
-    const std::string sFileName = "/dev/mtd0";
+    const std::string m_sFileName = "/dev/mtd0";
 
 //    CDataContainerDataBase* m_pxCommandDataContainer;
 //    CDataContainerDataBase* m_pxOperatingDataContainer;

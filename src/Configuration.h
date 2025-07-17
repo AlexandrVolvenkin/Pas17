@@ -297,6 +297,12 @@
 // MVAI5_REPER_POINTS_ADC_CHANNEL_QUANTITY + MVAI5_ANALOG_INPUT_QUANTITY// 6х7=42.
 #define ANALOGUE_INPUT_MODULE_REPER_POINTS_ADC_DATA_BASE_BLOCK_LENGTH 42
 
+#define FRAM_LAST_SAVED_TIME_OFFSET 0
+#define FRAM_LAST_SAVED_TIME_ARRAY_LENGTH sizeof(struct TAnalogueSignalsArchiveHourData)
+#define FRAM_ANALOGUE_MEASURE_ARCHIVE_ARRAY_OFFSET (RAM_LAST_SAVED_TIME_OFFSET + FRAM_LAST_SAVED_TIME_ARRAY_LENGTH)
+#define FRAM_ANALOGUE_MEASURE_ARCHIVE_ARRAY_LENGTH 0
+
+
 //// максимальное количество адресов на шине SPI.
 //#define SPI_CHIP_SELECT_MAX_ADDRESS 16
 //// 2 - смещение на данные в массиве RX SPI. 0 - команда запроса, 1 - "эхо" команды запроса.
@@ -616,6 +622,7 @@ enum INPUT_STATE_CODE
     SHORT_CIRCUIT	= 0x03,			//  ороткое замыкание
     INPUT_IS_INVALID	= 0x04,			// вход недостоверен
 };
+
 
 //-------------------------------------------------------------------------------
 #endif // CONFIGURATION_H_INCLUDED

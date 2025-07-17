@@ -274,8 +274,11 @@ void CDataBaseCreate::AnalogoueInputModuleAnalogoueSignalsTextTitlesCreate(uint8
     // базы данных текстовых реквизитов аналоговых сигналов, в общем формате хранения.
     pxAnalogoueSignalsTextTitlePackOne =
         (TAnalogoueSignalsTextTitlePackOne*)(puiBlockDataPointer +
-                (sizeof(struct TDiscreteSygnalTextTitle) *
-                 uiElementNumber));
+                ((sizeof(struct TDiscreteSygnalTextTitle) *
+                  // - uiElementNumber вычитается количество строк текстовых реквизитов в массиве
+                  // axDiscreteSygnalTextTitles, потомучто строка заканчивается нулём, а в блоке
+                  // базы данных для нулей нет места.
+                 uiElementNumber) - uiElementNumber));
 
     // Вычисляем количество элементов в массиве
     uiElementNumber = (sizeof(axAnalogoueSignalsTextTitles) /
