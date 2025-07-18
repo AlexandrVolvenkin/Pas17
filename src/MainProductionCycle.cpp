@@ -166,6 +166,11 @@ void CMainProductionCycle::Allocate(void)
     std::cout << "CMainProductionCycle::Allocate 1"  << std::endl;
 
     pxCurrentTime = &(GetResources() -> xCurrentTime);
+
+
+    // Получим указатель на буфер с серийным номером и идентификатором прибора.
+    m_puiSerialAndId =
+        (GetResources() -> m_puiSerialAndId);
 }
 
 //-------------------------------------------------------------------------------
@@ -518,6 +523,9 @@ uint8_t CMainProductionCycle::CreateTasks(void)
     m_xResources.AddCurrentlyRunningTasksList(pxAnalogueSignalsArchiveCreate);
 //    m_pxAnalogueSignalsArchiveCreate = pxAnalogueSignalsArchiveCreate;
 
+//-------------------------------------------------------------------------------
+    xCArchiveEventsDB.SetResources(&m_xResources);
+
 }
 
 //-------------------------------------------------------------------------------
@@ -854,15 +862,6 @@ uint8_t CMainProductionCycle::Fsm(void)
         std::cout << "CMainProductionCycle::Fsm READY"  << std::endl;
 //        SetFsmState(DATA_STORE_CHECK_TASK_READY_CHECK);
 //        SetFsmState(CONFIGURATION_CREATE_START);
-
-        // откроем базу данных.
-        if (xCArchiveEventsDB.Connect())
-        {
-            // error.
-        }
-
-        // создадим событие времени включения и выключения
-        PlcOnOffEvetnsCreate();
         SetFsmState(DATA_STORE_CHECK_START);
 
         break;
@@ -1308,6 +1307,15 @@ uint8_t CMainProductionCycle::Fsm(void)
 //        std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_START"  << std::endl;
         CurrentlyRunningTasksExecution();
 
+        // откроем базу данных.
+        if (xCArchiveEventsDB.Connect())
+        {
+            // error.
+        }
+
+        // создадим событие времени включения и выключения
+        PlcOnOffEvetnsCreate();
+
         SetFsmState(INTERNAL_MODULES_DATA_EXCHANGE_START);
         break;
 
@@ -1471,7 +1479,7 @@ uint8_t CMainProductionCycle::Fsm(void)
 
         (GetResources() -> m_uiModbusReceipt) = 0;
         (GetResources() -> m_uiModbusReset) = 0;
-        SetFsmState(MAIN_CYCLE_START);
+        SetFsmState(INTERNAL_MODULES_DATA_EXCHANGE_START);
         break;
 
 //-------------------------------------------------------------------------------

@@ -13,10 +13,11 @@
 
 //#include "Events.h"
 class CEvents;
+class CTask;
 
 //-----------------------------------------------------------------------------------------------------
 
-class CEventsDB
+class CEventsDB : public CTask
 {
 public:
     typedef enum
@@ -78,6 +79,8 @@ public:
     uint16_t ui16LastLastID;
     // флаг - размер базы данных достиг максимума.
     bool bDataBaseIsFull;
+
+    uint8_t* m_puiSerialAndId;
 
 //-----------------------------------------------------------------------------------------------------
     CEventsDB();

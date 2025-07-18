@@ -18,6 +18,7 @@
 #include "iconvlite.h"
 #include <iconv.h>
 #include "Configuration.h"
+#include "Resources.h"
 #include "Events.h"
 #include "EventsDB.h"
 
@@ -77,22 +78,32 @@ int CEventsDB::Callback(void *NotUsed, int argc, char **argv, char **azColName)
 // открывает базу данных.
 int CEventsDB::Connect(void)
 {
-    std::cout << "CEventsDB::Connect 1"  << std::endl;
+    //std::cout << "CEventsDB::Connect 1"  << std::endl;
     int rc;
     char* zErrMsg = 0;
     char acQuery[512];
     const char *pccQuery;
 
-    rc = sqlite3_open(pccEventsDataBaseName, &db);
+    // Получим указатель на буфер с серийным номером и идентификатором прибора.
+    m_puiSerialAndId =
+        (GetResources() -> m_puiSerialAndId);
+
+    std::string cSerialAndIdStr;
+    // Копируем данные из m_puiSerialAndId в cSerialAndIdStr
+    cSerialAndIdStr.assign((const char*)m_puiSerialAndId, SERIAL_AND_ID_DATA_BASE_BLOCK_LENGTH);
+    // Создаем пути к папкам и файлу
+    std::string sArchveFlashFile = "/home/debian/EventsArchive_" + cSerialAndIdStr + "_" + ".db";
+
+    rc = sqlite3_open(sArchveFlashFile.c_str(), &db);
     if (rc)
     {
-        std::cout << "CEventsDB::Connect 2"  << std::endl;
+        //std::cout << "CEventsDB::Connect 2"  << std::endl;
         cout << "Can't open database: " << sqlite3_errmsg(db) << endl;
         sqlite3_close(db);
         return 1;
     }
 
-    std::cout << "CEventsDB::Connect 3"  << std::endl;
+    //std::cout << "CEventsDB::Connect 3"  << std::endl;
     // для проверки, запросим первое событие в базе данных.
     // если таблицы не существует, создадим.
     Cp1251ToUtf8(acQuery, \
@@ -104,7 +115,7 @@ int CEventsDB::Connect(void)
                       &zErrMsg);
     if (rc != SQLITE_OK)
     {
-        std::cout << "CEventsDB::Connect 4"  << std::endl;
+        //std::cout << "CEventsDB::Connect 4"  << std::endl;
         cout << "SQLite error: " << zErrMsg << endl;
         sqlite3_free(zErrMsg);
 
@@ -126,21 +137,21 @@ int CEventsDB::Connect(void)
 
         if (rc != SQLITE_OK)
         {
-            std::cout << "CEventsDB::Connect 5"  << std::endl;
+            //std::cout << "CEventsDB::Connect 5"  << std::endl;
             cout << "CREATE TABLE Events SQLite error: " << zErrMsg << endl;
             sqlite3_free(zErrMsg);
             return 1;
         }
         else
         {
-            std::cout << "CEventsDB::Connect 6"  << std::endl;
+            //std::cout << "CEventsDB::Connect 6"  << std::endl;
             cout << "SQLite table create ok!" << endl;
             return 0;
         }
     }
     else
     {
-        std::cout << "CEventsDB::Connect 7"  << std::endl;
+        //std::cout << "CEventsDB::Connect 7"  << std::endl;
         cout << "SQLite open ok!" << endl;
         return 0;
     }

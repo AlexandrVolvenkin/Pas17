@@ -187,6 +187,8 @@ private:
     CAnalogueSignals* m_pxAnalogueSignals;
     CConfigurationCreate* m_pxConfigurationCreate;
 
+    uint8_t* m_puiSerialAndId;
+
     std::string m_sDeviceControlName;
     uint8_t m_uiDeviceControlId;
     CDeviceControl* m_pxDeviceControl;
