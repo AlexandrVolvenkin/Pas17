@@ -198,6 +198,7 @@ public:
     void SetInternalModuleMuvrName(std::string sName);
 
     uint8_t Init(void);
+    void Allocate(void);
     void LinuxCurrentTimeSet(unsigned char *pucSource);
     void CurrentTimeSet(void);
     void OnlineDataRead(void);
@@ -208,6 +209,8 @@ public:
     uint8_t Fsm(void);
 
 protected:
+    struct tm* pxCurrentTime;
+
     std::string m_sDataStoreName;
     CDataStore* m_pxDataStore;
     uint8_t m_uiDataStoreId;

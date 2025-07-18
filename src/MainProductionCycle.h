@@ -167,12 +167,13 @@ public:
 //    };
 
     uint8_t CreateTasks(void);
-    static void PlcOnOffEvetnsCreate(void);
+    void PlcOnOffEvetnsCreate(void);
     uint8_t InitTasks(void);
     void CurrentlyRunningTasksExecution(void);
     uint8_t Fsm(void);
 
 private:
+    struct tm* pxCurrentTime;
 //    std::list<CTaskInterface*> m_lpxCommonTasksList;
 //    std::list<CTaskInterface*>::iterator m_xCommonTasksListIterator;
 //    std::list<CTaskInterface*> m_lpxCurrentlyRunningTasksList;

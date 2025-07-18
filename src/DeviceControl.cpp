@@ -53,6 +53,152 @@ uint8_t CDeviceControl::Init(void)
     CDataContainerDataBase* pxDataContainer =
         (CDataContainerDataBase*)GetExecutorDataContainerPointer();
     pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+
+    Allocate();
+}
+
+//-------------------------------------------------------------------------------
+void CDeviceControl::Allocate(void)
+{
+    std::cout << "CDeviceControl::Allocate 1"  << std::endl;
+
+    pxCurrentTime = &(GetResources() -> xCurrentTime);
+
+////    m_uiAddress = xMemoryAllocationContext.uiAddress;
+////    m_puiRxBuffer = xMemoryAllocationContext.puiRxBuffer;
+////    m_puiTxBuffer = xMemoryAllocationContext.puiTxBuffer;
+////    m_puiErrorCode = xMemoryAllocationContext.puiErrorCode;
+//
+//    // Получим указатель на место в массиве дискретных входов для текущего модуля.
+//    m_puiDiscreteInputsState =
+//        &(GetResources() ->
+//          m_puiDiscreteInputsState[GetResources() ->
+//                                                  m_uiUsedDiscreteInputsState]);
+//    // Увеличим общий объём выделенной памяти.
+//    GetResources() ->
+//    m_uiUsedDiscreteInputsState +=
+//        MUVR_DISCRETE_SIGNALS_QUANTITY;
+//
+//
+//    // Получим указатель на место в массиве достоверности дискретных входов для текущего модуля.
+//    m_puiDiscreteInputsBadState =
+//        &(GetResources() ->
+//          m_puiDiscreteInputsBadState[GetResources() ->
+//                                                     m_uiUsedDiscreteInputsBadState]);
+//    // Увеличим общий объём выделенной памяти.
+//    GetResources() ->
+//    m_uiUsedDiscreteInputsBadState +=
+//        MUVR_DISCRETE_SIGNALS_QUANTITY;
+
+
+//    // Получим указатель на место в массиве аналоговых входов для текущего модуля.
+//    m_pfAnalogueInputsValue =
+//        &(GetResources() ->
+//          m_pfAnalogueInputsValue[0]);
+////    // Увеличим общий объём выделенной памяти.
+////    GetResources() ->
+////    m_uiUsedAnalogueInputsValue +=
+////        MUVR_ANALOG_INPUT_QUANTITY;
+
+
+//    // Получим указатель на место в массиве состояния аналоговых входов для текущего модуля.
+//    m_puiAnalogueInputsState =
+//        &(GetResources() ->
+//          m_puiAnalogueInputsState[GetResources() ->
+//                                                  m_uiUsedAnalogueInputsState]);
+//    // Увеличим общий объём выделенной памяти.
+//    GetResources() ->
+//    m_uiUsedAnalogueInputsBadState +=
+//        MUVR_ANALOG_INPUT_QUANTITY;
+//
+//
+//    // Получим указатель на место в массиве достоверности аналоговых входов для текущего модуля.
+//    m_puiAnalogueInputsBadState =
+//        &(GetResources() ->
+//          m_puiAnalogueInputsBadState[GetResources() ->
+//                                                     m_uiUsedAnalogueInputsBadState]);
+//    // Увеличим общий объём выделенной памяти.
+//    GetResources() ->
+//    m_uiUsedAnalogueInputsBadState +=
+//        MUVR_ANALOG_INPUT_QUANTITY;
+//
+//
+//    // Получим указатель на место в массиве состояний дискретных сигналов порождаемых аналоговыми входами.
+//    m_puiAnalogueInputDiscreteInputsState =
+//        &(GetResources() ->
+//          m_puiAnalogueInputDiscreteInputsState[GetResources() ->
+//                                 m_uiUsedAnalogueInputDiscreteInputsState]);
+//    // Увеличим общий объём выделенной памяти.
+//    GetResources() ->
+//    m_uiUsedAnalogueInputDiscreteInputsState +=
+//        MUVR_DISCRETE_SIGNALS_QUANTITY;
+//
+//
+//    // Получим указатель на место в массиве флагов недостоверности состояний дискретных сигналов порождаемых аналоговыми входами.
+//    m_puiAnalogueInputDiscreteInputsBadState =
+//        &(GetResources() ->
+//          m_puiAnalogueInputDiscreteInputsBadState[GetResources() ->
+//                                 m_uiUsedAnalogueInputDiscreteInputsBadState]);
+//    // Увеличим общий объём выделенной памяти.
+//    GetResources() ->
+//    m_uiUsedAnalogueInputDiscreteInputsBadState +=
+//        MUVR_DISCRETE_SIGNALS_QUANTITY;
+//
+//
+//    // Получим указатель на место в массиве отключения аналоговых входов для текущего модуля.
+//    m_puiAnalogueInputsOff =
+//        &(GetResources() ->
+//          m_puiAnalogueInputsOff[GetResources() ->
+//                                                m_uiUsedAnalogueInputsOff]);
+//    // Увеличим общий объём выделенной памяти.
+//    GetResources() ->
+//    m_uiUsedAnalogueInputsOff +=
+//        MUVR_ANALOG_INPUT_QUANTITY;
+//
+//
+//    // Получим указатель на место в массиве распакованной во внутренний формат базы данных
+//    // аналоговых сигналов.
+//    m_pxAnalogueInputDescriptionWork =
+//        &(GetResources() ->
+//          m_pxAnalogueInputDescriptionWork[GetResources() ->
+//                                                          m_uiUsedAnalogueInputDescriptionWork]);
+//    // Увеличим общий объём выделенной памяти.
+//    GetResources() ->
+//    m_uiUsedAnalogueInputDescriptionWork +=
+//        MUVR_ANALOG_INPUT_QUANTITY;
+//
+//
+//    // Получим указатель на место в массиве аналоговых входов для текущего модуля.
+//    m_puiReperPointsAdcBuffer =
+//        &(GetResources() ->
+//          m_puiReperPointsAdcBuffer[GetResources() ->
+//                                                   m_uiUsedReperPointsAdcBuffer]);
+//    // Увеличим общий объём выделенной памяти.
+//    GetResources() ->
+//    m_uiUsedReperPointsAdcBuffer +=
+//        ANALOGUE_INPUT_MODULE_REPER_POINTS_ADC_DATA_BASE_BLOCK_LENGTH;
+
+
+//    // Получим указатель на место в рабочем массиве дискретных сигналов для текущего модуля.
+//    m_pxDiscreteSignalsDescriptionWork =
+//        &(GetResources() ->
+//          m_pxDiscreteSignalsDescriptionWork[GetResources() ->
+//                                 m_uiUsedDiscreteSignalsDescriptionWork]);
+//    // Увеличим общий объём выделенной памяти.
+//    GetResources() ->
+//    m_uiUsedDiscreteSignalsDescriptionWork +=
+//        ANALOGUE_INPUT_MODULE_REPER_POINTS_ADC_DATA_BASE_BLOCK_LENGTH;
+
+////    m_puiHoldingRegisters = m_pxResources -> GetInputRegisters();
+//    m_puiHoldingRegisters = m_pxResources -> GetHoldingRegisters();
+//    m_puiInputRegisters = m_pxResources -> GetInputRegisters();
+//
+//
+//    // Получим указатель на буфер с серийным номером и идентификатором прибора.
+//    m_puiSerialAndId =
+//        (GetResources() -> m_puiSerialAndId);
+
+//    m_uiBadAnswerCounter = 0;
 }
 
 //-------------------------------------------------------------------------------

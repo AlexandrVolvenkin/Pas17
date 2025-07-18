@@ -28,7 +28,7 @@ int main()
 //    xMainProductionCycle.SetConfigurationCreateName("ConfigurationCreate");
 //    xMainProductionCycle.SetInternalModuleMuvrName("InternalModuleMuvr");
 
-    cout << "main sizeof(struct TAnalogueSignalsArchiveHourData)" << " " << (int)sizeof(struct TAnalogueSignalsArchiveHourData) << endl;
+//    cout << "main sizeof(struct TAnalogueSignalsArchiveHourData)" << " " << (int)sizeof(struct TAnalogueSignalsArchiveHourData) << endl;
 //    cout << "main sizeof(time_t)" << " " << (int)sizeof(struct time_t) << endl;
     while (1)
     {

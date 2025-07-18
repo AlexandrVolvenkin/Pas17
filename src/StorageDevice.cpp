@@ -316,8 +316,8 @@ CStorageDeviceSpiFram::~CStorageDeviceSpiFram()
 
 //-------------------------------------------------------------------------------
 // «аписывает блок данных в устройство хранени€.
-uint8_t CStorageDeviceSpiFram::Write(uint8_t* puiDataPointer,
-                                     uint16_t uiOffset,
+uint8_t CStorageDeviceSpiFram::Write(uint16_t uiOffset,
+                                     uint8_t* puiDataPointer,
                                      uint16_t uiLength)
 {
 //    std::cout << "CStorageDeviceSpiFram Write"  << std::endl;

@@ -126,6 +126,8 @@ uint8_t CMainProductionCycle::Init(void)
     CDataContainerDataBase* pxDataContainer =
         (CDataContainerDataBase*)GetExecutorDataContainerPointer();
     pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+
+    Allocate();
 }
 
 ////-------------------------------------------------------------------------------
@@ -162,6 +164,8 @@ uint8_t CMainProductionCycle::Init(void)
 void CMainProductionCycle::Allocate(void)
 {
     std::cout << "CMainProductionCycle::Allocate 1"  << std::endl;
+
+    pxCurrentTime = &(GetResources() -> xCurrentTime);
 }
 
 //-------------------------------------------------------------------------------
@@ -520,6 +524,7 @@ uint8_t CMainProductionCycle::CreateTasks(void)
 // создаёт события: время включения и выключения.
 void CMainProductionCycle::PlcOnOffEvetnsCreate(void)
 {
+    std::cout << "CMainProductionCycle PlcOnOffEvetnsCreate 1"  << std::endl;
     CEvents::TEventDataCommon *pxEventData;
     struct tm xCurrentTime;
 
@@ -542,6 +547,7 @@ void CMainProductionCycle::PlcOnOffEvetnsCreate(void)
     CStorageDeviceSpiFram::Read((uint8_t*)&xCurrentTime,
                                 FRAM_LAST_SAVED_TIME_OFFSET,
                                 sizeof(xCurrentTime));
+    std::cout << "CMainProductionCycle PlcOnOffEvetnsCreate 2"  << std::endl;
 
     // установим время события.
     (pxEventData -> xCurrentTime) =
@@ -555,6 +561,7 @@ void CMainProductionCycle::PlcOnOffEvetnsCreate(void)
             "%s",
             " ");
     xCArchiveEventsDB.DataBaseDataPush(pxEventData);
+    std::cout << "CMainProductionCycle PlcOnOffEvetnsCreate 3"  << std::endl;
 
     // модуль индикации МИНД последовательно запрашивает данные событий из кольцевого буфера.
     // когда МИНД получает данные события с маркером - нет события, он перестаёт посылать
@@ -567,7 +574,12 @@ void CMainProductionCycle::PlcOnOffEvetnsCreate(void)
     pxEventData = xCAlarmEvent.EventDataPop();
     // пометим событие маркером - нет события.
     pxEventData -> ui16ID = 0;
+    std::cout << "CMainProductionCycle PlcOnOffEvetnsCreate 4"  << std::endl;
 
+    // Получаем текущее время
+    time_t now = time(nullptr);
+    // Получаем текущую дату
+    xCurrentTime = *gmtime(&now);
 
 //    time_t xLocalLastTime;
 //    uint32_t ui32Seconds;
@@ -631,6 +643,7 @@ void CMainProductionCycle::PlcOnOffEvetnsCreate(void)
             "%s",
             " ");
     xCArchiveEventsDB.DataBaseDataPush(pxEventData);
+    std::cout << "CMainProductionCycle PlcOnOffEvetnsCreate 5"  << std::endl;
 
     // модуль индикации МИНД последовательно запрашивает данные событий из кольцевого буфера.
     // когда МИНД получает данные события с маркером - нет события, он перестаёт посылать
@@ -643,6 +656,7 @@ void CMainProductionCycle::PlcOnOffEvetnsCreate(void)
     pxEventData = xCAlarmEvent.EventDataPop();
     // пометим событие маркером - нет события.
     pxEventData -> ui16ID = 0;
+    std::cout << "CMainProductionCycle PlcOnOffEvetnsCreate 6"  << std::endl;
 }
 
 //-------------------------------------------------------------------------------
@@ -840,6 +854,15 @@ uint8_t CMainProductionCycle::Fsm(void)
         std::cout << "CMainProductionCycle::Fsm READY"  << std::endl;
 //        SetFsmState(DATA_STORE_CHECK_TASK_READY_CHECK);
 //        SetFsmState(CONFIGURATION_CREATE_START);
+
+        // откроем базу данных.
+        if (xCArchiveEventsDB.Connect())
+        {
+            // error.
+        }
+
+        // создадим событие времени включения и выключения
+        PlcOnOffEvetnsCreate();
         SetFsmState(DATA_STORE_CHECK_START);
 
         break;
@@ -1457,6 +1480,9 @@ uint8_t CMainProductionCycle::Fsm(void)
     {
         CurrentlyRunningTasksExecution();
 
+        m_xMainCycle100McTimer.Set(100);
+        SetFsmState(ERROR_HANDLER_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+
     }
     break;
 
@@ -1465,8 +1491,35 @@ uint8_t CMainProductionCycle::Fsm(void)
         {
             CurrentlyRunningTasksExecution();
 
-            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-            SetFsmState(DONE_OK);
+            if (m_xMainCycle100McTimer.IsOverflow())
+            {
+//            std::cout << "CMainProductionCycle::Fsm INTERNAL_MODULES_DATA_EXCHANGE_MAIN_CYCLE_START_WAITING 2"  << std::endl;
+                m_xMainCycle100McTimer.Set(100);
+                // время периода записи аналоговых сигналов в архив(1 секунда) не прошло?
+                if (m_uiCreateArchiveEntryCounter < 5)
+                {
+                    m_uiCreateArchiveEntryCounter++;
+                }
+                else
+                {
+                    m_uiCreateArchiveEntryCounter = 1;
+
+                    CDataContainerDataBase* pxDataContainer =
+                        (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+                    pxDataContainer -> m_uiTaskId = m_uiAnalogueSignalsArchiveCreateId;
+                    pxDataContainer -> m_uiFsmCommandState =
+                        CAnalogueSignalsArchiveCreate::ANALOGUE_SIGNALS_ARCHIVE_CREATE_START;
+
+                    SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+                    SetFsmNextStateDoneOk(ERROR_HANDLER_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+                    SetFsmNextStateReadyWaitingError(ERROR_HANDLER_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+                    SetFsmNextStateDoneWaitingError(ERROR_HANDLER_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+                    SetFsmNextStateDoneWaitingDoneError(ERROR_HANDLER_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+                }
+            }
+//
+//            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+//            SetFsmState(DONE_OK);
         }
         break;
 

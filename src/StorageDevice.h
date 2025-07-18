@@ -175,8 +175,8 @@ public:
     virtual ~CStorageDeviceSpiFram();
 
 //    bool WriteBlock(CDataContainerDataBase* pxDataContainer);
-    static uint8_t Write(uint8_t* puiDataPointer,
-                         uint16_t uiOffset,
+    static uint8_t Write(uint16_t uiOffset,
+                         uint8_t* puiDataPointer,
                          uint16_t uiLength);
 //    bool ReadBlock(CDataContainerDataBase* pxDataContainer);
     static uint8_t Read(uint8_t* puiDataPointer,

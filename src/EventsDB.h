@@ -132,7 +132,7 @@ public:
 public:
     CArchiveEventsDB()
     {
-        pccEventsDataBaseName = "/home/debian/Pas05ArchiveDataBase.db";
+        pccEventsDataBaseName = "/home/debian/Pas17ArchiveDataBase.db";
         ui8QueryGetRowQuantity = 0;
         bDataBaseIsFull = false;
     }

@@ -77,6 +77,7 @@ int CEventsDB::Callback(void *NotUsed, int argc, char **argv, char **azColName)
 // открывает базу данных.
 int CEventsDB::Connect(void)
 {
+    std::cout << "CEventsDB::Connect 1"  << std::endl;
     int rc;
     char* zErrMsg = 0;
     char acQuery[512];
@@ -85,11 +86,13 @@ int CEventsDB::Connect(void)
     rc = sqlite3_open(pccEventsDataBaseName, &db);
     if (rc)
     {
+        std::cout << "CEventsDB::Connect 2"  << std::endl;
         cout << "Can't open database: " << sqlite3_errmsg(db) << endl;
         sqlite3_close(db);
         return 1;
     }
 
+    std::cout << "CEventsDB::Connect 3"  << std::endl;
     // для проверки, запросим первое событие в базе данных.
     // если таблицы не существует, создадим.
     Cp1251ToUtf8(acQuery, \
@@ -101,6 +104,7 @@ int CEventsDB::Connect(void)
                       &zErrMsg);
     if (rc != SQLITE_OK)
     {
+        std::cout << "CEventsDB::Connect 4"  << std::endl;
         cout << "SQLite error: " << zErrMsg << endl;
         sqlite3_free(zErrMsg);
 
@@ -122,18 +126,21 @@ int CEventsDB::Connect(void)
 
         if (rc != SQLITE_OK)
         {
+            std::cout << "CEventsDB::Connect 5"  << std::endl;
             cout << "CREATE TABLE Events SQLite error: " << zErrMsg << endl;
             sqlite3_free(zErrMsg);
             return 1;
         }
         else
         {
+            std::cout << "CEventsDB::Connect 6"  << std::endl;
             cout << "SQLite table create ok!" << endl;
             return 0;
         }
     }
     else
     {
+        std::cout << "CEventsDB::Connect 7"  << std::endl;
         cout << "SQLite open ok!" << endl;
         return 0;
     }
@@ -187,6 +194,7 @@ int CEventsDB::SendQuery(char *pcQuery)
 // помещает событие в базу данных.
 int CEventsDB::DataBaseDataPush(CEvents::TEventDataCommon *pxSource)
 {
+    //std::cout << "CEventsDB::DataBaseDataPush 1"  << std::endl;
 //    if (Connect())
 //    {
 //        return 1;
@@ -202,6 +210,7 @@ int CEventsDB::DataBaseDataPush(CEvents::TEventDataCommon *pxSource)
     // количество записей в таблице базы данных больше или равно 2000?
     if (SendQuery("SELECT COUNT(*) FROM Events;") >= 2000)
     {
+        //std::cout << "CEventsDB::DataBaseDataPush 2"  << std::endl;
         // установим флаг - размер базы данных достиг максимума.
         bDataBaseIsFull = true;
     }
@@ -231,6 +240,7 @@ int CEventsDB::DataBaseDataPush(CEvents::TEventDataCommon *pxSource)
             pxSource -> ui8State
            );
 
+    //std::cout << "CEventsDB::DataBaseDataPush 3"  << std::endl;
     rc = sqlite3_exec(db,
                       (const char*)Cp1251ToUtf8(acQuery, acQuery),
                       Callback,
@@ -239,11 +249,13 @@ int CEventsDB::DataBaseDataPush(CEvents::TEventDataCommon *pxSource)
 
     if( rc != SQLITE_OK )
     {
+        //std::cout << "CEventsDB::DataBaseDataPush 4"  << std::endl;
         cout << "SQLite error: " << zErrMsg << endl;
         sqlite3_free(zErrMsg);
     }
     else
     {
+        //std::cout << "CEventsDB::DataBaseDataPush 5"  << std::endl;
         cout << "Records created successfully" << endl;
 
 //        printf("SELECT last_insert_rowid %d\n\r", (SendQuery("SELECT last_insert_rowid();")));
@@ -254,6 +266,7 @@ int CEventsDB::DataBaseDataPush(CEvents::TEventDataCommon *pxSource)
 
     }
 
+    //std::cout << "CEventsDB::DataBaseDataPush 6"  << std::endl;
 //    Close();
     return 0;
 }

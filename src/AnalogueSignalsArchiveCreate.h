@@ -59,6 +59,8 @@ public:
     void CreateArchiveEntry(void);
 
 private:
+    struct tm* pxCurrentTime;
+
     std::string m_sInternalModuleName;
     uint8_t m_uiInternalModuleId;
 
@@ -81,6 +83,7 @@ private:
     int m_iLastHour = 100;
     int m_iLastDay = 100;
 //    int m_iLastDay = 10;
+    int m_iCurrentTimeSaveDelayCounter = 100;
     int m_iFileNumberCounter = 0;
 };
 

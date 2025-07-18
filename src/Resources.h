@@ -129,6 +129,8 @@ public:
 //protected:
 //
 //private:
+    struct tm xCurrentTime;
+
     std::list<CTaskInterface*> m_lpxCommonTasksList;
     std::list<CTaskInterface*>::iterator m_xCommonTasksListIterator;
     std::list<CTaskInterface*> m_lpxCurrentlyRunningTasksList;

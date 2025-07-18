@@ -31,6 +31,7 @@ CAnalogueSignalsArchiveCreate::CAnalogueSignalsArchiveCreate()
 {
     std::cout << "CAnalogueSignalsArchiveCreate constructor"  << std::endl;
     m_puiIntermediateBuff = new uint8_t[256];
+    m_bIsStartState = true;
     SetFsmState(START);
 }
 
@@ -65,6 +66,8 @@ uint8_t CAnalogueSignalsArchiveCreate::Init(void)
 void CAnalogueSignalsArchiveCreate::Allocate(void)
 {
     std::cout << "CAnalogueSignalsArchiveCreate::Allocate 1"  << std::endl;
+
+    pxCurrentTime = &(GetResources() -> xCurrentTime);
 
 ////    m_uiAddress = xMemoryAllocationContext.uiAddress;
 ////    m_puiRxBuffer = xMemoryAllocationContext.puiRxBuffer;
@@ -221,6 +224,7 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
     time_t now = time(nullptr);
     // Получаем текущую дату
     struct tm tstructCurrent = *gmtime(&now);
+    pxCurrentTime = &tstructCurrent;
 
 
 //-------------------------------------------------------------------------------
@@ -301,6 +305,16 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
         m_iLastSecond = tstructCurrent.tm_sec;
     }
 
+    // прошла минута?
+    if (m_iCurrentTimeSaveDelayCounter != tstructCurrent.tm_min)
+    {
+        m_iCurrentTimeSaveDelayCounter = tstructCurrent.tm_min;
+        // сохраним текущее время в FRAM.
+        CStorageDeviceSpiFram::Write(FRAM_LAST_SAVED_TIME_OFFSET,
+                                     (uint8_t*)(&tstructCurrent),
+                                     sizeof(struct tm));
+    }
+
     TAnalogueSignalsArchiveHourData data;
 
     // Заполняем переменные структуры данными
@@ -328,7 +342,7 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
 
 
         // каждый новый час начинаем запись в fram сначала.
-        m_uiCurrentOffset = 0;
+        m_uiCurrentOffset = FRAM_ANALOGUE_MEASURE_ARCHIVE_ARRAY_OFFSET;//0;
 
         // блок записи новых ежесекундных данных в fram.
         {
@@ -511,7 +525,7 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
             }
 
             // каждый новый час начинаем запись в fram сначала.
-            m_uiCurrentOffset = 0;
+            m_uiCurrentOffset = FRAM_ANALOGUE_MEASURE_ARCHIVE_ARRAY_OFFSET;//0;
 
             // блок записи новых ежесекундных данных в fram.
             {
