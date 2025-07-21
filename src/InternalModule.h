@@ -139,7 +139,7 @@ public:
 
     virtual void Allocate(void) {};
     virtual uint8_t GetModuleType(uint8_t uiAddress) {};
-    virtual void SearchModules(void) {};
+    virtual bool SearchModules(void) {};
     virtual void ServiceDataCreate(void) {};
     virtual void CreateDevices(void) {};
     virtual uint8_t DataBaseRead(uint8_t uiAddress) {};
@@ -282,7 +282,7 @@ public:
 
     void Allocate(void);
     uint8_t GetModuleType(uint8_t uiAddress);
-    void SearchModules(void);
+    bool SearchModules(void);
     void ServiceDataCreate(void);
     void CreateDevices(void);
     void ModulesDataExchange(void);

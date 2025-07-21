@@ -356,9 +356,14 @@ uint8_t CInternalModule::GetModuleType(uint8_t uiAddress)
 }
 
 //-------------------------------------------------------------------------------
-void CInternalModule::SearchModules(void)
+bool CInternalModule::SearchModules(void)
 {
 //    std::cout << "CInternalModule::SearchModules 1"  << std::endl;
+    bool fbIsModuleFound = false;
+
+    CConfigurationCreate::TConfigDataPackOne* pxDeviceConfigSearch =
+        (CConfigurationCreate::TConfigDataPackOne*)
+        (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer);
 
     // опросим интерфейс SPI. какие модули присутствуют?
     for (uint8_t i = 0; i < SPI_MAX_BUS_ADDRESS; i++)
@@ -373,9 +378,8 @@ void CInternalModule::SearchModules(void)
             if (uiType != 0)
             {
 //                std::cout << "CInternalModule::SearchModules 3"  << std::endl;
-                CConfigurationCreate::TConfigDataPackOne* pxDeviceConfigSearch =
-                    (CConfigurationCreate::TConfigDataPackOne*)
-                    (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer);
+                fbIsModuleFound = true;
+
                 // сохраним тип модуля в массиве для упорядочивания следования модулей при поиске на SPI.
                 pxDeviceConfigSearch ->
                 axModulesContext[pxDeviceConfigSearch -> uiModulesQuantity].uiType = uiType;
@@ -392,16 +396,27 @@ void CInternalModule::SearchModules(void)
                 (pxDeviceConfigSearch -> uiModulesQuantity)++;
                 (pxDeviceConfigSearch -> uiInternalModulesQuantity)++;
 
-                if (pxDeviceConfigSearch -> uiModulesQuantity >=
-                        INTERNAL_MODULE_QUANTITY)
-                {
-                    return;
-                }
-
                 // перейдём к опросу следующего адреса.
                 break;
             }
         }
+
+        // количество найденных модулей превышает максимально допустимое в системе?
+        if (pxDeviceConfigSearch -> uiModulesQuantity >=
+                INTERNAL_MODULE_QUANTITY)
+        {
+            break;
+        }
+    }
+
+    // найден модуль?
+    if (fbIsModuleFound)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
     }
 }
 
@@ -736,10 +751,18 @@ uint8_t CInternalModule::Fsm(void)
     case SEARCH_MODULES_START:
         std::cout << "CInternalModule::Fsm SEARCH_MODULES_START 1"  << std::endl;
         {
-            SearchModules();
-            std::cout << "CInternalModule::Fsm SEARCH_MODULES_START 2"  << std::endl;
-            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-            SetFsmState(DONE_OK);
+            if (SearchModules())
+            {
+                std::cout << "CInternalModule::Fsm SEARCH_MODULES_START 2"  << std::endl;
+                ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+                SetFsmState(DONE_OK);
+            }
+            else
+            {
+                std::cout << "CInternalModule::Fsm SEARCH_MODULES_START 3"  << std::endl;
+                ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+                SetFsmState(DONE_ERROR);
+            }
         }
         break;
 

@@ -259,17 +259,26 @@ uint8_t CConfigurationCreate::Fsm(void)
                 (uint8_t*)(GetResources() -> GetDeviceConfigSearchPointer());
 
             SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
-            SetFsmNextStateDoneOk(CONFIGURATION_CREATE_INTERNAL_MODULES_SEARCH_MODULES_EXECUTOR_ANSWER_PROCESSING);
-            SetFsmNextStateReadyWaitingError(DONE_ERROR);
-            SetFsmNextStateDoneWaitingError(DONE_ERROR);
-            SetFsmNextStateDoneWaitingDoneError(DONE_ERROR);
+            SetFsmNextStateDoneOk(CONFIGURATION_CREATE_INTERNAL_MODULES_SEARCH_MODULES_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+            SetFsmNextStateReadyWaitingError(CONFIGURATION_CREATE_INTERNAL_MODULES_SEARCH_MODULES_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingError(CONFIGURATION_CREATE_INTERNAL_MODULES_SEARCH_MODULES_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingDoneError(CONFIGURATION_CREATE_INTERNAL_MODULES_SEARCH_MODULES_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
         }
         break;
 
-    case CONFIGURATION_CREATE_INTERNAL_MODULES_SEARCH_MODULES_EXECUTOR_ANSWER_PROCESSING:
-        std::cout << "CConfigurationCreate::Fsm CONFIGURATION_CREATE_INTERNAL_MODULES_SEARCH_MODULES_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
+    case CONFIGURATION_CREATE_INTERNAL_MODULES_SEARCH_MODULES_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+        std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CREATE_INTERNAL_MODULES_SEARCH_MODULES_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
         {
             SetFsmState(CONFIGURATION_CREATE_INTERNAL_MODULES_SERVICE_DATA_CREATE_START);
+        }
+        break;
+
+    case CONFIGURATION_CREATE_INTERNAL_MODULES_SEARCH_MODULES_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+        std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CREATE_INTERNAL_MODULES_SEARCH_MODULES_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        {
+            // текущая конфигурация и сохранённая в базе данных не совпадают.
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+            SetFsmState(DONE_ERROR);
         }
         break;
 
