@@ -1521,6 +1521,67 @@ uint8_t CDataStore::Fsm(void)
         }
         break;
 
+//-------------------------------------------------------------------------------
+    case SIGNATURE_CREATE_START:
+        std::cout << "CDataStore::Fsm SIGNATURE_CREATE_START"  << std::endl;
+        {
+            CrcOfBlocksCrcCreate();
+
+            std::cout << "CDataStore::Fsm SIGNATURE_CREATE_START 2"  << std::endl;
+            SetFsmState(SIGNATURE_CREATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+        }
+        break;
+
+    case SIGNATURE_CREATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+        std::cout << "CDataStore::Fsm SIGNATURE_CREATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        {
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(DONE_OK);
+        }
+        break;
+
+    case SIGNATURE_CREATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+        std::cout << "CDataStore::Fsm SIGNATURE_CREATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        {
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+            SetFsmState(DONE_ERROR);
+        }
+        break;
+
+//-------------------------------------------------------------------------------
+    case SIGNATURE_CHECK_START:
+        std::cout << "CDataStore::Fsm SIGNATURE_CHECK_START"  << std::endl;
+        {
+            if (CrcOfBlocksCrcCheck())
+            {
+                std::cout << "CDataStore::Fsm SIGNATURE_CHECK_START 2"  << std::endl;
+                SetFsmState(SIGNATURE_CHECK_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+            }
+            else
+            {
+                std::cout << "CDataStore::Fsm SIGNATURE_CHECK_START 3"  << std::endl;
+                SetFsmState(SIGNATURE_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            }
+        }
+        break;
+
+    case SIGNATURE_CHECK_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+        std::cout << "CDataStore::Fsm SIGNATURE_CHECK_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        {
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(DONE_OK);
+        }
+        break;
+
+    case SIGNATURE_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+        std::cout << "CDataStore::Fsm SIGNATURE_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        {
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+            SetFsmState(DONE_ERROR);
+        }
+        break;
+
+//-------------------------------------------------------------------------------
     default:
         std::cout << "CDataStore::Fsm default"  << std::endl;
         break;

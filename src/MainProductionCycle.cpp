@@ -810,6 +810,10 @@ uint8_t CMainProductionCycle::Fsm(void)
         {
             InitTasks();
 
+            m_uiDeviceControlId =
+                GetResources() ->
+                GetTaskIdByNameFromMap("DeviceControlRtuUpperLevel");
+
             m_uiConfigurationCreateId =
                 GetResources() ->
                 GetTaskIdByNameFromMap("ConfigurationCreate");
@@ -1022,7 +1026,7 @@ uint8_t CMainProductionCycle::Fsm(void)
 
             // текуща€ база данных не повреждена.
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-            SetFsmState(CONFIGURATION_CREATE_START);
+            SetFsmState(CONFIGURATION_CHECK_START);
         }
         break;
 
@@ -1122,8 +1126,8 @@ uint8_t CMainProductionCycle::Fsm(void)
 
             // текуща€ конфигураци€ и сохранЄнна€ в базе данных не совпадают.
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
-            //            SetFsmState(DATA_BASE_CREATE_CONFIGURATION_DATA_BASE_BLOCKS_WRITE_START);
-            SetFsmState(DATA_BASE_CREATE_START);
+                        SetFsmState(DATA_BASE_CREATE_CONFIGURATION_DATA_BASE_BLOCKS_WRITE_START);
+//            SetFsmState(DATA_BASE_CREATE_START);
 
         }
         break;
@@ -1187,7 +1191,7 @@ uint8_t CMainProductionCycle::Fsm(void)
         CurrentlyRunningTasksExecution();
 
         ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-        SetFsmState(ERROR_HANDLER_START);
+        SetFsmState(CONFIGURATION_CREATE_START);
     }
     break;
 
@@ -1299,6 +1303,45 @@ uint8_t CMainProductionCycle::Fsm(void)
 
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
             SetFsmState(DONE_ERROR);
+        }
+        break;
+
+//-------------------------------------------------------------------------------
+    case SIGNATURE_CHECK_START:
+        std::cout << "CMainProductionCycle::Fsm SIGNATURE_CHECK_START"  << std::endl;
+        {
+            // проверим подпись базы данных.
+            // при создании стартовой базы данных она не подписана и прибор переходит в
+            // аварийное состо€ние ожида€ подтверждени€ конфигурации.
+            // конфигураци€ считаетс€ подтверждЄнной после записи любого блока базы данных.
+
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            pxDataContainer -> m_uiTaskId = m_uiDeviceControlId;
+            pxDataContainer -> m_uiFsmCommandState =
+                CDeviceControl::SIGNATURE_CHECK_START;
+
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+            SetFsmNextStateDoneOk(SIGNATURE_CHECK_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+            SetFsmNextStateReadyWaitingError(SIGNATURE_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingError(SIGNATURE_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingDoneError(SIGNATURE_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+        }
+        break;
+
+    case SIGNATURE_CHECK_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+        std::cout << "CMainProductionCycle::Fsm SIGNATURE_CHECK_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        {
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(MAIN_CYCLE_START);
+        }
+        break;
+
+    case SIGNATURE_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+        std::cout << "CMainProductionCycle::Fsm SIGNATURE_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        {
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+            SetFsmState(ERROR_HANDLER_START);
         }
         break;
 
@@ -1489,13 +1532,13 @@ uint8_t CMainProductionCycle::Fsm(void)
         CurrentlyRunningTasksExecution();
 
         m_xMainCycle100McTimer.Set(100);
-        SetFsmState(ERROR_HANDLER_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+        SetFsmState(ERROR_HANDLER_TIME_UPDATE_END_CYCLE_WAITING);
 
     }
     break;
 
-    case ERROR_HANDLER_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
-        std::cout << "CMainProductionCycle::Fsm ERROR_HANDLER_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+    case ERROR_HANDLER_TIME_UPDATE_END_CYCLE_WAITING:
+        std::cout << "CMainProductionCycle::Fsm ERROR_HANDLER_TIME_UPDATE_END_CYCLE_WAITING"  << std::endl;
         {
             CurrentlyRunningTasksExecution();
 
@@ -1525,9 +1568,18 @@ uint8_t CMainProductionCycle::Fsm(void)
                     SetFsmNextStateDoneWaitingDoneError(ERROR_HANDLER_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
                 }
             }
-//
-//            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-//            SetFsmState(DONE_OK);
+        }
+        break;
+
+    case ERROR_HANDLER_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+        std::cout << "CMainProductionCycle::Fsm ERROR_HANDLER_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        {
+            CurrentlyRunningTasksExecution();
+
+            m_xMainCycle100McTimer.Set(100);
+
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(ERROR_HANDLER_TIME_UPDATE_END_CYCLE_WAITING);
         }
         break;
 
