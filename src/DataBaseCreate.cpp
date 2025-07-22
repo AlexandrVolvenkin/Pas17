@@ -636,7 +636,7 @@ uint8_t CDataBaseCreate::Fsm(void)
     case DATA_BASE_CREATE_CONFIGURATION_DATA_BASE_BLOCKS_WRITE_START:
         std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_CONFIGURATION_DATA_BASE_BLOCKS_WRITE_START"  << std::endl;
         {
-            CConfigurationCreate::ConfigurationToProgrammerFormat((CConfigurationCreate::TConfigDataProgrammerPackOne*)(m_puiIntermediateBuff),
+            CConfigurationCreate::ConfigurationToProgrammerFormat((TConfigDataProgrammerPackOne*)(m_puiIntermediateBuff),
                     (GetResources() -> GetDeviceConfigSearchPointer()));
 
             CDataContainerDataBase* pxDataContainer =
@@ -734,8 +734,8 @@ uint8_t CDataBaseCreate::Fsm(void)
         std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_NETWORK_ADDRESS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
         {
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-            SetFsmState(DONE_OK);
-//            SetFsmState(DATA_BASE_CREATE_MODULE_MUVR_DATA_BASE_READ_START);
+//            SetFsmState(DONE_OK);
+            SetFsmState(DATA_BASE_CREATE_MODULE_MUVR_DATA_BASE_READ_START);
         }
         break;
 

@@ -216,7 +216,7 @@ uint16_t CResources::GetInputRegistersNumber(void)
 }
 
 //-------------------------------------------------------------------------------
-CConfigurationCreate::TConfigDataPackOne* CResources::GetDeviceConfigSearchPointer(void)
+TConfigDataPackOne* CResources::GetDeviceConfigSearchPointer(void)
 {
     return &m_xDeviceConfigSearch;
 }

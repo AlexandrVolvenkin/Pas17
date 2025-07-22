@@ -289,10 +289,13 @@ void CDiscreteSignals::DiscreteSignalsStartDataBaseCreate(void)
     uiFlowControl = ANALOGUE_INPUT_SET_POINT_VIOLATION_LL_L;
 
     for (int i = 0;
-            i < ((GetResources() ->
-                  GetDeviceConfigSearchPointer()) ->
-                 uiServiceAnalogueInputModuleQuantity);
+            i < (1);
             i++)
+//    for (int i = 0;
+//            i < ((GetResources() ->
+//                  GetDeviceConfigSearchPointer()) ->
+//                 uiServiceAnalogueInputModuleQuantity);
+//            i++)
     {
         for (int j = 0, k = 0;
                 j < ((ANALOG_MODULE_INPUT_QUANTITY / 2) *
@@ -675,8 +678,8 @@ void CDiscreteSignals::ProgrammedDiscreteSignalsNumberCount(void)
     std::cout << "CConfigurationCreate::ProgrammedDiscreteSignalsNumberCount 1" << endl;
 
     // получим указатель на объект конфигурации.
-    CConfigurationCreate::TConfigDataPackOne* pxDeviceConfigSearch =
-        (CConfigurationCreate::TConfigDataPackOne*)
+    TConfigDataPackOne* pxDeviceConfigSearch =
+        (TConfigDataPackOne*)
         (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer);
 
     unsigned char ucCheck;
@@ -786,7 +789,7 @@ void CDiscreteSignals::CreateAlarmHandlers(void)
     std::cout << "CDiscreteSignals::CreateAlarmHandlers 1"  << std::endl;
 
     // получим указатель на объект конфигурации.
-    CConfigurationCreate::TConfigDataPackOne* pxDeviceConfigSearch =
+    TConfigDataPackOne* pxDeviceConfigSearch =
         (GetResources() -> GetDeviceConfigSearchPointer());
 
     TDiscreteSignalsDescriptionWork *pxDiscreteSignalsDescriptionWork;

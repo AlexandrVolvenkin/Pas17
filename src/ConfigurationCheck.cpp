@@ -264,7 +264,7 @@ uint8_t CConfigurationCheck::Fsm(void)
         {
             uint8_t auiTempArray[256];
             // преобразуем текущую конфигурацию в общий формат хранения совместимый с программатором.
-            CConfigurationCreate::ConfigurationToProgrammerFormat((CConfigurationCreate::TConfigDataProgrammerPackOne*)(auiTempArray),
+            CConfigurationCreate::ConfigurationToProgrammerFormat((TConfigDataProgrammerPackOne*)(auiTempArray),
                     (GetResources() -> GetDeviceConfigSearchPointer()));
 
             {
@@ -284,7 +284,7 @@ uint8_t CConfigurationCheck::Fsm(void)
 
 
             {
-                std::cout << "CConfigurationCheck::Fsm m_puiIntermediateBuff " << (sizeof(struct CConfigurationCreate::TConfigDataProgrammerPackOne))  << std::endl;
+                std::cout << "CConfigurationCheck::Fsm m_puiIntermediateBuff " << (sizeof(struct TConfigDataProgrammerPackOne))  << std::endl;
                 uint8_t *pucSourceTemp;
                 pucSourceTemp = (uint8_t*)m_puiIntermediateBuff;
                 for(int i=0; i<32; )
@@ -301,7 +301,7 @@ uint8_t CConfigurationCheck::Fsm(void)
             // текущая конфигурация и сохранённая в базе данных совпадают?
             if (memcmp(auiTempArray,
                        m_puiIntermediateBuff,
-                       (sizeof(struct CConfigurationCreate::TConfigDataProgrammerPackOne))) == 0)
+                       (sizeof(struct TConfigDataProgrammerPackOne))) == 0)
             {
                 std::cout << "CConfigurationCheck::Fsm CONFIGURATION_CHECK_CONFIGURATION_COMPARE_START 2"  << std::endl;
                 // текущая конфигурация и сохранённая в базе данных совпадают.

@@ -48,7 +48,7 @@ public:
     virtual std::list<CTaskInterface*>* GetCommonTasksListPointer(void) {};
     virtual uint8_t* CreateObjectBySize(size_t uiLength) {};
     virtual CDataContainerInterface* AddDataContainer(std::shared_ptr<CDataContainerInterface> pxDataContainer) {};
-    virtual CConfigurationCreate::TConfigDataPackOne* GetDeviceConfigSearchPointer(void) {};
+    virtual TConfigDataPackOne* GetDeviceConfigSearchPointer(void) {};
     virtual TDiscreteSygnalTextTitle* GetDiscreteSygnalTextTitlesWorkPointer(void) {};
 
 };
@@ -95,7 +95,7 @@ public:
     void SendRequest(void);
     void ReceiveAnswer(void);
 
-    CConfigurationCreate::TConfigDataPackOne* GetDeviceConfigSearchPointer(void);
+    TConfigDataPackOne* GetDeviceConfigSearchPointer(void);
     TDiscreteSygnalTextTitle* GetDiscreteSygnalTextTitlesWorkPointer(void);
 
 
@@ -158,7 +158,7 @@ public:
     uint16_t m_uiUsedCommonTaskPointersCounter;
 
     // объект с конфигурацией во внутреннем формате.
-    CConfigurationCreate::TConfigDataPackOne m_xDeviceConfigSearch;
+    TConfigDataPackOne m_xDeviceConfigSearch;
 
     uint8_t* m_puiCoils;
     uint8_t* m_puiDiscreteInputs;

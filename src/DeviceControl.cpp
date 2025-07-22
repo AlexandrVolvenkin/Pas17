@@ -309,7 +309,7 @@ void CDeviceControl::OnlineDataRead(void)
     pucDestination =
         (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer);
 
-    CConfigurationCreate::TConfigDataPackOne* pxDeviceConfigSearch =
+    TConfigDataPackOne* pxDeviceConfigSearch =
         (GetResources() -> GetDeviceConfigSearchPointer());
 
     // запрос “’— или реперных точек?
@@ -1156,8 +1156,6 @@ uint16_t CDeviceControl::DataBaseBlockReadBlockRelatedAction(void)
         cout << "CDeviceControl::DataBaseBlockReadBlockRelatedAction ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_OFFSET" << endl;
         {
             SetFsmState(DATA_BASE_BLOCK_READ_MODULE_MUVR_DATA_BASE_READ_START);
-//            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-//            SetFsmState(DONE_OK);
         }
         break;
 
@@ -1206,9 +1204,6 @@ uint16_t CDeviceControl::DataBaseBlockReadBlockRelatedAction(void)
 
     case NETWORK_ADDRESS_DATA_BASE_BLOCK_OFFSET:
         cout << "CDeviceControl::DataBaseBlockReadBlockRelatedAction NETWORK_ADDRESS_DATA_BASE_BLOCK_OFFSET" << endl;
-        //        {
-//            SetFsmState(DATA_BASE_BLOCK_NETWORK_ADDRESS_WRITE_START);
-//        } << endl;
         ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
         SetFsmState(DONE_OK);
         break;
@@ -1244,11 +1239,9 @@ uint16_t CDeviceControl::DataBaseBlockWriteBlockRelatedAction(void)
     {
     case ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_OFFSET:
         cout << "CDeviceControl::DataBaseBlockWriteBlockRelatedAction ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_OFFSET" << endl;
-//        {
-//            SetFsmState(DATA_BASE_BLOCK_MODULE_MUVR_WRITE_START);
-//        }
-        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-        SetFsmState(DONE_OK);
+        {
+            SetFsmState(DATA_BASE_BLOCK_MODULE_MUVR_WRITE_START);
+        }
         break;
 
     case DISCRETE_INPUT_SYGNALS_DATA_BASE_BLOCK_OFFSET:
@@ -1982,8 +1975,6 @@ uint8_t CDeviceControl::Fsm(void)
             // выполним дополнительное действие св€занное с записью определЄнного блока базы данных.
             // например при записи блока модул€ аналоговых сигналов запишим блок и в модуль.
             DataBaseBlockWriteBlockRelatedAction();
-//            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-//            SetFsmState(DONE_OK);
         }
         break;
 
@@ -2134,7 +2125,7 @@ uint8_t CDeviceControl::Fsm(void)
     case DATA_BASE_BLOCK_MODULE_MUVR_WRITE_COMPLETE_CHECK_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
         std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_MODULE_MUVR_WRITE_COMPLETE_CHECK_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
         {
-            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+//            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(DONE_OK);
         }
         break;

@@ -361,8 +361,8 @@ bool CInternalModule::SearchModules(void)
 //    std::cout << "CInternalModule::SearchModules 1"  << std::endl;
     bool fbIsModuleFound = false;
 
-    CConfigurationCreate::TConfigDataPackOne* pxDeviceConfigSearch =
-        (CConfigurationCreate::TConfigDataPackOne*)
+    TConfigDataPackOne* pxDeviceConfigSearch =
+        (TConfigDataPackOne*)
         (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer);
 
     // опросим интерфейс SPI. какие модули присутствуют?
@@ -426,8 +426,8 @@ void CInternalModule::ServiceDataCreate(void)
 //    std::cout << "CInternalModule::ServiceDataCreate 1"  << std::endl;
 
     // получим указатель на объект конфигурации.
-    CConfigurationCreate::TConfigDataPackOne* pxDeviceConfigSearch =
-        (CConfigurationCreate::TConfigDataPackOne*)
+    TConfigDataPackOne* pxDeviceConfigSearch =
+        (TConfigDataPackOne*)
         (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer);
 
     // вычисление служебных переменных для внутренних модулей.
@@ -476,8 +476,8 @@ void CInternalModule::CreateDevices(void)
     std::cout << "CInternalModule::CreateDevices 1"  << std::endl;
 
     // получим указатель на объект конфигурации.
-    CConfigurationCreate::TConfigDataPackOne* pxDeviceConfigSearch =
-        (CConfigurationCreate::TConfigDataPackOne*)
+    TConfigDataPackOne* pxDeviceConfigSearch =
+        (TConfigDataPackOne*)
         (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer);
 
     for (uint8_t i = 0;
