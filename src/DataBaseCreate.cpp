@@ -628,7 +628,7 @@ uint8_t CDataBaseCreate::Fsm(void)
     case DATA_BASE_CREATE_TEXT_TITLES_CREATE_ANALOGUE_SIGNALS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING:
         std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_TEXT_TITLES_CREATE_ANALOGUE_SIGNALS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
         {
-            SetFsmState(DATA_BASE_CREATE_CONFIGURATION_DATA_BASE_BLOCKS_WRITE_START);
+            SetFsmState(DATA_BASE_CREATE_SERIAL_AND_ID_DATA_BASE_BLOCKS_WRITE_START);
         }
         break;
 
@@ -659,7 +659,8 @@ uint8_t CDataBaseCreate::Fsm(void)
     case DATA_BASE_CREATE_CONFIGURATION_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING:
         std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_CONFIGURATION_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
         {
-            SetFsmState(DATA_BASE_CREATE_SERIAL_AND_ID_DATA_BASE_BLOCKS_WRITE_START);
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(DONE_OK);
         }
         break;
 

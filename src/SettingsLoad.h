@@ -51,7 +51,7 @@ public:
 
     void SetInternalModuleName(std::string sName);
     void SetDeviceControlName(std::string sName);
-    // РЎРµС‚С‚РµСЂ РґР»СЏ m_sDataStoreName
+    // Сеттер для m_sDataStoreName
     void SetDataStoreName(const std::string& sName)
     {
         m_sDataStoreName = sName;

@@ -1155,7 +1155,9 @@ uint16_t CDeviceControl::DataBaseBlockReadBlockRelatedAction(void)
     case ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_OFFSET:
         cout << "CDeviceControl::DataBaseBlockReadBlockRelatedAction ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_OFFSET" << endl;
         {
-            SetFsmState(DATA_BASE_BLOCK_READ_MODULE_MUVR_DATA_BASE_READ_START);
+//            SetFsmState(DATA_BASE_BLOCK_READ_MODULE_MUVR_DATA_BASE_READ_START);
+        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+        SetFsmState(DONE_OK);
         }
         break;
 
@@ -1283,6 +1285,20 @@ uint16_t CDeviceControl::DataBaseBlockWriteBlockRelatedAction(void)
 
     case REFERENCE_POINTS_ADC_CODES_DATA_BASE_BLOCK_OFFSET:
         cout << "CDeviceControl::DataBaseBlockReadBlockRelatedAction REFERENCE_POINTS_ADC_CODES_DATA_BASE_BLOCK_OFFSET" << endl;
+        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+        SetFsmState(DONE_OK);
+        break;
+
+    case SERIAL_AND_ID_DATA_BASE_BLOCK_OFFSET:
+        cout << "CDeviceControl::DataBaseBlockWriteBlockRelatedAction SERIAL_AND_ID_DATA_BASE_BLOCK_OFFSET" << endl;
+            // установим флаг, что записан блок 97 базы данных с идентификатором прибора.
+            // при первом запуске конфигурация ещё не сохранена в блоке базы данных
+            // и во время проверки конфигурации при сравнении созданной и сохранённой
+            // происходит ошибка и прибор переходит в
+            // аварийное состояние ожидая подтверждения конфигурации.
+            // конфигурация считается подтверждённой после записи 97 блока базы данных
+            //  с идентификатором прибора.
+        m_fbIsConfigurationConfirmed = true;
         ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
         SetFsmState(DONE_OK);
         break;
@@ -1856,6 +1872,20 @@ uint8_t CDeviceControl::Fsm(void)
     case DATA_BASE_BLOCK_READ_MODULE_MUVR_DATA_BASE_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
         std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_READ_MODULE_MUVR_DATA_BASE_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
         {
+//            CDataContainerDataBase* pxExecutorDataContainer =
+//                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+//            CDataContainerDataBase* pxCustomerDataContainer =
+//                (CDataContainerDataBase*)GetCustomerDataContainerPointer();
+//
+//            memcpy(pxCustomerDataContainer -> m_puiDataPointer,
+//                   (pxExecutorDataContainer -> m_puiDataPointer),
+//                   pxExecutorDataContainer -> m_uiDataLength);
+//            pxCustomerDataContainer -> m_uiDataLength =
+//                pxExecutorDataContainer -> m_uiDataLength;
+//
+//            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+//            SetFsmState(DONE_OK);
+
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
             SetFsmState(DONE_ERROR);
         }
@@ -2089,6 +2119,46 @@ uint8_t CDeviceControl::Fsm(void)
 
     case SIGNATURE_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
         std::cout << "CDeviceControl::Fsm SIGNATURE_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        {
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+            SetFsmState(DONE_ERROR);
+        }
+        break;
+
+//-------------------------------------------------------------------------------
+    case CONFIGURATION_CONFIRMATION_CHECK_START:
+//        std::cout << "CDeviceControl::Fsm CONFIGURATION_CONFIRMATION_CHECK_START"  << std::endl;
+        {
+            // проверим записан ли блок 97 базы данных с идентификатором прибора.
+            // при первом запуске конфигурация ещё не сохранена в блоке базы данных
+            // и во время проверки конфигурации при сравнении созданной и сохранённой
+            // происходит ошибка и прибор переходит в
+            // аварийное состояние ожидая подтверждения конфигурации.
+            // конфигурация считается подтверждённой после записи 97 блока базы данных
+            //  с идентификатором прибора.
+            if (m_fbIsConfigurationConfirmed)
+            {
+                std::cout << "CDataStore::Fsm CONFIGURATION_CONFIRMATION_CHECK_START 2"  << std::endl;
+                SetFsmState(CONFIGURATION_CONFIRMATION_CHECK_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+            }
+            else
+            {
+//                std::cout << "CDataStore::Fsm CONFIGURATION_CONFIRMATION_CHECK_START 3"  << std::endl;
+                SetFsmState(CONFIGURATION_CONFIRMATION_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            }
+        }
+        break;
+
+    case CONFIGURATION_CONFIRMATION_CHECK_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+        std::cout << "CDeviceControl::Fsm CONFIGURATION_CONFIRMATION_CHECK_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        {
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(DONE_OK);
+        }
+        break;
+
+    case CONFIGURATION_CONFIRMATION_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+//        std::cout << "CDeviceControl::Fsm CONFIGURATION_CONFIRMATION_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
         {
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
             SetFsmState(DONE_ERROR);
