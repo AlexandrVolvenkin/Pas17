@@ -1155,9 +1155,9 @@ uint16_t CDeviceControl::DataBaseBlockReadBlockRelatedAction(void)
     case ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_OFFSET:
         cout << "CDeviceControl::DataBaseBlockReadBlockRelatedAction ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_OFFSET" << endl;
         {
-//            SetFsmState(DATA_BASE_BLOCK_READ_MODULE_MUVR_DATA_BASE_READ_START);
-        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-        SetFsmState(DONE_OK);
+            SetFsmState(DATA_BASE_BLOCK_READ_MODULE_MUVR_DATA_BASE_READ_START);
+//            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+//            SetFsmState(DONE_OK);
         }
         break;
 
@@ -1206,9 +1206,11 @@ uint16_t CDeviceControl::DataBaseBlockReadBlockRelatedAction(void)
 
     case NETWORK_ADDRESS_DATA_BASE_BLOCK_OFFSET:
         cout << "CDeviceControl::DataBaseBlockReadBlockRelatedAction NETWORK_ADDRESS_DATA_BASE_BLOCK_OFFSET" << endl;
-        {
-            SetFsmState(DATA_BASE_BLOCK_NETWORK_ADDRESS_WRITE_START);
-        }
+        //        {
+//            SetFsmState(DATA_BASE_BLOCK_NETWORK_ADDRESS_WRITE_START);
+//        } << endl;
+        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+        SetFsmState(DONE_OK);
         break;
 
     case CONFIGURATION_DATA_BASE_BLOCK_OFFSET:
@@ -1242,9 +1244,11 @@ uint16_t CDeviceControl::DataBaseBlockWriteBlockRelatedAction(void)
     {
     case ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_OFFSET:
         cout << "CDeviceControl::DataBaseBlockWriteBlockRelatedAction ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_OFFSET" << endl;
-        {
-            SetFsmState(DATA_BASE_BLOCK_MODULE_MUVR_WRITE_START);
-        }
+//        {
+//            SetFsmState(DATA_BASE_BLOCK_MODULE_MUVR_WRITE_START);
+//        }
+        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+        SetFsmState(DONE_OK);
         break;
 
     case DISCRETE_INPUT_SYGNALS_DATA_BASE_BLOCK_OFFSET:
@@ -1291,13 +1295,13 @@ uint16_t CDeviceControl::DataBaseBlockWriteBlockRelatedAction(void)
 
     case SERIAL_AND_ID_DATA_BASE_BLOCK_OFFSET:
         cout << "CDeviceControl::DataBaseBlockWriteBlockRelatedAction SERIAL_AND_ID_DATA_BASE_BLOCK_OFFSET" << endl;
-            // установим флаг, что записан блок 97 базы данных с идентификатором прибора.
-            // при первом запуске конфигурация ещё не сохранена в блоке базы данных
-            // и во время проверки конфигурации при сравнении созданной и сохранённой
-            // происходит ошибка и прибор переходит в
-            // аварийное состояние ожидая подтверждения конфигурации.
-            // конфигурация считается подтверждённой после записи 97 блока базы данных
-            //  с идентификатором прибора.
+        // установим флаг, что записан блок 97 базы данных с идентификатором прибора.
+        // при первом запуске конфигурация ещё не сохранена в блоке базы данных
+        // и во время проверки конфигурации при сравнении созданной и сохранённой
+        // происходит ошибка и прибор переходит в
+        // аварийное состояние ожидая подтверждения конфигурации.
+        // конфигурация считается подтверждённой после записи 97 блока базы данных
+        //  с идентификатором прибора.
         m_fbIsConfigurationConfirmed = true;
         ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
         SetFsmState(DONE_OK);
@@ -1872,20 +1876,6 @@ uint8_t CDeviceControl::Fsm(void)
     case DATA_BASE_BLOCK_READ_MODULE_MUVR_DATA_BASE_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
         std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_READ_MODULE_MUVR_DATA_BASE_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
         {
-//            CDataContainerDataBase* pxExecutorDataContainer =
-//                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-//            CDataContainerDataBase* pxCustomerDataContainer =
-//                (CDataContainerDataBase*)GetCustomerDataContainerPointer();
-//
-//            memcpy(pxCustomerDataContainer -> m_puiDataPointer,
-//                   (pxExecutorDataContainer -> m_puiDataPointer),
-//                   pxExecutorDataContainer -> m_uiDataLength);
-//            pxCustomerDataContainer -> m_uiDataLength =
-//                pxExecutorDataContainer -> m_uiDataLength;
-//
-//            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-//            SetFsmState(DONE_OK);
-
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
             SetFsmState(DONE_ERROR);
         }
@@ -2026,8 +2016,8 @@ uint8_t CDeviceControl::Fsm(void)
     case DATA_BASE_BLOCK_WRITE_COMPLETE_CHECK_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
         std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_WRITE_COMPLETE_CHECK_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
         {
-//            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-            SetFsmState(SIGNATURE_CREATE_START);
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(DONE_OK);
         }
         break;
 
@@ -2040,114 +2030,28 @@ uint8_t CDeviceControl::Fsm(void)
         break;
 
 //-------------------------------------------------------------------------------
-    case SIGNATURE_CREATE_START:
-        std::cout << "CDeviceControl::Fsm SIGNATURE_CREATE_START"  << std::endl;
-        {
-            // создадим подпись базы данных.
-            // при создании стартовой базы данных она не подписана и прибор переходит в
-            // аварийное состояние ожидая подтверждения конфигурации.
-            // конфигурация считается подтверждённой после записи любого блока базы данных.
-
-            m_uiDataStoreId =
-                GetResources() ->
-                GetTaskIdByNameFromMap(m_sDataStoreName);
-
-            CDataContainerDataBase* pxDataContainer =
-                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-            pxDataContainer -> m_uiTaskId = m_uiDataStoreId;
-            pxDataContainer -> m_uiFsmCommandState =
-                CDataStore::SIGNATURE_CREATE_START;
-
-            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
-            SetFsmNextStateDoneOk(SIGNATURE_CREATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
-            SetFsmNextStateReadyWaitingError(SIGNATURE_CREATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
-            SetFsmNextStateDoneWaitingError(SIGNATURE_CREATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
-            SetFsmNextStateDoneWaitingDoneError(SIGNATURE_CREATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
-        }
-        break;
-
-    case SIGNATURE_CREATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
-        std::cout << "CDeviceControl::Fsm SIGNATURE_CREATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
-        {
-            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-            SetFsmState(DONE_OK);
-        }
-        break;
-
-    case SIGNATURE_CREATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
-        std::cout << "CDeviceControl::Fsm SIGNATURE_CREATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
-        {
-            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
-            SetFsmState(DONE_ERROR);
-        }
-        break;
-
-//-------------------------------------------------------------------------------
-    case SIGNATURE_CHECK_START:
-        std::cout << "CDeviceControl::Fsm SIGNATURE_CHECK_START"  << std::endl;
-        {
-            // проверим подпись базы данных.
-            // при создании стартовой базы данных она не подписана и прибор переходит в
-            // аварийное состояние ожидая подтверждения конфигурации.
-            // конфигурация считается подтверждённой после записи любого блока базы данных.
-
-            m_uiDataStoreId =
-                GetResources() ->
-                GetTaskIdByNameFromMap(m_sDataStoreName);
-
-            CDataContainerDataBase* pxDataContainer =
-                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-            pxDataContainer -> m_uiTaskId = m_uiDataStoreId;
-            pxDataContainer -> m_uiFsmCommandState =
-                CDataStore::SIGNATURE_CHECK_START;
-
-            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
-            SetFsmNextStateDoneOk(SIGNATURE_CHECK_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
-            SetFsmNextStateReadyWaitingError(SIGNATURE_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
-            SetFsmNextStateDoneWaitingError(SIGNATURE_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
-            SetFsmNextStateDoneWaitingDoneError(SIGNATURE_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
-        }
-        break;
-
-    case SIGNATURE_CHECK_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
-        std::cout << "CDeviceControl::Fsm SIGNATURE_CHECK_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
-        {
-            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-            SetFsmState(DONE_OK);
-        }
-        break;
-
-    case SIGNATURE_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
-        std::cout << "CDeviceControl::Fsm SIGNATURE_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
-        {
-            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
-            SetFsmState(DONE_ERROR);
-        }
-        break;
-
-//-------------------------------------------------------------------------------
     case CONFIGURATION_CONFIRMATION_CHECK_START:
 //        std::cout << "CDeviceControl::Fsm CONFIGURATION_CONFIRMATION_CHECK_START"  << std::endl;
+    {
+        // проверим записан ли блок 97 базы данных с идентификатором прибора.
+        // при первом запуске конфигурация ещё не сохранена в блоке базы данных
+        // и во время проверки конфигурации при сравнении созданной и сохранённой
+        // происходит ошибка и прибор переходит в
+        // аварийное состояние ожидая подтверждения конфигурации.
+        // конфигурация считается подтверждённой после записи 97 блока базы данных
+        //  с идентификатором прибора.
+        if (m_fbIsConfigurationConfirmed)
         {
-            // проверим записан ли блок 97 базы данных с идентификатором прибора.
-            // при первом запуске конфигурация ещё не сохранена в блоке базы данных
-            // и во время проверки конфигурации при сравнении созданной и сохранённой
-            // происходит ошибка и прибор переходит в
-            // аварийное состояние ожидая подтверждения конфигурации.
-            // конфигурация считается подтверждённой после записи 97 блока базы данных
-            //  с идентификатором прибора.
-            if (m_fbIsConfigurationConfirmed)
-            {
-                std::cout << "CDataStore::Fsm CONFIGURATION_CONFIRMATION_CHECK_START 2"  << std::endl;
-                SetFsmState(CONFIGURATION_CONFIRMATION_CHECK_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
-            }
-            else
-            {
-//                std::cout << "CDataStore::Fsm CONFIGURATION_CONFIRMATION_CHECK_START 3"  << std::endl;
-                SetFsmState(CONFIGURATION_CONFIRMATION_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
-            }
+            std::cout << "CDataStore::Fsm CONFIGURATION_CONFIRMATION_CHECK_START 2"  << std::endl;
+            SetFsmState(CONFIGURATION_CONFIRMATION_CHECK_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
         }
-        break;
+        else
+        {
+//                std::cout << "CDataStore::Fsm CONFIGURATION_CONFIRMATION_CHECK_START 3"  << std::endl;
+            SetFsmState(CONFIGURATION_CONFIRMATION_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+        }
+    }
+    break;
 
     case CONFIGURATION_CONFIRMATION_CHECK_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
         std::cout << "CDeviceControl::Fsm CONFIGURATION_CONFIRMATION_CHECK_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
@@ -2159,11 +2063,11 @@ uint8_t CDeviceControl::Fsm(void)
 
     case CONFIGURATION_CONFIRMATION_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
 //        std::cout << "CDeviceControl::Fsm CONFIGURATION_CONFIRMATION_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
-        {
-            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
-            SetFsmState(DONE_ERROR);
-        }
-        break;
+    {
+        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+        SetFsmState(DONE_ERROR);
+    }
+    break;
 
 //-------------------------------------------------------------------------------
     case DATA_BASE_BLOCK_MODULE_MUVR_WRITE_START:
