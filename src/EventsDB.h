@@ -11,8 +11,8 @@
 
 #include <sqlite3.h>
 
-#include "Events.h"
-//class CEvents;
+//#include "Events.h"
+class CEvents;
 class CTask;
 
 //-----------------------------------------------------------------------------------------------------

@@ -11,9 +11,9 @@
 #include "Configuration.h"
 //#include "EventsDB.h"
 
-class CEventsDB;
+//class CEventsDB;
 //class CAlarm;
-class CAlarmDfa;
+//class CAlarmDfa;
 
 //-----------------------------------------------------------------------------------------------------
 class CEvents
