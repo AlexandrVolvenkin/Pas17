@@ -115,6 +115,9 @@ public:
         DATA_BASE_CREATE_TEXT_TITLES_CREATE_ANALOGUE_SIGNALS_DATA_BASE_BLOCKS_WRITE_START,
         DATA_BASE_CREATE_TEXT_TITLES_CREATE_ANALOGUE_SIGNALS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING,
 
+        DATA_BASE_CREATE_MUVR_CURRENT_OUTPUTS_DATA_BASE_BLOCK_WRITE_START,
+        DATA_BASE_CREATE_MUVR_CURRENT_OUTPUTS_DATA_BASE_BLOCK_WRITE_EXECUTOR_ANSWER_PROCESSING,
+
         DATA_BASE_CREATE_CONFIGURATION_DATA_BASE_BLOCKS_WRITE_START,
         DATA_BASE_CREATE_CONFIGURATION_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING,
 
@@ -156,6 +159,7 @@ private:
     void DimentionsParametersDataBaseCreate(uint8_t* puiBlockDataPointer);
     void AnalogoueInputModuleDiscreteSignalsTextTitlesCreate(uint8_t* puiBlockDataPointer);
     void AnalogoueInputModuleAnalogoueSignalsTextTitlesCreate(uint8_t* puiBlockDataPointer);
+    void MuvrCurrentOutputsDataBaseCreate(uint8_t* puiBlockDataPointer);
 
 private:
     std::string m_sDataStoreName;

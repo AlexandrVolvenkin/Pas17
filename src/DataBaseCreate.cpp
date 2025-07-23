@@ -278,7 +278,7 @@ void CDataBaseCreate::AnalogoueInputModuleAnalogoueSignalsTextTitlesCreate(uint8
                   // - uiElementNumber вычитается количество строк текстовых реквизитов в массиве
                   // axDiscreteSygnalTextTitles, потомучто строка заканчивается нулём, а в блоке
                   // базы данных для нулей нет места.
-                 uiElementNumber) - uiElementNumber));
+                  uiElementNumber) - uiElementNumber));
 
     // Вычисляем количество элементов в массиве
     uiElementNumber = (sizeof(axAnalogoueSignalsTextTitles) /
@@ -296,6 +296,66 @@ void CDataBaseCreate::AnalogoueInputModuleAnalogoueSignalsTextTitlesCreate(uint8
 
         std::cout << "TextDescriptor "  << i << " " << pxAnalogoueSignalsTextTitlePackOne[i].acTextDescriptor << std::endl;
     }
+}
+
+//-------------------------------------------------------------------------------
+// создаёт стартовую базу токовых выходов.
+void CDataBaseCreate::MuvrCurrentOutputsDataBaseCreate(uint8_t* puiBlockDataPointer)
+{
+//-------------------------------------------------------------------------------
+    TDiscreteSygnalTextTitlePackOne *pxDiscreteSygnalTextTitlePackOne;
+    TDiscreteSygnalTextTitle *pxDiscreteSygnalTextTitle;
+
+    memset(puiBlockDataPointer,
+           0,
+           CDataStore::MAX_BLOCK_LENGTH);
+
+    // Объявляем массив типа unsigned char (byte) и инициализируем его данными
+    uint8_t auiMuvrCurrentOutputsDataBaseData[] =
+    {
+        0x03, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x64, 0x07,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x04,
+        0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x64, 0x07, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00
+    };
+
+//    unsigned char auiMuvrCurrentOutputsDataBaseData[] =
+//    {
+//        0xA2, 0x00, 0x00, 0x00, 0x00,
+//        0x00, 0x00, 0x00, 0x62, 0x00, 0x00, 0x00, 0x00,
+//        0x00, 0x00, 0x00, 0x62, 0x00, 0x00, 0x00, 0x00,
+//        0x00, 0x00, 0x00, 0xA2, 0x00, 0x00, 0x00, 0x00,
+//        0x00, 0x00, 0x00, 0xA2, 0x00, 0x00, 0x00, 0x00,
+//        0x00, 0x00, 0x00, 0x62, 0x00, 0x00, 0x00, 0x00,
+//        0x00, 0x00, 0x00, 0x62, 0x00, 0x00, 0x00, 0x00,
+//        0x00, 0x00, 0x00, 0xA2, 0x00, 0x00, 0x00, 0x00,
+//        0x00, 0x00, 0x00, 0xA2, 0x00, 0x00, 0x00, 0x00,
+//        0x00, 0x00, 0x00, 0x62, 0x01, 0x00, 0x00, 0x00,
+//        0x00, 0x00, 0x00, 0x62, 0x02, 0x00, 0x00, 0x00,
+//        0x00, 0x00, 0x00, 0xA2, 0x00, 0x00, 0x00, 0x00,
+//        0x00, 0x00, 0x00, 0xA2, 0x00, 0x00, 0x00, 0x00,
+//        0x00, 0x00, 0x00, 0x62, 0x04, 0x00, 0x00, 0x00,
+//        0x00, 0x00, 0x00, 0x62, 0x08, 0x00, 0x00, 0x00,
+//        0x00, 0x00, 0x00, 0xA2, 0x00, 0x00, 0x00, 0x00,
+//        0x00, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00,
+//        0x00, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00,
+//        0x00, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00,
+//        0x00, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00,
+//        0x00, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00,
+//        0x00, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00,
+//        0x00, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00,
+//        0x00, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00,
+//        0x00, 0x00, 0x00
+//    };
+
+    // скопируем один описатель, в буфер общей базы данных прибора.
+    memcpy(puiBlockDataPointer,
+           auiMuvrCurrentOutputsDataBaseData,
+           sizeof(auiMuvrCurrentOutputsDataBaseData));
 }
 
 //-------------------------------------------------------------------------------
@@ -627,6 +687,36 @@ uint8_t CDataBaseCreate::Fsm(void)
 
     case DATA_BASE_CREATE_TEXT_TITLES_CREATE_ANALOGUE_SIGNALS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING:
         std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_TEXT_TITLES_CREATE_ANALOGUE_SIGNALS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
+        {
+            SetFsmState(DATA_BASE_CREATE_MUVR_CURRENT_OUTPUTS_DATA_BASE_BLOCK_WRITE_START);
+        }
+        break;
+
+//-------------------------------------------------------------------------------
+    case DATA_BASE_CREATE_MUVR_CURRENT_OUTPUTS_DATA_BASE_BLOCK_WRITE_START:
+        std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_MUVR_CURRENT_OUTPUTS_DATA_BASE_BLOCK_WRITE_START"  << std::endl;
+        {
+            MuvrCurrentOutputsDataBaseCreate(m_puiIntermediateBuff);
+
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            pxDataContainer -> m_uiTaskId = m_uiDataStoreId;
+            pxDataContainer -> m_uiFsmCommandState =
+                CDataStore::START_WRITE_TEMPORARY_BLOCK_DATA;
+            // стартовая база данных токовых выходов модуля мувр, блок 32
+            pxDataContainer -> m_uiDataIndex = CURRENT_OUTPUT_MODULE_REGULATOR_DATA_BASE_BLOCK_OFFSET;
+            pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+            SetFsmNextStateDoneOk(DATA_BASE_CREATE_MUVR_CURRENT_OUTPUTS_DATA_BASE_BLOCK_WRITE_EXECUTOR_ANSWER_PROCESSING);
+            SetFsmNextStateReadyWaitingError(DONE_ERROR);
+            SetFsmNextStateDoneWaitingError(DONE_ERROR);
+            SetFsmNextStateDoneWaitingDoneError(DONE_ERROR);
+        }
+        break;
+
+    case DATA_BASE_CREATE_MUVR_CURRENT_OUTPUTS_DATA_BASE_BLOCK_WRITE_EXECUTOR_ANSWER_PROCESSING:
+        std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_MUVR_CURRENT_OUTPUTS_DATA_BASE_BLOCK_WRITE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
         {
             SetFsmState(DATA_BASE_CREATE_SERIAL_AND_ID_DATA_BASE_BLOCKS_WRITE_START);
         }
