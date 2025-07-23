@@ -82,6 +82,10 @@ public:
         TIME_SET_EXECUTOR_DONE_OK_ANSWER_PROCESSING,
         TIME_SET_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING,
 
+        TIME_UPDATE_START,
+        TIME_UPDATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING,
+        TIME_UPDATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING,
+
         DATA_BASE_BLOCK_READ,
         DATA_BASE_BLOCK_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING,
         DATA_BASE_BLOCK_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING,
@@ -206,6 +210,7 @@ public:
     void Allocate(void);
     void LinuxCurrentTimeSet(unsigned char *pucSource);
     void CurrentTimeSet(void);
+    void CurrentTimeUpdate(void);
     void OnlineDataRead(void);
     uint8_t ModbusFunction5Handler(void);
     uint16_t DataBaseBlockReadBlockRelatedAction(void);
@@ -231,6 +236,9 @@ protected:
 
     CLinkInterface* m_pxCommandDataLink;
     CLinkInterface* m_pxOperatingDataLink;
+
+    uint16_t *m_puiHoldingRegisters;
+    uint16_t *m_puiInputRegisters;
 
     uint8_t* m_puiIntermediateBuff;
     bool m_fbIsConfigurationConfirmed = false;

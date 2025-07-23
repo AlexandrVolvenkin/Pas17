@@ -1127,14 +1127,6 @@ uint8_t CMainProductionCycle::Fsm(void)
 
             // при старте нужно прочитать из хранилища в поле класса сервиный блок.
             m_pxDataStoreFileSystem -> ReadServiceSection();
-            SetFsmState(CONFIGURATION_CHECK_CONFIGURATION_DATA_BASE_BLOCKS_READ_START);
-        }
-        break;
-
-    case CONFIGURATION_CHECK_CONFIGURATION_DATA_BASE_BLOCKS_READ_START:
-        std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CHECK_CONFIGURATION_DATA_BASE_BLOCKS_READ_START"  << std::endl;
-        {
-            CurrentlyRunningTasksExecution();
 
             CDataContainerDataBase* pxDataContainer =
                 (CDataContainerDataBase*)GetExecutorDataContainerPointer();
@@ -1143,15 +1135,15 @@ uint8_t CMainProductionCycle::Fsm(void)
                 CConfigurationCheck::CONFIGURATION_CHECK_START;
 
             SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
-            SetFsmNextStateDoneOk(CONFIGURATION_CHECK_CONFIGURATION_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
-            SetFsmNextStateReadyWaitingError(CONFIGURATION_CHECK_CONFIGURATION_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
-            SetFsmNextStateDoneWaitingError(CONFIGURATION_CHECK_CONFIGURATION_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
-            SetFsmNextStateDoneWaitingDoneError(CONFIGURATION_CHECK_CONFIGURATION_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneOk(CONFIGURATION_CHECK_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+            SetFsmNextStateReadyWaitingError(CONFIGURATION_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingError(CONFIGURATION_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingDoneError(CONFIGURATION_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
         }
         break;
 
-    case CONFIGURATION_CHECK_CONFIGURATION_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
-        std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CHECK_CONFIGURATION_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+    case CONFIGURATION_CHECK_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+        std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CHECK_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
         {
             CurrentlyRunningTasksExecution();
 
@@ -1161,8 +1153,8 @@ uint8_t CMainProductionCycle::Fsm(void)
         }
         break;
 
-    case CONFIGURATION_CHECK_CONFIGURATION_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
-        std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CHECK_CONFIGURATION_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+    case CONFIGURATION_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+        std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
         {
             CurrentlyRunningTasksExecution();
 
@@ -1559,23 +1551,8 @@ uint8_t CMainProductionCycle::Fsm(void)
         SetFsmNextStateReadyWaitingError(CONFIGURATION_CONFIRMATION_WAITING_ERROR_HANDLER_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
         SetFsmNextStateDoneWaitingError(CONFIGURATION_CONFIRMATION_WAITING_ERROR_HANDLER_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
         SetFsmNextStateDoneWaitingDoneError(CONFIGURATION_CONFIRMATION_WAITING_ERROR_HANDLER_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
-
-        m_xMainCycle100McTimer.Set(100);
     }
     break;
-
-//    case CONFIGURATION_CONFIRMATION_WAITING_ERROR_HANDLER_TIME_UPDATE_END_CYCLE_WAITING:
-////        std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CONFIRMATION_WAITING_ERROR_HANDLER_TIME_UPDATE_END_CYCLE_WAITING"  << std::endl;
-//    {
-//        CurrentlyRunningTasksExecution();
-//
-//        if (m_xMainCycle100McTimer.IsOverflow())
-//        {
-//            m_xMainCycle100McTimer.Set(100);
-//            SetFsmState(CONFIGURATION_CONFIRMATION_WAITING_ERROR_HANDLER_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
-//        }
-//    }
-//    break;
 
     case CONFIGURATION_CONFIRMATION_WAITING_ERROR_HANDLER_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
         std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CONFIRMATION_WAITING_ERROR_HANDLER_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
@@ -1592,9 +1569,39 @@ uint8_t CMainProductionCycle::Fsm(void)
     {
         CurrentlyRunningTasksExecution();
 
+        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+        SetFsmState(CONFIGURATION_CONFIRMATION_WAITING_ERROR_HANDLER_TIME_UPDATE_START);
+    }
+    break;
+
+    case CONFIGURATION_CONFIRMATION_WAITING_ERROR_HANDLER_TIME_UPDATE_START:
+//        std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CONFIRMATION_WAITING_ERROR_HANDLER_TIME_UPDATE_START"  << std::endl;
+    {
+        CurrentlyRunningTasksExecution();
+
+        CDataContainerDataBase* pxDataContainer =
+            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+        pxDataContainer -> m_uiTaskId = m_uiDeviceControlId;
+        pxDataContainer -> m_uiFsmCommandState =
+            CDeviceControl::TIME_UPDATE_START;
+
+        SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+        SetFsmNextStateDoneOk(CONFIGURATION_CONFIRMATION_WAITING_ERROR_HANDLER_TIME_UPDATE_END_CYCLE_WAITING);
+        SetFsmNextStateReadyWaitingError(CONFIGURATION_CONFIRMATION_WAITING_ERROR_HANDLER_TIME_UPDATE_END_CYCLE_WAITING);
+        SetFsmNextStateDoneWaitingError(CONFIGURATION_CONFIRMATION_WAITING_ERROR_HANDLER_TIME_UPDATE_END_CYCLE_WAITING);
+        SetFsmNextStateDoneWaitingDoneError(CONFIGURATION_CONFIRMATION_WAITING_ERROR_HANDLER_TIME_UPDATE_END_CYCLE_WAITING);
+
+        m_xMainCycle100McTimer.Set(500);
+    }
+    break;
+
+    case CONFIGURATION_CONFIRMATION_WAITING_ERROR_HANDLER_TIME_UPDATE_END_CYCLE_WAITING:
+//        std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CONFIRMATION_WAITING_ERROR_HANDLER_TIME_UPDATE_END_CYCLE_WAITING"  << std::endl;
+    {
+        CurrentlyRunningTasksExecution();
+
         if (m_xMainCycle100McTimer.IsOverflow())
         {
-            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
             SetFsmState(CONFIGURATION_CONFIRMATION_WAITING_ERROR_HANDLER_START);
         }
     }

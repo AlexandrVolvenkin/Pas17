@@ -198,6 +198,10 @@ void CDeviceControl::Allocate(void)
 //    m_puiSerialAndId =
 //        (GetResources() -> m_puiSerialAndId);
 
+
+    m_puiHoldingRegisters = m_pxResources -> GetHoldingRegisters();
+    m_puiInputRegisters = m_pxResources -> GetInputRegisters();
+
 //    m_uiBadAnswerCounter = 0;
 }
 
@@ -273,6 +277,81 @@ void CDeviceControl::CurrentTimeSet(void)
 
     (pxDataContainer -> m_uiDataLength) =
         CURRENT_TIME_BYTE_QUANTITY;
+}
+
+//-----------------------------------------------------------------------------------------------------
+void CDeviceControl::CurrentTimeUpdate(void)
+{
+//    std::cout << "CDeviceControl CurrentTimeUpdate 1"  << std::endl;
+
+    // Получаем текущее время
+    time_t now = time(nullptr);
+    // Получаем текущую дату
+    struct tm tstructCurrent = *gmtime(&now);
+    pxCurrentTime = &tstructCurrent;
+
+//-------------------------------------------------------------------------------
+// обновление текущего времени в массивах модбас.
+
+    unsigned short *pusDestination;
+    // получим указатель на буфер с текущим временем в рабочем массиве прибора.
+    pusDestination =
+        (unsigned short*)&m_puiInputRegisters[CURRENT_TIME_OFFSET_INPUT_REGISTERS];
+
+    pusDestination[CURRENT_TIME_SECOND_OFFSET] = tstructCurrent.tm_sec;
+    pusDestination[CURRENT_TIME_MINUTE_OFFSET] = tstructCurrent.tm_min;
+    pusDestination[CURRENT_TIME_HOUR_OFFSET] = tstructCurrent.tm_hour;
+    pusDestination[CURRENT_TIME_MONTH_DAY_OFFSET] = tstructCurrent.tm_mday;
+    pusDestination[CURRENT_TIME_MONTH_OFFSET] = (tstructCurrent.tm_mon) + 1;
+    pusDestination[CURRENT_TIME_YEAR_OFFSET] = (tstructCurrent.tm_year) - 100;
+
+    // сегодня воскресение?
+    if ((tstructCurrent.tm_wday) == LINUX_WEEK_DAY_SUNDAY)
+    {
+        pusDestination[CURRENT_TIME_WEEK_DAY_OFFSET] = WEEK_DAY_SUNDAY;
+    }
+    else
+    {
+        pusDestination[CURRENT_TIME_WEEK_DAY_OFFSET] = tstructCurrent.tm_wday;
+    }
+
+////    std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 11"  << std::endl;
+//    pusDestination =
+//        (unsigned short*)&m_puiHoldingRegisters[CURRENT_TIME_OFFSET_HOLDING_REGISTERS];
+//
+//    pusDestination[CURRENT_TIME_SECOND_OFFSET] = tstructCurrent.tm_sec;
+//    pusDestination[CURRENT_TIME_MINUTE_OFFSET] = tstructCurrent.tm_min;
+//    pusDestination[CURRENT_TIME_HOUR_OFFSET] = tstructCurrent.tm_hour;
+//    pusDestination[CURRENT_TIME_MONTH_DAY_OFFSET] = tstructCurrent.tm_mday;
+//    pusDestination[CURRENT_TIME_MONTH_OFFSET] = (tstructCurrent.tm_mon) + 1;
+//    pusDestination[CURRENT_TIME_YEAR_OFFSET] = (tstructCurrent.tm_year) - 100;
+//
+//    // сегодня воскресение?
+//    if ((tstructCurrent.tm_wday) == LINUX_WEEK_DAY_SUNDAY)
+//    {
+//        pusDestination[CURRENT_TIME_WEEK_DAY_OFFSET] = WEEK_DAY_SUNDAY;
+//    }
+//    else
+//    {
+//        pusDestination[CURRENT_TIME_WEEK_DAY_OFFSET] = tstructCurrent.tm_wday;
+//    }
+
+//    std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 111"  << std::endl;
+//    memcpy(&m_puiHoldingRegisters[CURRENT_TIME_OFFSET_HOLDING_REGISTERS],
+//           pusDestination,
+//           (CURRENT_TIME_BYTE_QUANTITY * sizeof(short)));
+
+//        return;
+
+////    // прошла минута?
+////    if (ui8CurrentTimeSaveDelayCounter != tstructCurrent.tm_min)
+////    {
+////        ui8CurrentTimeSaveDelayCounter = tstructCurrent.tm_min;
+////        // сохраним текущее время в FRAM.
+////        iFramWrite(FRAM_LAST_SAVED_TIME_OFFSET,
+////                   (uint8_t*)&xCurrentTime,
+////                   sizeof(xCurrentTime));
+////    }
 }
 
 //-------------------------------------------------------------------------------
@@ -1702,17 +1781,6 @@ uint8_t CDeviceControl::Fsm(void)
     case TIME_SET_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
         std::cout << "CDeviceControl::Fsm TIME_SET_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
         {
-//            CDataContainerDataBase* pxExecutorDataContainer =
-//                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-//            CDataContainerDataBase* pxCustomerDataContainer =
-//                (CDataContainerDataBase*)GetCustomerDataContainerPointer();
-//
-//            memcpy(pxCustomerDataContainer -> m_puiDataPointer,
-//                   (pxExecutorDataContainer -> m_puiDataPointer),
-//                   pxExecutorDataContainer -> m_uiDataLength);
-//            pxCustomerDataContainer -> m_uiDataLength =
-//                pxExecutorDataContainer -> m_uiDataLength;
-//TIME_SET_MESSAGE_LENGTH
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(DONE_OK);
         }
@@ -1720,6 +1788,31 @@ uint8_t CDeviceControl::Fsm(void)
 
     case TIME_SET_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
         std::cout << "CDeviceControl::Fsm TIME_SET_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        {
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+            SetFsmState(DONE_ERROR);
+        }
+        break;
+
+//-------------------------------------------------------------------------------
+    case TIME_UPDATE_START:
+//        std::cout << "CDeviceControl::Fsm TIME_UPDATE_START"  << std::endl;
+        {
+            CurrentTimeUpdate();
+            SetFsmState(TIME_UPDATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+        }
+        break;
+
+    case TIME_UPDATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+//        std::cout << "CDeviceControl::Fsm TIME_UPDATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        {
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(DONE_OK);
+        }
+        break;
+
+    case TIME_UPDATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+        std::cout << "CDeviceControl::Fsm TIME_UPDATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
         {
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
             SetFsmState(DONE_ERROR);
