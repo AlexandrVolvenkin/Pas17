@@ -331,6 +331,7 @@ void CEvents::EventRegistration(
 // интерпретирует событие.
 void CEvents::EventsHandler(void)
 {
+    std::cout << "CEvents::EventsHandler 1"  << std::endl;
     uint8_t ui8EventsNumber;
     TOccuredEventsDataBriefly* pxOccuredEventsDataBriefly;
 //    TModuleContext *pxModuleContext;
