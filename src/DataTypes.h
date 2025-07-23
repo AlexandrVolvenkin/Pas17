@@ -10,6 +10,8 @@
 
 #include "Configuration.h"
 
+//class CEvents;
+
 //-----------------------------------------------------------------------------------------------------
 #pragma pack(push)
 #pragma pack(1)
@@ -20,6 +22,7 @@
     };
 #pragma pack(pop)
 
+//-----------------------------------------------------------------------------------------------------
 //#pragma pack(push)
 //#pragma pack(1)
     struct TConfigDataPackOne
@@ -76,6 +79,7 @@
     };
 #pragma pack(pop)
 
+//-----------------------------------------------------------------------------------------------------
 // Описатель канала вывода
 struct TOutputData
 {
@@ -84,6 +88,7 @@ struct TOutputData
     unsigned char ExternalResetAddress[DISCRETE_OUTPUT_NUMBER];		// Адреса входов внешнего сброса
 };
 
+//-----------------------------------------------------------------------------------------------------
 struct TDiscreteOutputControl
 {
     // Новое нарушение.
@@ -92,6 +97,7 @@ struct TDiscreteOutputControl
     uint8_t uiRelayActivationRequest;
 };
 
+//-----------------------------------------------------------------------------------------------------
 struct TAnalogueSignalsArchiveHourData
 {
     float fAin1;       // Переменная первого входа
@@ -100,5 +106,216 @@ struct TAnalogueSignalsArchiveHourData
     float fAin4;       // Переменная четвертого входа
     time_t currentTime; // Переменная для хранения текущего времени
 };
+
+
+////-----------------------------------------------------------------------------------------------------
+//#pragma pack(push)
+//#pragma pack(1)
+//// структура данных события.
+//    struct TEventDataPackOne
+//    {
+//        // ID в таблице базы данных.
+//        uint16_t ui16ID;
+//        // тип запрашиваемых событий.
+//        uint8_t ui8Type;
+//        // индекс события.
+//        int16_t i16Index;
+//        union
+//        {
+//            // числовые данные события.
+//            struct
+//            {
+//                // адрес источника события.
+//                uint16_t ui16Address;
+//                // состояние события.
+//                uint8_t ui8State;
+//                // время события.
+//                uint8_t ui8Second;
+//                uint8_t ui8Minute;
+//                uint8_t ui8Hour;
+//                uint8_t ui8MonthDay;
+//                uint8_t ui8Month;
+//                uint8_t ui8Year;
+//            };
+//            // текстовые данные события.
+//            char acTextData[CEvents::EVENT_TEXT_DATA_LENGTH + END_OF_STRING_LENGTH];
+//
+//            struct
+//            {
+//                // адрес первого запрашиваемого аналогового измерения.
+//                // адрес сигнала (№ входа, адрес в
+//                // (измеренные значения входных аналоговых сигналов - AI_VALUE_BYTE_ARRAY_OFFSET)
+//                uint8_t ui8Address;
+//                // состояние канала аналогового измерения.
+//                uint8_t ui8Status;
+//                // значение аналогового измерения.
+//                float fData;
+//                // Текстовый реквизит размерности измеряемого параметра КРЗМ.
+//                char acDimentionParameterText[DIMENSIONS_PARAMETERS_NAME_LENGTH + END_OF_STRING_LENGTH];
+//            };
+//        };
+//        // текстовое описание события.
+//        char acTextDescriptor[CEvents::EVENT_TEXT_DATA_LENGTH + END_OF_STRING_LENGTH];
+//    };
+//
+//// структура динамически изменяемых данных события.
+//    struct TEventDataDinamicPackOne
+//    {
+//        // ID в таблице базы данных.
+//        uint16_t ui16ID;
+////        // тип запрашиваемых событий.
+////        uint8_t ui8Type;
+//        // индекс события.
+//        int16_t i16Index;
+//        union
+//        {
+//            struct
+//            {
+//                //                // адрес первого запрашиваемого аналогового измерения.
+////                // адрес сигнала (№ входа, адрес в
+////                // (измеренные значения входных аналоговых сигналов - AI_VALUE_BYTE_ARRAY_OFFSET)
+////                uint8_t ui8Address;
+//                // состояние канала аналогового измерения.
+//                uint8_t ui8Status;
+//                // значение аналогового измерения.
+//                float fData;
+//            };
+//        };
+//    };
+//#pragma pack(pop)
+//
+//// структура данных события.
+//    struct TEventData
+//    {
+//        // индекс события.
+//        uint16_t ui16Index;
+//        // адрес источника события.
+//        uint16_t ui16Address;
+//        // состояние события.
+//        uint8_t ui8State;
+//        // текстовый реквизит источника события.
+//        char acTextDescriptor[CEvents::EVENT_NAME_LENGTH + END_OF_STRING_LENGTH];
+//        // время события.
+//        struct tm xCurrentTime;
+//    };
+//
+//    // структура данных события общего типа.
+//    struct TEventDataCommon
+//    {
+//        // ID в таблице базы данных.
+//        uint16_t ui16ID;
+//        // тип запрашиваемых событий.
+//        uint8_t ui8Type;
+//        // индекс события.
+//        int16_t i16Index;
+//        union
+//        {
+//            // числовые данные события.
+//            struct
+//            {
+//                // адрес источника события.
+//                uint16_t ui16Address;
+//                // состояние события.
+//                uint8_t ui8State;
+//                // время события.
+//                struct tm xCurrentTime;
+//            };
+//            // текстовые данные события.
+//            char acTextData[CEvents::EVENT_TEXT_DATA_LENGTH + END_OF_STRING_LENGTH];
+//
+//            struct
+//            {
+//                // адрес первого запрашиваемого аналогового измерения.
+//                // адрес сигнала (№ входа, адрес в
+//                // (измеренные значения входных аналоговых сигналов - AI_VALUE_BYTE_ARRAY_OFFSET)
+//                uint8_t ui8Address;
+//                // состояние канала аналогового измерения.
+//                uint8_t ui8Status;
+//                // значение аналогового измерения.
+//                float fData;
+//                // Текстовый реквизит размерности измеряемого параметра КРЗМ.
+//                char acDimentionParameterText[DIMENSIONS_PARAMETERS_NAME_LENGTH + END_OF_STRING_LENGTH];
+//            };
+//        };
+//        // текстовое описание события.
+//        char acTextDescriptor[CEvents::EVENT_TEXT_DATA_LENGTH + END_OF_STRING_LENGTH];
+//        // дополнительное текстовое описание события.
+//        char acTextDescriptorAdditional[CEvents::EVENT_TEXT_DATA_LENGTH + END_OF_STRING_LENGTH];
+//    };
+//
+//#pragma pack(push)
+//#pragma pack(1)
+//    // структура данных списка запросов журнала событий.
+//    struct TEventsLogQueryListPackOne
+//    {
+//        // индекс первого запрашиваемого события в массиве(журнала событий).
+//        int16_t i16Index;
+//        // тип запрашиваемых событий.
+//        uint8_t ui8Type;
+//        // порядок представления события.
+//        uint8_t ui8Order;
+//        // адрес источника события.
+//        union
+//        {
+//            uint8_t ui8Address;
+//            uint16_t ui16Address;
+//            struct
+//            {
+//                // время  первого запрашиваемого события.
+////        uint8_t ui8Second;
+////        uint8_t ui8Minute;
+////        uint8_t ui8Hour;
+//                uint8_t ui8MonthDay;
+//                uint8_t ui8Month;
+//                uint8_t ui8Year;
+//            };
+//        };
+//        // количество запрашиваемых событий.
+//        union
+//        {
+//            uint8_t ui8Quantity;
+//            uint8_t ui8Length;
+//        };
+//    };
+//#pragma pack(pop)
+//
+//// структура данных произошедшего события.
+//    struct TOccuredEventsData
+//    {
+//        // тип группы породившей событие(например номер модуля).
+//        uint8_t ui8GroupType;
+//        // индекс группы породившей событие(например номер модуля).
+//        uint16_t ui16GroupIndex;
+//        // тип произошедшего события.
+//        uint8_t ui8EventType;
+//        // код произошедшего события.
+//        uint8_t ui8EventCode;
+//        // состояние произошедшего события(1 - активно, 0 - переход в норму).
+//        uint8_t ui8State;
+//        // указатель на текстовое описание события.
+//        char* pcTextDescriptor;
+//    };
+//
+//// структура данных произошедшего события.
+//    struct TOccuredEventsDataBriefly
+//    {
+//        // индекс группы породившей событие(например номер модуля).
+//        uint16_t ui16GroupIndex;
+//        // тип произошедшего события.
+//        uint8_t ui8EventType;
+//        // состояние произошедшего события.
+//        uint8_t ui8EventCode;
+//        // указатель на текстовое описание события.
+//        char* pcTextDescriptor;
+//    };
+//
+//// структура управления произошедшими событиями.
+//    struct TOccuredEventsControl
+//    {
+//        // количество событий произошедших в одном цикле.
+//        uint8_t ui8OccuredEventsNumber;
+//        // массив с данными событий произошедших в одном цикле.
+//        TOccuredEventsDataBriefly axOccuredEventsData[ONE_CYCLE_OCCURED_EVENTS_MAXIMUM_NUMBER];
+//    };
 
 #endif // DATATYPES_H_INCLUDED

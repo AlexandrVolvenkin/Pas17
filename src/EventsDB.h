@@ -11,8 +11,8 @@
 
 #include <sqlite3.h>
 
-//#include "Events.h"
-class CEvents;
+#include "Events.h"
+//class CEvents;
 class CTask;
 
 //-----------------------------------------------------------------------------------------------------
@@ -90,7 +90,7 @@ public:
     int Connect(void);
     void Close(void);
     int SendQuery(char *);
-    int DataBaseDataPush(CEvents::TEventDataCommon *);
+    int DataBaseDataPush(class CEvents::TEventDataCommon *);
     int DataBaseDataPush(void);
     int DataBaseRingCreate(void);
     bool DataBaseIsFull(void);

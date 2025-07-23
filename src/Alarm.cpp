@@ -25,6 +25,8 @@
 #include "InternalModuleMuvr.h"
 #include "ModbusSlave.h"
 #include "DeviceControl.h"
+#include "Events.h"
+#include "EventsDB.h"
 #include "Alarm.h"
 
 using namespace std;

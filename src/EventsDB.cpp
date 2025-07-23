@@ -15,6 +15,7 @@
 #include <unistd.h>
 #include <cstdlib>
 
+#include "Task.h"
 #include "iconvlite.h"
 #include <iconv.h>
 #include "Configuration.h"
