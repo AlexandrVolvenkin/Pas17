@@ -1512,7 +1512,7 @@ uint8_t CMainProductionCycle::Fsm(void)
 
         m_xMainCycle100McTimer.Set(100);
 
-        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+//        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
         SetFsmState(INCORRECT_CONFIGURATION_ERROR_HANDLER_TIME_UPDATE_END_CYCLE_WAITING);
     }
     break;
@@ -1522,7 +1522,7 @@ uint8_t CMainProductionCycle::Fsm(void)
     {
         CurrentlyRunningTasksExecution();
 
-        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+//        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
         SetFsmState(DONE_ERROR);
     }
     break;
@@ -1586,14 +1586,24 @@ uint8_t CMainProductionCycle::Fsm(void)
             CDeviceControl::TIME_UPDATE_START;
 
         SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
-        SetFsmNextStateDoneOk(CONFIGURATION_CONFIRMATION_WAITING_ERROR_HANDLER_TIME_UPDATE_END_CYCLE_WAITING);
-        SetFsmNextStateReadyWaitingError(CONFIGURATION_CONFIRMATION_WAITING_ERROR_HANDLER_TIME_UPDATE_END_CYCLE_WAITING);
-        SetFsmNextStateDoneWaitingError(CONFIGURATION_CONFIRMATION_WAITING_ERROR_HANDLER_TIME_UPDATE_END_CYCLE_WAITING);
-        SetFsmNextStateDoneWaitingDoneError(CONFIGURATION_CONFIRMATION_WAITING_ERROR_HANDLER_TIME_UPDATE_END_CYCLE_WAITING);
+        SetFsmNextStateDoneOk(CONFIGURATION_CONFIRMATION_WAITING_ERROR_HANDLER_TIME_UPDATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+        SetFsmNextStateReadyWaitingError(CONFIGURATION_CONFIRMATION_WAITING_ERROR_HANDLER_TIME_UPDATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+        SetFsmNextStateDoneWaitingError(CONFIGURATION_CONFIRMATION_WAITING_ERROR_HANDLER_TIME_UPDATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+        SetFsmNextStateDoneWaitingDoneError(CONFIGURATION_CONFIRMATION_WAITING_ERROR_HANDLER_TIME_UPDATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
 
         m_xMainCycle100McTimer.Set(500);
     }
     break;
+
+    case CONFIGURATION_CONFIRMATION_WAITING_ERROR_HANDLER_TIME_UPDATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+//        std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CONFIRMATION_WAITING_ERROR_HANDLER_TIME_UPDATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        {
+            CurrentlyRunningTasksExecution();
+
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(CONFIGURATION_CONFIRMATION_WAITING_ERROR_HANDLER_TIME_UPDATE_END_CYCLE_WAITING);
+        }
+        break;
 
     case CONFIGURATION_CONFIRMATION_WAITING_ERROR_HANDLER_TIME_UPDATE_END_CYCLE_WAITING:
 //        std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CONFIRMATION_WAITING_ERROR_HANDLER_TIME_UPDATE_END_CYCLE_WAITING"  << std::endl;
