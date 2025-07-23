@@ -1617,6 +1617,7 @@ uint8_t CMainProductionCycle::Fsm(void)
     }
     break;
 
+//-------------------------------------------------------------------------------
     default:
         break;
     }
