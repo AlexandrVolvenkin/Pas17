@@ -35,8 +35,6 @@ CDataBaseCreate::CDataBaseCreate()
 CDataBaseCreate::~CDataBaseCreate()
 {
     delete[] m_puiIntermediateBuff;
-    delete[] GetResources() ->
-    m_pxDiscreteSygnalTextTitlesWork;
 }
 
 //-------------------------------------------------------------------------------
@@ -69,8 +67,151 @@ uint8_t CDataBaseCreate::Init(void)
         (CDataContainerDataBase*)GetExecutorDataContainerPointer();
     pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
 
-    GetResources() ->
-    m_pxDiscreteSygnalTextTitlesWork = new TDiscreteSygnalTextTitle[MAX_HANDLED_DISCRETE_INPUT];
+    Allocate();
+}
+
+//-------------------------------------------------------------------------------
+void CDataBaseCreate::Allocate(void)
+{
+    std::cout << "CDiscreteSignals::Allocate 1"  << std::endl;
+
+////    m_uiAddress = xMemoryAllocationContext.uiAddress;
+////    m_puiRxBuffer = xMemoryAllocationContext.puiRxBuffer;
+////    m_puiTxBuffer = xMemoryAllocationContext.puiTxBuffer;
+////    m_puiErrorCode = xMemoryAllocationContext.puiErrorCode;
+//
+//    // Получим указатель на место в массиве дискретных входов для текущего модуля.
+//    m_puiDiscreteInputsState =
+//        (GetResources() ->
+//         m_puiDiscreteInputsState);
+//    // Увеличим общий объём выделенной памяти.
+//    GetResources() ->
+//    m_uiUsedDiscreteInputsState +=
+//        MUVR_DISCRETE_SIGNALS_QUANTITY;
+//    memset(m_puiDiscreteInputsState, 0, 16);
+//
+//
+//    // Получим указатель на место в массиве достоверности дискретных входов для текущего модуля.
+//    m_puiDiscreteInputsBadState =
+//        (GetResources() ->
+//         m_puiDiscreteInputsBadState);
+//    // Увеличим общий объём выделенной памяти.
+//    GetResources() ->
+//    m_uiUsedDiscreteInputsBadState +=
+//        MUVR_DISCRETE_SIGNALS_QUANTITY;
+//
+//
+//    // Получим указатель на место в массиве аналоговых входов для текущего модуля.
+//    m_pfAnalogueInputsValue =
+//        &(GetResources() ->
+//          m_pfAnalogueInputsValue[GetResources() ->
+//                                                 m_uiUsedAnalogueInputsValue]);
+//    // Увеличим общий объём выделенной памяти.
+//    GetResources() ->
+//    m_uiUsedAnalogueInputsValue +=
+//        MUVR_ANALOG_INPUT_QUANTITY;
+//
+//
+//    // Получим указатель на место в массиве состояния аналоговых входов для текущего модуля.
+//    m_puiAnalogueInputsState =
+//        &(GetResources() ->
+//          m_puiAnalogueInputsState[GetResources() ->
+//                                                  m_uiUsedAnalogueInputsState]);
+//    // Увеличим общий объём выделенной памяти.
+//    GetResources() ->
+//    m_uiUsedAnalogueInputsBadState +=
+//        MUVR_ANALOG_INPUT_QUANTITY;
+//
+//
+//    // Получим указатель на место в массиве достоверности аналоговых входов для текущего модуля.
+//    m_puiAnalogueInputsBadState =
+//        &(GetResources() ->
+//          m_puiAnalogueInputsBadState[GetResources() ->
+//                                                     m_uiUsedAnalogueInputsBadState]);
+//    // Увеличим общий объём выделенной памяти.
+//    GetResources() ->
+//    m_uiUsedAnalogueInputsBadState +=
+//        MUVR_ANALOG_INPUT_QUANTITY;
+//
+//
+//    // Получим указатель на место в массиве состояний дискретных сигналов порождаемых аналоговыми входами.
+//    m_puiAnalogueInputDiscreteInputsState =
+//        &(GetResources() ->
+//          m_puiAnalogueInputDiscreteInputsState[GetResources() ->
+//                                 m_uiUsedAnalogueInputDiscreteInputsState]);
+//    // Увеличим общий объём выделенной памяти.
+//    GetResources() ->
+//    m_uiUsedAnalogueInputDiscreteInputsState +=
+//        MUVR_DISCRETE_SIGNALS_QUANTITY;
+//
+//
+//    // Получим указатель на место в массиве флагов недостоверности состояний дискретных сигналов порождаемых аналоговыми входами.
+//    m_puiAnalogueInputDiscreteInputsBadState =
+//        &(GetResources() ->
+//          m_puiAnalogueInputDiscreteInputsBadState[GetResources() ->
+//                                 m_uiUsedAnalogueInputDiscreteInputsBadState]);
+//    // Увеличим общий объём выделенной памяти.
+//    GetResources() ->
+//    m_uiUsedAnalogueInputDiscreteInputsBadState +=
+//        MUVR_DISCRETE_SIGNALS_QUANTITY;
+//
+//
+//    // Получим указатель на место в массиве отключения аналоговых входов для текущего модуля.
+//    m_puiAnalogueInputsOff =
+//        &(GetResources() ->
+//          m_puiAnalogueInputsOff[GetResources() ->
+//                                                m_uiUsedAnalogueInputsOff]);
+//    // Увеличим общий объём выделенной памяти.
+//    GetResources() ->
+//    m_uiUsedAnalogueInputsOff +=
+//        MUVR_ANALOG_INPUT_QUANTITY;
+//
+//
+//    // Получим указатель на место в массиве распакованной во внутренний формат базы данных
+//    // аналоговых сигналов.
+//    m_pxAnalogueInputDescriptionWork =
+//        &(GetResources() ->
+//          m_pxAnalogueInputDescriptionWork[GetResources() ->
+//                                                          m_uiUsedAnalogueInputDescriptionWork]);
+//    // Увеличим общий объём выделенной памяти.
+//    GetResources() ->
+//    m_uiUsedAnalogueInputDescriptionWork +=
+//        MUVR_ANALOG_INPUT_QUANTITY;
+//
+//
+//    // Получим указатель на место в массиве аналоговых входов для текущего модуля.
+//    m_puiReperPointsAdcBuffer =
+//        &(GetResources() ->
+//          m_puiReperPointsAdcBuffer[GetResources() ->
+//                                                   m_uiUsedReperPointsAdcBuffer]);
+//    // Увеличим общий объём выделенной памяти.
+//    GetResources() ->
+//    m_uiUsedReperPointsAdcBuffer +=
+//        ANALOGUE_INPUT_MODULE_REPER_POINTS_ADC_DATA_BASE_BLOCK_LENGTH;
+
+
+//    // Получим указатель на место в рабочем массиве дискретных сигналов для текущего модуля.
+//    m_pxDiscreteSignalsDescriptionWork =
+//        &(GetResources() ->
+//          m_pxDiscreteSignalsDescriptionWork[GetResources() ->
+//                                 m_uiUsedDiscreteSignalsDescriptionWork]);
+//    // Увеличим общий объём выделенной памяти.
+//    GetResources() ->
+//    m_uiUsedDiscreteSignalsDescriptionWork +=
+//        ANALOGUE_INPUT_MODULE_REPER_POINTS_ADC_DATA_BASE_BLOCK_LENGTH;
+
+
+//    // Получим указатель на место в рабочем массиве текстовых реквизитов дискретных сигналов для текущего модуля.
+//    m_pxDiscreteSygnalTextTitlesWork =
+//        &(GetResources() ->
+//          m_pxDiscreteSygnalTextTitlesWork[GetResources() ->
+//                                                          m_uiUsedDiscreteSygnalTextTitlesWork]);
+//    // Увеличим общий объём выделенной памяти.
+//    GetResources() ->
+//    m_uiUsedDiscreteSygnalTextTitlesWork +=
+//        ANALOGUE_INPUT_MODULE_REPER_POINTS_ADC_DATA_BASE_BLOCK_LENGTH;
+
+//    m_uiBadAnswerCounter = 0;
 }
 
 //-------------------------------------------------------------------------------
@@ -215,6 +356,42 @@ void CDataBaseCreate::AnalogoueInputModuleDiscreteSignalsTextTitlesCreate(uint8_
         std::cout << "TextDescriptor "  << i << " " << pxDiscreteSygnalTextTitlePackOne[i].acTextDescriptor << std::endl;
     }
 }
+
+////-----------------------------------------------------------------------------------------------------
+//// преобразовывает из общего формата базы данных, в формат хранения в RAM.
+//// база данных в приборе - это массив, длиной 100 блоков. каждый блок 256 байт.
+//// блоки баз данных модулей, дискретных сигналов, функциональных блоков и др., имеют различный рамер.
+//// базы данных модулей, дискретных сигналов, функциональных блоков и др., могут занимать несколько блоков.
+//// чтобы иметь возможность "плоской" адресации к описателям объектов, делается преобразование.
+//void CDataBaseCreate::AnalogoueInputModuleDiscreteSignalsTextTitlesDataBlockCommonFormatToWork(void)
+//{
+//    std::cout << "CDataBaseCreate::AnalogoueInputModuleDiscreteSignalsTextTitlesDataBlockCommonFormatToWork 1"  << std::endl;
+//    unsigned char ucCheck;
+//    unsigned char *pucSource;
+//    TDiscreteSygnalTextTitle *pxDiscreteSygnalTextTitlesWork;
+//    TDiscreteSygnalTextTitlePackOne *pxDiscreteSygnalTextTitlesWorkPackOne;
+//
+//    // получим указатель на рабочий массив текстовых реквизитов дискретных сигналов.
+//    pxDiscreteSygnalTextTitlesWork = m_pxDiscreteSygnalTextTitlesWork;
+//
+//    // получим указатель на базу данных прибора в общем формате.
+//    pxDiscreteSygnalTextTitlesWorkPackOne =
+//        (TDiscreteSygnalTextTitlePackOne*)m_puiIntermediateBuff;
+//
+//    // преобразуем из общего формата базы данных, в формат хранения в RAM.
+//    for (int i = 0;
+//            i < 16;
+//            i++)
+//    {
+//        memset(pxDiscreteSygnalTextTitlesWork[i].acTextDescriptor,
+//               0,
+//               (DISCRETE_SYGNAL_NAME_LENGTH + END_OF_STRING_LENGTH));
+//
+//        memcpy(pxDiscreteSygnalTextTitlesWork[i].acTextDescriptor,
+//               pxDiscreteSygnalTextTitlesWorkPackOne[i].acTextDescriptor,
+//               DISCRETE_SYGNAL_NAME_LENGTH);
+//    }
+//}
 
 //-------------------------------------------------------------------------------
 // создаёт стартовую базу текстовых реквизитов аналоговых сигналов модулей аналогового ввода.

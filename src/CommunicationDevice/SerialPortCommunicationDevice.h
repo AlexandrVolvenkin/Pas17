@@ -71,7 +71,7 @@ public:
 //-------------------------------------------------------------------------------
 //private:
 protected:
-    const char *m_pccDeviceName;
+    const char* m_pccDeviceName;
     /* Socket or file descriptor */
     int32_t m_iDeviceDescriptorServer;
     struct termios m_xTios;

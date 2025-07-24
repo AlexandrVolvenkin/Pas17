@@ -283,12 +283,66 @@ uint8_t CSystemComponentsCreate::Fsm(void)
                 (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer);
 
 //            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-            SetFsmState(SYSTEM_COMPONENTS_CREATE_DISCRETE_SIGNALS_ALARM_HANDLERS_CREATE_START);
+            SetFsmState(SYSTEM_COMPONENTS_CREATE_DISCRETE_SIGNALS_TEXT_TITLES_COMMON_TO_WORK_CREATE_START);
         }
         break;
 
     case SYSTEM_COMPONENTS_CREATE_DISCRETE_SIGNALS_SERVICE_DATA_CREATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
         std::cout << "CDiscreteSignals::Fsm SYSTEM_COMPONENTS_CREATE_DISCRETE_SIGNALS_SERVICE_DATA_CREATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        {
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+            SetFsmState(DONE_ERROR);
+        }
+        break;
+
+//-------------------------------------------------------------------------------
+    case SYSTEM_COMPONENTS_CREATE_DISCRETE_SIGNALS_TEXT_TITLES_COMMON_TO_WORK_CREATE_START:
+        std::cout << "CConfigurationCreate::Fsm SYSTEM_COMPONENTS_CREATE_DISCRETE_SIGNALS_TEXT_TITLES_COMMON_TO_WORK_CREATE_START"  << std::endl;
+        {
+            uint8_t uiDiscreteSignalsId =
+                GetResources() ->
+                GetTaskIdByNameFromMap("DiscreteSignals");
+
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            pxDataContainer -> m_uiTaskId = uiDiscreteSignalsId;
+            pxDataContainer -> m_uiFsmCommandState =
+                CDiscreteSignals::DISCRETE_SIGNALS_TEXT_TITLES_COMMON_TO_WORK_START;
+//            pxDataContainer -> m_puiDataPointer =
+//                (uint8_t*)(GetResources() -> GetDeviceConfigSearchPointer());
+
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+            SetFsmNextStateDoneOk(SYSTEM_COMPONENTS_CREATE_DISCRETE_SIGNALS_TEXT_TITLES_COMMON_TO_WORK_CREATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+            SetFsmNextStateReadyWaitingError(SYSTEM_COMPONENTS_CREATE_DISCRETE_SIGNALS_TEXT_TITLES_COMMON_TO_WORK_CREATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingError(SYSTEM_COMPONENTS_CREATE_DISCRETE_SIGNALS_TEXT_TITLES_COMMON_TO_WORK_CREATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingDoneError(SYSTEM_COMPONENTS_CREATE_DISCRETE_SIGNALS_TEXT_TITLES_COMMON_TO_WORK_CREATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+        }
+        break;
+
+    case SYSTEM_COMPONENTS_CREATE_DISCRETE_SIGNALS_TEXT_TITLES_COMMON_TO_WORK_CREATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+        std::cout << "CConfigurationCreate::Fsm SYSTEM_COMPONENTS_CREATE_DISCRETE_SIGNALS_TEXT_TITLES_COMMON_TO_WORK_CREATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        {
+//            CDataContainerDataBase* pxCustomerDataContainer =
+//                (CDataContainerDataBase*)GetCustomerDataContainerPointer();
+//
+//            uint16_t  uiLength = sizeof(struct TConfigDataPackOne);
+//            memcpy(pxCustomerDataContainer -> m_puiDataPointer,
+//                   (uint8_t*)(GetResources() -> GetDeviceConfigSearchPointer()),
+//                   uiLength);
+//            pxCustomerDataContainer -> m_uiDataLength =
+//                uiLength;
+//
+//            TConfigDataPackOne* pxDeviceConfigSearch =
+//                (TConfigDataPackOne*)
+//                (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer);
+
+//            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(SYSTEM_COMPONENTS_CREATE_DISCRETE_SIGNALS_ALARM_HANDLERS_CREATE_START);
+        }
+        break;
+
+    case SYSTEM_COMPONENTS_CREATE_DISCRETE_SIGNALS_TEXT_TITLES_COMMON_TO_WORK_CREATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+        std::cout << "CDiscreteSignals::Fsm SYSTEM_COMPONENTS_CREATE_DISCRETE_SIGNALS_TEXT_TITLES_COMMON_TO_WORK_CREATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
         {
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
             SetFsmState(DONE_ERROR);

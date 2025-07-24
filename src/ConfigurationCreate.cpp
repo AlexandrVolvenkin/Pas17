@@ -363,51 +363,97 @@ uint8_t CConfigurationCreate::Fsm(void)
         }
         break;
 
-//-------------------------------------------------------------------------------
-    case CONFIGURATION_CREATE_DISCRETE_SIGNALS_SERVICE_DATA_CREATE_START:
-        std::cout << "CConfigurationCreate::Fsm CONFIGURATION_CREATE_DISCRETE_SIGNALS_SERVICE_DATA_CREATE_START"  << std::endl;
-        {
-            uint8_t uiDiscreteSignalsId =
-                GetResources() ->
-                GetTaskIdByNameFromMap("DiscreteSignals");
+////-------------------------------------------------------------------------------
+//    case CONFIGURATION_CREATE_DISCRETE_SIGNALS_SERVICE_DATA_CREATE_START:
+//        std::cout << "CConfigurationCreate::Fsm CONFIGURATION_CREATE_DISCRETE_SIGNALS_SERVICE_DATA_CREATE_START"  << std::endl;
+//        {
+//            uint8_t uiDiscreteSignalsId =
+//                GetResources() ->
+//                GetTaskIdByNameFromMap("DiscreteSignals");
+//
+//            CDataContainerDataBase* pxDataContainer =
+//                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+//            pxDataContainer -> m_uiTaskId = uiDiscreteSignalsId;
+//            pxDataContainer -> m_uiFsmCommandState =
+//                CDiscreteSignals::DISCRETE_SIGNALS_CREATE_SERVICE_DATA_CREATE_START;
+//            pxDataContainer -> m_puiDataPointer =
+//                (uint8_t*)(GetResources() -> GetDeviceConfigSearchPointer());
+//
+//            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+//            SetFsmNextStateDoneOk(CONFIGURATION_CREATE_DISCRETE_SIGNALS_SERVICE_DATA_CREATE_EXECUTOR_ANSWER_PROCESSING);
+//            SetFsmNextStateReadyWaitingError(DONE_ERROR);
+//            SetFsmNextStateDoneWaitingError(DONE_ERROR);
+//            SetFsmNextStateDoneWaitingDoneError(DONE_ERROR);
+//        }
+//        break;
+//
+//    case CONFIGURATION_CREATE_DISCRETE_SIGNALS_SERVICE_DATA_CREATE_EXECUTOR_ANSWER_PROCESSING:
+//        std::cout << "CConfigurationCreate::Fsm CONFIGURATION_CREATE_DISCRETE_SIGNALS_SERVICE_DATA_CREATE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
+//        {
+//            CDataContainerDataBase* pxCustomerDataContainer =
+//                (CDataContainerDataBase*)GetCustomerDataContainerPointer();
+//
+//            uint16_t  uiLength = sizeof(struct TConfigDataPackOne);
+//            memcpy(pxCustomerDataContainer -> m_puiDataPointer,
+//                   (uint8_t*)(GetResources() -> GetDeviceConfigSearchPointer()),
+//                   uiLength);
+//            pxCustomerDataContainer -> m_uiDataLength =
+//                uiLength;
+//
+//            TConfigDataPackOne* pxDeviceConfigSearch =
+//                (TConfigDataPackOne*)
+//                (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer);
+//
+//            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+//            SetFsmState(DONE_OK);
+//        }
+//        break;
 
-            CDataContainerDataBase* pxDataContainer =
-                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-            pxDataContainer -> m_uiTaskId = uiDiscreteSignalsId;
-            pxDataContainer -> m_uiFsmCommandState =
-                CDiscreteSignals::DISCRETE_SIGNALS_CREATE_SERVICE_DATA_CREATE_START;
-            pxDataContainer -> m_puiDataPointer =
-                (uint8_t*)(GetResources() -> GetDeviceConfigSearchPointer());
-
-            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
-            SetFsmNextStateDoneOk(CONFIGURATION_CREATE_DISCRETE_SIGNALS_SERVICE_DATA_CREATE_EXECUTOR_ANSWER_PROCESSING);
-            SetFsmNextStateReadyWaitingError(DONE_ERROR);
-            SetFsmNextStateDoneWaitingError(DONE_ERROR);
-            SetFsmNextStateDoneWaitingDoneError(DONE_ERROR);
-        }
-        break;
-
-    case CONFIGURATION_CREATE_DISCRETE_SIGNALS_SERVICE_DATA_CREATE_EXECUTOR_ANSWER_PROCESSING:
-        std::cout << "CConfigurationCreate::Fsm CONFIGURATION_CREATE_DISCRETE_SIGNALS_SERVICE_DATA_CREATE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
-        {
-            CDataContainerDataBase* pxCustomerDataContainer =
-                (CDataContainerDataBase*)GetCustomerDataContainerPointer();
-
-            uint16_t  uiLength = sizeof(struct TConfigDataPackOne);
-            memcpy(pxCustomerDataContainer -> m_puiDataPointer,
-                   (uint8_t*)(GetResources() -> GetDeviceConfigSearchPointer()),
-                   uiLength);
-            pxCustomerDataContainer -> m_uiDataLength =
-                uiLength;
-
-            TConfigDataPackOne* pxDeviceConfigSearch =
-                (TConfigDataPackOne*)
-                (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer);
-
-            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-            SetFsmState(DONE_OK);
-        }
-        break;
+////-------------------------------------------------------------------------------
+//    case CONFIGURATION_CREATE_DISCRETE_SIGNALS_TEXT_TITLES_COMMON_TO_WORK_CREATE_START:
+//        std::cout << "CConfigurationCreate::Fsm CONFIGURATION_CREATE_DISCRETE_SIGNALS_TEXT_TITLES_COMMON_TO_WORK_CREATE_START"  << std::endl;
+//        {
+//            uint8_t uiDiscreteSignalsId =
+//                GetResources() ->
+//                GetTaskIdByNameFromMap("DiscreteSignals");
+//
+//            CDataContainerDataBase* pxDataContainer =
+//                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+//            pxDataContainer -> m_uiTaskId = uiDiscreteSignalsId;
+//            pxDataContainer -> m_uiFsmCommandState =
+//                CDiscreteSignals::DISCRETE_SIGNALS_CREATE_SERVICE_DATA_CREATE_START;
+//            pxDataContainer -> m_puiDataPointer =
+//                (uint8_t*)(GetResources() -> GetDeviceConfigSearchPointer());
+//
+//            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+//            SetFsmNextStateDoneOk(CONFIGURATION_CREATE_DISCRETE_SIGNALS_TEXT_TITLES_COMMON_TO_WORK_CREATE_EXECUTOR_ANSWER_PROCESSING);
+//            SetFsmNextStateReadyWaitingError(DONE_ERROR);
+//            SetFsmNextStateDoneWaitingError(DONE_ERROR);
+//            SetFsmNextStateDoneWaitingDoneError(DONE_ERROR);
+//        }
+//        break;
+//
+//    case CONFIGURATION_CREATE_DISCRETE_SIGNALS_TEXT_TITLES_COMMON_TO_WORK_CREATE_EXECUTOR_ANSWER_PROCESSING:
+//        std::cout << "CConfigurationCreate::Fsm CONFIGURATION_CREATE_DISCRETE_SIGNALS_TEXT_TITLES_COMMON_TO_WORK_CREATE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
+//        {
+//            CDataContainerDataBase* pxCustomerDataContainer =
+//                (CDataContainerDataBase*)GetCustomerDataContainerPointer();
+//
+//            uint16_t  uiLength = sizeof(struct TConfigDataPackOne);
+//            memcpy(pxCustomerDataContainer -> m_puiDataPointer,
+//                   (uint8_t*)(GetResources() -> GetDeviceConfigSearchPointer()),
+//                   uiLength);
+//            pxCustomerDataContainer -> m_uiDataLength =
+//                uiLength;
+//
+//            TConfigDataPackOne* pxDeviceConfigSearch =
+//                (TConfigDataPackOne*)
+//                (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer);
+//
+//            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+//            SetFsmState(DONE_OK);
+//        }
+//        break;
 
 //-------------------------------------------------------------------------------
     case CONFIGURATION_REQUEST_START:

@@ -58,12 +58,12 @@ public:
 //-------------------------------------------------------------------------------
 //private:
 protected:
-    const char *m_pccDeviceName;
+    const char* m_pccDeviceName;
     /* Socket or file descriptor */
     int32_t m_iDeviceDescriptorServer;
 
-    uint8_t *m_puiClientToServerBuffer;
-    uint8_t *m_puiServerToClientBuffer;
+    uint8_t* m_puiClientToServerBuffer;
+    uint8_t* m_puiServerToClientBuffer;
 };
 
 //-------------------------------------------------------------------------------

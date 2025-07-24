@@ -198,6 +198,17 @@ void CDiscreteSignals::Allocate(void)
 //    GetResources() ->
 //    m_uiUsedDiscreteSignalsDescriptionWork +=
 //        ANALOGUE_INPUT_MODULE_REPER_POINTS_ADC_DATA_BASE_BLOCK_LENGTH;
+
+
+    // Получим указатель на место в рабочем массиве текстовых реквизитов дискретных сигналов для текущего модуля.
+    m_pxDiscreteSygnalTextTitlesWork =
+        &(GetResources() ->
+          m_pxDiscreteSygnalTextTitlesWork[GetResources() ->
+                                                          m_uiUsedDiscreteSygnalTextTitlesWork]);
+//    // Увеличим общий объём выделенной памяти.
+//    GetResources() ->
+//    m_uiUsedDiscreteSygnalTextTitlesWork +=
+//        ANALOGUE_INPUT_MODULE_REPER_POINTS_ADC_DATA_BASE_BLOCK_LENGTH;
 //
 //    m_uiBadAnswerCounter = 0;
 }
@@ -726,6 +737,40 @@ void CDiscreteSignals::ProgrammedDiscreteSignalsNumberCount(void)
 //        nucModuleCounter;
 }
 
+//-----------------------------------------------------------------------------------------------------
+// преобразовывает из общего формата базы данных, в формат хранения в RAM.
+// база данных в приборе - это массив, длиной 100 блоков. каждый блок 256 байт.
+// блоки баз данных модулей, дискретных сигналов, функциональных блоков и др., имеют различный рамер.
+// базы данных модулей, дискретных сигналов, функциональных блоков и др., могут занимать несколько блоков.
+// чтобы иметь возможность "плоской" адресации к описателям объектов, делается преобразование.
+void CDiscreteSignals::DiscreteSignalsTextTitlesDataBlockCommonFormatToWork(void)
+{
+    std::cout << "CDiscreteSignals::DiscreteSignalsTextTitlesDataBlockCommonFormatToWork 1"  << std::endl;
+//    TDiscreteSygnalTextTitle *pxDiscreteSygnalTextTitlesWork;
+//    TDiscreteSygnalTextTitlePackOne *pxDiscreteSygnalTextTitlesWorkPackOne;
+//
+//    // получим указатель на рабочий массив текстовых реквизитов дискретных сигналов.
+//    pxDiscreteSygnalTextTitlesWork = m_pxDiscreteSygnalTextTitlesWork;
+//
+//    // получим указатель на базу данных прибора в общем формате.
+//    pxDiscreteSygnalTextTitlesWorkPackOne =
+//        (TDiscreteSygnalTextTitlePackOne*)m_puiIntermediateBuff;
+//
+//    // преобразуем из общего формата базы данных, в формат хранения в RAM.
+//    for (int i = 0;
+//            i < 16;
+//            i++)
+//    {
+//        memset(pxDiscreteSygnalTextTitlesWork[i].acTextDescriptor,
+//               0,
+//               (DISCRETE_SYGNAL_NAME_LENGTH + END_OF_STRING_LENGTH));
+//
+//        memcpy(pxDiscreteSygnalTextTitlesWork[i].acTextDescriptor,
+//               pxDiscreteSygnalTextTitlesWorkPackOne[i].acTextDescriptor,
+//               DISCRETE_SYGNAL_NAME_LENGTH);
+//    }
+}
+
 //-------------------------------------------------------------------------------
 void CDiscreteSignals::ServiceDataCreate(void)
 {
@@ -1231,6 +1276,49 @@ uint8_t CDiscreteSignals::Fsm(void)
 
     case DISCRETE_SIGNALS_CREATE_SERVICE_DATA_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
         std::cout << "CDiscreteSignals::Fsm DISCRETE_SIGNALS_CREATE_SERVICE_DATA_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        {
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+            SetFsmState(DONE_ERROR);
+        }
+        break;
+
+//-------------------------------------------------------------------------------
+    case DISCRETE_SIGNALS_TEXT_TITLES_COMMON_TO_WORK_START:
+        std::cout << "CDiscreteSignals::Fsm DISCRETE_SIGNALS_TEXT_TITLES_COMMON_TO_WORK_START"  << std::endl;
+        {
+            uint8_t uiDataStoreId =
+                GetResources() ->
+                GetTaskIdByNameFromMap("DataStoreFileSystem");
+
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            pxDataContainer -> m_uiTaskId = uiDataStoreId;
+            pxDataContainer -> m_uiFsmCommandState =
+                CDataStore::READ_BLOCK_DATA_START;
+            // текстовые реквизиты дискретных сигналов блок 40
+            pxDataContainer -> m_uiDataIndex = TEXT_TITLES_DATA_BASE_BLOCK_OFFSET;
+            pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+            SetFsmNextStateDoneOk(DISCRETE_SIGNALS_CREATE_SERVICE_DATA_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+            SetFsmNextStateReadyWaitingError(DISCRETE_SIGNALS_CREATE_SERVICE_DATA_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingError(DISCRETE_SIGNALS_CREATE_SERVICE_DATA_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingDoneError(DISCRETE_SIGNALS_CREATE_SERVICE_DATA_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+        }
+        break;
+
+    case DISCRETE_SIGNALS_TEXT_TITLES_COMMON_TO_WORK_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+        std::cout << "CDiscreteSignals::Fsm DISCRETE_SIGNALS_TEXT_TITLES_COMMON_TO_WORK_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        {
+            DiscreteSignalsTextTitlesDataBlockCommonFormatToWork();
+
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(DONE_OK);
+        }
+        break;
+
+    case DISCRETE_SIGNALS_TEXT_TITLES_COMMON_TO_WORK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+        std::cout << "CDiscreteSignals::Fsm DISCRETE_SIGNALS_TEXT_TITLES_COMMON_TO_WORK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
         {
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
             SetFsmState(DONE_ERROR);

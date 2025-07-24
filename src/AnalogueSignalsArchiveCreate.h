@@ -68,8 +68,8 @@ private:
 //    uint8_t* m_puiAnalogueInputsState;
 //    uint8_t* m_puiAnalogueInputsOff;
 //    uint8_t* m_puiAnalogueInputsBadState;
-    uint16_t *m_puiHoldingRegisters;
-    uint16_t *m_puiInputRegisters;
+    uint16_t* m_puiHoldingRegisters;
+    uint16_t* m_puiInputRegisters;
 
     uint8_t* m_puiSerialAndId;
 

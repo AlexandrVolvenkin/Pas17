@@ -129,7 +129,7 @@ struct TGpioControl
 //    static void ClearPin(uint8_t ucPortN, uint8_t ucPinN);
 //
 //private:
-////    const char *m_pccDeviceName;
+////    const char* m_pccDeviceName;
 //    /* Socket or file descriptor */
 //    static int32_t m_iDeviceDescriptorServer;
 //    static TGpioControl m_xGpioControl;

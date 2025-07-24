@@ -141,10 +141,10 @@ public:
 //    uint8_t* m_puiAnalogueInputDescriptionWork;
     uint32_t m_uiUsedAnalogueInputDescriptionWork;
 
-    struct TDiscreteSignalsDescriptionWork *m_pxDiscreteSignalsDescriptionWork;
+    struct TDiscreteSignalsDescriptionWork* m_pxDiscreteSignalsDescriptionWork;
     uint32_t m_uiUsedDiscreteSignalsDescriptionWork;
 
-    TDiscreteSygnalTextTitle *m_pxDiscreteSygnalTextTitlesWork;
+    TDiscreteSygnalTextTitle* m_pxDiscreteSygnalTextTitlesWork;
     uint32_t m_uiUsedDiscreteSygnalTextTitlesWork;
 
     // Массив управления модулями дискретных выходов(реле).

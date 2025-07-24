@@ -237,8 +237,8 @@ protected:
     CLinkInterface* m_pxCommandDataLink;
     CLinkInterface* m_pxOperatingDataLink;
 
-    uint16_t *m_puiHoldingRegisters;
-    uint16_t *m_puiInputRegisters;
+    uint16_t* m_puiHoldingRegisters;
+    uint16_t* m_puiInputRegisters;
 
     uint8_t* m_puiIntermediateBuff;
     bool m_fbIsConfigurationConfirmed = false;

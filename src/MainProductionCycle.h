@@ -262,10 +262,10 @@ private:
 
     CDataContainerDataBase* m_pxOperatingDataContainer;
 
-    uint8_t *m_puiCoils;
-    uint8_t *m_puiDiscreteInputs;
-    uint16_t *m_puiHoldingRegisters;
-    uint16_t *m_puiInputRegisters;
+    uint8_t* m_puiCoils;
+    uint8_t* m_puiDiscreteInputs;
+    uint16_t* m_puiHoldingRegisters;
+    uint16_t* m_puiInputRegisters;
     uint16_t m_uiCoilsNumber;
     uint16_t m_uiDiscreteInputsNumber;
     uint16_t m_uiHoldingRegistersNumber;

@@ -33,64 +33,64 @@ class CDeviceControl;
 class CDiscreteSignals;
 
 
-//-------------------------------------------------------------------------------
-// структура описателя одной размерности.
-// для сериализации, разбора данных полученных по интерфейсам передачи данных.
-#pragma pack(push)
-#pragma pack(1)
-// структура описателя одной размерности.
-// после преобразования из общего формата базы данных.
-struct TDimentionParameterPackOne
-{
-    // Текстовый реквизит размерности – 6 символов ASCII.
-    char acDimentionParameterText[DIMENSIONS_PARAMETERS_NAME_LENGTH];
-};
-#pragma pack(pop)
-
-// структура описателя одной размерности.
-struct TDimentionParameter
-{
-    // Текстовый реквизит размерности – 6 символов ASCII, плюс нуль - признак конца строки.
-    char acDimentionParameterText[DIMENSIONS_PARAMETERS_NAME_LENGTH + END_OF_STRING_LENGTH];
-};
-
-//-------------------------------------------------------------------------------
-// Структура описателей - "Текстовый реквизит дискретного сигнала", в базе данных.
-// для сериализации, разбора данных полученных по интерфейсам передачи данных.
-#pragma pack(push)
-#pragma pack(1)
-struct TDiscreteSygnalTextTitlePackOne
-{
-    // Текстовый реквизит дискретного сигнала – 14 символов ASCII.
-    char acTextDescriptor[DISCRETE_SYGNAL_NAME_LENGTH];
-};
-#pragma pack(pop)
-
-// Структура описателей - "Текстовый реквизит дискретного сигнала", в базе данных.
-struct TDiscreteSygnalTextTitle
-{
-// Текстовый реквизит дискретного сигнала – 14 символов ASCII, плюс нуль - признак конца строки.
-    char acTextDescriptor[DISCRETE_SYGNAL_NAME_LENGTH + END_OF_STRING_LENGTH];
-};
-
-//-------------------------------------------------------------------------------
-// Структура описателей - "Текстовый реквизит аналогового сигнала", в базе данных.
-// для сериализации, разбора данных полученных по интерфейсам передачи данных.
-#pragma pack(push)
-#pragma pack(1)
-struct TAnalogoueSignalsTextTitlePackOne
-{
-    // Текстовый реквизит аналогового сигнала – 35 символов ASCII.
-    char acTextDescriptor[ANALOGUE_SYGNAL_NAME_LENGTH];
-};
-#pragma pack(pop)
-
-// Структура описателей - "Текстовый реквизит аналогового сигнала", в базе данных.
-struct TAnalogoueSignalsTextTitle
-{
-// Текстовый реквизит аналогового сигнала – 35 символов ASCII, плюс нуль - признак конца строки.
-    char acTextDescriptor[ANALOGUE_SYGNAL_NAME_LENGTH + END_OF_STRING_LENGTH];
-};
+////-------------------------------------------------------------------------------
+//// структура описателя одной размерности.
+//// для сериализации, разбора данных полученных по интерфейсам передачи данных.
+//#pragma pack(push)
+//#pragma pack(1)
+//// структура описателя одной размерности.
+//// после преобразования из общего формата базы данных.
+//struct TDimentionParameterPackOne
+//{
+//    // Текстовый реквизит размерности – 6 символов ASCII.
+//    char acDimentionParameterText[DIMENSIONS_PARAMETERS_NAME_LENGTH];
+//};
+//#pragma pack(pop)
+//
+//// структура описателя одной размерности.
+//struct TDimentionParameter
+//{
+//    // Текстовый реквизит размерности – 6 символов ASCII, плюс нуль - признак конца строки.
+//    char acDimentionParameterText[DIMENSIONS_PARAMETERS_NAME_LENGTH + END_OF_STRING_LENGTH];
+//};
+//
+////-------------------------------------------------------------------------------
+//// Структура описателей - "Текстовый реквизит дискретного сигнала", в базе данных.
+//// для сериализации, разбора данных полученных по интерфейсам передачи данных.
+//#pragma pack(push)
+//#pragma pack(1)
+//struct TDiscreteSygnalTextTitlePackOne
+//{
+//    // Текстовый реквизит дискретного сигнала – 14 символов ASCII.
+//    char acTextDescriptor[DISCRETE_SYGNAL_NAME_LENGTH];
+//};
+//#pragma pack(pop)
+//
+//// Структура описателей - "Текстовый реквизит дискретного сигнала", в базе данных.
+//struct TDiscreteSygnalTextTitle
+//{
+//// Текстовый реквизит дискретного сигнала – 14 символов ASCII, плюс нуль - признак конца строки.
+//    char acTextDescriptor[DISCRETE_SYGNAL_NAME_LENGTH + END_OF_STRING_LENGTH];
+//};
+//
+////-------------------------------------------------------------------------------
+//// Структура описателей - "Текстовый реквизит аналогового сигнала", в базе данных.
+//// для сериализации, разбора данных полученных по интерфейсам передачи данных.
+//#pragma pack(push)
+//#pragma pack(1)
+//struct TAnalogoueSignalsTextTitlePackOne
+//{
+//    // Текстовый реквизит аналогового сигнала – 35 символов ASCII.
+//    char acTextDescriptor[ANALOGUE_SYGNAL_NAME_LENGTH];
+//};
+//#pragma pack(pop)
+//
+//// Структура описателей - "Текстовый реквизит аналогового сигнала", в базе данных.
+//struct TAnalogoueSignalsTextTitle
+//{
+//// Текстовый реквизит аналогового сигнала – 35 символов ASCII, плюс нуль - признак конца строки.
+//    char acTextDescriptor[ANALOGUE_SYGNAL_NAME_LENGTH + END_OF_STRING_LENGTH];
+//};
 
 //-------------------------------------------------------------------------------
 class CDataBaseCreate : public CTask
@@ -152,12 +152,14 @@ public:
     void SetInternalModuleMuvrName(std::string sName);
     void SetDeviceControlName(std::string sName);
 
+    void Allocate(void);
     uint8_t Init(void);
     uint8_t Fsm(void);
 
 private:
     void DimentionsParametersDataBaseCreate(uint8_t* puiBlockDataPointer);
     void AnalogoueInputModuleDiscreteSignalsTextTitlesCreate(uint8_t* puiBlockDataPointer);
+//    void AnalogoueInputModuleDiscreteSignalsTextTitlesDataBlockCommonFormatToWork(void);
     void AnalogoueInputModuleAnalogoueSignalsTextTitlesCreate(uint8_t* puiBlockDataPointer);
     void MuvrCurrentOutputsDataBaseCreate(uint8_t* puiBlockDataPointer);
 
@@ -176,6 +178,8 @@ private:
 
     uint8_t* m_puiIntermediateBuff;
     uint8_t m_uiBlocksCounter;
+
+//    TDiscreteSygnalTextTitle* m_pxDiscreteSygnalTextTitlesWork;
 
 };
 

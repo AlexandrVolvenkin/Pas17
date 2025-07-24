@@ -75,11 +75,11 @@ public:
 
     static const uint8_t BUFFER_LENGTH = 64;
 private:
-    const char *m_pccDeviceName;
+    const char* m_pccDeviceName;
     /* Socket or file descriptor */
     int32_t m_iDeviceDescriptorServer;
     static const uint8_t aui8ModuleSlotNumberToSpiAddressMatching[SPI_MAX_BUS_ADDRESS];
-    const char *m_pccSemaphoreKeyFileName = "Spi0Semaphore.sem";
+    const char* m_pccSemaphoreKeyFileName = "Spi0Semaphore.sem";
     int m_iSpi0SemaphoreId;
 //    CSemaphore xSpi0Semaphore(12345, 1);
     CSemaphore* m_pxSpi0Semaphore;

@@ -158,6 +158,10 @@ public:
         DISCRETE_SIGNALS_CREATE_SERVICE_DATA_EXECUTOR_DONE_OK_ANSWER_PROCESSING,
         DISCRETE_SIGNALS_CREATE_SERVICE_DATA_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING,
 
+        DISCRETE_SIGNALS_TEXT_TITLES_COMMON_TO_WORK_START,
+        DISCRETE_SIGNALS_TEXT_TITLES_COMMON_TO_WORK_EXECUTOR_DONE_OK_ANSWER_PROCESSING,
+        DISCRETE_SIGNALS_TEXT_TITLES_COMMON_TO_WORK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING,
+
         DISCRETE_SIGNALS_CREATE_ALARM_HANDLERS_START,
         DISCRETE_SIGNALS_CREATE_ALARM_HANDLERS_EXECUTOR_DONE_OK_ANSWER_PROCESSING,
         DISCRETE_SIGNALS_CREATE_ALARM_HANDLERS_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING,
@@ -184,6 +188,7 @@ public:
     void DiscreteSignalsDataBlockCommonFormatToWork(void);
     uint8_t DiscreteSignalsDataBaseCrcCheck(TDiscreteSignalsDescriptionWork *pxDiscreteSignalsDataBase);
     void ProgrammedDiscreteSignalsNumberCount(void);
+    void DiscreteSignalsTextTitlesDataBlockCommonFormatToWork(void);
     void ServiceDataCreate(void);
     void CreateAlarmHandlers(void);
     void AlarmHandlersProcessing(void);
@@ -216,7 +221,8 @@ private:
 
     uint8_t* m_puiDiscreteInputsState;
     uint8_t* m_puiDiscreteInputsBadState;
-    TDiscreteSignalsDescriptionWork *m_pxDiscreteSignalsDescriptionWork;
+    TDiscreteSignalsDescriptionWork* m_pxDiscreteSignalsDescriptionWork;
+    TDiscreteSygnalTextTitle* m_pxDiscreteSygnalTextTitlesWork;
     uint8_t m_uiBlocksCounter;
 
     uint8_t* m_puiIntermediateBuff;

@@ -114,6 +114,7 @@ void CResources::ModbusWorkingArraysDestroy(void)
     delete[] m_puiHoldingRegisters;
     delete[] m_puiInputRegisters;
     delete[] m_puiSerialAndId;
+    delete[] m_pxDiscreteSygnalTextTitlesWork;
 }
 
 //-------------------------------------------------------------------------------
@@ -322,6 +323,10 @@ void CResources::Allocate(void)
     // Обнулим общий объём выделенной памяти.
     m_uiUsedDiscreteSignalsDescriptionWork = 0;
     m_pxDiscreteSignalsDescriptionWork = new TDiscreteSignalsDescriptionWork[MAX_HANDLED_DISCRETE_INPUT];
+
+    // Обнулим общий объём выделенной памяти.
+    m_uiUsedDiscreteSygnalTextTitlesWork = 0;
+    m_pxDiscreteSygnalTextTitlesWork = new TDiscreteSygnalTextTitle[MAX_HANDLED_DISCRETE_INPUT];
 
 
     // Обнулим общий объём выделенной памяти.

@@ -201,15 +201,15 @@ public:
     const static uint16_t m_uiConfirmationTimeout = 500;
     const static uint16_t m_uiTransmitDelayTimeout = 5;
 
-    uint8_t *m_puiRxBuffer;
-    uint8_t *m_puiTxBuffer;
+    uint8_t* m_puiRxBuffer;
+    uint8_t* m_puiTxBuffer;
     // Вспомогательный буфер.
     uint8_t* m_puiIntermediateBuff;
 
-    uint8_t *m_puiCoils;
-    uint8_t *m_puiDiscreteInputs;
-    uint16_t *m_puiHoldingRegisters;
-    uint16_t *m_puiInputRegisters;
+    uint8_t* m_puiCoils;
+    uint8_t* m_puiDiscreteInputs;
+    uint16_t* m_puiHoldingRegisters;
+    uint16_t* m_puiInputRegisters;
     uint16_t m_uiCoilsNumber;
     uint16_t m_uiDiscreteInputsNumber;
     uint16_t m_uiHoldingRegistersNumber;

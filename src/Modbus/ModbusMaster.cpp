@@ -137,7 +137,7 @@ void CModbusMaster::WorkingArraysInit(void)
 //-------------------------------------------------------------------------------
 uint16_t CModbusMaster::ByteToBitPack(uint16_t uiAddress,
                                       uint16_t uiNumberB,
-                                      uint8_t *m_puiCoils,
+                                      uint8_t* puiCoils,
                                       uint8_t *puiResponse,
                                       uint16_t uiLength)
 {
@@ -145,7 +145,7 @@ uint16_t CModbusMaster::ByteToBitPack(uint16_t uiAddress,
     uint8_t uiShift = 0;
     for (uint16_t i = 0; i < uiNumberB; i++)
     {
-        if (m_puiCoils[uiAddress++])
+        if (puiCoils[uiAddress++])
         {
             uiData |= (1 << uiShift);
         }

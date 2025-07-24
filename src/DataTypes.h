@@ -315,5 +315,63 @@ struct TAnalogueSignalsArchiveHourData
 //        // массив с данными событий произошедших в одном цикле.
 //        TOccuredEventsDataBriefly axOccuredEventsData[ONE_CYCLE_OCCURED_EVENTS_MAXIMUM_NUMBER];
 //    };
+//-------------------------------------------------------------------------------
+// структура описател€ одной размерности.
+// дл€ сериализации, разбора данных полученных по интерфейсам передачи данных.
+#pragma pack(push)
+#pragma pack(1)
+// структура описател€ одной размерности.
+// после преобразовани€ из общего формата базы данных.
+struct TDimentionParameterPackOne
+{
+    // “екстовый реквизит размерности Ц 6 символов ASCII.
+    char acDimentionParameterText[DIMENSIONS_PARAMETERS_NAME_LENGTH];
+};
+#pragma pack(pop)
+
+// структура описател€ одной размерности.
+struct TDimentionParameter
+{
+    // “екстовый реквизит размерности Ц 6 символов ASCII, плюс нуль - признак конца строки.
+    char acDimentionParameterText[DIMENSIONS_PARAMETERS_NAME_LENGTH + END_OF_STRING_LENGTH];
+};
+
+//-------------------------------------------------------------------------------
+// —труктура описателей - "“екстовый реквизит дискретного сигнала", в базе данных.
+// дл€ сериализации, разбора данных полученных по интерфейсам передачи данных.
+#pragma pack(push)
+#pragma pack(1)
+struct TDiscreteSygnalTextTitlePackOne
+{
+    // “екстовый реквизит дискретного сигнала Ц 14 символов ASCII.
+    char acTextDescriptor[DISCRETE_SYGNAL_NAME_LENGTH];
+};
+#pragma pack(pop)
+
+// —труктура описателей - "“екстовый реквизит дискретного сигнала", в базе данных.
+struct TDiscreteSygnalTextTitle
+{
+// “екстовый реквизит дискретного сигнала Ц 14 символов ASCII, плюс нуль - признак конца строки.
+    char acTextDescriptor[DISCRETE_SYGNAL_NAME_LENGTH + END_OF_STRING_LENGTH];
+};
+
+//-------------------------------------------------------------------------------
+// —труктура описателей - "“екстовый реквизит аналогового сигнала", в базе данных.
+// дл€ сериализации, разбора данных полученных по интерфейсам передачи данных.
+#pragma pack(push)
+#pragma pack(1)
+struct TAnalogoueSignalsTextTitlePackOne
+{
+    // “екстовый реквизит аналогового сигнала Ц 35 символов ASCII.
+    char acTextDescriptor[ANALOGUE_SYGNAL_NAME_LENGTH];
+};
+#pragma pack(pop)
+
+// —труктура описателей - "“екстовый реквизит аналогового сигнала", в базе данных.
+struct TAnalogoueSignalsTextTitle
+{
+// “екстовый реквизит аналогового сигнала Ц 35 символов ASCII, плюс нуль - признак конца строки.
+    char acTextDescriptor[ANALOGUE_SYGNAL_NAME_LENGTH + END_OF_STRING_LENGTH];
+};
 
 #endif // DATATYPES_H_INCLUDED

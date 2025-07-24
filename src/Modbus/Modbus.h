@@ -311,13 +311,13 @@ typedef enum
 //    uint16_t m_uiQuantity;
 //    uint16_t m_uiMessageLength;
 //
-//    uint8_t *m_puiRxBuffer;
-//    uint8_t *m_puiTxBuffer;
+//    uint8_t* m_puiRxBuffer;
+//    uint8_t* m_puiTxBuffer;
 //
-//    uint8_t *m_puiCoils;
-//    uint8_t *m_puiDiscreteInputs;
-//    uint16_t *m_puiHoldingRegisters;
-//    uint16_t *m_puiInputRegisters;
+//    uint8_t* m_puiCoils;
+//    uint8_t* m_puiDiscreteInputs;
+//    uint16_t* m_puiHoldingRegisters;
+//    uint16_t* m_puiInputRegisters;
 //    uint16_t m_uiCoilsNumber;
 //    uint16_t m_uiDiscreteInputsNumber;
 //    uint16_t m_uiHoldingRegistersNumber;
@@ -472,13 +472,13 @@ typedef enum
 //    uint16_t m_uiQuantity;
 //    uint16_t m_uiMessageLength;
 //
-//    uint8_t *m_puiRxBuffer;
-//    uint8_t *m_puiTxBuffer;
+//    uint8_t* m_puiRxBuffer;
+//    uint8_t* m_puiTxBuffer;
 //
-//    uint8_t *m_puiCoils;
-//    uint8_t *m_puiDiscreteInputs;
-//    uint16_t *m_puiHoldingRegisters;
-//    uint16_t *m_puiInputRegisters;
+//    uint8_t* m_puiCoils;
+//    uint8_t* m_puiDiscreteInputs;
+//    uint16_t* m_puiHoldingRegisters;
+//    uint16_t* m_puiInputRegisters;
 //    uint16_t m_uiCoilsNumber;
 //    uint16_t m_uiDiscreteInputsNumber;
 //    uint16_t m_uiHoldingRegistersNumber;

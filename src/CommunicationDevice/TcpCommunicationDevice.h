@@ -72,8 +72,8 @@ public:
 //-------------------------------------------------------------------------------
 //private:
 //protected:
-    const char *m_pccDeviceName;
-    const char *m_pccIpAddress;
+    const char* m_pccDeviceName;
+    const char* m_pccIpAddress;
     uint32_t m_uiIpAddress;
     uint16_t m_uiPort;
     /* Socket or file descriptor */
