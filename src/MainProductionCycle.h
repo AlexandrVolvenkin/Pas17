@@ -49,6 +49,7 @@ class CEvents;
 class CEventsDB;
 class CArchiveEventsDB;
 
+
 //-------------------------------------------------------------------------------
 class CMainProductionCycle : public CTask
 {

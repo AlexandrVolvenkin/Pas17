@@ -11,12 +11,15 @@
 #include "Configuration.h"
 //#include "EventsDB.h"
 
-//class CEventsDB;
+class CTask;
+class CEventsDB;
+class CArchiveEventsDB;
 //class CAlarm;
 //class CAlarmDfa;
+extern CArchiveEventsDB xCArchiveEventsDB;
 
 //-----------------------------------------------------------------------------------------------------
-class CEvents
+class CEvents : public CTask
 {
 public:
     typedef enum

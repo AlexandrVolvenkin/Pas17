@@ -82,6 +82,26 @@ enum
 #define MUVR_ANSWER_DATA_NOT_READY 0x24
 #define MUVR_ANSWER_DATABASE_ERROR 0x25
 #define MUVR_ANSWER_REPER_POINTS_ADC_DATABASE_ERROR 0x26
+
+// был сброс или отключения питания, требуется загрузка предыдущего состояния регуляторов.
+#define MUVR_LOAD_OUTS 0x26
+// ошибка обмена данными с ЦАП модуля МТВИ.
+#define MUVR_DAC_LINK_ERROR 0x27
+// ошибка обмена данными с ЦАП модуля МТВИ.
+#define MUVR_OUT_DAC_ERROR 0x28
+// ошибка обмена данными с ЦАП модуля МТВИ.
+#define MUVR_OUT_DAC_ERROR_OFFSET 0x01
+// ошибка обмена данными с ЦАП модуля МТВИ.
+#define MUVR_NO_ERROR_OFFSET 0x00
+// ошибка обмена данными модуля МТВИ.
+#define MUVR_BAD_ANSWER_ERROR_OFFSET 0x00
+// ошибка цепочки ЦАП модуля МТВИ.
+#define MUVR_DAC_LINK_ERROR_OFFSET 0x0A
+// ошибка базы данных модуля МТВИ.
+#define MUVR_DATA_BASE_ERROR_OFFSET 0x0B
+// ошибка базы данных модуля МТВИ.
+#define MUVR_REPER_POINTS_DATA_BASE_ERROR_OFFSET 0x0C
+
 // $45 - запрос реперных точек и кода АЦП
 #define MUVR_GET_REPER_POINTS_ADC_DATA_COMMAND 0x45
 // код ошибки - модуль не отвечает. при запросе о результате программированния функцией Modbus 14 от программатора.

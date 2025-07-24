@@ -11,13 +11,13 @@
 
 #include <sqlite3.h>
 
-//#include "Events.h"
-class CEvents;
-class CTask;
+#include "Events.h"
+//class CEvents;
+//class CTask;
 
 //-----------------------------------------------------------------------------------------------------
 
-class CEventsDB : public CTask
+class CEventsDB// : public CTask
 {
 public:
     typedef enum
@@ -61,7 +61,7 @@ public:
     sqlite3 *db;
     // массив даных получаемых по запросу от СУБД.
     static char acQueryDataExchange[((EVENTS_DB_QUERY_COLUMN_LENGTH * EVENTS_DB_QUERY_COLUMN_QUANTITY) *
-                                     EVENTS_DB_QUERY_ROW_QUANTITY)];
+                                                                                                        EVENTS_DB_QUERY_ROW_QUANTITY)];
     // массив индексов смещения на строки в даных получаемых по запросу от СУБД.
     // данные по запросу поступают от СУБД в виде строк.
     // для данных каждой колонки  - своя строка.
@@ -87,7 +87,8 @@ public:
     virtual ~CEventsDB();
 
     static int Callback(void *, int, char **, char **);
-    int Connect(void);
+//    int Connect(void);
+    int Connect(uint8_t* puiSerialAndId);
     void Close(void);
     int SendQuery(char *);
     int DataBaseDataPush(class CEvents::TEventDataCommon *);
@@ -146,10 +147,10 @@ public:
     }
 
 };
-typedef CArchiveEventsDB CArchiveEventsDB;
+//typedef CArchiveEventsDB CArchiveEventsDB;
 //-----------------------------------------------------------------------------------------------------
 
-extern CArchiveEventsDB xCArchiveEventsDB;
+//extern CArchiveEventsDB xCArchiveEventsDB;
 
 
 

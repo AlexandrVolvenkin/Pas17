@@ -26,7 +26,7 @@
 using namespace std;
 
 //-----------------------------------------------------------------------------------------------------
-CArchiveEventsDB xCArchiveEventsDB;
+//CArchiveEventsDB xCArchiveEventsDB;
 char CEventsDB::acQueryDataExchange[];
 uint16_t CEventsDB::aui16QueryDataExchangeIndex[];
 uint16_t CEventsDB::ui16QueryDataExchangeIndex;
@@ -75,9 +75,92 @@ int CEventsDB::Callback(void *NotUsed, int argc, char **argv, char **azColName)
     return 0;
 }
 
+////-----------------------------------------------------------------------------------------------------
+//// открывает базу данных.
+//int CEventsDB::Connect(void)
+//{
+//    //std::cout << "CEventsDB::Connect 1"  << std::endl;
+//    int rc;
+//    char* zErrMsg = 0;
+//    char acQuery[512];
+//    const char *pccQuery;
+//
+//    // Получим указатель на буфер с серийным номером и идентификатором прибора.
+//    m_puiSerialAndId =
+//        (GetResources() -> m_puiSerialAndId);
+//
+//    std::string cSerialAndIdStr;
+//    // Копируем данные из m_puiSerialAndId в cSerialAndIdStr
+//    cSerialAndIdStr.assign((const char*)m_puiSerialAndId, SERIAL_AND_ID_DATA_BASE_BLOCK_LENGTH);
+//    // Создаем пути к папкам и файлу
+//    std::string sArchveFlashFile = "/home/debian/EventsArchive_" + cSerialAndIdStr + "_" + ".db";
+//
+//    rc = sqlite3_open(sArchveFlashFile.c_str(), &db);
+//    if (rc)
+//    {
+//        //std::cout << "CEventsDB::Connect 2"  << std::endl;
+//        cout << "Can't open database: " << sqlite3_errmsg(db) << endl;
+//        sqlite3_close(db);
+//        return 1;
+//    }
+//
+//    //std::cout << "CEventsDB::Connect 3"  << std::endl;
+//    // для проверки, запросим первое событие в базе данных.
+//    // если таблицы не существует, создадим.
+//    Cp1251ToUtf8(acQuery, \
+//                 "SELECT rowid FROM Events WHERE rowid = 1;");
+//    rc = sqlite3_exec(db,
+//                      (const char*)acQuery,
+//                      Callback,
+//                      0,
+//                      &zErrMsg);
+//    if (rc != SQLITE_OK)
+//    {
+//        //std::cout << "CEventsDB::Connect 4"  << std::endl;
+//        cout << "SQLite error: " << zErrMsg << endl;
+//        sqlite3_free(zErrMsg);
+//
+//        // создадим таблицу в базе данных.
+//        Cp1251ToUtf8(acQuery, \
+//                     "CREATE TABLE Events \
+//                     (TextData text, \
+//                     StateText text, \
+//                     Address INTEGER, \
+//                     Date date, \
+//                     Time time, \
+//                     Type INTEGER, \
+//                     State INTEGER);");
+//        rc = sqlite3_exec(db,
+//                          acQuery,
+//                          Callback,
+//                          0,
+//                          &zErrMsg);
+//
+//        if (rc != SQLITE_OK)
+//        {
+//            //std::cout << "CEventsDB::Connect 5"  << std::endl;
+//            cout << "CREATE TABLE Events SQLite error: " << zErrMsg << endl;
+//            sqlite3_free(zErrMsg);
+//            return 1;
+//        }
+//        else
+//        {
+//            //std::cout << "CEventsDB::Connect 6"  << std::endl;
+//            cout << "SQLite table create ok!" << endl;
+//            return 0;
+//        }
+//    }
+//    else
+//    {
+//        //std::cout << "CEventsDB::Connect 7"  << std::endl;
+//        cout << "SQLite open ok!" << endl;
+//        return 0;
+//    }
+//}
+
 //-----------------------------------------------------------------------------------------------------
 // открывает базу данных.
-int CEventsDB::Connect(void)
+int CEventsDB::Connect(uint8_t* puiSerialAndId)
 {
     //std::cout << "CEventsDB::Connect 1"  << std::endl;
     int rc;
@@ -85,13 +168,13 @@ int CEventsDB::Connect(void)
     char acQuery[512];
     const char *pccQuery;
 
-    // Получим указатель на буфер с серийным номером и идентификатором прибора.
-    m_puiSerialAndId =
-        (GetResources() -> m_puiSerialAndId);
+//    // Получим указатель на буфер с серийным номером и идентификатором прибора.
+//    m_puiSerialAndId =
+//        (GetResources() -> m_puiSerialAndId);
 
     std::string cSerialAndIdStr;
     // Копируем данные из m_puiSerialAndId в cSerialAndIdStr
-    cSerialAndIdStr.assign((const char*)m_puiSerialAndId, SERIAL_AND_ID_DATA_BASE_BLOCK_LENGTH);
+    cSerialAndIdStr.assign((const char*)puiSerialAndId, SERIAL_AND_ID_DATA_BASE_BLOCK_LENGTH);
     // Создаем пути к папкам и файлу
     std::string sArchveFlashFile = "/home/debian/EventsArchive_" + cSerialAndIdStr + "_" + ".db";
 

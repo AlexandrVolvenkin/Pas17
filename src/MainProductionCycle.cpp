@@ -69,6 +69,7 @@ uint8_t auiTempBlock[]
 };
 
 //CSpi xSpiCommunicationDevice;
+CArchiveEventsDB xCArchiveEventsDB;
 
 
 //-------------------------------------------------------------------------------
@@ -523,8 +524,8 @@ uint8_t CMainProductionCycle::CreateTasks(void)
     m_xResources.AddCurrentlyRunningTasksList(pxAnalogueSignalsArchiveCreate);
 //    m_pxAnalogueSignalsArchiveCreate = pxAnalogueSignalsArchiveCreate;
 
-//-------------------------------------------------------------------------------
-    xCArchiveEventsDB.SetResources(&m_xResources);
+////-------------------------------------------------------------------------------
+//    xCArchiveEventsDB.SetResources(&m_xResources);
 
 }
 
@@ -1314,7 +1315,7 @@ uint8_t CMainProductionCycle::Fsm(void)
         CurrentlyRunningTasksExecution();
 
         // откроем базу данных.
-        if (xCArchiveEventsDB.Connect())
+        if (xCArchiveEventsDB.Connect((GetResources() -> m_puiSerialAndId)))
         {
             // error.
         }
@@ -1489,6 +1490,26 @@ uint8_t CMainProductionCycle::Fsm(void)
     {
         CurrentlyRunningTasksExecution();
 
+        // откроем базу данных.
+        if (xCArchiveEventsDB.Connect((GetResources() -> m_puiSerialAndId)))
+        {
+            // error.
+        }
+
+        // создадим событие времени включени€ и выключени€
+        PlcOnOffEvetnsCreate();
+
+        // зарегистрируем активное состо€ние событи€.
+        CEvents::EventRegistration(
+            0,
+            (CEvents::HANDLED_EVENTS_CONFIGURATION_ERROR_TYPE |
+             CEvents::HANDLED_EVENTS_IS_POPUP |
+             CEvents::HANDLED_EVENTS_IS_SOUND |
+             CEvents::HANDLED_EVENTS_IS_OCCURED_ON_START |
+             CEvents::HANDLED_EVENTS_IS_ARCHIVE),
+            0,
+            "Ќекор. конфигураци€");
+
         m_xMainCycle100McTimer.Set(100);
         SetFsmState(INCORRECT_CONFIGURATION_ERROR_HANDLER_TIME_UPDATE_END_CYCLE_WAITING);
 
@@ -1537,7 +1558,7 @@ uint8_t CMainProductionCycle::Fsm(void)
         CurrentlyRunningTasksExecution();
 
         // откроем базу данных.
-        if (xCArchiveEventsDB.Connect())
+        if (xCArchiveEventsDB.Connect((GetResources() -> m_puiSerialAndId)))
         {
             // error.
         }
