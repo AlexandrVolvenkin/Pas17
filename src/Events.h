@@ -16,7 +16,11 @@ class CEventsDB;
 class CArchiveEventsDB;
 //class CAlarm;
 //class CAlarmDfa;
+class CDataContainerInterface;
+class CDataContainerDataBase;
+
 extern CArchiveEventsDB xCArchiveEventsDB;
+
 
 //-----------------------------------------------------------------------------------------------------
 class CEvents : public CTask
@@ -349,6 +353,9 @@ public:
     };
 
 //-----------------------------------------------------------------------------------------------------
+    CEvents();
+    virtual ~CEvents();
+
     void EventReset(int16_t );
     CEvents::TEventDataCommon*
     EventGetBuffer(void);
@@ -367,10 +374,14 @@ public:
     CEvents::TEventDataCommon* RequestedEventSearch(uint8_t );
     // обнуляет количество событий произошедших в одном цикле.
     static void OccuredEventsControlReset(void);
-    uint8_t EventOnIsNotRegistered(uint16_t , uint8_t );
-    uint8_t EventOffIsNotRegistered(uint16_t , uint8_t );
-    static void EventRegistration(uint16_t , uint8_t , uint8_t , char* );
+    uint8_t EventOnIsNotRegistered(uint16_t, uint8_t );
+    uint8_t EventOffIsNotRegistered(uint16_t, uint8_t );
+    static void EventRegistration(uint16_t, uint8_t, uint8_t, char* );
     static void EventsHandler(void);
+
+    uint8_t Init(void);
+//    uint8_t Fsm(void);
+    void Allocate(void);
 
 //-----------------------------------------------------------------------------------------------------
 //    // количество обрабатываемых событий одного типа.
@@ -409,6 +420,9 @@ public:
     int16_t ui16EventDataCommonPointersPopIndex;
     // объект управления произошедшими событиями.
     static TOccuredEventsControl xOccuredEventsControl;
+    TDiscreteSygnalTextTitle* m_pxDiscreteSygnalTextTitlesWork;
+
+    uint8_t* m_puiIntermediateBuff;
 };
 
 //-----------------------------------------------------------------------------------------------------
@@ -451,10 +465,10 @@ public:
 
 //-----------------------------------------------------------------------------------------------------
 public:
-    uint8_t EventOnIsNotRegistered(uint16_t , uint8_t );
-    uint8_t EventOffIsNotRegistered(uint16_t , uint8_t );
-    uint8_t EventOnIsNotRegistered(uint16_t , uint8_t , uint8_t );
-    uint8_t EventOffIsNotRegistered(uint16_t , uint8_t , uint8_t );
+    uint8_t EventOnIsNotRegistered(uint16_t, uint8_t );
+    uint8_t EventOffIsNotRegistered(uint16_t, uint8_t );
+    uint8_t EventOnIsNotRegistered(uint16_t, uint8_t, uint8_t );
+    uint8_t EventOffIsNotRegistered(uint16_t, uint8_t, uint8_t );
     void EventsCompleteInformationCreate(TOccuredEventsDataBriefly* );
 
 //-----------------------------------------------------------------------------------------------------
@@ -636,8 +650,8 @@ private:
     CEvents::TEventDataCommon axEventDataCommon[RECORDED_EVENTS_QUANTITY];
 
 public:
-    uint8_t EventOnIsNotRegistered(uint16_t , uint8_t );
-    uint8_t EventOffIsNotRegistered(uint16_t , uint8_t );
+    uint8_t EventOnIsNotRegistered(uint16_t, uint8_t );
+    uint8_t EventOffIsNotRegistered(uint16_t, uint8_t );
     void EventsCompleteInformationCreate(TOccuredEventsDataBriefly* );
 
 //-----------------------------------------------------------------------------------------------------

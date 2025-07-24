@@ -12,6 +12,8 @@
 #include <stdio.h>
 
 #include "Task.h"
+#include "Resources.h"
+#include "DataContainer.h"
 #include "Alarm.h"
 #include "EventsDB.h"
 #include "Events.h"
@@ -32,6 +34,179 @@ CInfoEvent xCInfoEvent;
 CEvents::TEventsLogQueryListPackOne CEvents::xEventsLogQueryList;
 //int16_t CEvents::i16EventsLogQueryListQuantity;
 CEvents::TOccuredEventsControl CEvents::xOccuredEventsControl;
+
+//-------------------------------------------------------------------------------
+CEvents::CEvents()
+{
+    std::cout << "CEvents constructor"  << std::endl;
+    m_puiIntermediateBuff = new uint8_t[256];
+    SetFsmState(START);
+}
+
+//-------------------------------------------------------------------------------
+CEvents::~CEvents()
+{
+    delete[] m_puiIntermediateBuff;
+}
+
+//-------------------------------------------------------------------------------
+uint8_t CEvents::Init(void)
+{
+    std::cout << "CEvents Init"  << std::endl;
+    SetExecutorDataContainer(static_cast<CDataContainerDataBase*>(GetResources() ->
+                             AddDataContainer(std::make_shared<CDataContainerDataBase>())));
+    SetCustomerDataContainer(GetExecutorDataContainerPointer());
+
+    CDataContainerDataBase* pxDataContainer =
+        (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+    pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+
+    Allocate();
+}
+
+//-------------------------------------------------------------------------------
+void CEvents::Allocate(void)
+{
+    std::cout << "CEvents::Allocate 1"  << std::endl;
+
+////    m_uiAddress = xMemoryAllocationContext.uiAddress;
+////    m_puiRxBuffer = xMemoryAllocationContext.puiRxBuffer;
+////    m_puiTxBuffer = xMemoryAllocationContext.puiTxBuffer;
+////    m_puiErrorCode = xMemoryAllocationContext.puiErrorCode;
+//
+//    // Получим указатель на место в массиве дискретных входов для текущего модуля.
+//    m_puiDiscreteInputsState =
+//        (GetResources() ->
+//         m_puiDiscreteInputsState);
+//    // Увеличим общий объём выделенной памяти.
+//    GetResources() ->
+//    m_uiUsedDiscreteInputsState +=
+//        MUVR_DISCRETE_SIGNALS_QUANTITY;
+//    memset(m_puiDiscreteInputsState, 0, 16);
+//
+//
+//    // Получим указатель на место в массиве достоверности дискретных входов для текущего модуля.
+//    m_puiDiscreteInputsBadState =
+//        (GetResources() ->
+//         m_puiDiscreteInputsBadState);
+//    // Увеличим общий объём выделенной памяти.
+//    GetResources() ->
+//    m_uiUsedDiscreteInputsBadState +=
+//        MUVR_DISCRETE_SIGNALS_QUANTITY;
+//
+//
+//    // Получим указатель на место в массиве аналоговых входов для текущего модуля.
+//    m_pfAnalogueInputsValue =
+//        &(GetResources() ->
+//          m_pfAnalogueInputsValue[GetResources() ->
+//                                                 m_uiUsedAnalogueInputsValue]);
+//    // Увеличим общий объём выделенной памяти.
+//    GetResources() ->
+//    m_uiUsedAnalogueInputsValue +=
+//        MUVR_ANALOG_INPUT_QUANTITY;
+//
+//
+//    // Получим указатель на место в массиве состояния аналоговых входов для текущего модуля.
+//    m_puiAnalogueInputsState =
+//        &(GetResources() ->
+//          m_puiAnalogueInputsState[GetResources() ->
+//                                                  m_uiUsedAnalogueInputsState]);
+//    // Увеличим общий объём выделенной памяти.
+//    GetResources() ->
+//    m_uiUsedAnalogueInputsBadState +=
+//        MUVR_ANALOG_INPUT_QUANTITY;
+//
+//
+//    // Получим указатель на место в массиве достоверности аналоговых входов для текущего модуля.
+//    m_puiAnalogueInputsBadState =
+//        &(GetResources() ->
+//          m_puiAnalogueInputsBadState[GetResources() ->
+//                                                     m_uiUsedAnalogueInputsBadState]);
+//    // Увеличим общий объём выделенной памяти.
+//    GetResources() ->
+//    m_uiUsedAnalogueInputsBadState +=
+//        MUVR_ANALOG_INPUT_QUANTITY;
+//
+//
+//    // Получим указатель на место в массиве состояний дискретных сигналов порождаемых аналоговыми входами.
+//    m_puiAnalogueInputDiscreteInputsState =
+//        &(GetResources() ->
+//          m_puiAnalogueInputDiscreteInputsState[GetResources() ->
+//                                 m_uiUsedAnalogueInputDiscreteInputsState]);
+//    // Увеличим общий объём выделенной памяти.
+//    GetResources() ->
+//    m_uiUsedAnalogueInputDiscreteInputsState +=
+//        MUVR_DISCRETE_SIGNALS_QUANTITY;
+//
+//
+//    // Получим указатель на место в массиве флагов недостоверности состояний дискретных сигналов порождаемых аналоговыми входами.
+//    m_puiAnalogueInputDiscreteInputsBadState =
+//        &(GetResources() ->
+//          m_puiAnalogueInputDiscreteInputsBadState[GetResources() ->
+//                                 m_uiUsedAnalogueInputDiscreteInputsBadState]);
+//    // Увеличим общий объём выделенной памяти.
+//    GetResources() ->
+//    m_uiUsedAnalogueInputDiscreteInputsBadState +=
+//        MUVR_DISCRETE_SIGNALS_QUANTITY;
+//
+//
+//    // Получим указатель на место в массиве отключения аналоговых входов для текущего модуля.
+//    m_puiAnalogueInputsOff =
+//        &(GetResources() ->
+//          m_puiAnalogueInputsOff[GetResources() ->
+//                                                m_uiUsedAnalogueInputsOff]);
+//    // Увеличим общий объём выделенной памяти.
+//    GetResources() ->
+//    m_uiUsedAnalogueInputsOff +=
+//        MUVR_ANALOG_INPUT_QUANTITY;
+//
+//
+//    // Получим указатель на место в массиве распакованной во внутренний формат базы данных
+//    // аналоговых сигналов.
+//    m_pxAnalogueInputDescriptionWork =
+//        &(GetResources() ->
+//          m_pxAnalogueInputDescriptionWork[GetResources() ->
+//                                                          m_uiUsedAnalogueInputDescriptionWork]);
+//    // Увеличим общий объём выделенной памяти.
+//    GetResources() ->
+//    m_uiUsedAnalogueInputDescriptionWork +=
+//        MUVR_ANALOG_INPUT_QUANTITY;
+//
+//
+//    // Получим указатель на место в массиве аналоговых входов для текущего модуля.
+//    m_puiReperPointsAdcBuffer =
+//        &(GetResources() ->
+//          m_puiReperPointsAdcBuffer[GetResources() ->
+//                                                   m_uiUsedReperPointsAdcBuffer]);
+//    // Увеличим общий объём выделенной памяти.
+//    GetResources() ->
+//    m_uiUsedReperPointsAdcBuffer +=
+//        ANALOGUE_INPUT_MODULE_REPER_POINTS_ADC_DATA_BASE_BLOCK_LENGTH;
+
+
+//    // Получим указатель на место в рабочем массиве дискретных сигналов для текущего модуля.
+//    m_pxDiscreteSignalsDescriptionWork =
+//        &(GetResources() ->
+//          m_pxDiscreteSignalsDescriptionWork[GetResources() ->
+//                                 m_uiUsedDiscreteSignalsDescriptionWork]);
+//    // Увеличим общий объём выделенной памяти.
+//    GetResources() ->
+//    m_uiUsedDiscreteSignalsDescriptionWork +=
+//        ANALOGUE_INPUT_MODULE_REPER_POINTS_ADC_DATA_BASE_BLOCK_LENGTH;
+
+
+    // Получим указатель на место в рабочем массиве текстовых реквизитов дискретных сигналов для текущего модуля.
+    m_pxDiscreteSygnalTextTitlesWork =
+        &(GetResources() ->
+          m_pxDiscreteSygnalTextTitlesWork[GetResources() ->
+                                                          m_uiUsedDiscreteSygnalTextTitlesWork]);
+//    // Увеличим общий объём выделенной памяти.
+//    GetResources() ->
+//    m_uiUsedDiscreteSygnalTextTitlesWork +=
+//        ANALOGUE_INPUT_MODULE_REPER_POINTS_ADC_DATA_BASE_BLOCK_LENGTH;
+//
+//    m_uiBadAnswerCounter = 0;
+}
 
 //-----------------------------------------------------------------------------------------------------
 // снимает признак того, что событие уже было.
@@ -832,11 +1007,11 @@ void CAlarmEvent::EventsCompleteInformationCreate(TOccuredEventsDataBriefly* pxO
 //    if (i < (pxDeviceConfigSearch ->
 //             uiHandledDiscreteSignalsQuantity))
 //    {
-//        // источник события - дискретный вход.
-//        // скопируем строку текстового реквизита.
-//        memcpy(&(pxEventData -> acTextDescriptor),
-//               (&(axDiscreteSygnalTextDescriptor[i].acTextDescriptor)),
-//               (CAlarm::EVENT_NAME_LENGTH + END_OF_STRING_LENGTH));
+        // источник события - дискретный вход.
+        // скопируем строку текстового реквизита.
+        memcpy(&(pxEventData -> acTextDescriptor),
+               (&(m_pxDiscreteSygnalTextTitlesWork[i].acTextDescriptor)),
+               (DISCRETE_SYGNAL_NAME_LENGTH + END_OF_STRING_LENGTH));
 //    }
 //    else
 //    {
