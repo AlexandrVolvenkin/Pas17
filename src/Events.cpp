@@ -12,7 +12,7 @@
 #include <stdio.h>
 
 #include "Task.h"
-//#include "Alarm.h"
+#include "Alarm.h"
 #include "EventsDB.h"
 #include "Events.h"
 
@@ -304,10 +304,12 @@ void CEvents::EventRegistration(
     uint8_t ui8EventCode,
     char* pcTextDescriptor)
 {
+    std::cout << "CEvents::EventRegistration 1"  << std::endl;
     // не превысили максимальное количество событий произошедших в одном цикле?
     if (xOccuredEventsControl.ui8OccuredEventsNumber <
             (ONE_CYCLE_OCCURED_EVENTS_MAXIMUM_NUMBER - CONVERT_NATURAL_NUMBER_TO_INTEGER))
     {
+        std::cout << "CEvents::EventRegistration 2"  << std::endl;
         // указатель на данные произошедшего события.
         TOccuredEventsDataBriefly* pxOccuredEventsDataBriefly;
         // получим указатель на место для сохранения данных произошедшего события.
@@ -716,27 +718,30 @@ uint8_t CAlarmEvent::EventOffIsNotRegistered(
 // создаёт подробный отчёт о событии.
 void CAlarmEvent::EventsCompleteInformationCreate(TOccuredEventsDataBriefly* pxOccuredEventsDataBriefly)
 {
-//    TEventDataCommon *pxEventData;
+    TEventDataCommon *pxEventData;
 //    TAlarmHmi *pxAlarmHmi;
-//    int i;
-//    uint8_t ui8EventType;
-//    uint8_t ui8EventCode;
-//
-//    // получим указатель на место в кольцевом буфере.
-//    pxEventData = EventDataPush();
-//
-//    // получим тип события.
-//    ui8EventType = ((pxOccuredEventsDataBriefly -> ui8EventType) &
-//                    ~(CEvents::HANDLED_EVENTS_IS_POPUP |
-//                      HANDLED_EVENTS_IS_SOUND |
-//                      HANDLED_EVENTS_IS_ARCHIVE |
-//                      HANDLED_EVENTS_IS_OCCURED_ON_START));
-//    // получим состояние события.
-//    ui8EventCode = pxOccuredEventsDataBriefly -> ui8EventCode;
-//
-//    // получим индекс события.
-//    i = (int)(pxOccuredEventsDataBriefly -> ui16GroupIndex);
-//
+    int i;
+    uint8_t ui8EventType;
+    uint8_t ui8EventCode;
+//    // получим указатель на объект конфигурации.
+//    TConfigDataPackOne* pxDeviceConfigSearch =
+//        (GetResources() -> GetDeviceConfigSearchPointer());
+
+    // получим указатель на место в кольцевом буфере.
+    pxEventData = EventDataPush();
+
+    // получим тип события.
+    ui8EventType = ((pxOccuredEventsDataBriefly -> ui8EventType) &
+                    ~(CEvents::HANDLED_EVENTS_IS_POPUP |
+                      HANDLED_EVENTS_IS_SOUND |
+                      HANDLED_EVENTS_IS_ARCHIVE |
+                      HANDLED_EVENTS_IS_OCCURED_ON_START));
+    // получим состояние события.
+    ui8EventCode = pxOccuredEventsDataBriefly -> ui8EventCode;
+
+    // получим индекс события.
+    i = (int)(pxOccuredEventsDataBriefly -> ui16GroupIndex);
+
 //    // обрабатываем событие функционального блока?
 //    if (ui8EventType == HANDLED_EVENTS_FUNCTION_BLOCKS_TYPE)
 //    {
@@ -744,47 +749,47 @@ void CAlarmEvent::EventsCompleteInformationCreate(TOccuredEventsDataBriefly* pxO
 //        i += (xPlcConfigService.xPlcConfigServiceData.
 //              uiHandledDiscreteInputQuantity);
 //    }
-//
-//    // сигнализация аварийная?
-//    if ((ui8EventCode & (0x01 << ALARM_TYPE_ALARM)) &&
-//            (!(ui8EventCode & (0x01 << ALARM_TYPE_PREVENT))))
+
+    // сигнализация аварийная?
+    if ((ui8EventCode & (0x01 << ALARM_TYPE_ALARM)) &&
+            (!(ui8EventCode & (0x01 << ALARM_TYPE_PREVENT))))
+    {
+//        fucZvkMal = COMMAND_SOUND_SIGNAL_TYPE_ALARM;
+        sprintf((char*)(pxEventData -> acTextDescriptorAdditional),
+                "%s",
+                "Аварийная");
+    }
+    // сигнализация предупредительная?
+    else if  ((!(ui8EventCode & (0x01 << ALARM_TYPE_ALARM))) &&
+              (ui8EventCode & (0x01 << ALARM_TYPE_PREVENT)))
+    {
+        // предупредительная сигнализация.
+//        fucZvkMal = COMMAND_SOUND_SIGNAL_TYPE_WARNING;
+        sprintf((char*)(pxEventData -> acTextDescriptorAdditional),
+                "%s",
+                "Предупредительная");
+    }
+    // сигнализация в норме?
+    else if (((!(ui8EventCode & (0x01 << ALARM_TYPE_ALARM))) &&
+              (!(ui8EventCode & (0x01 << ALARM_TYPE_PREVENT)))) ||
+             (((ui8EventCode & (0x01 << ALARM_TYPE_ALARM))) &&
+              ((ui8EventCode & (0x01 << ALARM_TYPE_PREVENT)))))
+    {
+        // сигнализация в норме.
+//        fucZvkMal = COMMAND_SOUND_SIGNAL_TYPE_WARNING;
+        sprintf((char*)(pxEventData -> acTextDescriptorAdditional),
+                "%s",
+                "Норма");
+    }
+//    else
 //    {
 //        fucZvkMal = COMMAND_SOUND_SIGNAL_TYPE_ALARM;
+//    // создадим пустую строку в поле дополнительных текстовых данных таблицы архива в базе данных.
 //        sprintf((char*)(pxEventData -> acTextDescriptorAdditional),
 //                "%s",
 //                "Аварийная");
 //    }
-//    // сигнализация предупредительная?
-//    else if  ((!(ui8EventCode & (0x01 << ALARM_TYPE_ALARM))) &&
-//              (ui8EventCode & (0x01 << ALARM_TYPE_PREVENT)))
-//    {
-//        // предупредительная сигнализация.
-//        fucZvkMal = COMMAND_SOUND_SIGNAL_TYPE_WARNING;
-//        sprintf((char*)(pxEventData -> acTextDescriptorAdditional),
-//                "%s",
-//                "Предупредительная");
-//    }
-//    // сигнализация в норме?
-//    else if (((!(ui8EventCode & (0x01 << ALARM_TYPE_ALARM))) &&
-//              (!(ui8EventCode & (0x01 << ALARM_TYPE_PREVENT)))) ||
-//             (((ui8EventCode & (0x01 << ALARM_TYPE_ALARM))) &&
-//              ((ui8EventCode & (0x01 << ALARM_TYPE_PREVENT)))))
-//    {
-//        // сигнализация в норме.
-//        fucZvkMal = COMMAND_SOUND_SIGNAL_TYPE_WARNING;
-//        sprintf((char*)(pxEventData -> acTextDescriptorAdditional),
-//                "%s",
-//                "Норма");
-//    }
-////    else
-////    {
-////        fucZvkMal = COMMAND_SOUND_SIGNAL_TYPE_ALARM;
-////    // создадим пустую строку в поле дополнительных текстовых данных таблицы архива в базе данных.
-////        sprintf((char*)(pxEventData -> acTextDescriptorAdditional),
-////                "%s",
-////                "Аварийная");
-////    }
-//
+
 //    // событие со звуком и выводом на дисплей?
 //    if (((pxOccuredEventsDataBriefly -> ui8EventType) & HANDLED_EVENTS_IS_POPUP) &&
 //            ((pxOccuredEventsDataBriefly -> ui8EventType) & HANDLED_EVENTS_IS_SOUND))
@@ -803,34 +808,35 @@ void CAlarmEvent::EventsCompleteInformationCreate(TOccuredEventsDataBriefly* pxO
 //        // сбросим команды типа звука. на МИНД ничего не отправляем.
 //        fucZvkMal = COMMAND_SOUND_SIGNAL_TYPE_NOT;
 //    }
-//
-//    // по указателю(pxEventData) на место в журнале,
-//    // сохраним данные события.
-//    // установим id события.
-//    (pxEventData -> ui16ID) =
-//        1;
-//    // установим тип события.
-//    (pxEventData -> ui8Type) =
-//        ui8EventType;
-//    // установим адрес источника события.
-//    (pxEventData -> ui16Address) =
-//        (i + CONVERT_INTEGER_TO_NATURAL_NUMBER);
-//    // установим код события.
-//    (pxEventData -> ui8State) =
-//        ui8EventCode;
-//    // установим время события.
-//    (pxEventData -> xCurrentTime) =
-//        xCurrentTime;
+
+    // по указателю(pxEventData) на место в журнале,
+    // сохраним данные события.
+    // установим id события.
+    (pxEventData -> ui16ID) =
+        1;
+    // установим тип события.
+    (pxEventData -> ui8Type) =
+        ui8EventType;
+    // установим адрес источника события.
+    (pxEventData -> ui16Address) =
+        (i + CONVERT_INTEGER_TO_NATURAL_NUMBER);
+    // установим код события.
+    (pxEventData -> ui8State) =
+        ui8EventCode;
+    // Получаем текущее время
+    time_t now = time(nullptr);
+    // Получаем текущую дату
+    // установим время события.
+    (pxEventData -> xCurrentTime) = *gmtime(&now);
 //    // источник события - дискретный вход?
-//    if (i <
-//            (xPlcConfigService.xPlcConfigServiceData.
-//             uiHandledDiscreteInputQuantity))
+//    if (i < (pxDeviceConfigSearch ->
+//             uiHandledDiscreteSignalsQuantity))
 //    {
-////        // источник события - дискретный вход.
-////        // скопируем строку текстового реквизита.
-////        memcpy(&(pxEventData -> acTextDescriptor),
-////               (&(axDiscreteSygnalTextDescriptor[i].acTextDescriptor)),
-////               (CAlarm::EVENT_NAME_LENGTH + END_OF_STRING_LENGTH));
+//        // источник события - дискретный вход.
+//        // скопируем строку текстового реквизита.
+//        memcpy(&(pxEventData -> acTextDescriptor),
+//               (&(axDiscreteSygnalTextDescriptor[i].acTextDescriptor)),
+//               (CAlarm::EVENT_NAME_LENGTH + END_OF_STRING_LENGTH));
 //    }
 //    else
 //    {
@@ -840,28 +846,28 @@ void CAlarmEvent::EventsCompleteInformationCreate(TOccuredEventsDataBriefly* pxO
 //                "%s%d",
 //                "ФБЛ #",
 //                ((i - (xPlcConfigService.xPlcConfigServiceData.
-//                        uiHandledDiscreteInputQuantity)) +
+//                       uiHandledDiscreteInputQuantity)) +
 //                 CONVERT_INTEGER_TO_NATURAL_NUMBER));
 //    }
-//
-//    // событие архивируется?
-//    if ((pxOccuredEventsDataBriefly -> ui8EventType) & HANDLED_EVENTS_IS_ARCHIVE)
-//    {
-//        // архивируем событие.
-//        xCArchiveEventsDB.DataBaseDataPush(pxEventData);
-//    }
-//
-//    // модуль индикации МИНД последовательно запрашивает данные событий из кольцевого буфера.
-//    // когда МИНД получает данные события с маркером - нет события, он перестаёт посылать
-//    // запросы. на дисплее появляется информация о том, что событий больше нет.
-//    // чтобы сообщить модулю индикации МИНД о том, что событий больше нет - вытесним из
-//    // кольцевого буфера самое давнее событие. пометим его маркером - нет события(ui16ID = 0).
-//    // установим индекс (ui16EventDataCommonPopIndex) на место следующего в кольцевом буфере самого давнего события.
-//    EventDataPopIndexSet(0);
-//    // получим указатель на место следующего в кольцевом буфере самого давнего события.
-//    pxEventData = EventDataPop();
-//    // пометим событие маркером - нет события.
-//    pxEventData -> ui16ID = 0;
+
+    // событие архивируется?
+    if ((pxOccuredEventsDataBriefly -> ui8EventType) & HANDLED_EVENTS_IS_ARCHIVE)
+    {
+        // архивируем событие.
+        xCArchiveEventsDB.DataBaseDataPush(pxEventData);
+    }
+
+    // модуль индикации МИНД последовательно запрашивает данные событий из кольцевого буфера.
+    // когда МИНД получает данные события с маркером - нет события, он перестаёт посылать
+    // запросы. на дисплее появляется информация о том, что событий больше нет.
+    // чтобы сообщить модулю индикации МИНД о том, что событий больше нет - вытесним из
+    // кольцевого буфера самое давнее событие. пометим его маркером - нет события(ui16ID = 0).
+    // установим индекс (ui16EventDataCommonPopIndex) на место следующего в кольцевом буфере самого давнего события.
+    EventDataPopIndexSet(0);
+    // получим указатель на место следующего в кольцевом буфере самого давнего события.
+    pxEventData = EventDataPop();
+    // пометим событие маркером - нет события.
+    pxEventData -> ui16ID = 0;
 }
 
 

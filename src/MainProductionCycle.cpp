@@ -1273,6 +1273,14 @@ uint8_t CMainProductionCycle::Fsm(void)
         {
             CurrentlyRunningTasksExecution();
 
+            // зарегистрируем событие.
+            CEvents::EventRegistration(
+                0,
+                (CEvents::HANDLED_EVENTS_SYSTEM_EVENTS_TYPE |
+                 CEvents::HANDLED_EVENTS_IS_ARCHIVE),
+                0,
+                "Новая конф. и бд.");
+
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(SERIAL_AND_ID_LOAD_START);
         }
@@ -1479,7 +1487,9 @@ uint8_t CMainProductionCycle::Fsm(void)
 //        std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_END"  << std::endl;
         CurrentlyRunningTasksExecution();
 
-        (GetResources() -> m_uiModbusReceipt) = 0;
+        // обработаем события.
+        CEvents::EventsHandler();
+//        (GetResources() -> m_uiModbusReceipt) = 0;
         (GetResources() -> m_uiModbusReset) = 0;
         SetFsmState(INTERNAL_MODULES_DATA_EXCHANGE_START);
         break;
@@ -1524,6 +1534,8 @@ uint8_t CMainProductionCycle::Fsm(void)
         if (m_xMainCycle100McTimer.IsOverflow())
         {
             m_xMainCycle100McTimer.Set(100);
+            // обработаем события.
+            CEvents::EventsHandler();
             SetFsmState(INCORRECT_CONFIGURATION_ERROR_HANDLER_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
         }
     }

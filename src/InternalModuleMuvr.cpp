@@ -487,20 +487,21 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
         {
             // зарегистрируем активное состояние события.
             CEvents::EventRegistration(0,
-                (CEvents::HANDLED_EVENTS_INTERNAL_MODULES_BAD_TYPE |
-                 CEvents::HANDLED_EVENTS_IS_POPUP |
-                 CEvents::HANDLED_EVENTS_IS_SOUND |
-                 CEvents::HANDLED_EVENTS_IS_ARCHIVE),
-                MUVR_REPER_POINTS_DATA_BASE_ERROR_OFFSET,
-                "Реперные т.");
+                                       (CEvents::HANDLED_EVENTS_INTERNAL_MODULES_BAD_TYPE |
+                                        CEvents::HANDLED_EVENTS_IS_POPUP |
+                                        CEvents::HANDLED_EVENTS_IS_SOUND |
+                                        CEvents::HANDLED_EVENTS_IS_ARCHIVE),
+                                       MUVR_REPER_POINTS_DATA_BASE_ERROR_OFFSET,
+                                       "Реперные т.");
         }
     case MUVR_GET_MEASURE_DATA_COMMAND:
-        //std::cout << "CInternalModuleMuvr::DataExchange 16"  << std::endl;
-        // данные не повреждены?
-        if (iCrcSummTwoByteCompare(&auiSpiRxBuffer[SPI_DATA_BYTE_OFFSET],
-                                   MUVR_GET_MEASURE_DATA_COMMAND_ANSWER_LENGTH) > 0)
+//        std::cout << "CInternalModuleMuvr::DataExchange 16"  << std::endl;
+//        // данные не повреждены?
+//        if (iCrcSummTwoByteCompare(&auiSpiRxBuffer[SPI_DATA_BYTE_OFFSET],
+//                                   MUVR_GET_MEASURE_DATA_COMMAND_ANSWER_LENGTH) > 0)
+                if (!(GetResources() -> m_uiModbusReceipt))
         {
-            //std::cout << "CInternalModuleMuvr::DataExchange 17"  << std::endl;
+//            std::cout << "CInternalModuleMuvr::DataExchange 17"  << std::endl;
             // модуль исправен.
             SetBadAnswerCounter(BAD_MODULE_CYCLE_COUNT_DEFAULT);
 //            // сбросим флаг отказа модуля.
@@ -508,15 +509,15 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
 
             // неактивное состояние события ещё не зарегистрировано?
             if(xCInternalModuleErrorEvent.EventOffIsNotRegistered(0,
-                        MUVR_BAD_ANSWER_ERROR_OFFSET))
+                    MUVR_BAD_ANSWER_ERROR_OFFSET))
             {
                 // зарегистрируем неактивное состояние события.
                 // норма обмена данными.
                 CEvents::EventRegistration(0,
-                    (CEvents::HANDLED_EVENTS_INTERNAL_MODULES_BAD_TYPE |
-                     CEvents::HANDLED_EVENTS_IS_ARCHIVE),
-                    MUVR_BAD_ANSWER_ERROR_OFFSET,
-                    "Норм. обмена");
+                                           (CEvents::HANDLED_EVENTS_INTERNAL_MODULES_BAD_TYPE |
+                                            CEvents::HANDLED_EVENTS_IS_ARCHIVE),
+                                           MUVR_BAD_ANSWER_ERROR_OFFSET,
+                                           "Норм. обмена");
             }
 
             // получим данные состояния каналов аналоговых входов.
@@ -686,12 +687,12 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
         {
             // зарегистрируем активное состояние события.
             CEvents::EventRegistration(0,
-                (CEvents::HANDLED_EVENTS_INTERNAL_MODULES_BAD_TYPE |
-                 CEvents::HANDLED_EVENTS_IS_POPUP |
-                 CEvents::HANDLED_EVENTS_IS_SOUND |
-                 CEvents::HANDLED_EVENTS_IS_ARCHIVE),
-                MUVR_DATA_BASE_ERROR_OFFSET,
-                "Ошиб. б. МВА");
+                                       (CEvents::HANDLED_EVENTS_INTERNAL_MODULES_BAD_TYPE |
+                                        CEvents::HANDLED_EVENTS_IS_POPUP |
+                                        CEvents::HANDLED_EVENTS_IS_SOUND |
+                                        CEvents::HANDLED_EVENTS_IS_ARCHIVE),
+                                       MUVR_DATA_BASE_ERROR_OFFSET,
+                                       "Ошиб. б. МВА");
         }
         return 0;
         break;
@@ -705,7 +706,7 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
     // модуль признан неисправным?
     if (GetBadAnswerCounter() == 0)
     {
-        //std::cout << "CInternalModuleMuvr::DataExchange 10"  << std::endl;
+//        std::cout << "CInternalModuleMuvr::DataExchange 10"  << std::endl;
 //        // модуль признан неисправным.
 //        *(m_puiModuleBadStateBuffer) = BAD_MODULE_NOT_RESPONDED;
 
@@ -713,15 +714,16 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
         if(xCInternalModuleErrorEvent.EventOnIsNotRegistered(0,
                 MUVR_BAD_ANSWER_ERROR_OFFSET))
         {
+//        std::cout << "CInternalModuleMuvr::DataExchange 101"  << std::endl;
             // зарегистрируем активное состояние события.
             // ошибка обмена данными.
             CEvents::EventRegistration(0,
-                (CEvents::HANDLED_EVENTS_INTERNAL_MODULES_BAD_TYPE |
-                 CEvents::HANDLED_EVENTS_IS_POPUP |
-                 CEvents::HANDLED_EVENTS_IS_SOUND |
-                 CEvents::HANDLED_EVENTS_IS_ARCHIVE),
-                MUVR_BAD_ANSWER_ERROR_OFFSET,
-                "Ошиб. обмена");
+                                       (CEvents::HANDLED_EVENTS_INTERNAL_MODULES_BAD_TYPE |
+                                        CEvents::HANDLED_EVENTS_IS_POPUP |
+                                        CEvents::HANDLED_EVENTS_IS_SOUND |
+                                        CEvents::HANDLED_EVENTS_IS_ARCHIVE),
+                                       MUVR_BAD_ANSWER_ERROR_OFFSET,
+                                       "Ошиб. обмена");
         }
 
         // данные входов модуля недостоверны, обнулим их.

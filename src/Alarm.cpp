@@ -25,7 +25,7 @@
 #include "InternalModuleMuvr.h"
 #include "ModbusSlave.h"
 #include "DeviceControl.h"
-//#include "Events.h"
+#include "Events.h"
 //#include "EventsDB.h"
 #include "Alarm.h"
 
@@ -227,7 +227,7 @@ void CAlarmDfa::DiscreteOutputsSet(uint8_t *puiLinkedDiscreteOutputs, uint8_t ui
                 // Текущий - (j, k) дискретный выход(реле) привязан?
                 if (puiLinkedDiscreteOutputs[j] & (0x01 << k))
                 {
-    //std::cout << "CAlarmDfa::DiscreteOutputsSet 2"  << std::endl;
+                    //std::cout << "CAlarmDfa::DiscreteOutputsSet 2"  << std::endl;
                     // установим флаг - новое нарушение.
                     m_pxDiscreteOutputControl[(j * MUVR_MR_DISCRETE_OUTPUT_NUMBER) + k].uiNewActivation = 0;
                     // установим флаг - требование включения реле.
@@ -259,7 +259,7 @@ void CAlarmDfa::DiscreteOutputsSet(uint8_t *puiLinkedDiscreteOutputs, uint8_t ui
                 // Текущий - (j, k) дискретный выход(реле) привязан?
                 if (puiLinkedDiscreteOutputs[j] & (0x01 << k))
                 {
-    //std::cout << "CAlarmDfa::DiscreteOutputsSet 3"  << std::endl;
+                    //std::cout << "CAlarmDfa::DiscreteOutputsSet 3"  << std::endl;
                     // установим флаг - новое нарушение.
                     m_pxDiscreteOutputControl[(j * MUVR_MR_DISCRETE_OUTPUT_NUMBER) + k].uiNewActivation = 1;
                     // установим флаг - требование включения реле.
@@ -289,7 +289,7 @@ void CAlarmDfa::DiscreteOutputsSet(uint8_t *puiLinkedDiscreteOutputs, uint8_t ui
                 // Текущий - (j, k) дискретный выход(реле) привязан?
                 if (puiLinkedDiscreteOutputs[j] & (0x01 << k))
                 {
-    //std::cout << "CAlarmDfa::DiscreteOutputsSet 4"  << std::endl;
+                    //std::cout << "CAlarmDfa::DiscreteOutputsSet 4"  << std::endl;
                     // установим флаг - требование включения реле.
                     m_pxDiscreteOutputControl[(j * MUVR_MR_DISCRETE_OUTPUT_NUMBER) + k].uiRelayActivationRequest = 1;
                 }
@@ -390,6 +390,23 @@ uint8_t CAlarmDfa::Fsm(void)
                 //std::cout << "CAlarmDfa::Fsm 4"  << std::endl;
                 // Установим связанные дискретный выходы - не новое нарушение.
                 DiscreteOutputsSet(GetLinkedDiscreteOutputsPointer(), NOT_NEW_VIOLATION);
+
+                // активное состояние события ещё не зарегистрировано?
+                if(xCAlarmEvent.EventOnIsNotRegistered(
+                            GetAlarmHandlerIndex(),
+                            0))
+                {
+                    // зарегистрируем активное состояние события.
+                    CEvents::EventRegistration(
+                        GetAlarmHandlerIndex(),
+                        (CEvents::HANDLED_EVENTS_DISCRETE_INPUTS_TYPE |
+                         CEvents::HANDLED_EVENTS_IS_POPUP |
+                         CEvents::HANDLED_EVENTS_IS_SOUND |
+                         CEvents::HANDLED_EVENTS_IS_ARCHIVE),
+                        1,//(pxAlarmHmi -> ui8AlarmState),
+                        0);
+                }
+
                 SetFsmState(RECEIPT_OR_RESET_WAITING);
             }
         }
@@ -402,7 +419,7 @@ uint8_t CAlarmDfa::Fsm(void)
         // Дискретный сигнал активен?
         if (uiDiscreteSignalState == DISCRETE_SIGNAL_IS_ACTIVE)
         {
-                //std::cout << "CAlarmDfa::Fsm 5"  << std::endl;
+            //std::cout << "CAlarmDfa::Fsm 5"  << std::endl;
             // Время ожидания 1 секунды закончилось?
             if (GetTimerPointer() -> IsOverflow())
             {
@@ -410,23 +427,40 @@ uint8_t CAlarmDfa::Fsm(void)
                 // задержка закончилась?
                 if (m_uiDelay < m_uiRelayOnDelay)
                 {
-                //std::cout << "CAlarmDfa::Fsm 7"  << std::endl;
+                    //std::cout << "CAlarmDfa::Fsm 7"  << std::endl;
                     m_uiDelay++;
                     // Установим время ожидания 1 секунда.
                     GetTimerPointer() -> Set(RELAY_ON_DELAY_ONE_SECOND);
                 }
                 else
                 {
-                //std::cout << "CAlarmDfa::Fsm 8"  << std::endl;
+                    //std::cout << "CAlarmDfa::Fsm 8"  << std::endl;
                     // Установим связанные дискретный выходы - не новое нарушение.
                     DiscreteOutputsSet(GetLinkedDiscreteOutputsPointer(), NOT_NEW_VIOLATION);
+
+                    // активное состояние события ещё не зарегистрировано?
+                    if(xCAlarmEvent.EventOnIsNotRegistered(
+                                GetAlarmHandlerIndex(),
+                                0))
+                    {
+                        // зарегистрируем активное состояние события.
+                        CEvents::EventRegistration(
+                            GetAlarmHandlerIndex(),
+                            (CEvents::HANDLED_EVENTS_DISCRETE_INPUTS_TYPE |
+                             CEvents::HANDLED_EVENTS_IS_POPUP |
+                             CEvents::HANDLED_EVENTS_IS_SOUND |
+                             CEvents::HANDLED_EVENTS_IS_ARCHIVE),
+                            1,//(pxAlarmHmi -> ui8AlarmState),
+                            0);
+                    }
+
                     SetFsmState(RECEIPT_OR_RESET_WAITING);
                 }
             }
         }
         else
         {
-                //std::cout << "CAlarmDfa::Fsm 9"  << std::endl;
+            //std::cout << "CAlarmDfa::Fsm 9"  << std::endl;
             // сбросим связанные дискретный выходы - всё в норму.
             DiscreteOutputsSet(GetLinkedDiscreteOutputsPointer(), NORMA);
             SetFsmState(ACTIVE_STATE_WAITING);
@@ -493,6 +527,21 @@ uint8_t CAlarmDfa::Fsm(void)
             //std::cout << "CAlarmDfa::Fsm 15"  << std::endl;
             // сбросим связанные дискретный выходы - всё в норму.
             DiscreteOutputsSet(GetLinkedDiscreteOutputsPointer(), NORMA);
+
+            // неактивное состояние события ещё не зарегистрировано?
+            if(xCAlarmEvent.EventOffIsNotRegistered(
+                        1,
+                        0))
+            {
+                // зарегистрируем неактивное состояние события.
+                CEvents::EventRegistration(
+                    GetAlarmHandlerIndex(),
+                    (CEvents::HANDLED_EVENTS_DISCRETE_INPUTS_TYPE |
+                     CEvents::HANDLED_EVENTS_IS_ARCHIVE),
+                    0,
+                    0);
+            }
+
             SetFsmState(ACTIVE_STATE_WAITING);
         }
         else if (uiDiscreteSignalState == DISCRETE_SIGNAL_IS_ACTIVE)

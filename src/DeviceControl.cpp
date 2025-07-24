@@ -523,6 +523,7 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
     uint8_t* pucDestination =
         (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer);
 
+//    std::cout << "CDeviceControl::Fsm uiAddress "  << (int)uiAddress << std::endl;
 //-------------------------------------------------------------------------------
 // Function 5
     // смотрим, по какому адресу записывается бит.
@@ -576,6 +577,7 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
     // блокировка с верхнего уровня.
     case DEVICE_CONTROL_BLOCK:
     {
+        std::cout << "CDeviceControl ModbusFunction5Handler 4" << std::endl;
         CDataContainerDataBase* pxDataContainer =
             (CDataContainerDataBase*)GetCustomerDataContainerPointer();
         // бит установлен?
@@ -1797,19 +1799,19 @@ uint8_t CDeviceControl::Fsm(void)
 //-------------------------------------------------------------------------------
     case TIME_UPDATE_START:
 //        std::cout << "CDeviceControl::Fsm TIME_UPDATE_START"  << std::endl;
-        {
-            CurrentTimeUpdate();
-            SetFsmState(TIME_UPDATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
-        }
-        break;
+    {
+        CurrentTimeUpdate();
+        SetFsmState(TIME_UPDATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+    }
+    break;
 
     case TIME_UPDATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
 //        std::cout << "CDeviceControl::Fsm TIME_UPDATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
-        {
-            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-            SetFsmState(DONE_OK);
-        }
-        break;
+    {
+        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+        SetFsmState(DONE_OK);
+    }
+    break;
 
     case TIME_UPDATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
         std::cout << "CDeviceControl::Fsm TIME_UPDATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;

@@ -207,9 +207,9 @@ public:
     CConfiguration* m_pxConfigurationCreate;
     CServiceMarket* m_pxServiceMarket;
 
-    uint8_t m_uiModbusReceipt;
-    uint8_t m_uiModbusReset;
-    uint8_t m_uiModbusBlockeded;
+    uint8_t m_uiModbusReceipt = 0;
+    uint8_t m_uiModbusReset = 0;
+    uint8_t m_uiModbusBlockeded = 0;
     uint8_t m_uiAinOffProcessOwnerIndex = 0;
 
 };
