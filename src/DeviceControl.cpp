@@ -1283,6 +1283,12 @@ uint16_t CDeviceControl::DataBaseBlockReadBlockRelatedAction(void)
         }
         break;
 
+    case SERIAL_AND_ID_DATA_BASE_BLOCK_OFFSET:
+        cout << "CDeviceControl::DataBaseBlockReadBlockRelatedAction SERIAL_AND_ID_DATA_BASE_BLOCK_OFFSET" << endl;
+        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+        SetFsmState(DONE_OK);
+        break;
+
     case NETWORK_ADDRESS_DATA_BASE_BLOCK_OFFSET:
         cout << "CDeviceControl::DataBaseBlockReadBlockRelatedAction NETWORK_ADDRESS_DATA_BASE_BLOCK_OFFSET" << endl;
         ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
