@@ -604,6 +604,14 @@ enum TYPE_INDICATION
     BEEP_SIGNAL  = 8,			// Звук нажатия кнопок.
 };
 
+enum TYPE_ALARM_STATE
+{
+    ALARM_STATE_IS_NORMAL		 = 0,			// норма
+    ALARM_STATE_IS_RECEIPTED	 = 1,			// сигнализация квитирована
+    ALARM_STATE_IS_ACTIVE	 = 2,			// сигнализация активна
+    ALARM_STATE_IS_INDICATION	 = 3,			// Индикация
+};
+
 enum Errors
 {
     NO_ERROR	= 0,

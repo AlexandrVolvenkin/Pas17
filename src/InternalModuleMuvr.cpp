@@ -496,10 +496,9 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
         }
     case MUVR_GET_MEASURE_DATA_COMMAND:
 //        std::cout << "CInternalModuleMuvr::DataExchange 16"  << std::endl;
-//        // данные не повреждены?
-//        if (iCrcSummTwoByteCompare(&auiSpiRxBuffer[SPI_DATA_BYTE_OFFSET],
-//                                   MUVR_GET_MEASURE_DATA_COMMAND_ANSWER_LENGTH) > 0)
-                if (!(GetResources() -> m_uiModbusReceipt))
+        // данные не повреждены?
+        if (iCrcSummTwoByteCompare(&auiSpiRxBuffer[SPI_DATA_BYTE_OFFSET],
+                                   MUVR_GET_MEASURE_DATA_COMMAND_ANSWER_LENGTH) > 0)
         {
 //            std::cout << "CInternalModuleMuvr::DataExchange 17"  << std::endl;
             // модуль исправен.

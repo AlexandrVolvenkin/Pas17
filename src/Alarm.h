@@ -93,6 +93,7 @@ public:
         NOT_ACTIVE_STATE_WAITING,
         NAMUR_STATE_ON,
         NAMUR_INPUT_CORRECT_STATE_WAITING,
+        NORMAL_STATE_SET,
     };
 
     enum

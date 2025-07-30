@@ -584,7 +584,7 @@ void CDiscreteSignals::DiscreteSignalsDataBlockCommonFormatToWork(void)
 
 
     {
-        std::cout << "CDiscreteSignals::CreateAlarmHandler m_puiIntermediateBuff 1"  << std::endl;
+        std::cout << "CDiscreteSignals::DiscreteSignalsDataBlockCommonFormatToWork m_puiIntermediateBuff 1"  << std::endl;
         uint8_t *pucSourceTemp;
         pucSourceTemp = (uint8_t*)(m_puiIntermediateBuff);
         for(int i=0; i<128 ; )
@@ -635,7 +635,7 @@ void CDiscreteSignals::DiscreteSignalsDataBlockCommonFormatToWork(void)
 
 
     {
-        std::cout << "CDiscreteSignals::CreateAlarmHandler DiscreteSignalsDataBlockCommonFormatToWork 1"  << std::endl;
+        std::cout << "CDiscreteSignals::DiscreteSignalsDataBlockCommonFormatToWork DiscreteSignalsDataBlockCommonFormatToWork 1"  << std::endl;
         uint8_t *pucSourceTemp;
         pucSourceTemp = (uint8_t*)(pxDiscreteSignalsDescriptionWorkPackOne[8].auiRelayOut);
         for(int i=0; i<32 ; )
@@ -851,6 +851,7 @@ void CDiscreteSignals::CreateAlarmHandlers(void)
         {
         case NORMAL:
         {
+    std::cout << "CDiscreteSignals::CreateAlarmHandlers 2"  << std::endl;
             CreateAlarmHandler<CNormalAlarmDfa>(GetResources(),
                                                 i,
                                                 "CNormalAlarmDfa");
@@ -861,12 +862,14 @@ void CDiscreteSignals::CreateAlarmHandlers(void)
             // Уровень дискретного сигнала интерпретируемый как активный - высокий?
             if ((pxDiscreteSignalsDescriptionWork[i].uiTalTkGrp >> 5) & 0x01)
             {
+    std::cout << "CDiscreteSignals::CreateAlarmHandlers 3"  << std::endl;
                 CreateAlarmHandler<CIndicationAlarmHighLevelDfa>(GetResources(),
                         i,
                         "CIndicationAlarmHighLevelDfa");
             }
             else
             {
+    std::cout << "CDiscreteSignals::CreateAlarmHandlers 4"  << std::endl;
                 CreateAlarmHandler<CIndicationAlarmLowLevelDfa>(GetResources(),
                         i,
                         "CIndicationAlarmLowLevelDfa");
@@ -877,12 +880,14 @@ void CDiscreteSignals::CreateAlarmHandlers(void)
             // Уровень дискретного сигнала интерпретируемый как активный - высокий?
             if ((pxDiscreteSignalsDescriptionWork[i].uiTalTkGrp >> 5) & 0x01)
             {
+    std::cout << "CDiscreteSignals::CreateAlarmHandlers 5"  << std::endl;
                 CreateAlarmHandler<CPreventiveAlarmHighLevelDfa>(GetResources(),
                         i,
                         "CPreventiveAlarmHighLevelDfa");
             }
             else
             {
+    std::cout << "CDiscreteSignals::CreateAlarmHandlers 6"  << std::endl;
                 CreateAlarmHandler<CPreventiveAlarmLowLevelDfa>(GetResources(),
                         i,
                         "CPreventiveAlarmLowLevelDfa");
@@ -893,12 +898,14 @@ void CDiscreteSignals::CreateAlarmHandlers(void)
             // Уровень дискретного сигнала интерпретируемый как активный - высокий?
             if ((pxDiscreteSignalsDescriptionWork[i].uiTalTkGrp >> 5) & 0x01)
             {
+    std::cout << "CDiscreteSignals::CreateAlarmHandlers 7"  << std::endl;
                 CreateAlarmHandler<CEmergencyAlarmHighLevelDfa>(GetResources(),
                         i,
                         "CEmergencyAlarmHighLevelDfa");
             }
             else
             {
+    std::cout << "CDiscreteSignals::CreateAlarmHandlers 8"  << std::endl;
                 CreateAlarmHandler<CEmergencyAlarmLowLevelDfa>(GetResources(),
                         i,
                         "CEmergencyAlarmLowLevelDfa");
@@ -907,6 +914,7 @@ void CDiscreteSignals::CreateAlarmHandlers(void)
 
         case IND_PREVENTIVE:
         {
+    std::cout << "CDiscreteSignals::CreateAlarmHandlers 9"  << std::endl;
             CreateAlarmHandler<CNormalAlarmDfa>(GetResources(),
                                                 i,
                                                 "CNormalAlarmDfa");
@@ -916,6 +924,7 @@ void CDiscreteSignals::CreateAlarmHandlers(void)
 
         case IND_EMERGENCY:
         {
+    std::cout << "CDiscreteSignals::CreateAlarmHandlers 10"  << std::endl;
             CreateAlarmHandler<CNormalAlarmDfa>(GetResources(),
                                                 i,
                                                 "CNormalAlarmDfa");
@@ -925,6 +934,7 @@ void CDiscreteSignals::CreateAlarmHandlers(void)
 
         default:
         {
+    std::cout << "CDiscreteSignals::CreateAlarmHandlers 11"  << std::endl;
             CreateAlarmHandler<CNormalAlarmDfa>(GetResources(),
                                                 i,
                                                 "CNormalAlarmDfa");
@@ -1300,10 +1310,10 @@ uint8_t CDiscreteSignals::Fsm(void)
             pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
 
             SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
-            SetFsmNextStateDoneOk(DISCRETE_SIGNALS_CREATE_SERVICE_DATA_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
-            SetFsmNextStateReadyWaitingError(DISCRETE_SIGNALS_CREATE_SERVICE_DATA_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
-            SetFsmNextStateDoneWaitingError(DISCRETE_SIGNALS_CREATE_SERVICE_DATA_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
-            SetFsmNextStateDoneWaitingDoneError(DISCRETE_SIGNALS_CREATE_SERVICE_DATA_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneOk(DISCRETE_SIGNALS_TEXT_TITLES_COMMON_TO_WORK_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+            SetFsmNextStateReadyWaitingError(DISCRETE_SIGNALS_TEXT_TITLES_COMMON_TO_WORK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingError(DISCRETE_SIGNALS_TEXT_TITLES_COMMON_TO_WORK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingDoneError(DISCRETE_SIGNALS_TEXT_TITLES_COMMON_TO_WORK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
         }
         break;
 

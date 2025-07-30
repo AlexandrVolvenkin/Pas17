@@ -585,11 +585,11 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
         {
             // если установлен - сбросим.
             (pxDataContainer -> m_puiDataPointer[BIT_STATE_OFFSET]) = 0;
-            (GetResources() -> m_uiModbusBlockeded) = 1;
+            (GetResources() -> m_uiModbusBlocked) = 1;
         }
         else
         {
-            (GetResources() -> m_uiModbusBlockeded) = 0;
+            (GetResources() -> m_uiModbusBlocked) = 0;
         }
         SetFsmState(MODBUS_FUNCTION_5_HANDLER_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
         return 1;

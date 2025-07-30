@@ -926,8 +926,7 @@ void CAlarmEvent::EventsCompleteInformationCreate(TOccuredEventsDataBriefly* pxO
 //    }
 
     // сигнализация аварийная?
-    if ((ui8EventCode & (0x01 << ALARM_TYPE_ALARM)) &&
-            (!(ui8EventCode & (0x01 << ALARM_TYPE_PREVENT))))
+    if (ui8EventCode == EMERGENCY)
     {
 //        fucZvkMal = COMMAND_SOUND_SIGNAL_TYPE_ALARM;
         sprintf((char*)(pxEventData -> acTextDescriptorAdditional),
@@ -935,8 +934,7 @@ void CAlarmEvent::EventsCompleteInformationCreate(TOccuredEventsDataBriefly* pxO
                 "Аварийная");
     }
     // сигнализация предупредительная?
-    else if  ((!(ui8EventCode & (0x01 << ALARM_TYPE_ALARM))) &&
-              (ui8EventCode & (0x01 << ALARM_TYPE_PREVENT)))
+    else if (ui8EventCode == PREVENTIVE)
     {
         // предупредительная сигнализация.
 //        fucZvkMal = COMMAND_SOUND_SIGNAL_TYPE_WARNING;
@@ -945,10 +943,7 @@ void CAlarmEvent::EventsCompleteInformationCreate(TOccuredEventsDataBriefly* pxO
                 "Предупредительная");
     }
     // сигнализация в норме?
-    else if (((!(ui8EventCode & (0x01 << ALARM_TYPE_ALARM))) &&
-              (!(ui8EventCode & (0x01 << ALARM_TYPE_PREVENT)))) ||
-             (((ui8EventCode & (0x01 << ALARM_TYPE_ALARM))) &&
-              ((ui8EventCode & (0x01 << ALARM_TYPE_PREVENT)))))
+    else if (ui8EventCode == NORMAL)
     {
         // сигнализация в норме.
 //        fucZvkMal = COMMAND_SOUND_SIGNAL_TYPE_WARNING;

@@ -1522,7 +1522,7 @@ uint8_t CMainProductionCycle::Fsm(void)
 
         // обработаем события.
         CEvents::EventsHandler();
-//        (GetResources() -> m_uiModbusReceipt) = 0;
+        (GetResources() -> m_uiModbusReceipt) = 0;
         (GetResources() -> m_uiModbusReset) = 0;
         SetFsmState(INTERNAL_MODULES_DATA_EXCHANGE_START);
         break;

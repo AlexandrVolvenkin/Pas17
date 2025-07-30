@@ -209,7 +209,7 @@ public:
 
     uint8_t m_uiModbusReceipt = 0;
     uint8_t m_uiModbusReset = 0;
-    uint8_t m_uiModbusBlockeded = 0;
+    uint8_t m_uiModbusBlocked = 0;
     uint8_t m_uiAinOffProcessOwnerIndex = 0;
 
 };
