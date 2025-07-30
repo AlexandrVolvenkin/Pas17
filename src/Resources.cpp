@@ -11,6 +11,7 @@
 #include <typeinfo>
 
 #include "Task.h"
+#include "Gpio.h"
 #include "DeviceControl.h"
 #include "Link.h"
 #include "DataContainer.h"
@@ -334,6 +335,16 @@ void CResources::Allocate(void)
     // Подключим буфер с серийным номером и идентификатором прибора.
     m_puiSerialAndId =
         new uint8_t[SERIAL_AND_ID_DATA_BASE_BLOCK_LENGTH];
+
+
+    m_pxGpioSpiChipEnablePin =
+        CGpio::Create(2,
+                      12,
+                      "SPI_CHIP_ENABLE_PIN");
+    m_pxGpioPrdEnablePin =
+        CGpio::Create(0,
+                      22,
+                      "PRD_EN_PIN");
 }
 
 //-------------------------------------------------------------------------------

@@ -689,6 +689,9 @@ uint8_t CMainProductionCycle::InitTasks(void)
     std::cout << "CMainProductionCycle Init"  << std::endl;
 
 //-------------------------------------------------------------------------------
+    GetResources() -> Allocate();
+
+//-------------------------------------------------------------------------------
     //CGpio::Init();
 
 //-------------------------------------------------------------------------------
@@ -769,9 +772,6 @@ uint8_t CMainProductionCycle::InitTasks(void)
 //                               GetTaskPointerByNameFromMap("InternalModuleMuvr"));
 //    pxInternalModuleMuvr ->
 //    SetAddress(0);
-
-//-------------------------------------------------------------------------------
-    GetResources() -> Allocate();
 
 ////-------------------------------------------------------------------------------
 //    xCArchiveEventsDB.Allocate();
@@ -1306,6 +1306,11 @@ uint8_t CMainProductionCycle::Fsm(void)
         {
             CurrentlyRunningTasksExecution();
 
+            // получим указатель на объект управения пином порта ввода-вывода(синий светодиод)
+            CGpio* pxGpioPrdEnablePin = (GetResources() -> m_pxGpioPrdEnablePin.get());
+            // погасим синий светодиод сигнализирующий об ошибке конфигурации
+            pxGpioPrdEnablePin -> ClearPin();
+
             // зарегистрируем событие.
             CEvents::EventRegistration(
                 0,
@@ -1533,6 +1538,11 @@ uint8_t CMainProductionCycle::Fsm(void)
     {
         CurrentlyRunningTasksExecution();
 
+        // получим указатель на объект управения пином порта ввода-вывода(синий светодиод)
+        CGpio* pxGpioPrdEnablePin = (GetResources() -> m_pxGpioPrdEnablePin.get());
+        // зажжём синий светодиод сигнализирующий об ошибке конфигурации
+        pxGpioPrdEnablePin -> SetPin();
+
         // откроем базу данных.
         if (xCArchiveEventsDB.Connect((GetResources() -> m_puiSerialAndId)))
         {
@@ -1567,6 +1577,12 @@ uint8_t CMainProductionCycle::Fsm(void)
         if (m_xMainCycle100McTimer.IsOverflow())
         {
             m_xMainCycle100McTimer.Set(100);
+
+            // получим указатель на объект управения пином порта ввода-вывода(синий светодиод)
+            CGpio* pxGpioPrdEnablePin = (GetResources() -> m_pxGpioPrdEnablePin.get());
+            // зажжём синий светодиод сигнализирующий об ошибке конфигурации
+            pxGpioPrdEnablePin -> SetPin();
+
             // обработаем события.
             CEvents::EventsHandler();
             SetFsmState(INCORRECT_CONFIGURATION_ERROR_HANDLER_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
@@ -1601,6 +1617,11 @@ uint8_t CMainProductionCycle::Fsm(void)
 //        std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CONFIRMATION_WAITING_ERROR_HANDLER_START"  << std::endl;
     {
         CurrentlyRunningTasksExecution();
+
+        // получим указатель на объект управения пином порта ввода-вывода(синий светодиод)
+        CGpio* pxGpioPrdEnablePin = (GetResources() -> m_pxGpioPrdEnablePin.get());
+        // зажжём синий светодиод сигнализирующий об ошибке конфигурации
+        pxGpioPrdEnablePin -> SetPin();
 
         // откроем базу данных.
         if (xCArchiveEventsDB.Connect((GetResources() -> m_puiSerialAndId)))
@@ -1710,6 +1731,11 @@ uint8_t CMainProductionCycle::Fsm(void)
 
         if (m_xMainCycle100McTimer.IsOverflow())
         {
+            // получим указатель на объект управения пином порта ввода-вывода(синий светодиод)
+            CGpio* pxGpioPrdEnablePin = (GetResources() -> m_pxGpioPrdEnablePin.get());
+            // зажжём синий светодиод сигнализирующий об ошибке конфигурации
+            pxGpioPrdEnablePin -> SetPin();
+
             // обработаем события.
             CEvents::EventsHandler();
             SetFsmState(CONFIGURATION_CONFIRMATION_WAITING_ERROR_HANDLER_COMMAND_SEND);

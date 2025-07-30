@@ -23,7 +23,7 @@
 
 class CDfa;
 //class CTaskInterface;
-//class CTask;
+class CGpio;
 class CDeviceControl;
 class CDataStore;
 class CConfiguration;
@@ -211,6 +211,9 @@ public:
     uint8_t m_uiModbusReset = 0;
     uint8_t m_uiModbusBlocked = 0;
     uint8_t m_uiAinOffProcessOwnerIndex = 0;
+
+    std::shared_ptr<CGpio> m_pxGpioSpiChipEnablePin;
+    std::shared_ptr<CGpio> m_pxGpioPrdEnablePin;
 
 };
 
