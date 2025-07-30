@@ -746,29 +746,29 @@ void CDiscreteSignals::ProgrammedDiscreteSignalsNumberCount(void)
 void CDiscreteSignals::DiscreteSignalsTextTitlesDataBlockCommonFormatToWork(void)
 {
     std::cout << "CDiscreteSignals::DiscreteSignalsTextTitlesDataBlockCommonFormatToWork 1"  << std::endl;
-//    TDiscreteSygnalTextTitle *pxDiscreteSygnalTextTitlesWork;
-//    TDiscreteSygnalTextTitlePackOne *pxDiscreteSygnalTextTitlesWorkPackOne;
-//
-//    // получим указатель на рабочий массив текстовых реквизитов дискретных сигналов.
-//    pxDiscreteSygnalTextTitlesWork = m_pxDiscreteSygnalTextTitlesWork;
-//
-//    // получим указатель на базу данных прибора в общем формате.
-//    pxDiscreteSygnalTextTitlesWorkPackOne =
-//        (TDiscreteSygnalTextTitlePackOne*)m_puiIntermediateBuff;
-//
-//    // преобразуем из общего формата базы данных, в формат хранения в RAM.
-//    for (int i = 0;
-//            i < 16;
-//            i++)
-//    {
-//        memset(pxDiscreteSygnalTextTitlesWork[i].acTextDescriptor,
-//               0,
-//               (DISCRETE_SYGNAL_NAME_LENGTH + END_OF_STRING_LENGTH));
-//
-//        memcpy(pxDiscreteSygnalTextTitlesWork[i].acTextDescriptor,
-//               pxDiscreteSygnalTextTitlesWorkPackOne[i].acTextDescriptor,
-//               DISCRETE_SYGNAL_NAME_LENGTH);
-//    }
+    TDiscreteSygnalTextTitle *pxDiscreteSygnalTextTitlesWork;
+    TDiscreteSygnalTextTitlePackOne *pxDiscreteSygnalTextTitlesWorkPackOne;
+
+    // получим указатель на рабочий массив текстовых реквизитов дискретных сигналов.
+    pxDiscreteSygnalTextTitlesWork = m_pxDiscreteSygnalTextTitlesWork;
+
+    // получим указатель на базу данных прибора в общем формате.
+    pxDiscreteSygnalTextTitlesWorkPackOne =
+        (TDiscreteSygnalTextTitlePackOne*)m_puiIntermediateBuff;
+
+    // преобразуем из общего формата базы данных, в формат хранения в RAM.
+    for (int i = 0;
+            i < 16;
+            i++)
+    {
+        memset(pxDiscreteSygnalTextTitlesWork[i].acTextDescriptor,
+               0,
+               (DISCRETE_SYGNAL_NAME_LENGTH + END_OF_STRING_LENGTH));
+
+        memcpy(pxDiscreteSygnalTextTitlesWork[i].acTextDescriptor,
+               pxDiscreteSygnalTextTitlesWorkPackOne[i].acTextDescriptor,
+               DISCRETE_SYGNAL_NAME_LENGTH);
+    }
 }
 
 //-------------------------------------------------------------------------------
