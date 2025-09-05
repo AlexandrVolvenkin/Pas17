@@ -152,11 +152,6 @@
 		<Unit filename="src/Platform.h" />
 		<Unit filename="src/Resources.cpp" />
 		<Unit filename="src/Resources.h" />
-		<Unit filename="src/SQLite/sqlite3.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src/SQLite/sqlite3.h" />
-		<Unit filename="src/SQLite/sqlite3ext.h" />
 		<Unit filename="src/STEP5_floating_point.cpp" />
 		<Unit filename="src/STEP5_floating_point.h" />
 		<Unit filename="src/Semaphore.cpp" />

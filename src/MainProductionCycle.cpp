@@ -798,6 +798,8 @@ void CMainProductionCycle::CurrentlyRunningTasksExecution(void)
 {
 //    std::cout << "CMainProductionCycle CurrentlyRunningTasksExecution"  << std::endl;
 
+    usleep(1000);
+
     for(GetResources() -> m_xCurrentlyRunningTasksListIterator =
                 GetResources() -> m_lpxCurrentlyRunningTasksList.begin();
             GetResources() -> m_xCurrentlyRunningTasksListIterator !=
@@ -813,7 +815,7 @@ uint8_t CMainProductionCycle::Fsm(void)
 {
 //        std::cout << "CMainProductionCycle::Fsm 1"  << std::endl;
 
-    usleep(1000);
+//    usleep(1000);
 //    CurrentlyRunningTasksExecution();
 
     switch (GetFsmState())

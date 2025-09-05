@@ -428,6 +428,8 @@ int CSpiCommunicationDevice::Exchange(uint8_t uiAddress,
 //        uiExchangeCounter++;
 //    }
 
+
+//    return 0;
     while (m_pxSpi0Semaphore -> Acquire() == false);
 
 //    if (!(m_pxSpi0Semaphore -> Acquire()))

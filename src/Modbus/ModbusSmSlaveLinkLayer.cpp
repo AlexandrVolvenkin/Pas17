@@ -392,7 +392,7 @@ uint8_t CModbusSmSlaveLinkLayer::Fsm(void)
         break;
 
     case COMMUNICATION_START:
-        std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_START"  << std::endl;
+//        std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_START"  << std::endl;
         m_pxCommunicationDevice -> Open();
         m_uiFrameLength = 0;
         SetFsmState(COMMUNICATION_RECEIVE_START);
@@ -408,7 +408,7 @@ uint8_t CModbusSmSlaveLinkLayer::Fsm(void)
                          m_uiReceiveTimeout);
         if (iBytesNumber > 0)
         {
-            std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_START 2"  << std::endl;
+//            std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_START 2"  << std::endl;
             m_uiFrameLength = m_uiFrameLength + iBytesNumber;
             SetFsmState(COMMUNICATION_FRAME_CHECK);
         }
@@ -435,7 +435,7 @@ uint8_t CModbusSmSlaveLinkLayer::Fsm(void)
                             m_uiReceiveTimeout);
         if (iBytesNumber > 0)
         {
-            std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_CONTINUE 2"  << std::endl;
+//            std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_CONTINUE 2"  << std::endl;
             m_uiFrameLength = m_uiFrameLength + iBytesNumber;
             SetFsmState(COMMUNICATION_FRAME_CHECK);
         }
@@ -461,8 +461,8 @@ uint8_t CModbusSmSlaveLinkLayer::Fsm(void)
                             m_uiGuardTimeout);
         if (iBytesNumber > 0)
         {
-            std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END 2"  << std::endl;
-            cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END errno " << errno << endl;
+//            std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END 2"  << std::endl;
+//            cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END errno " << errno << endl;
             m_uiFrameLength = m_uiFrameLength + iBytesNumber;
         }
         else if (iBytesNumber < 0)
@@ -480,62 +480,62 @@ uint8_t CModbusSmSlaveLinkLayer::Fsm(void)
         break;
 
     case COMMUNICATION_FRAME_CHECK:
-        std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_FRAME_CHECK 1"  << std::endl;
-
-        {
-            cout << "CModbusSmSlaveLinkLayer::Fsm m_auiRxBuffer" << endl;
-            uint8_t *pucSourceTemp;
-            pucSourceTemp = (uint8_t*)m_auiRxBuffer;
-            for(int i=0; i<32; )
-            {
-                for(int j=0; j<8; j++)
-                {
-                    cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
-                }
-                cout << endl;
-                i += 8;
-            }
-        }
+//        std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_FRAME_CHECK 1"  << std::endl;
+//
+//        {
+//            cout << "CModbusSmSlaveLinkLayer::Fsm m_auiRxBuffer" << endl;
+//            uint8_t *pucSourceTemp;
+//            pucSourceTemp = (uint8_t*)m_auiRxBuffer;
+//            for(int i=0; i<32; )
+//            {
+//                for(int j=0; j<8; j++)
+//                {
+//                    cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+//                }
+//                cout << endl;
+//                i += 8;
+//            }
+//        }
         if (FrameCheck(m_auiRxBuffer, m_uiFrameLength))
         {
-            std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_FRAME_CHECK 2"  << std::endl;
+//            std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_FRAME_CHECK 2"  << std::endl;
             SetFsmState(COMMUNICATION_FRAME_RECEIVED);
         }
         else
         {
-            std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_FRAME_CHECK 3"  << std::endl;
+//            std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_FRAME_CHECK 3"  << std::endl;
             SetFsmState(COMMUNICATION_RECEIVE_CONTINUE);
         }
         break;
 
     case COMMUNICATION_FRAME_RECEIVED:
-        std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_FRAME_RECEIVED"  << std::endl;
+//        std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_FRAME_RECEIVED"  << std::endl;
         SetFsmState(DONE_OK);
         break;
 
     case COMMUNICATION_TRANSMIT_START:
-        std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_TRANSMIT_START"  << std::endl;
-        std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_TRANSMIT_START m_uiFrameLength "  << (int)m_uiFrameLength << std::endl;
+//        std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_TRANSMIT_START"  << std::endl;
+//        std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_TRANSMIT_START m_uiFrameLength "  << (int)m_uiFrameLength << std::endl;
         m_pxCommunicationDevice -> Write(m_auiTxBuffer, m_uiFrameLength);
         SetFsmState(COMMUNICATION_FRAME_TRANSMITED);
         break;
 
     case COMMUNICATION_FRAME_TRANSMITED:
-        std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_FRAME_TRANSMITED"  << std::endl;
-        {
-            cout << "CModbusSmSlaveLinkLayer::Fsm m_auiTxBuffer" << endl;
-            uint8_t *pucSourceTemp;
-            pucSourceTemp = (uint8_t*)m_auiTxBuffer;
-            for(int i=0; i<32; )
-            {
-                for(int j=0; j<8; j++)
-                {
-                    cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
-                }
-                cout << endl;
-                i += 8;
-            }
-        }
+//        std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_FRAME_TRANSMITED"  << std::endl;
+//        {
+//            cout << "CModbusSmSlaveLinkLayer::Fsm m_auiTxBuffer" << endl;
+//            uint8_t *pucSourceTemp;
+//            pucSourceTemp = (uint8_t*)m_auiTxBuffer;
+//            for(int i=0; i<32; )
+//            {
+//                for(int j=0; j<8; j++)
+//                {
+//                    cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+//                }
+//                cout << endl;
+//                i += 8;
+//            }
+//        }
         SetFsmState(DONE_OK);
         break;
 
