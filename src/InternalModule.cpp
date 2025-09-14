@@ -828,6 +828,7 @@ uint8_t CInternalModule::Fsm(void)
     case MODULES_DATA_EXCHANGE_EXECUTOR_ANSWER_PROCESSING:
 //        std::cout << "CMainProductionCycle::Fsm MODULES_DATA_EXCHANGE_EXECUTOR_ANSWER_PROCESSING 1"  << std::endl;
     {
+//        if (m_xDevicesIterator == m_vpxDevices.end())
         if (m_xDevicesIdIterator == m_vuiDevicesId.end())
         {
 //                std::cout << "CInternalModule::Fsm MODULES_DATA_EXCHANGE_EXECUTOR_ANSWER_PROCESSING 2"  << std::endl;

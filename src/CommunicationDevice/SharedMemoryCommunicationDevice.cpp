@@ -9,6 +9,7 @@
 #include <typeinfo>
 
 #include "Task.h"
+#include "Timer.h"
 #include "Platform.h"
 #include "Resources.h"
 #include "CommunicationDevice.h"
@@ -16,6 +17,7 @@
 
 using namespace std;
 
+//CTimeMeasure xTimeMeasure;
 //-------------------------------------------------------------------------------
 CSharedMemoryCommunicationDevice::CSharedMemoryCommunicationDevice()
 {
@@ -123,21 +125,22 @@ int16_t CSharedMemoryCommunicationDevice::ReceiveStart(uint8_t *puiDestination,
     {
         cout << "CSharedMemoryCommunicationDevice::ReceiveStart 2" << endl;
 
+//    xTimeMeasure.Begin();
 
-        {
-            cout << "CSharedMemoryCommunicationDevice::ReceiveStart m_puiClientToServerBuffer" << endl;
-            uint8_t *pucSourceTemp;
-            pucSourceTemp = (uint8_t*)m_puiClientToServerBuffer;
-            for(int i=0; i<32; )
-            {
-                for(int j=0; j<8; j++)
-                {
-                    cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
-                }
-                cout << endl;
-                i += 8;
-            }
-        }
+//        {
+//            cout << "CSharedMemoryCommunicationDevice::ReceiveStart m_puiClientToServerBuffer" << endl;
+//            uint8_t *pucSourceTemp;
+//            pucSourceTemp = (uint8_t*)m_puiClientToServerBuffer;
+//            for(int i=0; i<32; )
+//            {
+//                for(int j=0; j<8; j++)
+//                {
+//                    cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+//                }
+//                cout << endl;
+//                i += 8;
+//            }
+//        }
 
         m_puiClientToServerBuffer[0] = 0;
 
@@ -161,25 +164,26 @@ int16_t CSharedMemoryCommunicationDevice::ReceiveContinue(uint8_t *puiDestinatio
 {
 //    std::cout << "CSharedMemoryCommunicationDevice::ReceiveContinue 1"  << std::endl;
 
+//    xTimeMeasure.Begin();
     uint16_t uiLengthLocal = m_puiClientToServerBuffer[0];
 
     if (uiLengthLocal)
     {
-        cout << "CSharedMemoryCommunicationDevice::ReceiveContinue 2" << endl;
-        {
-            cout << "CSharedMemoryCommunicationDevice::ReceiveContinue m_puiClientToServerBuffer" << endl;
-            uint8_t *pucSourceTemp;
-            pucSourceTemp = (uint8_t*)m_puiClientToServerBuffer;
-            for(int i=0; i<32; )
-            {
-                for(int j=0; j<8; j++)
-                {
-                    cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
-                }
-                cout << endl;
-                i += 8;
-            }
-        }
+//        cout << "CSharedMemoryCommunicationDevice::ReceiveContinue 2" << endl;
+//        {
+//            cout << "CSharedMemoryCommunicationDevice::ReceiveContinue m_puiClientToServerBuffer" << endl;
+//            uint8_t *pucSourceTemp;
+//            pucSourceTemp = (uint8_t*)m_puiClientToServerBuffer;
+//            for(int i=0; i<32; )
+//            {
+//                for(int j=0; j<8; j++)
+//                {
+//                    cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+//                }
+//                cout << endl;
+//                i += 8;
+//            }
+//        }
 
         m_puiClientToServerBuffer[0] = 0;
 
@@ -207,21 +211,22 @@ int16_t CSharedMemoryCommunicationDevice::Write(uint8_t *puiSource, uint16_t uiL
 
     m_puiServerToClientBuffer[0]  = uiLength;
 
-    {
-        cout << "CSharedMemoryCommunicationDevice::ReceiveContinue m_puiServerToClientBuffer" << endl;
-        uint8_t *pucSourceTemp;
-        pucSourceTemp = (uint8_t*)m_puiServerToClientBuffer;
-        for(int i=0; i<32; )
-        {
-            for(int j=0; j<8; j++)
-            {
-                cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
-            }
-            cout << endl;
-            i += 8;
-        }
-    }
+//    {
+//        cout << "CSharedMemoryCommunicationDevice::ReceiveContinue m_puiServerToClientBuffer" << endl;
+//        uint8_t *pucSourceTemp;
+//        pucSourceTemp = (uint8_t*)m_puiServerToClientBuffer;
+//        for(int i=0; i<32; )
+//        {
+//            for(int j=0; j<8; j++)
+//            {
+//                cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+//            }
+//            cout << endl;
+//            i += 8;
+//        }
+//    }
 
+//    xTimeMeasure.End();
     return uiLength;
 }
 

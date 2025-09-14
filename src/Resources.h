@@ -96,8 +96,8 @@ public:
     void ReceiveAnswer(void);
 
     TConfigDataPackOne* GetDeviceConfigSearchPointer(void);
+    TDeviceStateDataPackOne* GetDeviceStateDataPointer(void);
     TDiscreteSygnalTextTitle* GetDiscreteSygnalTextTitlesWorkPointer(void);
-
 
     void ModbusWorkingArraysCreate(uint16_t uiCoilsNumber,
                                    uint16_t uiDiscreteInputsNumber,
@@ -159,6 +159,9 @@ public:
 
     // объект с конфигурацией во внутреннем формате.
     TConfigDataPackOne m_xDeviceConfigSearch;
+
+    // объект с состоянием системы.
+    TDeviceStateDataPackOne m_xDeviceStateData;
 
     uint8_t* m_puiCoils;
     uint8_t* m_puiDiscreteInputs;

@@ -561,20 +561,20 @@ uint8_t CModbusRtuSlaveLinkLayer::Fsm(void)
 
     case COMMUNICATION_FRAME_TRANSMITED:
         //std::cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_FRAME_TRANSMITED"  << std::endl;
-//        {
-//            //std::cout << "CModbusRtuSlaveLinkLayer::Fsm m_auiTxBuffer" << endl;
-//            uint8_t *pucSourceTemp;
-//            pucSourceTemp = (uint8_t*)m_auiTxBuffer;
-//            for(int i=0; i<32; )
-//            {
-//                for(int j=0; j<8; j++)
-//                {
-//                    cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
-//                }
-//                cout << endl;
-//                i += 8;
-//            }
-//        }
+        {
+            //std::cout << "CModbusRtuSlaveLinkLayer::Fsm m_auiTxBuffer" << endl;
+            uint8_t *pucSourceTemp;
+            pucSourceTemp = (uint8_t*)m_auiTxBuffer;
+            for(int i=0; i<32; )
+            {
+                for(int j=0; j<8; j++)
+                {
+                    cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+                }
+                cout << endl;
+                i += 8;
+            }
+        }
         SetFsmState(DONE_OK);
         break;
 

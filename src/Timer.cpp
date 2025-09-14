@@ -9,7 +9,7 @@
 #include "Platform.h"
 #include "Timer.h"
 
-CTimeMeasure xTimeMeasure;
+//CTimeMeasure xTimeMeasure;
 //-------------------------------------------------------------------------------
 CTimer::CTimer()
 {
@@ -133,6 +133,7 @@ uint32_t CTimeMeasure::End(void)
             }
             else
             {
+                std::cout << "CTimeMeasure::End uiTime "  << (float)uiTime  << std::endl;
                 return uiTime;
             }
 //            return ((uint32_t)((uint32_t)xTimeCur.tv_usec - (uint32_t)xTimeLast.tv_usec));

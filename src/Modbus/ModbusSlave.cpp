@@ -11,6 +11,7 @@
 
 #include "Configuration.h"
 #include "Task.h"
+#include "Timer.h"
 #include "Resources.h"
 #include "Platform.h"
 #include "DataStore.h"
@@ -23,6 +24,8 @@
 #include "ModbusSlave.h"
 
 using namespace std;
+
+CTimeMeasure xTimeMeasure;
 
 //-------------------------------------------------------------------------------
 CModbusSlave::CModbusSlave()
@@ -692,6 +695,102 @@ uint16_t CModbusSlave::PollProgramming(void)
 }
 
 //-------------------------------------------------------------------------------
+uint16_t CModbusSlave::StateDataRead(void)
+
+{
+    std::cout << "CModbusSlave::StateDataRead 1" << std::endl;
+
+    uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
+    uint8_t * puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
+    uint8_t * puiResponse = m_pxModbusSlaveLinkLayer -> GetTxBuffer();
+    uint16_t  uiLength = m_pxModbusSlaveLinkLayer -> GetFrameLength();
+
+    int8_t uiSlave = puiRequest[uiPduOffset - 1];
+    int8_t uiFunctionCode = puiRequest[uiPduOffset];
+
+    m_uiFunctionCode = uiFunctionCode;
+
+    CDataContainerDataBase* pxDataContainer =
+        (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+    pxDataContainer -> m_uiTaskId = m_uiDeviceControlId;
+    pxDataContainer -> m_uiFsmCommandState =
+        CDeviceControl::STATE_DATA_READ_START;
+    pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+
+    SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+    SetFsmNextStateDoneOk(EXECUTOR_ANSWER_PROCESSING);
+    SetFsmNextStateReadyWaitingError(RESPONSE_EXCEPTION_SLAVE_OR_SERVER_BUSY);
+    SetFsmNextStateDoneWaitingError(RESPONSE_EXCEPTION_SLAVE_OR_SERVER_BUSY);
+    SetFsmNextStateDoneWaitingDoneError(RESPONSE_EXCEPTION_SLAVE_OR_SERVER_FAILURE);
+
+    return uiLength;
+}
+
+//-------------------------------------------------------------------------------
+uint16_t CModbusSlave::AnalogueMeasureArchiveWrite(void)
+
+{
+    std::cout << "CModbusSlave::AnalogueMeasureArchiveWrite 1" << std::endl;
+
+    uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
+    uint8_t * puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
+    uint8_t * puiResponse = m_pxModbusSlaveLinkLayer -> GetTxBuffer();
+    uint16_t  uiLength = m_pxModbusSlaveLinkLayer -> GetFrameLength();
+
+    int8_t uiSlave = puiRequest[uiPduOffset - 1];
+    int8_t uiFunctionCode = puiRequest[uiPduOffset];
+
+    m_uiFunctionCode = uiFunctionCode;
+
+    CDataContainerDataBase* pxDataContainer =
+        (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+    pxDataContainer -> m_uiTaskId = m_uiDeviceControlId;
+    pxDataContainer -> m_uiFsmCommandState =
+        CDeviceControl::ANALOGUE_MEASURE_ARCHIVE_WRITE_START;
+    pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+
+    SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+    SetFsmNextStateDoneOk(EXECUTOR_ANSWER_PROCESSING);
+    SetFsmNextStateReadyWaitingError(RESPONSE_EXCEPTION_SLAVE_OR_SERVER_BUSY);
+    SetFsmNextStateDoneWaitingError(RESPONSE_EXCEPTION_SLAVE_OR_SERVER_BUSY);
+    SetFsmNextStateDoneWaitingDoneError(RESPONSE_EXCEPTION_SLAVE_OR_SERVER_FAILURE);
+
+    return uiLength;
+}
+
+//-------------------------------------------------------------------------------
+uint16_t CModbusSlave::AnalogueMeasureArchiveWriteStateRequest(void)
+
+{
+    std::cout << "CModbusSlave::AnalogueMeasureArchiveWriteStateRequest 1" << std::endl;
+
+    uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
+    uint8_t * puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
+    uint8_t * puiResponse = m_pxModbusSlaveLinkLayer -> GetTxBuffer();
+    uint16_t  uiLength = m_pxModbusSlaveLinkLayer -> GetFrameLength();
+
+    int8_t uiSlave = puiRequest[uiPduOffset - 1];
+    int8_t uiFunctionCode = puiRequest[uiPduOffset];
+
+    m_uiFunctionCode = uiFunctionCode;
+
+    CDataContainerDataBase* pxDataContainer =
+        (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+    pxDataContainer -> m_uiTaskId = m_uiDeviceControlId;
+    pxDataContainer -> m_uiFsmCommandState =
+        CDeviceControl::ANALOGUE_MEASURE_ARCHIVE_WRITE_STATE_REQUEST_START;
+    pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+
+    SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+    SetFsmNextStateDoneOk(EXECUTOR_ANSWER_PROCESSING);
+    SetFsmNextStateReadyWaitingError(RESPONSE_EXCEPTION_SLAVE_OR_SERVER_BUSY);
+    SetFsmNextStateDoneWaitingError(RESPONSE_EXCEPTION_SLAVE_OR_SERVER_BUSY);
+    SetFsmNextStateDoneWaitingDoneError(RESPONSE_EXCEPTION_SLAVE_OR_SERVER_FAILURE);
+
+    return uiLength;
+}
+
+//-------------------------------------------------------------------------------
 uint16_t CModbusSlave::DataBaseRead(void)
 {
     std::cout << "CModbusSlave::DataBaseRead 1" << std::endl;
@@ -975,7 +1074,16 @@ uint16_t CModbusSlave::RequestProcessing(void)
         uiLength = WriteAndReadRegisters();
         break;
 
-    case _FC_DATA_EXCHANGE:
+    case _FC_STATE_DATA_READ:
+        uiLength = StateDataRead();
+        break;
+
+    case _FC_ANALOGUE_MEASURE_ARCHIVE_WRITE:
+        uiLength = AnalogueMeasureArchiveWrite();
+        break;
+
+    case _FC_ANALOGUE_MEASURE_ARCHIVE_WRITE_STATE_REQUEST:
+        uiLength = AnalogueMeasureArchiveWriteStateRequest();
         break;
 
     case _FC_DATA_BASE_READ:
@@ -1543,6 +1651,114 @@ uint16_t CModbusSlave::PollProgrammingAnswer(void)
 }
 
 //-------------------------------------------------------------------------------
+uint16_t CModbusSlave::StateDataReadAnswer(void)
+{
+    std::cout << "CModbusSlave::StateDataReadAnswer 1" << std::endl;
+
+    uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
+    uint8_t * puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
+    uint8_t * puiResponse = m_pxModbusSlaveLinkLayer -> GetTxBuffer();
+    uint16_t  uiLength = m_pxModbusSlaveLinkLayer -> GetFrameLength();
+
+    int8_t uiSlave = puiRequest[uiPduOffset - 1];
+    int8_t uiFunctionCode = puiRequest[uiPduOffset];
+
+    std::cout << "CModbusSlave::StateDataReadAnswer 2" << std::endl;
+
+    CDataContainerDataBase* pxDataContainer =
+        (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+    uiLength = pxDataContainer -> m_uiDataLength;
+
+    std::cout << "CModbusSlave::StateDataReadAnswer uiLength "  << (int)uiLength << std::endl;
+
+    memcpy(&puiResponse[uiPduOffset + 2],
+           (pxDataContainer -> m_puiDataPointer),
+           uiLength);
+
+    // количество байт в прикладном сообщении массиве конфигурации, не включа€ остальные.
+    puiResponse[uiPduOffset + 1] = uiLength;
+    uiLength++;
+    uiLength += m_pxModbusSlaveLinkLayer ->
+                ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
+
+    SetFsmState(MESSAGE_TRANSMIT_START);
+
+    return uiLength;
+}
+
+//-------------------------------------------------------------------------------
+uint16_t CModbusSlave::AnalogueMeasureArchiveWriteAnswer(void)
+{
+    std::cout << "CModbusSlave::AnalogueMeasureArchiveWriteAnswer 1" << std::endl;
+
+    uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
+    uint8_t * puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
+    uint8_t * puiResponse = m_pxModbusSlaveLinkLayer -> GetTxBuffer();
+    uint16_t  uiLength = m_pxModbusSlaveLinkLayer -> GetFrameLength();
+
+    int8_t uiSlave = puiRequest[uiPduOffset - 1];
+    int8_t uiFunctionCode = puiRequest[uiPduOffset];
+
+    std::cout << "CModbusSlave::AnalogueMeasureArchiveWriteAnswer 2" << std::endl;
+
+    CDataContainerDataBase* pxDataContainer =
+        (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+    uiLength = pxDataContainer -> m_uiDataLength;
+
+    std::cout << "CModbusSlave::AnalogueMeasureArchiveWriteAnswer uiLength "  << (int)uiLength << std::endl;
+
+    memcpy(&puiResponse[uiPduOffset + 2],
+           (pxDataContainer -> m_puiDataPointer),
+           uiLength);
+
+    // количество байт в прикладном сообщении массиве конфигурации, не включа€ остальные.
+    puiResponse[uiPduOffset + 1] = uiLength;
+    uiLength++;
+    uiLength += m_pxModbusSlaveLinkLayer ->
+                ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
+
+    SetFsmState(MESSAGE_TRANSMIT_START);
+
+    return uiLength;
+}
+
+//-------------------------------------------------------------------------------
+uint16_t CModbusSlave::AnalogueMeasureArchiveWriteStateRequestAnswer(void)
+{
+    std::cout << "CModbusSlave::AnalogueMeasureArchiveWriteStateRequestAnswer 1" << std::endl;
+
+    uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
+    uint8_t * puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
+    uint8_t * puiResponse = m_pxModbusSlaveLinkLayer -> GetTxBuffer();
+    uint16_t  uiLength = m_pxModbusSlaveLinkLayer -> GetFrameLength();
+
+    int8_t uiSlave = puiRequest[uiPduOffset - 1];
+    int8_t uiFunctionCode = puiRequest[uiPduOffset];
+
+    std::cout << "CModbusSlave::AnalogueMeasureArchiveWriteStateRequestAnswer 2" << std::endl;
+
+    CDataContainerDataBase* pxDataContainer =
+        (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+    uiLength = pxDataContainer -> m_uiDataLength;
+
+    std::cout << "CModbusSlave::AnalogueMeasureArchiveWriteStateRequestAnswer uiLength "  << (int)uiLength << std::endl;
+
+    memcpy(&puiResponse[uiPduOffset + 2],
+           (pxDataContainer -> m_puiDataPointer),
+           uiLength);
+
+    // количество байт в прикладном сообщении массиве конфигурации, не включа€ остальные.
+    puiResponse[uiPduOffset + 1] = uiLength;
+    uiLength++;
+    uiLength += m_pxModbusSlaveLinkLayer ->
+                ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
+
+    SetFsmState(MESSAGE_TRANSMIT_START);
+
+    return uiLength;
+}
+
+//-------------------------------------------------------------------------------
 uint16_t CModbusSlave::DataBaseReadAnswer(void)
 {
     std::cout << "CModbusSlave::DataBaseReadAnswer 1" << std::endl;
@@ -1790,7 +2006,16 @@ uint16_t CModbusSlave::AnswerProcessing(void)
         uiLength = WriteAndReadRegistersAnswer();
         break;
 
-    case _FC_DATA_EXCHANGE:
+    case _FC_STATE_DATA_READ:
+        uiLength = StateDataReadAnswer();
+        break;
+
+    case _FC_ANALOGUE_MEASURE_ARCHIVE_WRITE:
+        uiLength = AnalogueMeasureArchiveWriteAnswer();
+        break;
+
+    case _FC_ANALOGUE_MEASURE_ARCHIVE_WRITE_STATE_REQUEST:
+        uiLength = AnalogueMeasureArchiveWriteStateRequestAnswer();
         break;
 
     case _FC_DATA_BASE_READ:
@@ -1800,9 +2025,6 @@ uint16_t CModbusSlave::AnswerProcessing(void)
     case _FC_DATA_BASE_WRITE:
         uiLength = DataBaseWriteAnswer();
         break;
-
-//    case _FC_PROGRAMMING:
-//        break;
 
     case _FC_TIME_SET:
         uiLength = TimeSetAnswer();
@@ -2130,6 +2352,7 @@ uint8_t CModbusSlave::Fsm(void)
 
         if (uiFsmState == DONE_OK)
         {
+            xTimeMeasure.Begin();
             std::cout << "CModbusSlave::Fsm MESSAGE_RECEIVE_WAITING 2"  << std::endl;
             SetFsmState(REQUEST_PROCESSING);
         }
@@ -2143,6 +2366,7 @@ uint8_t CModbusSlave::Fsm(void)
 
     case REQUEST_PROCESSING:
         std::cout << "CModbusSlave::Fsm REQUEST_PROCESSING"  << std::endl;
+//    xTimeMeasure.End();
         if (RequestProcessing())
         {
             // состо€ние автомата измен€ют вызываемые методы обработчики функций модбас.
@@ -2168,6 +2392,8 @@ uint8_t CModbusSlave::Fsm(void)
 
     case MESSAGE_TRANSMIT_START:
         std::cout << "CModbusSlave::Fsm MESSAGE_TRANSMIT_START"  << std::endl;
+//    xTimeMeasure.Begin();
+//    xTimeMeasure.End();
         GetTimerPointer() -> Set(m_uiTransmitDelayTimeout);
         SetFsmState(MESSAGE_TRANSMIT_BEFORE_WAITING);
         break;
@@ -2196,6 +2422,7 @@ uint8_t CModbusSlave::Fsm(void)
 
         if (uiFsmState == DONE_OK)
         {
+            xTimeMeasure.End();
             std::cout << "CModbusSlave::Fsm MESSAGE_TRANSMIT_AFTER_WAITING 2"  << std::endl;
             SetFsmState(COMMUNICATION_RECEIVE_CONTINUE);
         }

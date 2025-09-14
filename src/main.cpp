@@ -14,11 +14,14 @@
 
 #include "Task.h"
 //#include "Dfa.h"
+#include "Timer.h"
 #include "DataTypes.h"
 #include "MainProductionCycle.h"
 
 //-------------------------------------------------------------------------------
 using namespace std;
+
+//CTimeMeasure xTimeMeasure;
 
 int main()
 {
@@ -32,7 +35,11 @@ int main()
 //    cout << "main sizeof(time_t)" << " " << (int)sizeof(struct time_t) << endl;
     while (1)
     {
+
+//    xTimeMeasure.Begin();
         xMainProductionCycle.Fsm();
+
+//    xTimeMeasure.End();
     }
 
     return 0;

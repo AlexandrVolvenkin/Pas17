@@ -13,6 +13,7 @@
 
 #include "Platform.h"
 #include "Task.h"
+#include "Timer.h"
 #include "Resources.h"
 #include "CommunicationDevice.h"
 #include "ModbusSmSlaveLinkLayer.h"
@@ -22,6 +23,7 @@
 
 using namespace std;
 
+//CTimeMeasure xTimeMeasure;
 //-------------------------------------------------------------------------------
 CModbusSmSlaveLinkLayer::CModbusSmSlaveLinkLayer()
 {
@@ -408,6 +410,8 @@ uint8_t CModbusSmSlaveLinkLayer::Fsm(void)
                          m_uiReceiveTimeout);
         if (iBytesNumber > 0)
         {
+
+//    xTimeMeasure.Begin();
 //            std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_START 2"  << std::endl;
             m_uiFrameLength = m_uiFrameLength + iBytesNumber;
             SetFsmState(COMMUNICATION_FRAME_CHECK);
@@ -435,6 +439,7 @@ uint8_t CModbusSmSlaveLinkLayer::Fsm(void)
                             m_uiReceiveTimeout);
         if (iBytesNumber > 0)
         {
+//    xTimeMeasure.Begin();
 //            std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_CONTINUE 2"  << std::endl;
             m_uiFrameLength = m_uiFrameLength + iBytesNumber;
             SetFsmState(COMMUNICATION_FRAME_CHECK);
@@ -461,6 +466,7 @@ uint8_t CModbusSmSlaveLinkLayer::Fsm(void)
                             m_uiGuardTimeout);
         if (iBytesNumber > 0)
         {
+//    xTimeMeasure.Begin();
 //            std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END 2"  << std::endl;
 //            cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_END errno " << errno << endl;
             m_uiFrameLength = m_uiFrameLength + iBytesNumber;
@@ -514,6 +520,7 @@ uint8_t CModbusSmSlaveLinkLayer::Fsm(void)
         break;
 
     case COMMUNICATION_TRANSMIT_START:
+//    xTimeMeasure.End();
 //        std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_TRANSMIT_START"  << std::endl;
 //        std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_TRANSMIT_START m_uiFrameLength "  << (int)m_uiFrameLength << std::endl;
         m_pxCommunicationDevice -> Write(m_auiTxBuffer, m_uiFrameLength);
@@ -536,6 +543,7 @@ uint8_t CModbusSmSlaveLinkLayer::Fsm(void)
 //                i += 8;
 //            }
 //        }
+//    xTimeMeasure.End();
         SetFsmState(DONE_OK);
         break;
 

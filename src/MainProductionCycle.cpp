@@ -798,7 +798,8 @@ void CMainProductionCycle::CurrentlyRunningTasksExecution(void)
 {
 //    std::cout << "CMainProductionCycle CurrentlyRunningTasksExecution"  << std::endl;
 
-    usleep(1000);
+
+//    xTimeMeasure.Begin();
 
     for(GetResources() -> m_xCurrentlyRunningTasksListIterator =
                 GetResources() -> m_lpxCurrentlyRunningTasksList.begin();
@@ -808,12 +809,18 @@ void CMainProductionCycle::CurrentlyRunningTasksExecution(void)
     {
         (*(GetResources() -> m_xCurrentlyRunningTasksListIterator)) -> Fsm();
     }
+
+    usleep(500);
+//
+//    xTimeMeasure.End();
 }
 
 //-------------------------------------------------------------------------------
 uint8_t CMainProductionCycle::Fsm(void)
 {
 //        std::cout << "CMainProductionCycle::Fsm 1"  << std::endl;
+
+//    CTimeMeasure xTimeMeasure;
 
 //    usleep(1000);
 //    CurrentlyRunningTasksExecution();
@@ -822,7 +829,7 @@ uint8_t CMainProductionCycle::Fsm(void)
     {
     case IDDLE:
         //std::cout << "CMainProductionCycle::Fsm IDDLE"  << std::endl;
-        usleep(1000);
+//        usleep(1000);
         break;
 
     case STOP:
@@ -905,13 +912,13 @@ uint8_t CMainProductionCycle::Fsm(void)
         break;
 
     case DONE_OK:
-//        std::cout << "CMainProductionCycle::Fsm DONE_OK"  << std::endl;
+        std::cout << "CMainProductionCycle::Fsm DONE_OK"  << std::endl;
 //        SetFsmOperationStatus(DONE_OK);
 //        SetFsmState(READY);
         break;
 
     case DONE_ERROR:
-//        std::cout << "CMainProductionCycle::Fsm DONE_ERROR"  << std::endl;
+        std::cout << "CMainProductionCycle::Fsm DONE_ERROR"  << std::endl;
 //        SetFsmOperationStatus(DONE_ERROR);
 //        SetFsmState(READY);
         break;
@@ -1421,6 +1428,9 @@ uint8_t CMainProductionCycle::Fsm(void)
     case INTERNAL_MODULES_DATA_EXCHANGE_START:
 //        std::cout << "CMainProductionCycle::Fsm INTERNAL_MODULES_DATA_EXCHANGE_START"  << std::endl;
     {
+
+//        xTimeMeasure.Begin();
+
         CurrentlyRunningTasksExecution();
 
         m_xMainCycle100McTimer.Set(100);
@@ -1575,6 +1585,8 @@ uint8_t CMainProductionCycle::Fsm(void)
         (GetResources() -> m_uiModbusReceipt) = 0;
         (GetResources() -> m_uiModbusReset) = 0;
         SetFsmState(INTERNAL_MODULES_DATA_EXCHANGE_START);
+
+//        xTimeMeasure.End();
         break;
 
 //-------------------------------------------------------------------------------

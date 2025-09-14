@@ -101,6 +101,9 @@ public:
     uint16_t WriteAndReadRegisters(void);
     uint16_t Programming(void);
     uint16_t PollProgramming(void);
+    uint16_t StateDataRead(void);
+    uint16_t AnalogueMeasureArchiveWrite(void);
+    uint16_t AnalogueMeasureArchiveWriteStateRequest(void);
     uint16_t DataBaseRead(void);
     uint16_t DataBaseWrite(void);
     uint16_t TimeSet(void);
@@ -121,6 +124,9 @@ public:
     uint16_t WriteAndReadRegistersAnswer(void);
     uint16_t ProgrammingAnswer(void);
     uint16_t PollProgrammingAnswer(void);
+    uint16_t StateDataReadAnswer(void);
+    uint16_t AnalogueMeasureArchiveWriteAnswer(void);
+    uint16_t AnalogueMeasureArchiveWriteStateRequestAnswer(void);
     uint16_t DataBaseReadAnswer(void);
     uint16_t DataBaseWriteAnswer(void);
     uint16_t TimeSetAnswer(void);
@@ -199,7 +205,7 @@ public:
     uint16_t m_uiMessageLength;
     // таймоут по отсутствию подтверждения.
     const static uint16_t m_uiConfirmationTimeout = 500;
-    const static uint16_t m_uiTransmitDelayTimeout = 5;
+    const static uint16_t m_uiTransmitDelayTimeout = 1;
 
     uint8_t* m_puiRxBuffer;
     uint8_t* m_puiTxBuffer;
