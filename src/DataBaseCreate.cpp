@@ -900,7 +900,8 @@ uint8_t CDataBaseCreate::Fsm(void)
     case DATA_BASE_CREATE_SERIAL_AND_ID_DATA_BASE_BLOCKS_WRITE_START:
         std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_SERIAL_AND_ID_DATA_BASE_BLOCKS_WRITE_START"  << std::endl;
         {
-            const char* cSerialAndIdStr = "00000-ПАС-17А___";
+            const char* cSerialAndIdStr = "00000-Pas-17A___";
+//            const char* cSerialAndIdStr = "00000-ПАС-17А___";
             // Получаем серийный номер и идентификатор
             memcpy(m_puiIntermediateBuff,
                    cSerialAndIdStr,

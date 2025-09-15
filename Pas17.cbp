@@ -148,6 +148,8 @@
 		<Unit filename="src/Modbus/ModbusTcpSlaveLinkLayer.cpp" />
 		<Unit filename="src/Modbus/ModbusTcpSlaveLinkLayer.h" />
 		<Unit filename="src/Modbus/errno-base.h" />
+		<Unit filename="src/Parse.cpp" />
+		<Unit filename="src/Parse.h" />
 		<Unit filename="src/Platform.cpp" />
 		<Unit filename="src/Platform.h" />
 		<Unit filename="src/Resources.cpp" />

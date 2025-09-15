@@ -224,6 +224,7 @@ public:
     void LinuxCurrentTimeSet(unsigned char *pucSource);
     void CurrentTimeSet(void);
     void CurrentTimeUpdate(void);
+    void AnalogueMeasureArchiveWrite(void);
     void OnlineDataRead(void);
     uint8_t ModbusFunction5Handler(void);
     uint16_t DataBaseBlockReadBlockRelatedAction(void);
@@ -252,6 +253,8 @@ protected:
 
     uint16_t* m_puiHoldingRegisters;
     uint16_t* m_puiInputRegisters;
+
+    uint8_t* m_puiSerialAndId;
 
     uint8_t* m_puiIntermediateBuff;
     bool m_fbIsConfigurationConfirmed = false;

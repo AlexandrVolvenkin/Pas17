@@ -88,7 +88,7 @@ class CPlatform;
 /* Function codes */
 #define _FC_READ_COILS                0x01
 #define _FC_READ_DISCRETE_INPUTS      0x02
-#define _FC_READ_HOLDING_REGISTERS    0x03
+#define _FC_READ_HOLDING_REGISTERS    0x49//0x03
 #define _FC_READ_INPUT_REGISTERS      0x04
 #define _FC_WRITE_SINGLE_COIL         0x05
 #define _FC_WRITE_SINGLE_REGISTER     0x06
@@ -112,7 +112,7 @@ class CPlatform;
 //#define _FC_DATA_EXCHANGE  0x41
 //#define _FC_SEND_MESSAGE  0x41
 
-#define _FC_STATE_DATA_READ  0x41
+#define _FC_STATE_DATA_READ  0x03//0x41
 #define _FC_ANALOGUE_MEASURE_ARCHIVE_WRITE  0x42
 #define _FC_ANALOGUE_MEASURE_ARCHIVE_WRITE_STATE_REQUEST  0x43
 

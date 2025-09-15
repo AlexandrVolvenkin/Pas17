@@ -5,7 +5,15 @@
 //  email       : aav-36@mail.ru
 //  GitHub      : https://github.com/AlexandrVolvenkin
 //-------------------------------------------------------------------------------
+//#include <iostream>
+//#include <vector>
+//#include <string>
+//#include <filesystem>
 
+#include <iostream>
+#include <dirent.h>
+#include <string>
+#include <algorithm>
 #include <memory>
 
 #include "Timer.h"
@@ -19,6 +27,7 @@
 #include "ConfigurationCreate.h"
 #include "InternalModuleMuvr.h"
 #include "ModbusSlave.h"
+#include "Parse.h"
 #include "DeviceControl.h"
 
 using namespace std;
@@ -202,6 +211,11 @@ void CDeviceControl::Allocate(void)
     m_puiHoldingRegisters = m_pxResources -> GetHoldingRegisters();
     m_puiInputRegisters = m_pxResources -> GetInputRegisters();
 
+
+    // Получим указатель на буфер с серийным номером и идентификатором прибора.
+    m_puiSerialAndId =
+        (GetResources() -> m_puiSerialAndId);
+
 //    m_uiBadAnswerCounter = 0;
 }
 
@@ -352,6 +366,154 @@ void CDeviceControl::CurrentTimeUpdate(void)
 ////                   (uint8_t*)&xCurrentTime,
 ////                   sizeof(xCurrentTime));
 ////    }
+}
+
+
+std::vector<std::string> listFilesByPrefix(const std::string& prefix)
+{
+    std::vector<std::string> files;
+    DIR* dir = opendir("/home/debian");
+//    DIR* dir = opendir("/home/debian/AnalogueMeasureArchives_10000-Pas-17A____");
+
+    if (dir != nullptr)
+    {
+        struct dirent* entry;
+
+        while ((entry = readdir(dir)) != nullptr)
+        {
+            // Игнорируем текущий и предыдущий каталоги
+            if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
+                continue;
+
+            std::string fileName(entry->d_name);
+            // Проверяем, начинается ли имя файла с заданного префикса
+            if (fileName.compare(0, prefix.length(), prefix) == 0)
+            {
+                files.push_back(fileName);
+            }
+        }
+
+        closedir(dir);
+    }
+    else
+    {
+        std::cerr << "Ошибка при открытии каталога" << std::endl;
+    }
+
+    return files;
+}
+
+//// Функция для получения списка всех файлов в директории
+//std::vector<std::string> listFiles(const std::string& path)
+//{
+//    std::vector<std::string> files;
+//    for (const auto& entry : std::filesystem::directory_iterator(path))
+//    {
+//        if (!entry.is_directory())
+//        {
+//            files.push_back(entry.path().filename().string());
+//        }
+//    }
+//    return files;
+//}
+//-----------------------------------------------------------------------------------------------------
+void CDeviceControl::AnalogueMeasureArchiveWrite(void)
+{
+    std::cout << "CDeviceControl AnalogueMeasureArchiveWrite 1"  << std::endl;
+
+//            CDataContainerDataBase* pxDataContainer =
+//                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+//            pxDataContainer -> m_uiTaskId = m_uiConfigurationCreateId;
+//            pxDataContainer -> m_uiFsmCommandState =
+//                CConfigurationCreate::CONFIGURATION_REQUEST_START;
+//            pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+
+    CParse xCArchiveSaveParse;
+//            xCArchiveSaveParse.GetDiskInfo();
+    xCArchiveSaveParse.GetDiskInfoNew();
+    for (uint8_t i; i < 4; i++)
+    {
+        std::cout << "CDeviceControl::Fsm acName " <<
+                  (xCArchiveSaveParse.axTDiskInfo[i].acName) << std::endl;
+    }
+
+    // создадим строки предложения имеющихся дисков для меню.
+    for (uint8_t i = 0, j = 0, k = 0, l = 0;
+            (i < 2);
+            i++)
+    {
+        // есть USB диск?
+        if (memcmp((xCArchiveSaveParse.axTDiskInfo[i].acName),
+                   "sd",
+                   2) == 0)
+        {
+//                    // создадим строку с именем и ёмкостью имеющегося USB диска.
+//                    sprintf((char*)(pxDestination -> axChoiceOptionTextData[j].acChoiceOptionTextData),
+//                            ("%s%d %s"),
+//                            ("USB"),
+//                            k,
+//                            (xCArchiveSaveParse.axTDiskInfo[i].acSize));
+            // следующий индекс в имени диска.
+            k++;
+            // следующий диск.
+            j++;
+        }
+        // есть SD карта?
+        else if (memcmp((xCArchiveSaveParse.axTDiskInfo[i].acName),
+                        "mmc",
+                        3) == 0)
+        {
+//                    // создадим строку с именем и ёмкостью имеющейся SD карты.
+//                    sprintf((char*)(pxDestination -> axChoiceOptionTextData[j].acChoiceOptionTextData),
+//                            ("%s%d %s"),
+//                            ("SD"),
+//                            l,
+//                            (xCArchiveSaveParse.axTDiskInfo[i].acSize));
+            // следующий индекс в имени диска.
+            l++;
+            // следующий диск.
+            j++;
+        }
+//                // поместим количество имеющихся дисков.
+//                pxDestination -> ui8ChoiceOptionNumber = j;
+    }
+
+    std::string cSerialAndIdStr;
+    // Копируем данные из m_puiSerialAndId в cSerialAndIdStr
+    cSerialAndIdStr.assign((const char*)m_puiSerialAndId, SERIAL_AND_ID_DATA_BASE_BLOCK_LENGTH);
+
+    // Создаем начальные символы имени файла архива
+    std::string prefix = "AnalogueMeasureArchives_" + cSerialAndIdStr;
+
+    std::cout << "CDeviceControl::Fsm prefix " <<
+              (prefix) << std::endl;
+
+    std::vector<std::string> matchingFiles = listFilesByPrefix(prefix);
+
+    if (!matchingFiles.empty())
+    {
+        std::cout << "Имя файлов, начинающихся с \"" << prefix << "\":" << std::endl;
+        for (const auto& file : matchingFiles)
+        {
+            std::cout << file << std::endl;
+        }
+    }
+    else
+    {
+        std::cout << "Нет файлов, начинающихся с \"" << prefix << "\"." << std::endl;
+    }
+
+//            const std::string path = "/home/debian/AnalogueMeasureArchives_10000-Pas-17A____";
+//            std::vector<std::string> files = listFiles(path);
+//
+//            for (const auto& file : files)
+//            {
+//                if (file.rfind(path, 0) == 0)   // Проверяем, начинается ли имя файла с заданного пути
+//                {
+//                    std::cout << "Найден файл: " << file << std::endl;
+//                    break;
+//                }
+//            }
 }
 
 //-------------------------------------------------------------------------------
@@ -1661,12 +1823,7 @@ uint8_t CDeviceControl::Fsm(void)
     case STATE_DATA_READ_START:
         std::cout << "CDeviceControl::Fsm STATE_DATA_READ_START"  << std::endl;
         {
-//            CDataContainerDataBase* pxDataContainer =
-//                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-//            pxDataContainer -> m_uiTaskId = m_uiConfigurationCreateId;
-//            pxDataContainer -> m_uiFsmCommandState =
-//                CConfigurationCreate::CONFIGURATION_REQUEST_START;
-//            pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+            AnalogueMeasureArchiveWrite();
 
             SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
             SetFsmNextStateDoneOk(STATE_DATA_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
