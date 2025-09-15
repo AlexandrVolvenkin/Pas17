@@ -322,52 +322,6 @@ void CParse::GetDiskInfoNew(void)
 {
     char acCommand[128];
 
-//    // создадим команду.
-//    sprintf(acCommand,
-//            "%s%s",
-//            "lsblk | awk '!/в/ {print $1}' > ",
-//            pccParseFileName
-//           );
-//    // отправим команду.
-//    (system(acCommand));
-//
-//    FILE *fp;
-//    char acTempBuff[LSBLK_COMMAND_ANSWER_MAX_ROW_LENGTH];
-//    // откроем файл, в который система помещает ответ на запрос.
-//    if ((fp = fopen(pccParseFileName, "r") ) == NULL)
-//    {
-//        printf("Cannot open pccParseFileName.\n");
-//        exit (1);
-//    }
-//
-//    // получим содержимое первой строки(имя устройства).
-//    if (fgets(acTempBuff, LSBLK_COMMAND_ANSWER_MAX_NAME_LENGTH, fp))
-//    {
-//        // Linux загружен с диска mmc0?
-//        if (memcmp((acTempBuff),
-//                   "mmcblk0",
-//                   7) == 0)
-//
-//        {
-//
-//        }
-//    }
-//    else
-//    {
-//        printf("Cannot read pccParseFileName.\n");
-//    }
-//    fclose(fp);
-
-
-
-
-//    indata.open(pccParseFileName, std::ios::app); // opens the file
-//    if (!indata)   // file couldn't be opened
-//    {
-//        cerr << "Error: file could not be opened" << endl;
-//        exit(1);
-//    }
-
     // пройдём по дискам, предположительно имеющимся в системе.
     for (int i = 0;
             (i < MAX_PARSE_DISK_NUMBER);
@@ -404,57 +358,19 @@ void CParse::GetDiskInfoNew(void)
         // прочитаем файл.
         indata.read(axTDiskInfo[i].acName,
                     LSBLK_COMMAND_ANSWER_MAX_NAME_LENGTH);
-//        strcpy(axTDiskInfo[ui8DiskIndex].acName, acTempBuff);
-//            strcpy(axTDiskInfo[ui8DiskIndex].acSize, acTempBuff);
-//            strcpy(axTDiskInfo[ui8DiskIndex].acMountPoint, acTempBuff);
 
 
-        printf("GetDiskInfoNew i %d\n\r", i);
-//        printf("GetDiskInfoNew ((i + 1) * 2) %d\n\r", ((i + 1) * 2));
-//        printf("GetDiskInfoNew ui8NrTemp %d\n\r", ui8NrTemp);
-        printf("GetDiskInfoNew axTDiskInfo[i].acName %s\n\r", axTDiskInfo[i].acName);
-//        printf("GetDiskInfoNew axTDiskInfo[i].acSize %s\n\r", axTDiskInfo[i].acSize);
-//        printf("GetDiskInfoNew acCommand %s\n\r", acCommand);
+//        printf("GetDiskInfoNew i %d\n\r", i);
+////        printf("GetDiskInfoNew ((i + 1) * 2) %d\n\r", ((i + 1) * 2));
+////        printf("GetDiskInfoNew ui8NrTemp %d\n\r", ui8NrTemp);
+//        printf("GetDiskInfoNew axTDiskInfo[i].acName %s\n\r", axTDiskInfo[i].acName);
+////        printf("GetDiskInfoNew axTDiskInfo[i].acSize %s\n\r", axTDiskInfo[i].acSize);
+////        printf("GetDiskInfoNew acCommand %s\n\r", acCommand);
 
         // закроем файл.
         indata.close();
-
-
-
-
-
-//        FILE *fp;
-//        char acTempBuff[LSBLK_COMMAND_ANSWER_MAX_ROW_LENGTH];
-//        // откроем файл, в который система помещает ответ на запрос.
-//        if ((fp = fopen(pccParseFileName, "r") ) == NULL)
-//        {
-//            printf("Cannot open pccParseFileName.\n");
-//            exit (1);
-//        }
-//
-//        // получим содержимое первой строки(имя устройства).
-//        if (fgets(acTempBuff, LSBLK_COMMAND_ANSWER_MAX_NAME_LENGTH, fp))
-//        {
-//            // Linux загружен с диска mmc0?
-//            if (memcmp((acTempBuff),
-//                       "mmcblk0",
-//                       7) == 0)
-//
-//            {
-//
-//            }
-//        }
-//        else
-//        {
-//            printf("Cannot read pccParseFileName.\n");
-//        }
-//
-//
-//        printf("GetDiskInfoNew acTempBuff %s\n\r", acTempBuff);
-//
-//        fclose(fp);
-
     }
+
 
     // пройдём по дискам, предположительно имеющимся в системе.
     for (int i = 0;
@@ -491,16 +407,13 @@ void CParse::GetDiskInfoNew(void)
         // прочитаем файл.
         indata.read(axTDiskInfo[i].acSize,
                     LSBLK_COMMAND_ANSWER_MAX_NAME_LENGTH);
-//        strcpy(axTDiskInfo[ui8DiskIndex].acName, acTempBuff);
-//            strcpy(axTDiskInfo[ui8DiskIndex].acSize, acTempBuff);
-//            strcpy(axTDiskInfo[ui8DiskIndex].acMountPoint, acTempBuff);
 
-        printf("GetDiskInfoNew i %d\n\r", i);
-//        printf("GetDiskInfoNew ((i + 1) * 2) %d\n\r", ((i + 1) * 2));
-//        printf("GetDiskInfoNew ui8NrTemp %d\n\r", ui8NrTemp);
-//        printf("GetDiskInfoNew axTDiskInfo[i].acName %s\n\r", axTDiskInfo[i].acName);
-        printf("GetDiskInfoNew axTDiskInfo[i].acSize %s\n\r", axTDiskInfo[i].acSize);
-//        printf("GetDiskInfoNew acCommand %s\n\r", acCommand);
+//        printf("GetDiskInfoNew i %d\n\r", i);
+////        printf("GetDiskInfoNew ((i + 1) * 2) %d\n\r", ((i + 1) * 2));
+////        printf("GetDiskInfoNew ui8NrTemp %d\n\r", ui8NrTemp);
+////        printf("GetDiskInfoNew axTDiskInfo[i].acName %s\n\r", axTDiskInfo[i].acName);
+//        printf("GetDiskInfoNew axTDiskInfo[i].acSize %s\n\r", axTDiskInfo[i].acSize);
+////        printf("GetDiskInfoNew acCommand %s\n\r", acCommand);
 
 
         // закроем файл.

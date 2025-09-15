@@ -100,6 +100,7 @@ void CModbusTcpSlaveLinkLayer::Process(CModbusTcpSlaveLinkLayer* pxModbusSlaveLi
 
     while (1)
     {
+    usleep(500);
         pxModbusSlaveLinkLayer -> Fsm();
     }
 }

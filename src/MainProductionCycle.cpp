@@ -820,6 +820,8 @@ uint8_t CMainProductionCycle::Fsm(void)
 {
 //        std::cout << "CMainProductionCycle::Fsm 1"  << std::endl;
 
+//    for (uint8_t i; i < 200; i++)
+//    {
 //    CTimeMeasure xTimeMeasure;
 
 //    usleep(1000);
@@ -1804,6 +1806,7 @@ uint8_t CMainProductionCycle::Fsm(void)
     default:
         break;
     }
+    //    }
 
     return GetFsmState();
 }

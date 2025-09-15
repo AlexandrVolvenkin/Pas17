@@ -373,7 +373,6 @@ std::vector<std::string> listFilesByPrefix(const std::string& prefix)
 {
     std::vector<std::string> files;
     DIR* dir = opendir("/home/debian");
-//    DIR* dir = opendir("/home/debian/AnalogueMeasureArchives_10000-Pas-17A____");
 
     if (dir != nullptr)
     {
@@ -403,43 +402,23 @@ std::vector<std::string> listFilesByPrefix(const std::string& prefix)
     return files;
 }
 
-//// Функция для получения списка всех файлов в директории
-//std::vector<std::string> listFiles(const std::string& path)
-//{
-//    std::vector<std::string> files;
-//    for (const auto& entry : std::filesystem::directory_iterator(path))
-//    {
-//        if (!entry.is_directory())
-//        {
-//            files.push_back(entry.path().filename().string());
-//        }
-//    }
-//    return files;
-//}
 //-----------------------------------------------------------------------------------------------------
 void CDeviceControl::AnalogueMeasureArchiveWrite(void)
 {
     std::cout << "CDeviceControl AnalogueMeasureArchiveWrite 1"  << std::endl;
 
-//            CDataContainerDataBase* pxDataContainer =
-//                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-//            pxDataContainer -> m_uiTaskId = m_uiConfigurationCreateId;
-//            pxDataContainer -> m_uiFsmCommandState =
-//                CConfigurationCreate::CONFIGURATION_REQUEST_START;
-//            pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
-
     CParse xCArchiveSaveParse;
-//            xCArchiveSaveParse.GetDiskInfo();
     xCArchiveSaveParse.GetDiskInfoNew();
-    for (uint8_t i; i < 4; i++)
-    {
-        std::cout << "CDeviceControl::Fsm acName " <<
-                  (xCArchiveSaveParse.axTDiskInfo[i].acName) << std::endl;
-    }
+//    for (uint8_t i; i < 4; i++)
+//    {
+//        std::cout << "CDeviceControl AnalogueMeasureArchiveWrite acName " <<
+//                  (xCArchiveSaveParse.axTDiskInfo[i].acName) << std::endl;
+//    }
 
+    std::string sDiskName;
     // создадим строки предложения имеющихся дисков для меню.
-    for (uint8_t i = 0, j = 0, k = 0, l = 0;
-            (i < 2);
+    for (uint8_t i = 0;
+            (i < 4);
             i++)
     {
         // есть USB диск?
@@ -447,36 +426,20 @@ void CDeviceControl::AnalogueMeasureArchiveWrite(void)
                    "sd",
                    2) == 0)
         {
-//                    // создадим строку с именем и ёмкостью имеющегося USB диска.
-//                    sprintf((char*)(pxDestination -> axChoiceOptionTextData[j].acChoiceOptionTextData),
-//                            ("%s%d %s"),
-//                            ("USB"),
-//                            k,
-//                            (xCArchiveSaveParse.axTDiskInfo[i].acSize));
-            // следующий индекс в имени диска.
-            k++;
-            // следующий диск.
-            j++;
+            sDiskName = xCArchiveSaveParse.axTDiskInfo[i].acName;
+            break;
         }
-        // есть SD карта?
-        else if (memcmp((xCArchiveSaveParse.axTDiskInfo[i].acName),
-                        "mmc",
-                        3) == 0)
-        {
-//                    // создадим строку с именем и ёмкостью имеющейся SD карты.
-//                    sprintf((char*)(pxDestination -> axChoiceOptionTextData[j].acChoiceOptionTextData),
-//                            ("%s%d %s"),
-//                            ("SD"),
-//                            l,
-//                            (xCArchiveSaveParse.axTDiskInfo[i].acSize));
-            // следующий индекс в имени диска.
-            l++;
-            // следующий диск.
-            j++;
-        }
-//                // поместим количество имеющихся дисков.
-//                pxDestination -> ui8ChoiceOptionNumber = j;
+//        // есть SD карта?
+//        else if (memcmp((xCArchiveSaveParse.axTDiskInfo[i].acName),
+//                        "mmc",
+//                        3) == 0)
+//        {
+//            sDiskName = xCArchiveSaveParse.axTDiskInfo[i].acName;
+//            break;
+//        }
     }
+    std::cout << "CDeviceControl AnalogueMeasureArchiveWrite sDiskName " <<
+              (sDiskName) << std::endl;
 
     std::string cSerialAndIdStr;
     // Копируем данные из m_puiSerialAndId в cSerialAndIdStr
@@ -485,7 +448,7 @@ void CDeviceControl::AnalogueMeasureArchiveWrite(void)
     // Создаем начальные символы имени файла архива
     std::string prefix = "AnalogueMeasureArchives_" + cSerialAndIdStr;
 
-    std::cout << "CDeviceControl::Fsm prefix " <<
+    std::cout << "CDeviceControl AnalogueMeasureArchiveWrite prefix " <<
               (prefix) << std::endl;
 
     std::vector<std::string> matchingFiles = listFilesByPrefix(prefix);
@@ -496,24 +459,47 @@ void CDeviceControl::AnalogueMeasureArchiveWrite(void)
         for (const auto& file : matchingFiles)
         {
             std::cout << file << std::endl;
+
+            char acCommand[128];
+            // создадим команду монтирования выбранного диска.
+            sprintf(acCommand,
+                    "%s%s %s",
+                    "sudo mount /dev/",
+                    sDiskName.c_str(),
+                    "/mnt/usb"
+                   );
+            std::cout << "CDeviceControl AnalogueMeasureArchiveWriteacCommand " << acCommand << std::endl;
+//            // примонтируем выбранный диск.
+//            system(acCommand);
+//            usleep(100000);
+
+            // создадим команду сохранения и установим время.
+            sprintf(acCommand,
+                    "%s%s %s%s",
+                    "sudo cp -f /home/debian/",
+                    file.c_str(),
+                    "/mnt/usb/",
+                    " && sync");
+            std::cout << "CDeviceControl AnalogueMeasureArchiveWriteacCommand " << acCommand << std::endl;
+
+//            // сохраним файл.
+//            // файл сохранён успешно?
+//            if (!(system(acCommand)))
+//            {
+//                std::cout << "CDeviceControl AnalogueMeasureArchiveWrite 2"  << std::endl;
+////                ui8ArchiveFileIsSaveState = WRITE_OK;
+//            }
+//            else
+//            {
+//                std::cout << "CDeviceControl AnalogueMeasureArchiveWrite 3"  << std::endl;
+////                ui8ArchiveFileIsSaveState = WRITE_ERROR;
+//            }
         }
     }
     else
     {
         std::cout << "Нет файлов, начинающихся с \"" << prefix << "\"." << std::endl;
     }
-
-//            const std::string path = "/home/debian/AnalogueMeasureArchives_10000-Pas-17A____";
-//            std::vector<std::string> files = listFiles(path);
-//
-//            for (const auto& file : files)
-//            {
-//                if (file.rfind(path, 0) == 0)   // Проверяем, начинается ли имя файла с заданного пути
-//                {
-//                    std::cout << "Найден файл: " << file << std::endl;
-//                    break;
-//                }
-//            }
 }
 
 //-------------------------------------------------------------------------------
@@ -1823,7 +1809,7 @@ uint8_t CDeviceControl::Fsm(void)
     case STATE_DATA_READ_START:
         std::cout << "CDeviceControl::Fsm STATE_DATA_READ_START"  << std::endl;
         {
-            AnalogueMeasureArchiveWrite();
+//            AnalogueMeasureArchiveWrite();
 
             SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
             SetFsmNextStateDoneOk(STATE_DATA_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
@@ -1864,6 +1850,8 @@ uint8_t CDeviceControl::Fsm(void)
     case ANALOGUE_MEASURE_ARCHIVE_WRITE_START:
         std::cout << "CDeviceControl::Fsm ANALOGUE_MEASURE_ARCHIVE_WRITE_START"  << std::endl;
         {
+            AnalogueMeasureArchiveWrite();
+
 //            CDataContainerDataBase* pxDataContainer =
 //                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
 //            pxDataContainer -> m_uiTaskId = m_uiConfigurationCreateId;
