@@ -21,7 +21,7 @@ using namespace std;
 //-------------------------------------------------------------------------------
 CSharedMemoryCommunicationDevice::CSharedMemoryCommunicationDevice()
 {
-    std::cout << "CSharedMemoryCommunicationDevice constructor"  << std::endl;
+    //std::cout << "CSharedMemoryCommunicationDevice constructor"  << std::endl;
 //    // получим имя класса.
 //    sprintf(GetTaskNamePointer(),
 //            "%s",
@@ -37,7 +37,7 @@ CSharedMemoryCommunicationDevice::~CSharedMemoryCommunicationDevice()
 //-------------------------------------------------------------------------------
 void CSharedMemoryCommunicationDevice::Init(void)
 {
-    std::cout << "CSharedMemoryCommunicationDevice::Init 1"  << std::endl;
+    //std::cout << "CSharedMemoryCommunicationDevice::Init 1"  << std::endl;
 
     SetFsmState(READY);
 }
@@ -57,7 +57,7 @@ const char* CSharedMemoryCommunicationDevice::GetDeviceName(void)
 //-------------------------------------------------------------------------------
 int8_t CSharedMemoryCommunicationDevice::Open(void)
 {
-    std::cout << "CSharedMemoryCommunicationDevice::Open 1"  << std::endl;
+    //std::cout << "CSharedMemoryCommunicationDevice::Open 1"  << std::endl;
 
 //-------------------------------------------------------------------------------
     int fd;
@@ -99,7 +99,7 @@ int8_t CSharedMemoryCommunicationDevice::Open(void)
 //-------------------------------------------------------------------------------
 int8_t CSharedMemoryCommunicationDevice::Close(void)
 {
-    std::cout << "CSharedMemoryCommunicationDevice::Close 1"  << std::endl;
+    //std::cout << "CSharedMemoryCommunicationDevice::Close 1"  << std::endl;
     munmap(m_puiServerToClientBuffer,
            MODBUS_SM_MAX_ADU_LENGTH);
     munmap(m_puiClientToServerBuffer,
@@ -109,7 +109,7 @@ int8_t CSharedMemoryCommunicationDevice::Close(void)
 //-------------------------------------------------------------------------------
 int16_t CSharedMemoryCommunicationDevice::Read(uint8_t *puiDestination, uint16_t uiLength)
 {
-    std::cout << "CSharedMemoryCommunicationDevice::Read 1"  << std::endl;
+    //std::cout << "CSharedMemoryCommunicationDevice::Read 1"  << std::endl;
 }
 
 //-------------------------------------------------------------------------------
@@ -117,7 +117,7 @@ int16_t CSharedMemoryCommunicationDevice::ReceiveStart(uint8_t *puiDestination,
         uint16_t uiLength,
         uint32_t uiReceiveTimeout)
 {
-//    std::cout << "CSharedMemoryCommunicationDevice::ReceiveStart 1"  << std::endl;
+//    //std::cout << "CSharedMemoryCommunicationDevice::ReceiveStart 1"  << std::endl;
 
     uint16_t uiLengthLocal = m_puiClientToServerBuffer[0];
 
@@ -162,7 +162,7 @@ int16_t CSharedMemoryCommunicationDevice::ReceiveContinue(uint8_t *puiDestinatio
         uint16_t uiLength,
         uint32_t uiReceiveTimeout)
 {
-//    std::cout << "CSharedMemoryCommunicationDevice::ReceiveContinue 1"  << std::endl;
+//    //std::cout << "CSharedMemoryCommunicationDevice::ReceiveContinue 1"  << std::endl;
 
 //    xTimeMeasure.Begin();
     uint16_t uiLengthLocal = m_puiClientToServerBuffer[0];
@@ -203,7 +203,7 @@ int16_t CSharedMemoryCommunicationDevice::ReceiveContinue(uint8_t *puiDestinatio
 //-------------------------------------------------------------------------------
 int16_t CSharedMemoryCommunicationDevice::Write(uint8_t *puiSource, uint16_t uiLength)
 {
-    std::cout << "CSharedMemoryCommunicationDevice::Write"  << std::endl;
+    //std::cout << "CSharedMemoryCommunicationDevice::Write"  << std::endl;
 
     memcpy(&m_puiServerToClientBuffer[1],
            puiSource,

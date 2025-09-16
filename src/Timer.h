@@ -70,6 +70,7 @@ private:
 //    int iTimeMeasureCounter;
 //    int iMeasureCounter;
 //    int aiTimeMeasureAverage[CTimeMeasure::TIME_MEASURE_COUNTER_NUMBER];
+    uint8_t uiMeasureId;
 
 
 };

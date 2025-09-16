@@ -102,10 +102,12 @@ uint8_t CTimeMeasure::Begin(void)
     {
         /* gettimeofday failed - retry next time. */
         xTimeLast.tv_usec = 0;
+        uiMeasureId = 0;
         return 0;
     }
     else
     {
+        uiMeasureId = 0;
         return 1;
     }
 }
@@ -133,7 +135,8 @@ uint32_t CTimeMeasure::End(void)
             }
             else
             {
-                std::cout << "CTimeMeasure::End uiTime "  << (float)uiTime  << std::endl;
+                std::cout << "CTimeMeasure::End uiTime " << (int)uiMeasureId << " " << (float)uiTime  << std::endl;
+                uiMeasureId++;
                 return uiTime;
             }
 //            return ((uint32_t)((uint32_t)xTimeCur.tv_usec - (uint32_t)xTimeLast.tv_usec));

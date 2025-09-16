@@ -820,7 +820,7 @@ uint8_t CMainProductionCycle::Fsm(void)
 {
 //        std::cout << "CMainProductionCycle::Fsm 1"  << std::endl;
 
-//    for (uint8_t i; i < 200; i++)
+//    for (uint8_t i; i < 20; i++)
 //    {
 //    CTimeMeasure xTimeMeasure;
 
