@@ -329,7 +329,8 @@ void CParse::GetDiskInfoNew(void)
     {
         uint8_t ui8NrTemp;
 
-        ui8NrTemp = ((i + 1) * 2);
+        ui8NrTemp = ((i + 2));
+//        ui8NrTemp = ((i + 1) * 2);
         // создадим команду.
         sprintf(acCommand,
                 "%s%d%s%s",
@@ -353,6 +354,7 @@ void CParse::GetDiskInfoNew(void)
             exit(1);
         }
 
+        memset(axTDiskInfo[i].acName, 0, 16);
         // установим смещение в файле.
         indata.seekg(0, ios_base::beg);
         // прочитаем файл.
@@ -379,7 +381,8 @@ void CParse::GetDiskInfoNew(void)
     {
         uint8_t ui8NrTemp;
 
-        ui8NrTemp = ((i + 1) * 2);
+        ui8NrTemp = ((i + 2));
+//        ui8NrTemp = ((i + 1) * 2);
         // создадим команду.
         sprintf(acCommand,
                 "%s%d%s%s",
@@ -402,6 +405,7 @@ void CParse::GetDiskInfoNew(void)
             exit(1);
         }
 
+        memset(axTDiskInfo[i].acSize, 0, 16);
         // установим смещение в файле.
         indata.seekg(0, ios_base::beg);
         // прочитаем файл.

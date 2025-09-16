@@ -258,6 +258,7 @@ protected:
 
     uint8_t* m_puiIntermediateBuff;
     bool m_fbIsConfigurationConfirmed = false;
+    uint8_t uiArchiveFileIsSaveState;
 
     CDataContainerDataBase* m_pxCommandDataContainer;
     CDataContainerDataBase* m_pxOperatingDataContainer;

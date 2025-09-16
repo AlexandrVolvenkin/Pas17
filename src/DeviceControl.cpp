@@ -407,99 +407,152 @@ void CDeviceControl::AnalogueMeasureArchiveWrite(void)
 {
     std::cout << "CDeviceControl AnalogueMeasureArchiveWrite 1"  << std::endl;
 
+    char acCommand[128];
+
     CParse xCArchiveSaveParse;
     xCArchiveSaveParse.GetDiskInfoNew();
-//    for (uint8_t i; i < 4; i++)
-//    {
-//        std::cout << "CDeviceControl AnalogueMeasureArchiveWrite acName " <<
-//                  (xCArchiveSaveParse.axTDiskInfo[i].acName) << std::endl;
-//    }
+    for (uint8_t i; i < 4; i++)
+    {
+        std::cout << "CDeviceControl AnalogueMeasureArchiveWrite acName " <<
+                  (xCArchiveSaveParse.axTDiskInfo[i].acName) << std::endl;
+    }
 
     std::string sDiskName;
-    // создадим строки предложения имеющихся дисков для меню.
-    for (uint8_t i = 0;
-            (i < 4);
-            i++)
-    {
-        // есть USB диск?
-        if (memcmp((xCArchiveSaveParse.axTDiskInfo[i].acName),
-                   "sd",
-                   2) == 0)
-        {
-            sDiskName = xCArchiveSaveParse.axTDiskInfo[i].acName;
-            break;
-        }
-//        // есть SD карта?
-//        else if (memcmp((xCArchiveSaveParse.axTDiskInfo[i].acName),
-//                        "mmc",
-//                        3) == 0)
-//        {
-//            sDiskName = xCArchiveSaveParse.axTDiskInfo[i].acName;
-//            break;
-//        }
-    }
+    sDiskName = xCArchiveSaveParse.axTDiskInfo[1].acName;
     std::cout << "CDeviceControl AnalogueMeasureArchiveWrite sDiskName " <<
               (sDiskName) << std::endl;
-
-    std::string cSerialAndIdStr;
-    // Копируем данные из m_puiSerialAndId в cSerialAndIdStr
-    cSerialAndIdStr.assign((const char*)m_puiSerialAndId, SERIAL_AND_ID_DATA_BASE_BLOCK_LENGTH);
-
-    // Создаем начальные символы имени файла архива
-    std::string prefix = "AnalogueMeasureArchives_" + cSerialAndIdStr;
-
-    std::cout << "CDeviceControl AnalogueMeasureArchiveWrite prefix " <<
-              (prefix) << std::endl;
-
-    std::vector<std::string> matchingFiles = listFilesByPrefix(prefix);
-
-    if (!matchingFiles.empty())
+// Начнем поиск имени, начиная с "sd" в конце строки sDiskName
+    size_t found = sDiskName.rfind("sd");
+    if (found != std::string::npos)
     {
-        std::cout << "Имя файлов, начинающихся с \"" << prefix << "\":" << std::endl;
-        for (const auto& file : matchingFiles)
+        // Скопируем часть строки начиная с найденной позиции
+        sDiskName = sDiskName.substr(found);
+        sDiskName[4] = '\0';  // Добавляем завершающий ноль
+        std::cout << "CDeviceControl AnalogueMeasureArchiveWrite sDiskName " <<
+                  (sDiskName) << std::endl;
+
+        std::string cSerialAndIdStr;
+        // Копируем данные из m_puiSerialAndId в cSerialAndIdStr
+        cSerialAndIdStr.assign((const char*)m_puiSerialAndId, SERIAL_AND_ID_DATA_BASE_BLOCK_LENGTH);
+
+        // Создаем начальные символы имени файла архива
+        std::string prefix = "AnalogueMeasureArchives_" + cSerialAndIdStr;
+
+        std::cout << "CDeviceControl AnalogueMeasureArchiveWrite prefix " <<
+                  (prefix) << std::endl;
+
+        std::vector<std::string> matchingFiles = listFilesByPrefix(prefix);
+
+        // создадим команду размонтирования выбранного диска.
+        sprintf(acCommand,
+                "%s",
+                "sudo umount /mnt/usb"
+               );
+        std::cout << "CDeviceControl AnalogueMeasureArchiveWriteacCommand " << acCommand << std::endl;
+        // размонтируем выбранный диск.
+        system(acCommand);
+        usleep(100000);
+
+        // создадим команду монтирования выбранного диска.
+        sprintf(acCommand,
+                "%s%s %s",
+                "sudo mount /dev/",
+                sDiskName.c_str(),
+                "/mnt/usb"
+               );
+        std::cout << "CDeviceControl AnalogueMeasureArchiveWriteacCommand " << acCommand << std::endl;
+        // примонтируем выбранный диск.
+        system(acCommand);
+        usleep(100000);
+
+        if (!matchingFiles.empty())
         {
-            std::cout << file << std::endl;
+            std::cout << "Имя файлов, начинающихся с \"" << prefix << "\":" << std::endl;
+            for (const auto& file : matchingFiles)
+            {
+                std::cout << file << std::endl;
+//sudo mount /dev/sda4 /mnt/usb
+//sudo umount /mnt/usb
+//sudo cp -r /home/debian/AnalogueMeasureArchives_00000-Pas-17A____2000 /mnt/usb
 
-            char acCommand[128];
-            // создадим команду монтирования выбранного диска.
-            sprintf(acCommand,
-                    "%s%s %s",
-                    "sudo mount /dev/",
-                    sDiskName.c_str(),
-                    "/mnt/usb"
-                   );
-            std::cout << "CDeviceControl AnalogueMeasureArchiveWriteacCommand " << acCommand << std::endl;
-//            // примонтируем выбранный диск.
-//            system(acCommand);
-//            usleep(100000);
+                // создадим команду сохранения
+                sprintf(acCommand,
+                        "%s%s %s%s",
+                        "sudo cp -r -f /home/debian/",
+                        file.c_str(),
+                        "/mnt/usb/",
+                        " && sync");
+                std::cout << "CDeviceControl AnalogueMeasureArchiveWriteacCommand " << acCommand << std::endl;
 
-            // создадим команду сохранения и установим время.
-            sprintf(acCommand,
-                    "%s%s %s%s",
-                    "sudo cp -f /home/debian/",
-                    file.c_str(),
-                    "/mnt/usb/",
-                    " && sync");
-            std::cout << "CDeviceControl AnalogueMeasureArchiveWriteacCommand " << acCommand << std::endl;
-
-//            // сохраним файл.
-//            // файл сохранён успешно?
-//            if (!(system(acCommand)))
-//            {
-//                std::cout << "CDeviceControl AnalogueMeasureArchiveWrite 2"  << std::endl;
-////                ui8ArchiveFileIsSaveState = WRITE_OK;
-//            }
-//            else
-//            {
-//                std::cout << "CDeviceControl AnalogueMeasureArchiveWrite 3"  << std::endl;
-////                ui8ArchiveFileIsSaveState = WRITE_ERROR;
-//            }
+                // сохраним файл.
+                // файл сохранён успешно?
+                if (!(system(acCommand)))
+                {
+                    std::cout << "CDeviceControl AnalogueMeasureArchiveWrite 3"  << std::endl;
+                    uiArchiveFileIsSaveState = WRITE_OK;
+                }
+                else
+                {
+                    std::cout << "CDeviceControl AnalogueMeasureArchiveWrite 4"  << std::endl;
+                    uiArchiveFileIsSaveState = WRITE_ERROR;
+                }
+            }
         }
+        else
+        {
+            std::cout << "Нет файлов, начинающихся с \"" << prefix << "\"." << std::endl;
+            uiArchiveFileIsSaveState = WRITE_ERROR;
+        }
+
+        // создадим команду размонтирования выбранного диска.
+        sprintf(acCommand,
+                "%s",
+                "sudo umount /mnt/usb"
+               );
+        std::cout << "CDeviceControl AnalogueMeasureArchiveWriteacCommand " << acCommand << std::endl;
+        // размонтируем выбранный диск.
+        system(acCommand);
+        usleep(100000);
     }
     else
     {
-        std::cout << "Нет файлов, начинающихся с \"" << prefix << "\"." << std::endl;
+        // Если "sd" не найдено, установим пустую строку
+//        sDiskName = "";
+        uiArchiveFileIsSaveState = WRITE_ERROR;
     }
+
+
+
+//    // создадим строки предложения имеющихся дисков для меню.
+//    for (uint8_t i = 0;
+//            (i < 4);
+//            i++)
+//    {
+//        // есть USB диск?
+//        if (memcmp((xCArchiveSaveParse.axTDiskInfo[i].acName) + 2,
+//                   "sd",
+//                   2) == 0)
+//        {
+//            std::cout << "CDeviceControl AnalogueMeasureArchiveWrite 2"  << std::endl;
+//            sDiskName = xCArchiveSaveParse.axTDiskInfo[i].acName + 2;
+//            sDiskName[4] = '\0';  // Добавляем завершающий ноль
+////        // Используем strncpy для копирования части строки
+////        strncpy((char*)(sDiskName.data()), (const char*)((xCArchiveSaveParse.axTDiskInfo[i].acName) + 2), 4);
+////        sDiskName[sDiskName.size() - 1] = '\0';  // Добавляем завершающий ноль
+//            break;
+//        }
+////        // есть SD карта?
+////        else if (memcmp((xCArchiveSaveParse.axTDiskInfo[i].acName),
+////                        "mmc",
+////                        3) == 0)
+////        {
+////            sDiskName = xCArchiveSaveParse.axTDiskInfo[i].acName;
+////            break;
+////        }
+//    }
+
+
+
 }
 
 //-------------------------------------------------------------------------------

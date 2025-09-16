@@ -11,6 +11,15 @@
 #include "Configuration.h"
 
 //-----------------------------------------------------------------------------------------------------
+typedef enum
+{
+    WRITE_IDDLE = 0,
+    WRITE_ERROR = 1,
+    WRITE_OK = 2,
+    WRITE_BUSY = 3
+};
+
+//-----------------------------------------------------------------------------------------------------
 #pragma pack(push)
 #pragma pack(1)
 struct TModuleContext
