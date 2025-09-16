@@ -260,7 +260,8 @@ protected:
 
     uint8_t* m_puiSerialAndId;
 
-    std::thread* m_pxThread;
+//    std::thread* m_pxAnalogueMeasureArchiveWriteThread;
+    std::shared_ptr<std::thread> m_pxAnalogueMeasureArchiveWriteThread;
 
     uint8_t* m_puiIntermediateBuff;
     bool m_fbIsConfigurationConfirmed = false;

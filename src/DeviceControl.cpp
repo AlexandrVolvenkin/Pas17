@@ -46,11 +46,11 @@ CDeviceControl::~CDeviceControl()
 {
     delete[] m_puiIntermediateBuff;
 
-    if (m_pxThread -> joinable())
-    {
-        m_pxThread -> join();
-    }
-    delete m_pxThread;
+//    if (m_pxAnalogueMeasureArchiveWriteThread -> joinable())
+//    {
+//        m_pxAnalogueMeasureArchiveWriteThread -> join();
+//    }
+//    delete m_pxAnalogueMeasureArchiveWriteThread;
 }
 
 //-------------------------------------------------------------------------------
@@ -1883,55 +1883,36 @@ uint8_t CDeviceControl::Fsm(void)
     case ANALOGUE_MEASURE_ARCHIVE_WRITE_START:
         std::cout << "CDeviceControl::Fsm ANALOGUE_MEASURE_ARCHIVE_WRITE_START"  << std::endl;
         {
-//            // создадим поток сохранения файла архива.
-//            // create thread, pass reference, addr of the function and data
-//            if (pthread_create(&xArchiveFileSave,
-//                               NULL,
-//                               thread_ArchiveFileSave,
-//                               NULL))
-//            {
-//                cout << "Failed to create the thread_ArchiveFileSave" << endl;
-//                uiArchiveFileIsSaveState = WRITE_ERROR;
-//            }
-//            else
-//            {
-//                uiArchiveFileIsSaveState = WRITE_BUSY;
-//            }
-//            std::thread thread(&CDeviceControl::AnalogueMeasureArchiveWrite, this);
-////            thread.join(); // Ожидаем завершение потока
-//            // не ждем завершения работы функции
-//            thread.detach();
-
-
-            if (!m_pxThread || m_pxThread->joinable())
+            // Ожидаем завершение первого потока (если он еще выполняется)
+            if (!m_pxAnalogueMeasureArchiveWriteThread || m_pxAnalogueMeasureArchiveWriteThread->joinable())
+//            if (m_pxAnalogueMeasureArchiveWriteThread)
             {
-        std::cout << "CDeviceControl::Fsm ANALOGUE_MEASURE_ARCHIVE_WRITE_START 2"  << std::endl;
                 // Разорваем связь между потоком и его владелецом
-                if (m_pxThread)
+                if (m_pxAnalogueMeasureArchiveWriteThread)
                 {
-        std::cout << "CDeviceControl::Fsm ANALOGUE_MEASURE_ARCHIVE_WRITE_START 3"  << std::endl;
-                    m_pxThread->detach();
+                    m_pxAnalogueMeasureArchiveWriteThread->detach();
                 }
-
-                // Создаем новый поток на том же участке памяти, что был занят первым
-                m_pxThread = new std::thread(&CDeviceControl::AnalogueMeasureArchiveWrite, this);
+//                m_pxAnalogueMeasureArchiveWriteThread->join();
+                m_pxAnalogueMeasureArchiveWriteThread.reset(); // Сбросим указатель
             }
 
-//// Восстановление работы потока
-//            if (m_pxThread && m_pxThread->joinable())
+            // Перезапускаем поток
+            m_pxAnalogueMeasureArchiveWriteThread = std::make_shared<std::thread>(&CDeviceControl::AnalogueMeasureArchiveWrite, this);
+//            m_pxAnalogueMeasureArchiveWriteThread->detach();
+
+////            // создадим поток сохранения файла архива.
+//            if (!m_pxAnalogueMeasureArchiveWriteThread || m_pxAnalogueMeasureArchiveWriteThread->joinable())
 //            {
-//        std::cout << "CDeviceControl::Fsm ANALOGUE_MEASURE_ARCHIVE_WRITE_START 4"  << std::endl;
-//                m_pxThread = new std::thread(&CDeviceControl::AnalogueMeasureArchiveWrite, this);
+//                // Разорваем связь между потоком и его владелецом
+//                if (m_pxAnalogueMeasureArchiveWriteThread)
+//                {
+//                    m_pxAnalogueMeasureArchiveWriteThread->detach();
+//                }
+//
+//    delete m_pxAnalogueMeasureArchiveWriteThread;
+//                // Создаем новый поток на том же участке памяти, что был занят первым
+//                m_pxAnalogueMeasureArchiveWriteThread = new std::thread(&CDeviceControl::AnalogueMeasureArchiveWrite, this);
 //            }
-
-//            AnalogueMeasureArchiveWrite();
-
-//            CDataContainerDataBase* pxDataContainer =
-//                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-//            pxDataContainer -> m_uiTaskId = m_uiConfigurationCreateId;
-//            pxDataContainer -> m_uiFsmCommandState =
-//                CConfigurationCreate::CONFIGURATION_REQUEST_START;
-//            pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
 
             SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
             SetFsmNextStateDoneOk(ANALOGUE_MEASURE_ARCHIVE_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
