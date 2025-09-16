@@ -11,15 +11,6 @@
 #include "Configuration.h"
 
 //-----------------------------------------------------------------------------------------------------
-typedef enum
-{
-    WRITE_IDDLE = 0,
-    WRITE_ERROR = 1,
-    WRITE_OK = 2,
-    WRITE_BUSY = 3
-};
-
-//-----------------------------------------------------------------------------------------------------
 #pragma pack(push)
 #pragma pack(1)
 struct TModuleContext
@@ -98,6 +89,27 @@ enum
 struct TDeviceStateDataPackOne
 {
     uint8_t uiFlashConnectorStatus;
+};
+#pragma pack(pop)
+
+
+//-----------------------------------------------------------------------------------------------------
+typedef enum
+{
+    WRITE_IDDLE = 0,
+    // запись завершена с ошибкой
+    WRITE_ERROR = 1,
+    // запись завершена успешно
+    WRITE_OK = 2,
+    // идёт процесс записи
+    WRITE_BUSY = 3
+};
+
+#pragma pack(push)
+#pragma pack(1)
+struct TFileSaveStateDataPackOne
+{
+    uint8_t uiFileSaveState;
 };
 #pragma pack(pop)
 

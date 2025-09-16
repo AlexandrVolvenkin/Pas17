@@ -1699,25 +1699,38 @@ uint16_t CModbusSlave::AnalogueMeasureArchiveWriteAnswer(void)
     int8_t uiSlave = puiRequest[uiPduOffset - 1];
     int8_t uiFunctionCode = puiRequest[uiPduOffset];
 
-    std::cout << "CModbusSlave::AnalogueMeasureArchiveWriteAnswer 2" << std::endl;
+//    std::cout << "CModbusSlave::AnalogueMeasureArchiveWriteAnswer 2" << std::endl;
+//
+//    std::cout << "CModbusSlave::AnalogueMeasureArchiveWriteAnswer uiSlave "  << (int)uiSlave << std::endl;
+//    std::cout << "CModbusSlave::AnalogueMeasureArchiveWriteAnswer uiFunctionCode "  << (int)uiFunctionCode << std::endl;
+//
+//
+//    std::cout << "CModbusSlave::AnalogueMeasureArchiveWriteAnswer 3" << std::endl;
 
-    CDataContainerDataBase* pxDataContainer =
-        (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-    uiLength = pxDataContainer -> m_uiDataLength;
-
-    std::cout << "CModbusSlave::AnalogueMeasureArchiveWriteAnswer uiLength "  << (int)uiLength << std::endl;
-
-    memcpy(&puiResponse[uiPduOffset + 2],
-           (pxDataContainer -> m_puiDataPointer),
-           uiLength);
-
-    // количество байт в прикладном сообщении массиве конфигурации, не включая остальные.
-    puiResponse[uiPduOffset + 1] = uiLength;
-    uiLength++;
-    uiLength += m_pxModbusSlaveLinkLayer ->
-                ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
+//    uiLength = m_pxModbusSlaveLinkLayer ->
+//               ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
+    memcpy(puiResponse, puiRequest, uiLength);
 
     SetFsmState(MESSAGE_TRANSMIT_START);
+
+
+//    CDataContainerDataBase* pxDataContainer =
+//        (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+//    uiLength = pxDataContainer -> m_uiDataLength;
+//
+//    std::cout << "CModbusSlave::AnalogueMeasureArchiveWriteAnswer uiLength "  << (int)uiLength << std::endl;
+//
+//    memcpy(&puiResponse[uiPduOffset + 2],
+//           (pxDataContainer -> m_puiDataPointer),
+//           uiLength);
+//
+//    // количество байт в прикладном сообщении массиве конфигурации, не включая остальные.
+//    puiResponse[uiPduOffset + 1] = uiLength;
+//    uiLength++;
+//    uiLength += m_pxModbusSlaveLinkLayer ->
+//                ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
+//
+//    SetFsmState(MESSAGE_TRANSMIT_START);
 
     return uiLength;
 }

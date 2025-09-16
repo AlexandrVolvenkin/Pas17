@@ -1085,7 +1085,7 @@ uint8_t CMainProductionCycle::Fsm(void)
             // текущая конфигурация и сохранённая в базе данных не совпадают.
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
             SetFsmState(INCORRECT_CONFIGURATION_ERROR_HANDLER_START);
-            SetFsmState(DATA_STORE_CHECK_START);
+//            SetFsmState(DATA_STORE_CHECK_START);
 
         }
         break;
@@ -1438,21 +1438,21 @@ uint8_t CMainProductionCycle::Fsm(void)
 
         m_xMainCycle100McTimer.Set(100);
 
-//        CDataContainerDataBase* pxDataContainer =
-//            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-//        pxDataContainer -> m_uiTaskId = m_uiInternalModuleId;
-//        pxDataContainer -> m_uiFsmCommandState =
-//            CInternalModule::MODULES_DATA_EXCHANGE_START;
-//        pxDataContainer -> m_puiDataPointer =
-//            (uint8_t*)(GetResources() -> GetDeviceConfigSearchPointer());
-//
-//        SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
-//        SetFsmNextStateDoneOk(INTERNAL_MODULES_DATA_EXCHANGE_EXECUTOR_ANSWER_PROCESSING);
-//        SetFsmNextStateReadyWaitingError(DONE_ERROR);
-//        SetFsmNextStateDoneWaitingError(DONE_ERROR);
-//        SetFsmNextStateDoneWaitingDoneError(DONE_ERROR);
+        CDataContainerDataBase* pxDataContainer =
+            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+        pxDataContainer -> m_uiTaskId = m_uiInternalModuleId;
+        pxDataContainer -> m_uiFsmCommandState =
+            CInternalModule::MODULES_DATA_EXCHANGE_START;
+        pxDataContainer -> m_puiDataPointer =
+            (uint8_t*)(GetResources() -> GetDeviceConfigSearchPointer());
 
-        SetFsmState(INTERNAL_MODULES_DATA_EXCHANGE_MAIN_CYCLE_START_WAITING);
+        SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+        SetFsmNextStateDoneOk(INTERNAL_MODULES_DATA_EXCHANGE_EXECUTOR_ANSWER_PROCESSING);
+        SetFsmNextStateReadyWaitingError(DONE_ERROR);
+        SetFsmNextStateDoneWaitingError(DONE_ERROR);
+        SetFsmNextStateDoneWaitingDoneError(DONE_ERROR);
+
+//        SetFsmState(INTERNAL_MODULES_DATA_EXCHANGE_MAIN_CYCLE_START_WAITING);
     }
     break;
 

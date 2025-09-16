@@ -38,6 +38,7 @@ CDeviceControl::CDeviceControl()
 {
     std::cout << "CDeviceControl constructor"  << std::endl;
     m_puiIntermediateBuff = new uint8_t[CDataStore::MAX_BLOCK_LENGTH];
+    xFileSaveStateDataPackOne.uiFileSaveState = WRITE_BUSY;
     SetFsmState(START);
 }
 
@@ -45,12 +46,6 @@ CDeviceControl::CDeviceControl()
 CDeviceControl::~CDeviceControl()
 {
     delete[] m_puiIntermediateBuff;
-
-//    if (m_pxAnalogueMeasureArchiveWriteThread -> joinable())
-//    {
-//        m_pxAnalogueMeasureArchiveWriteThread -> join();
-//    }
-//    delete m_pxAnalogueMeasureArchiveWriteThread;
 }
 
 //-------------------------------------------------------------------------------
@@ -425,6 +420,8 @@ void CDeviceControl::AnalogueMeasureArchiveWrite(void)
 
     char acCommand[128];
 
+    xFileSaveStateDataPackOne.uiFileSaveState = WRITE_BUSY;
+
     CParse xCArchiveSaveParse;
     xCArchiveSaveParse.GetDiskInfoNew();
     for (uint8_t i; i < 4; i++)
@@ -502,19 +499,19 @@ void CDeviceControl::AnalogueMeasureArchiveWrite(void)
                 if (!(system(acCommand)))
                 {
                     std::cout << "CDeviceControl AnalogueMeasureArchiveWrite 3"  << std::endl;
-                    uiArchiveFileIsSaveState = WRITE_OK;
+                    xFileSaveStateDataPackOne.uiFileSaveState = WRITE_OK;
                 }
                 else
                 {
                     std::cout << "CDeviceControl AnalogueMeasureArchiveWrite 4"  << std::endl;
-                    uiArchiveFileIsSaveState = WRITE_ERROR;
+                    xFileSaveStateDataPackOne.uiFileSaveState = WRITE_ERROR;
                 }
             }
         }
         else
         {
             std::cout << "Нет файлов, начинающихся с \"" << prefix << "\"." << std::endl;
-            uiArchiveFileIsSaveState = WRITE_ERROR;
+            xFileSaveStateDataPackOne.uiFileSaveState = WRITE_ERROR;
         }
 
         // создадим команду размонтирования выбранного диска.
@@ -531,7 +528,7 @@ void CDeviceControl::AnalogueMeasureArchiveWrite(void)
     {
         // Если "sd" не найдено, установим пустую строку
 //        sDiskName = "";
-        uiArchiveFileIsSaveState = WRITE_ERROR;
+        xFileSaveStateDataPackOne.uiFileSaveState = WRITE_ERROR;
     }
 }
 
@@ -1885,34 +1882,17 @@ uint8_t CDeviceControl::Fsm(void)
         {
             // Ожидаем завершение первого потока (если он еще выполняется)
             if (!m_pxAnalogueMeasureArchiveWriteThread || m_pxAnalogueMeasureArchiveWriteThread->joinable())
-//            if (m_pxAnalogueMeasureArchiveWriteThread)
             {
                 // Разорваем связь между потоком и его владелецом
                 if (m_pxAnalogueMeasureArchiveWriteThread)
                 {
                     m_pxAnalogueMeasureArchiveWriteThread->detach();
                 }
-//                m_pxAnalogueMeasureArchiveWriteThread->join();
                 m_pxAnalogueMeasureArchiveWriteThread.reset(); // Сбросим указатель
             }
 
             // Перезапускаем поток
             m_pxAnalogueMeasureArchiveWriteThread = std::make_shared<std::thread>(&CDeviceControl::AnalogueMeasureArchiveWrite, this);
-//            m_pxAnalogueMeasureArchiveWriteThread->detach();
-
-////            // создадим поток сохранения файла архива.
-//            if (!m_pxAnalogueMeasureArchiveWriteThread || m_pxAnalogueMeasureArchiveWriteThread->joinable())
-//            {
-//                // Разорваем связь между потоком и его владелецом
-//                if (m_pxAnalogueMeasureArchiveWriteThread)
-//                {
-//                    m_pxAnalogueMeasureArchiveWriteThread->detach();
-//                }
-//
-//    delete m_pxAnalogueMeasureArchiveWriteThread;
-//                // Создаем новый поток на том же участке памяти, что был занят первым
-//                m_pxAnalogueMeasureArchiveWriteThread = new std::thread(&CDeviceControl::AnalogueMeasureArchiveWrite, this);
-//            }
 
             SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
             SetFsmNextStateDoneOk(ANALOGUE_MEASURE_ARCHIVE_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
@@ -1925,16 +1905,16 @@ uint8_t CDeviceControl::Fsm(void)
     case ANALOGUE_MEASURE_ARCHIVE_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
         std::cout << "CDeviceControl::Fsm ANALOGUE_MEASURE_ARCHIVE_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
         {
-            CDataContainerDataBase* pxCustomerDataContainer =
-                (CDataContainerDataBase*)GetCustomerDataContainerPointer();
-            (GetResources() -> GetDeviceStateDataPointer()) ->
-            uiFlashConnectorStatus =
-                2;
-            pxCustomerDataContainer -> m_uiDataLength =
-                sizeof(struct TDeviceStateDataPackOne);
-            memcpy(pxCustomerDataContainer -> m_puiDataPointer,
-                   (GetResources() -> GetDeviceStateDataPointer()),
-                   pxCustomerDataContainer -> m_uiDataLength);
+//            CDataContainerDataBase* pxCustomerDataContainer =
+//                (CDataContainerDataBase*)GetCustomerDataContainerPointer();
+//            (GetResources() -> GetDeviceStateDataPointer()) ->
+//            uiFlashConnectorStatus =
+//                2;
+//            pxCustomerDataContainer -> m_uiDataLength =
+//                sizeof(struct TDeviceStateDataPackOne);
+//            memcpy(pxCustomerDataContainer -> m_puiDataPointer,
+//                   (GetResources() -> GetDeviceStateDataPointer()),
+//                   pxCustomerDataContainer -> m_uiDataLength);
 
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(DONE_OK);
@@ -1973,13 +1953,11 @@ uint8_t CDeviceControl::Fsm(void)
         {
             CDataContainerDataBase* pxCustomerDataContainer =
                 (CDataContainerDataBase*)GetCustomerDataContainerPointer();
-            (GetResources() -> GetDeviceStateDataPointer()) ->
-            uiFlashConnectorStatus =
-                3;
+
             pxCustomerDataContainer -> m_uiDataLength =
-                sizeof(struct TDeviceStateDataPackOne);
+                sizeof(struct TFileSaveStateDataPackOne);
             memcpy(pxCustomerDataContainer -> m_puiDataPointer,
-                   (GetResources() -> GetDeviceStateDataPointer()),
+                   (uint8_t*)(&xFileSaveStateDataPackOne),
                    pxCustomerDataContainer -> m_uiDataLength);
 
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;

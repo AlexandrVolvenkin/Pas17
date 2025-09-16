@@ -1310,14 +1310,14 @@ uint8_t CDataStore::Fsm(void)
             else
             {
                 cerr << "CheckTemporaryBlock error" << endl;
-                SetFsmState(WRITE_ERROR);
+                SetFsmState(DATA_WRITE_ERROR);
             }
         }
         // ”стройство хранени€ закончило запись не успешно?
         else if (m_pxStorageDevice -> IsDoneError())
         {
             std::cout << "CDataStore::Fsm 4"  << std::endl;
-            SetFsmState(WRITE_ERROR);
+            SetFsmState(DATA_WRITE_ERROR);
         }
         else
         {
@@ -1325,7 +1325,7 @@ uint8_t CDataStore::Fsm(void)
             if (GetTimerPointer() -> IsOverflow())
             {
                 std::cout << "CDataStore::Fsm 5"  << std::endl;
-                SetFsmState(WRITE_ERROR);
+                SetFsmState(DATA_WRITE_ERROR);
             }
         }
         break;
@@ -1356,14 +1356,14 @@ uint8_t CDataStore::Fsm(void)
             else
             {
                 std::cout << "CDataStore::Fsm 9"  << std::endl;
-                SetFsmState(WRITE_ERROR);
+                SetFsmState(DATA_WRITE_ERROR);
             }
         }
         // ”стройство хранени€ закончило запись не успешно?
         else if (m_pxStorageDevice -> IsDoneError())
         {
             std::cout << "CDataStore::Fsm 10"  << std::endl;
-            SetFsmState(WRITE_ERROR);
+            SetFsmState(DATA_WRITE_ERROR);
         }
         else
         {
@@ -1372,7 +1372,7 @@ uint8_t CDataStore::Fsm(void)
             {
                 std::cout << "CDataStore::Fsm 12"  << std::endl;
 //                m_pxStorageDevice -> SetFsmOperationStatus(0);
-                SetFsmState(WRITE_ERROR);
+                SetFsmState(DATA_WRITE_ERROR);
             }
         }
         break;
@@ -1403,14 +1403,14 @@ uint8_t CDataStore::Fsm(void)
             else
             {
                 std::cout << "CDataStore::Fsm 16"  << std::endl;
-                SetFsmState(WRITE_ERROR);
+                SetFsmState(DATA_WRITE_ERROR);
             }
         }
         // ”стройство хранени€ закончило запись не успешно?
         else if (m_pxStorageDevice -> IsDoneError())
         {
             std::cout << "CDataStore::Fsm 17"  << std::endl;
-            SetFsmState(WRITE_ERROR);
+            SetFsmState(DATA_WRITE_ERROR);
         }
         else
         {
@@ -1418,7 +1418,7 @@ uint8_t CDataStore::Fsm(void)
             if (GetTimerPointer() -> IsOverflow())
             {
                 std::cout << "CDataStore::Fsm 18"  << std::endl;
-                SetFsmState(WRITE_ERROR);
+                SetFsmState(DATA_WRITE_ERROR);
             }
         }
         break;
@@ -1449,14 +1449,14 @@ uint8_t CDataStore::Fsm(void)
             else
             {
                 std::cout << "CDataStore::Fsm 22"  << std::endl;
-                SetFsmState(WRITE_ERROR);
+                SetFsmState(DATA_WRITE_ERROR);
             }
         }
         // ”стройство хранени€ закончило запись не успешно?
         else if (m_pxStorageDevice -> IsDoneError())
         {
             std::cout << "CDataStore::Fsm 23"  << std::endl;
-            SetFsmState(WRITE_ERROR);
+            SetFsmState(DATA_WRITE_ERROR);
         }
         else
         {
@@ -1464,7 +1464,7 @@ uint8_t CDataStore::Fsm(void)
             if (GetTimerPointer() -> IsOverflow())
             {
                 std::cout << "CDataStore::Fsm 24"  << std::endl;
-                SetFsmState(WRITE_ERROR);
+                SetFsmState(DATA_WRITE_ERROR);
             }
         }
         break;
@@ -1476,7 +1476,7 @@ uint8_t CDataStore::Fsm(void)
         SetFsmState(READY);
         break;
 
-    case WRITE_ERROR:
+    case DATA_WRITE_ERROR:
         std::cout << "CDataStore::Fsm 26"  << std::endl;
         ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
         SetFsmOperationStatus(DONE_ERROR);
