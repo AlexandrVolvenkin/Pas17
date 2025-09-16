@@ -15,6 +15,7 @@
 #include <string>
 #include <algorithm>
 #include <memory>
+#include <thread>
 
 #include "Timer.h"
 #include "Task.h"
@@ -44,6 +45,12 @@ CDeviceControl::CDeviceControl()
 CDeviceControl::~CDeviceControl()
 {
     delete[] m_puiIntermediateBuff;
+
+    if (m_pxThread -> joinable())
+    {
+        m_pxThread -> join();
+    }
+    delete m_pxThread;
 }
 
 //-------------------------------------------------------------------------------
@@ -368,7 +375,7 @@ void CDeviceControl::CurrentTimeUpdate(void)
 ////    }
 }
 
-
+//-----------------------------------------------------------------------------------------------------
 std::vector<std::string> listFilesByPrefix(const std::string& prefix)
 {
     std::vector<std::string> files;
@@ -401,6 +408,15 @@ std::vector<std::string> listFilesByPrefix(const std::string& prefix)
 
     return files;
 }
+
+//pthread_t xArchiveFileSave;
+////-----------------------------------------------------------------------------------------------------
+//// поток записи архива аналоговых сигналов
+//void *CDeviceControl::thread_ArchiveFileSave(void *value)
+//{
+//    std::cout << "CDeviceControl thread_ArchiveFileSave 1"  << std::endl;
+////    this -> AnalogueMeasureArchiveWrite();
+//}
 
 //-----------------------------------------------------------------------------------------------------
 void CDeviceControl::AnalogueMeasureArchiveWrite(void)
@@ -471,9 +487,6 @@ void CDeviceControl::AnalogueMeasureArchiveWrite(void)
             for (const auto& file : matchingFiles)
             {
                 std::cout << file << std::endl;
-//sudo mount /dev/sda4 /mnt/usb
-//sudo umount /mnt/usb
-//sudo cp -r /home/debian/AnalogueMeasureArchives_00000-Pas-17A____2000 /mnt/usb
 
                 // создадим команду сохранени€
                 sprintf(acCommand,
@@ -520,39 +533,6 @@ void CDeviceControl::AnalogueMeasureArchiveWrite(void)
 //        sDiskName = "";
         uiArchiveFileIsSaveState = WRITE_ERROR;
     }
-
-
-
-//    // создадим строки предложени€ имеющихс€ дисков дл€ меню.
-//    for (uint8_t i = 0;
-//            (i < 4);
-//            i++)
-//    {
-//        // есть USB диск?
-//        if (memcmp((xCArchiveSaveParse.axTDiskInfo[i].acName) + 2,
-//                   "sd",
-//                   2) == 0)
-//        {
-//            std::cout << "CDeviceControl AnalogueMeasureArchiveWrite 2"  << std::endl;
-//            sDiskName = xCArchiveSaveParse.axTDiskInfo[i].acName + 2;
-//            sDiskName[4] = '\0';  // ƒобавл€ем завершающий ноль
-////        // »спользуем strncpy дл€ копировани€ части строки
-////        strncpy((char*)(sDiskName.data()), (const char*)((xCArchiveSaveParse.axTDiskInfo[i].acName) + 2), 4);
-////        sDiskName[sDiskName.size() - 1] = '\0';  // ƒобавл€ем завершающий ноль
-//            break;
-//        }
-////        // есть SD карта?
-////        else if (memcmp((xCArchiveSaveParse.axTDiskInfo[i].acName),
-////                        "mmc",
-////                        3) == 0)
-////        {
-////            sDiskName = xCArchiveSaveParse.axTDiskInfo[i].acName;
-////            break;
-////        }
-//    }
-
-
-
 }
 
 //-------------------------------------------------------------------------------
@@ -1903,7 +1883,48 @@ uint8_t CDeviceControl::Fsm(void)
     case ANALOGUE_MEASURE_ARCHIVE_WRITE_START:
         std::cout << "CDeviceControl::Fsm ANALOGUE_MEASURE_ARCHIVE_WRITE_START"  << std::endl;
         {
-            AnalogueMeasureArchiveWrite();
+//            // создадим поток сохранени€ файла архива.
+//            // create thread, pass reference, addr of the function and data
+//            if (pthread_create(&xArchiveFileSave,
+//                               NULL,
+//                               thread_ArchiveFileSave,
+//                               NULL))
+//            {
+//                cout << "Failed to create the thread_ArchiveFileSave" << endl;
+//                uiArchiveFileIsSaveState = WRITE_ERROR;
+//            }
+//            else
+//            {
+//                uiArchiveFileIsSaveState = WRITE_BUSY;
+//            }
+//            std::thread thread(&CDeviceControl::AnalogueMeasureArchiveWrite, this);
+////            thread.join(); // ќжидаем завершение потока
+//            // не ждем завершени€ работы функции
+//            thread.detach();
+
+
+            if (!m_pxThread || m_pxThread->joinable())
+            {
+        std::cout << "CDeviceControl::Fsm ANALOGUE_MEASURE_ARCHIVE_WRITE_START 2"  << std::endl;
+                // –азорваем св€зь между потоком и его владелецом
+                if (m_pxThread)
+                {
+        std::cout << "CDeviceControl::Fsm ANALOGUE_MEASURE_ARCHIVE_WRITE_START 3"  << std::endl;
+                    m_pxThread->detach();
+                }
+
+                // —оздаем новый поток на том же участке пам€ти, что был зан€т первым
+                m_pxThread = new std::thread(&CDeviceControl::AnalogueMeasureArchiveWrite, this);
+            }
+
+//// ¬осстановление работы потока
+//            if (m_pxThread && m_pxThread->joinable())
+//            {
+//        std::cout << "CDeviceControl::Fsm ANALOGUE_MEASURE_ARCHIVE_WRITE_START 4"  << std::endl;
+//                m_pxThread = new std::thread(&CDeviceControl::AnalogueMeasureArchiveWrite, this);
+//            }
+
+//            AnalogueMeasureArchiveWrite();
 
 //            CDataContainerDataBase* pxDataContainer =
 //                (CDataContainerDataBase*)GetExecutorDataContainerPointer();

@@ -8,6 +8,8 @@
 //  GitHub      : https://github.com/AlexandrVolvenkin
 //-------------------------------------------------------------------------------
 
+#include <thread>
+
 class Timer;
 class Platform;
 class CTask;
@@ -230,6 +232,8 @@ public:
     uint16_t DataBaseBlockReadBlockRelatedAction(void);
     uint16_t DataBaseBlockWriteBlockRelatedAction(void);
 
+//void *thread_ArchiveFileSave(void *value);
+
     uint8_t Fsm(void);
 
 protected:
@@ -255,6 +259,8 @@ protected:
     uint16_t* m_puiInputRegisters;
 
     uint8_t* m_puiSerialAndId;
+
+    std::thread* m_pxThread;
 
     uint8_t* m_puiIntermediateBuff;
     bool m_fbIsConfigurationConfirmed = false;
