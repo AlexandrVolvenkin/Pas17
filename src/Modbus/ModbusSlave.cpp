@@ -2365,7 +2365,7 @@ uint8_t CModbusSlave::Fsm(void)
 
         if (uiFsmState == DONE_OK)
         {
-            xTimeMeasure.Begin();
+//            xTimeMeasure.Begin();
 //            //std::cout << "CModbusSlave::Fsm MESSAGE_RECEIVE_WAITING 2"  << std::endl;
 //            SetFsmState(REQUEST_PROCESSING);
             if (RequestProcessing())
@@ -2450,7 +2450,7 @@ uint8_t CModbusSlave::Fsm(void)
 
         if (uiFsmState == DONE_OK)
         {
-            xTimeMeasure.End();
+//            xTimeMeasure.End();
             //std::cout << "CModbusSlave::Fsm MESSAGE_TRANSMIT_AFTER_WAITING 2"  << std::endl;
             SetFsmState(COMMUNICATION_RECEIVE_CONTINUE);
         }

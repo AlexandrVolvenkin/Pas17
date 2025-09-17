@@ -16,6 +16,8 @@
 #include <algorithm>
 #include <memory>
 #include <thread>
+#include <sys/stat.h>
+//#include <sys/mount.h>
 
 #include "Timer.h"
 #include "Task.h"
@@ -36,9 +38,9 @@ using namespace std;
 //-------------------------------------------------------------------------------
 CDeviceControl::CDeviceControl()
 {
-    std::cout << "CDeviceControl constructor"  << std::endl;
+    //std::cout << "CDeviceControl constructor"  << std::endl;
     m_puiIntermediateBuff = new uint8_t[CDataStore::MAX_BLOCK_LENGTH];
-    xFileSaveStateDataPackOne.uiFileSaveState = WRITE_BUSY;
+    xFileSaveStateDataPackOne.uiFileSaveState = WRITE_IDDLE;
     SetFsmState(START);
 }
 
@@ -51,7 +53,7 @@ CDeviceControl::~CDeviceControl()
 //-------------------------------------------------------------------------------
 uint8_t CDeviceControl::Init(void)
 {
-    std::cout << "CDeviceControl Init"  << std::endl;
+    //std::cout << "CDeviceControl Init"  << std::endl;
 //    m_pxCommandDataContainer = static_cast<CDataContainerDataBase*>(GetResources() ->
 //                               AddDataContainer(std::make_shared<CDataContainerDataBase>()));
     m_pxOperatingDataContainer = static_cast<CDataContainerDataBase*>(GetResources() ->
@@ -71,7 +73,7 @@ uint8_t CDeviceControl::Init(void)
 //-------------------------------------------------------------------------------
 void CDeviceControl::Allocate(void)
 {
-    std::cout << "CDeviceControl::Allocate 1"  << std::endl;
+    //std::cout << "CDeviceControl::Allocate 1"  << std::endl;
 
     pxCurrentTime = &(GetResources() -> xCurrentTime);
 
@@ -238,7 +240,7 @@ void CDeviceControl::SetInternalModuleMuvrName(std::string sName)
 // Байт 7 – день недели 1 – 7.
 void CDeviceControl::LinuxCurrentTimeSet(unsigned char *pucSource)
 {
-    std::cout << "CDeviceControl LinuxCurrentTimeSet 1"  << std::endl;
+    //std::cout << "CDeviceControl LinuxCurrentTimeSet 1"  << std::endl;
 
     time_t rawtime;
     struct tm *timeinfo;
@@ -284,7 +286,7 @@ void CDeviceControl::LinuxCurrentTimeSet(unsigned char *pucSource)
 // На данный запрос SL не отвечает.
 void CDeviceControl::CurrentTimeSet(void)
 {
-    std::cout << "CDeviceControl CurrentTimeSet 1"  << std::endl;
+    //std::cout << "CDeviceControl CurrentTimeSet 1"  << std::endl;
 
     CDataContainerDataBase* pxDataContainer =
         (CDataContainerDataBase*)GetCustomerDataContainerPointer();
@@ -298,7 +300,7 @@ void CDeviceControl::CurrentTimeSet(void)
 //-----------------------------------------------------------------------------------------------------
 void CDeviceControl::CurrentTimeUpdate(void)
 {
-//    std::cout << "CDeviceControl CurrentTimeUpdate 1"  << std::endl;
+//    //std::cout << "CDeviceControl CurrentTimeUpdate 1"  << std::endl;
 
     // Получаем текущее время
     time_t now = time(nullptr);
@@ -404,36 +406,27 @@ std::vector<std::string> listFilesByPrefix(const std::string& prefix)
     return files;
 }
 
-//pthread_t xArchiveFileSave;
-////-----------------------------------------------------------------------------------------------------
-//// поток записи архива аналоговых сигналов
-//void *CDeviceControl::thread_ArchiveFileSave(void *value)
-//{
-//    std::cout << "CDeviceControl thread_ArchiveFileSave 1"  << std::endl;
-////    this -> AnalogueMeasureArchiveWrite();
-//}
-
 //-----------------------------------------------------------------------------------------------------
 void CDeviceControl::AnalogueMeasureArchiveWrite(void)
 {
-    std::cout << "CDeviceControl AnalogueMeasureArchiveWrite 1"  << std::endl;
+    //std::cout << "CDeviceControl AnalogueMeasureArchiveWrite 1"  << std::endl;
 
     char acCommand[128];
 
-    xFileSaveStateDataPackOne.uiFileSaveState = WRITE_BUSY;
+    xFileSaveStateDataPackOne.uiFileSaveState = WRITE_IDDLE;
 
     CParse xCArchiveSaveParse;
     xCArchiveSaveParse.GetDiskInfoNew();
     for (uint8_t i; i < 4; i++)
     {
-        std::cout << "CDeviceControl AnalogueMeasureArchiveWrite acName " <<
-                  (xCArchiveSaveParse.axTDiskInfo[i].acName) << std::endl;
+        //std::cout << "CDeviceControl AnalogueMeasureArchiveWrite acName " <<
+//                  (xCArchiveSaveParse.axTDiskInfo[i].acName) << std::endl;
     }
 
     std::string sDiskName;
     sDiskName = xCArchiveSaveParse.axTDiskInfo[1].acName;
-    std::cout << "CDeviceControl AnalogueMeasureArchiveWrite sDiskName " <<
-              (sDiskName) << std::endl;
+    //std::cout << "CDeviceControl AnalogueMeasureArchiveWrite sDiskName " <<
+//              (sDiskName) << std::endl;
 // Начнем поиск имени, начиная с "sd" в конце строки sDiskName
     size_t found = sDiskName.rfind("sd");
     if (found != std::string::npos)
@@ -441,8 +434,8 @@ void CDeviceControl::AnalogueMeasureArchiveWrite(void)
         // Скопируем часть строки начиная с найденной позиции
         sDiskName = sDiskName.substr(found);
         sDiskName[4] = '\0';  // Добавляем завершающий ноль
-        std::cout << "CDeviceControl AnalogueMeasureArchiveWrite sDiskName " <<
-                  (sDiskName) << std::endl;
+        //std::cout << "CDeviceControl AnalogueMeasureArchiveWrite sDiskName " <<
+//                  (sDiskName) << std::endl;
 
         std::string cSerialAndIdStr;
         // Копируем данные из m_puiSerialAndId в cSerialAndIdStr
@@ -451,8 +444,8 @@ void CDeviceControl::AnalogueMeasureArchiveWrite(void)
         // Создаем начальные символы имени файла архива
         std::string prefix = "AnalogueMeasureArchives_" + cSerialAndIdStr;
 
-        std::cout << "CDeviceControl AnalogueMeasureArchiveWrite prefix " <<
-                  (prefix) << std::endl;
+        //std::cout << "CDeviceControl AnalogueMeasureArchiveWrite prefix " <<
+//                  (prefix) << std::endl;
 
         std::vector<std::string> matchingFiles = listFilesByPrefix(prefix);
 
@@ -461,7 +454,7 @@ void CDeviceControl::AnalogueMeasureArchiveWrite(void)
                 "%s",
                 "sudo umount /mnt/usb"
                );
-        std::cout << "CDeviceControl AnalogueMeasureArchiveWriteacCommand " << acCommand << std::endl;
+        //std::cout << "CDeviceControl AnalogueMeasureArchiveWriteacCommand " << acCommand << std::endl;
         // размонтируем выбранный диск.
         system(acCommand);
         usleep(100000);
@@ -473,7 +466,7 @@ void CDeviceControl::AnalogueMeasureArchiveWrite(void)
                 sDiskName.c_str(),
                 "/mnt/usb"
                );
-        std::cout << "CDeviceControl AnalogueMeasureArchiveWriteacCommand " << acCommand << std::endl;
+        //std::cout << "CDeviceControl AnalogueMeasureArchiveWriteacCommand " << acCommand << std::endl;
         // примонтируем выбранный диск.
         system(acCommand);
         usleep(100000);
@@ -492,18 +485,18 @@ void CDeviceControl::AnalogueMeasureArchiveWrite(void)
                         file.c_str(),
                         "/mnt/usb/",
                         " && sync");
-                std::cout << "CDeviceControl AnalogueMeasureArchiveWriteacCommand " << acCommand << std::endl;
+                //std::cout << "CDeviceControl AnalogueMeasureArchiveWriteacCommand " << acCommand << std::endl;
 
                 // сохраним файл.
                 // файл сохранён успешно?
                 if (!(system(acCommand)))
                 {
-                    std::cout << "CDeviceControl AnalogueMeasureArchiveWrite 3"  << std::endl;
+                    //std::cout << "CDeviceControl AnalogueMeasureArchiveWrite 3"  << std::endl;
                     xFileSaveStateDataPackOne.uiFileSaveState = WRITE_OK;
                 }
                 else
                 {
-                    std::cout << "CDeviceControl AnalogueMeasureArchiveWrite 4"  << std::endl;
+                    //std::cout << "CDeviceControl AnalogueMeasureArchiveWrite 4"  << std::endl;
                     xFileSaveStateDataPackOne.uiFileSaveState = WRITE_ERROR;
                 }
             }
@@ -519,7 +512,7 @@ void CDeviceControl::AnalogueMeasureArchiveWrite(void)
                 "%s",
                 "sudo umount /mnt/usb"
                );
-        std::cout << "CDeviceControl AnalogueMeasureArchiveWriteacCommand " << acCommand << std::endl;
+        //std::cout << "CDeviceControl AnalogueMeasureArchiveWriteacCommand " << acCommand << std::endl;
         // размонтируем выбранный диск.
         system(acCommand);
         usleep(100000);
@@ -537,7 +530,7 @@ void CDeviceControl::AnalogueMeasureArchiveWrite(void)
 // передаёт измеренные значения аналоговых входов, реперные точки АЦП, значения ТХС.
 void CDeviceControl::OnlineDataRead(void)
 {
-    std::cout << "CDeviceControl OnlineDataRead 1"  << std::endl;
+    //std::cout << "CDeviceControl OnlineDataRead 1"  << std::endl;
     float *pfSource;
     uint8_t *pucSource;
     uint8_t *pucSource2;
@@ -572,7 +565,7 @@ void CDeviceControl::OnlineDataRead(void)
     // запрос ТХС или реперных точек?
     if (ucAddressHigh & MUVR_TXS_REQUEST_MASK)
     {
-        std::cout << "CDeviceControl OnlineDataRead 2"  << std::endl;
+        //std::cout << "CDeviceControl OnlineDataRead 2"  << std::endl;
 // запрос ТХС.
 //        cout << "TXS" << endl;
 
@@ -595,7 +588,7 @@ void CDeviceControl::OnlineDataRead(void)
     }
     else
     {
-        std::cout << "CDeviceControl OnlineDataRead 3"  << std::endl;
+        //std::cout << "CDeviceControl OnlineDataRead 3"  << std::endl;
 // запрос реперных точек.
 
         // адрес аналогового входа принадлежит внутреннему или внешнему модулю?
@@ -603,7 +596,7 @@ void CDeviceControl::OnlineDataRead(void)
                 (((ucAddressHigh & ANALOGUE_INPUT_ADDRESS_MASK) /
                   MUVR_ANALOG_INPUT_QUANTITY) + 1))
         {
-            std::cout << "CDeviceControl OnlineDataRead 4"  << std::endl;
+            //std::cout << "CDeviceControl OnlineDataRead 4"  << std::endl;
             // адрес аналогового входа принадлежит внутреннему модулю.
 
             // получим адрес значения аналогового входа.
@@ -629,12 +622,12 @@ void CDeviceControl::OnlineDataRead(void)
                   (ONLINE_DATA_READ_ONE_INPUT_ASCII_BYTE_QUANTITY +
                    ONLINE_DATA_READ_ONE_INPUT_STAT_AI_BYTE_QUANTITY)));
 
-            std::cout << "CDeviceControl::OnlineDataRead m_uiDataLength "  <<
-                      (int)(((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiDataLength) << std::endl;
+            //std::cout << "CDeviceControl::OnlineDataRead m_uiDataLength "  <<
+//                      (int)(((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiDataLength) << std::endl;
         }
         else
         {
-            std::cout << "CDeviceControl OnlineDataRead 5"  << std::endl;
+            //std::cout << "CDeviceControl OnlineDataRead 5"  << std::endl;
             // адрес аналогового входа принадлежит внешнему модулю.
 //            cout << "LSNU" << endl;
 
@@ -661,8 +654,8 @@ void CDeviceControl::OnlineDataRead(void)
                   (ONLINE_DATA_READ_ONE_INPUT_ASCII_BYTE_QUANTITY +
                    ONLINE_DATA_READ_ONE_INPUT_STAT_AI_BYTE_QUANTITY)));
 
-            std::cout << "CDeviceControl::OnlineDataRead m_uiDataLength "  <<
-                      (int)(((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiDataLength) << std::endl;
+            //std::cout << "CDeviceControl::OnlineDataRead m_uiDataLength "  <<
+//                      (int)(((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiDataLength) << std::endl;
         }
     }
 
@@ -692,7 +685,7 @@ void CDeviceControl::OnlineDataRead(void)
 // обрабатывает входящие сообщения от Modbus интерфейсов, по 5 функции.
 uint8_t CDeviceControl::ModbusFunction5Handler(void)
 {
-    std::cout << "CDeviceControl ModbusFunction5Handler 1" << std::endl;
+    //std::cout << "CDeviceControl ModbusFunction5Handler 1" << std::endl;
     uint8_t nucIndexNumber;
     int i;
 
@@ -701,7 +694,7 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
     uint8_t* pucDestination =
         (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer);
 
-//    std::cout << "CDeviceControl::Fsm uiAddress "  << (int)uiAddress << std::endl;
+//    //std::cout << "CDeviceControl::Fsm uiAddress "  << (int)uiAddress << std::endl;
 //-------------------------------------------------------------------------------
 // Function 5
     // смотрим, по какому адресу записывается бит.
@@ -711,7 +704,7 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
     // квитирование с верхнего уровня.
     case DEVICE_CONTROL_PC_KVIT:
     {
-        std::cout << "CDeviceControl ModbusFunction5Handler 2" << std::endl;
+        //std::cout << "CDeviceControl ModbusFunction5Handler 2" << std::endl;
         CDataContainerDataBase* pxDataContainer =
             (CDataContainerDataBase*)GetCustomerDataContainerPointer();
         // бит установлен?
@@ -733,7 +726,7 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
     // сброс с верхнего уровня.
     case DEVICE_CONTROL_PC_RESET:
     {
-        std::cout << "CDeviceControl ModbusFunction5Handler 3" << std::endl;
+        //std::cout << "CDeviceControl ModbusFunction5Handler 3" << std::endl;
         CDataContainerDataBase* pxDataContainer =
             (CDataContainerDataBase*)GetCustomerDataContainerPointer();
         // бит установлен?
@@ -755,7 +748,7 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
     // блокировка с верхнего уровня.
     case DEVICE_CONTROL_BLOCK:
     {
-        std::cout << "CDeviceControl ModbusFunction5Handler 4" << std::endl;
+        //std::cout << "CDeviceControl ModbusFunction5Handler 4" << std::endl;
         CDataContainerDataBase* pxDataContainer =
             (CDataContainerDataBase*)GetCustomerDataContainerPointer();
         // бит установлен?
@@ -1401,12 +1394,12 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
 //-------------------------------------------------------------------------------
 uint16_t CDeviceControl::DataBaseBlockReadBlockRelatedAction(void)
 {
-    std::cout << "CDeviceControl::DataBaseBlockReadBlockRelatedAction 1" << std::endl;
+    //std::cout << "CDeviceControl::DataBaseBlockReadBlockRelatedAction 1" << std::endl;
 
     // номер принятого для записи блока базы данных.
     uint8_t uiBlockIndex =
         (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiDataIndex);
-    std::cout << "CDeviceControl::DataBaseBlockReadBlockRelatedAction  uiBlockIndex "  << (int)uiBlockIndex << std::endl;
+    //std::cout << "CDeviceControl::DataBaseBlockReadBlockRelatedAction  uiBlockIndex "  << (int)uiBlockIndex << std::endl;
 
 
     switch(uiBlockIndex)
@@ -1492,12 +1485,12 @@ uint16_t CDeviceControl::DataBaseBlockReadBlockRelatedAction(void)
 //-------------------------------------------------------------------------------
 uint16_t CDeviceControl::DataBaseBlockWriteBlockRelatedAction(void)
 {
-    std::cout << "CDeviceControl::DataBaseBlockWriteBlockRelatedAction 1" << std::endl;
+    //std::cout << "CDeviceControl::DataBaseBlockWriteBlockRelatedAction 1" << std::endl;
 
     // номер принятого для записи блока базы данных.
     uint8_t uiBlockIndex =
         (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiDataIndex);
-    std::cout << "CDeviceControl::DataBaseBlockWriteBlockRelatedAction  uiBlockIndex "  << (int)uiBlockIndex << std::endl;
+    //std::cout << "CDeviceControl::DataBaseBlockWriteBlockRelatedAction  uiBlockIndex "  << (int)uiBlockIndex << std::endl;
 
 
     switch(uiBlockIndex)
@@ -1591,27 +1584,27 @@ uint16_t CDeviceControl::DataBaseBlockWriteBlockRelatedAction(void)
 //-------------------------------------------------------------------------------
 uint8_t CDeviceControl::Fsm(void)
 {
-//    std::cout << "CDeviceControl::Fsm 1" << endl;
+//    //std::cout << "CDeviceControl::Fsm 1" << endl;
     uint8_t uiReadyTaskCounter = 0;
     switch (GetFsmState())
     {
     case IDDLE:
-//        std::cout << "CDeviceControl::Fsm IDDLE"  << std::endl;
+//        //std::cout << "CDeviceControl::Fsm IDDLE"  << std::endl;
         break;
 
     case STOP:
-//        //std::cout << "CDeviceControl::Fsm STOP"  << std::endl;
+//        ////std::cout << "CDeviceControl::Fsm STOP"  << std::endl;
         break;
 
     case START:
-        std::cout << "CDeviceControl::Fsm START"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm START"  << std::endl;
         Init();
         GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
         SetFsmState(INIT);
         break;
 
     case INIT:
-//        std::cout << "CDeviceControl::Fsm INIT 1"  << std::endl;
+//        //std::cout << "CDeviceControl::Fsm INIT 1"  << std::endl;
     {
         CTaskInterface* pxTask =
             GetResources() ->
@@ -1619,10 +1612,10 @@ uint8_t CDeviceControl::Fsm(void)
 
         if (pxTask != 0)
         {
-//                std::cout << "CDeviceControl::Fsm INIT 2"  << std::endl;
+//                //std::cout << "CDeviceControl::Fsm INIT 2"  << std::endl;
             if (pxTask -> GetFsmState() >= READY)
             {
-//                    std::cout << "CDeviceControl::Fsm INIT 3"  << std::endl;
+//                    //std::cout << "CDeviceControl::Fsm INIT 3"  << std::endl;
                 SetDataStore((CDataStore*)pxTask);
                 uiReadyTaskCounter += 1;
 //                    SetFsmState(READY);
@@ -1630,10 +1623,10 @@ uint8_t CDeviceControl::Fsm(void)
         }
         else
         {
-//                std::cout << "CDeviceControl::Fsm INIT 4"  << std::endl;
+//                //std::cout << "CDeviceControl::Fsm INIT 4"  << std::endl;
             if (GetTimerPointer() -> IsOverflow())
             {
-                std::cout << "CDeviceControl::Fsm INIT 5"  << std::endl;
+                //std::cout << "CDeviceControl::Fsm INIT 5"  << std::endl;
                 SetFsmState(STOP);
             }
         }
@@ -1651,12 +1644,12 @@ uint8_t CDeviceControl::Fsm(void)
     break;
 
     case READY:
-//        std::cout << "CDeviceControl::Fsm READY"  << std::endl;
+//        //std::cout << "CDeviceControl::Fsm READY"  << std::endl;
 //    {
 //
 //        if (GetCommandDataLink() != 0)
 //        {
-//            std::cout << "CDeviceControl::Fsm READY 2"  << std::endl;
+//            //std::cout << "CDeviceControl::Fsm READY 2"  << std::endl;
 //            SetOperatingDataLink(GetCommandDataLink());
 //            SetFsmState(GetCommandDataLink() ->
 //                        GetDataContainerPointer() ->
@@ -1670,20 +1663,20 @@ uint8_t CDeviceControl::Fsm(void)
         break;
 
     case DONE_OK:
-//        std::cout << "CDeviceControl::Fsm DONE_OK"  << std::endl;
+//        //std::cout << "CDeviceControl::Fsm DONE_OK"  << std::endl;
 //        SetFsmOperationStatus(DONE_OK);
 //        SetFsmState(READY);
         break;
 
     case DONE_ERROR:
-//        std::cout << "CDeviceControl::Fsm DONE_ERROR"  << std::endl;
+//        //std::cout << "CDeviceControl::Fsm DONE_ERROR"  << std::endl;
 //        SetFsmOperationStatus(DONE_ERROR);
 //        SetFsmState(READY);
         break;
 
 //-------------------------------------------------------------------------------
     case SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_START:
-        std::cout << "CDeviceControl::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_START"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_START"  << std::endl;
         {
             GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
             SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING);
@@ -1691,21 +1684,21 @@ uint8_t CDeviceControl::Fsm(void)
         break;
 
     case SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING:
-//        std::cout << "CDeviceControl::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING 1"  << std::endl;
+//        //std::cout << "CDeviceControl::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING 1"  << std::endl;
     {
         if (SetTaskData(GetExecutorDataContainerPointer()))
         {
-            std::cout << "CDeviceControl::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING 2"  << std::endl;
+            //std::cout << "CDeviceControl::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING 2"  << std::endl;
 //            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(GetFsmNextStateDoneOk());
         }
         else
         {
-            std::cout << "CDeviceControl::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING 3"  << std::endl;
+            //std::cout << "CDeviceControl::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING 3"  << std::endl;
             // Время ожидания выполнения запроса закончилось?
             if (GetTimerPointer() -> IsOverflow())
             {
-                std::cout << "CDeviceControl::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING 4"  << std::endl;
+                //std::cout << "CDeviceControl::Fsm SUBTASK_EXECUTOR_READY_CHECK_NO_DONE_CHECK_WAITING 4"  << std::endl;
 //                ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
                 SetFsmState(GetFsmNextStateReadyWaitingError());
             }
@@ -1715,7 +1708,7 @@ uint8_t CDeviceControl::Fsm(void)
 
 //-------------------------------------------------------------------------------
     case SUBTASK_EXECUTOR_READY_CHECK_START:
-        std::cout << "CDeviceControl::Fsm SUBTASK_EXECUTOR_READY_CHECK_START"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm SUBTASK_EXECUTOR_READY_CHECK_START"  << std::endl;
         {
             GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
             SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_WAITING);
@@ -1723,20 +1716,20 @@ uint8_t CDeviceControl::Fsm(void)
         break;
 
     case SUBTASK_EXECUTOR_READY_CHECK_WAITING:
-//        std::cout << "CDeviceControl::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 1"  << std::endl;
+//        //std::cout << "CDeviceControl::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 1"  << std::endl;
     {
         if (SetTaskData(GetExecutorDataContainerPointer()))
         {
-            std::cout << "CDeviceControl::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 2"  << std::endl;
+            //std::cout << "CDeviceControl::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 2"  << std::endl;
             SetFsmState(SUBTASK_EXECUTOR_DONE_CHECK_START);
         }
         else
         {
-            std::cout << "CDeviceControl::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 3"  << std::endl;
+            //std::cout << "CDeviceControl::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 3"  << std::endl;
             // Время ожидания выполнения запроса закончилось?
             if (GetTimerPointer() -> IsOverflow())
             {
-                std::cout << "CDeviceControl::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 4"  << std::endl;
+                //std::cout << "CDeviceControl::Fsm SUBTASK_EXECUTOR_READY_CHECK_WAITING 4"  << std::endl;
 //                ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
                 SetFsmState(GetFsmNextStateReadyWaitingError());
             }
@@ -1745,7 +1738,7 @@ uint8_t CDeviceControl::Fsm(void)
     break;
 
     case SUBTASK_EXECUTOR_DONE_CHECK_START:
-        std::cout << "CDeviceControl::Fsm SUBTASK_EXECUTOR_DONE_CHECK_START 1"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm SUBTASK_EXECUTOR_DONE_CHECK_START 1"  << std::endl;
         {
             GetTimerPointer() -> Set(TASK_READY_WAITING_TIME);
             SetFsmState(SUBTASK_EXECUTOR_DONE_CHECK_WAITING);
@@ -1754,7 +1747,7 @@ uint8_t CDeviceControl::Fsm(void)
         break;
 
     case SUBTASK_EXECUTOR_DONE_CHECK_WAITING:
-//        std::cout << "CDeviceControl::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 1"  << std::endl;
+//        //std::cout << "CDeviceControl::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 1"  << std::endl;
     {
         CDataContainerDataBase* pxDataContainer =
             (CDataContainerDataBase*)GetExecutorDataContainerPointer();
@@ -1763,13 +1756,13 @@ uint8_t CDeviceControl::Fsm(void)
 
         if (uiFsmState == DONE_OK)
         {
-            std::cout << "CDeviceControl::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 2"  << std::endl;
+            //std::cout << "CDeviceControl::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 2"  << std::endl;
 //            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(GetFsmNextStateDoneOk());
         }
         else if (uiFsmState == DONE_ERROR)
         {
-            std::cout << "CDeviceControl::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 3"  << std::endl;
+            //std::cout << "CDeviceControl::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 3"  << std::endl;
 //            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
             SetFsmState(GetFsmNextStateDoneWaitingDoneError());
         }
@@ -1778,7 +1771,7 @@ uint8_t CDeviceControl::Fsm(void)
             // Время ожидания выполнения запроса закончилось?
             if (GetTimerPointer() -> IsOverflow())
             {
-                std::cout << "CDeviceControl::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 4"  << std::endl;
+                //std::cout << "CDeviceControl::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 4"  << std::endl;
 //                ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
                 SetFsmState(GetFsmNextStateDoneWaitingError());
             }
@@ -1788,7 +1781,7 @@ uint8_t CDeviceControl::Fsm(void)
 
 //-------------------------------------------------------------------------------
     case CONFIGURATION_REQUEST_START:
-        std::cout << "CDeviceControl::Fsm CONFIGURATION_REQUEST_START"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm CONFIGURATION_REQUEST_START"  << std::endl;
         {
             CDataContainerDataBase* pxDataContainer =
                 (CDataContainerDataBase*)GetExecutorDataContainerPointer();
@@ -1806,7 +1799,7 @@ uint8_t CDeviceControl::Fsm(void)
         break;
 
     case CONFIGURATION_REQUEST_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
-        std::cout << "CDeviceControl::Fsm CONFIGURATION_REQUEST_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm CONFIGURATION_REQUEST_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
         {
             CDataContainerDataBase* pxExecutorDataContainer =
                 (CDataContainerDataBase*)GetExecutorDataContainerPointer();
@@ -1819,8 +1812,8 @@ uint8_t CDeviceControl::Fsm(void)
             pxCustomerDataContainer -> m_uiDataLength =
                 pxExecutorDataContainer -> m_uiDataLength;
 
-            std::cout << "CDeviceControl::Fsm CONFIGURATION_REQUEST_EXECUTOR_DONE_CHECK_WAITING pxCustomerDataContainer -> m_uiDataLength "  << (int)pxCustomerDataContainer -> m_uiDataLength << std::endl;
-            std::cout << "CDeviceControl::Fsm CONFIGURATION_REQUEST_EXECUTOR_DONE_CHECK_WAITING pxExecutorDataContainer -> m_uiDataLength "  << (int)pxExecutorDataContainer -> m_uiDataLength << std::endl;
+            //std::cout << "CDeviceControl::Fsm CONFIGURATION_REQUEST_EXECUTOR_DONE_CHECK_WAITING pxCustomerDataContainer -> m_uiDataLength "  << (int)pxCustomerDataContainer -> m_uiDataLength << std::endl;
+            //std::cout << "CDeviceControl::Fsm CONFIGURATION_REQUEST_EXECUTOR_DONE_CHECK_WAITING pxExecutorDataContainer -> m_uiDataLength "  << (int)pxExecutorDataContainer -> m_uiDataLength << std::endl;
 
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(DONE_OK);
@@ -1828,7 +1821,7 @@ uint8_t CDeviceControl::Fsm(void)
         break;
 
     case CONFIGURATION_REQUEST_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
-        std::cout << "CDeviceControl::Fsm CONFIGURATION_REQUEST_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm CONFIGURATION_REQUEST_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
         {
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
             SetFsmState(DONE_ERROR);
@@ -1837,26 +1830,41 @@ uint8_t CDeviceControl::Fsm(void)
 
 //-------------------------------------------------------------------------------
     case STATE_DATA_READ_START:
-        std::cout << "CDeviceControl::Fsm STATE_DATA_READ_START"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm STATE_DATA_READ_START"  << std::endl;
         {
-//            AnalogueMeasureArchiveWrite();
+            struct stat STAT;
 
-            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
-            SetFsmNextStateDoneOk(STATE_DATA_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
-            SetFsmNextStateReadyWaitingError(STATE_DATA_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
-            SetFsmNextStateDoneWaitingError(STATE_DATA_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
-            SetFsmNextStateDoneWaitingDoneError(STATE_DATA_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            if(stat("/dev/sda", &STAT) == 0)
+            {
+        //std::cout << "CDeviceControl::Fsm STATE_DATA_READ_START 2"  << std::endl;
+                (GetResources() -> GetDeviceStateDataPointer()) ->
+                uiFlashConnectorStatus =
+                    FLASH_CONNECTOR_INSERTED;
+            }
+            else
+            {
+        //std::cout << "CDeviceControl::Fsm STATE_DATA_READ_START 3"  << std::endl;
+                (GetResources() -> GetDeviceStateDataPointer()) ->
+                uiFlashConnectorStatus =
+                    FLASH_CONNECTOR_EMPTY;
+            }
+
+            SetFsmState(STATE_DATA_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+
+//            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+//            SetFsmNextStateDoneOk(STATE_DATA_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+//            SetFsmNextStateReadyWaitingError(STATE_DATA_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+//            SetFsmNextStateDoneWaitingError(STATE_DATA_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+//            SetFsmNextStateDoneWaitingDoneError(STATE_DATA_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
         }
         break;
 
     case STATE_DATA_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
-        std::cout << "CDeviceControl::Fsm STATE_DATA_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm STATE_DATA_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
         {
             CDataContainerDataBase* pxCustomerDataContainer =
                 (CDataContainerDataBase*)GetCustomerDataContainerPointer();
-            (GetResources() -> GetDeviceStateDataPointer()) ->
-            uiFlashConnectorStatus =
-                FLASH_CONNECTOR_INSERTED;
+
             pxCustomerDataContainer -> m_uiDataLength =
                 sizeof(struct TDeviceStateDataPackOne);
             memcpy(pxCustomerDataContainer -> m_puiDataPointer,
@@ -1869,7 +1877,7 @@ uint8_t CDeviceControl::Fsm(void)
         break;
 
     case STATE_DATA_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
-        std::cout << "CDeviceControl::Fsm STATE_DATA_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm STATE_DATA_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
         {
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
             SetFsmState(DONE_ERROR);
@@ -1878,7 +1886,7 @@ uint8_t CDeviceControl::Fsm(void)
 
 //-------------------------------------------------------------------------------
     case ANALOGUE_MEASURE_ARCHIVE_WRITE_START:
-        std::cout << "CDeviceControl::Fsm ANALOGUE_MEASURE_ARCHIVE_WRITE_START"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm ANALOGUE_MEASURE_ARCHIVE_WRITE_START"  << std::endl;
         {
             // Ожидаем завершение первого потока (если он еще выполняется)
             if (!m_pxAnalogueMeasureArchiveWriteThread || m_pxAnalogueMeasureArchiveWriteThread->joinable())
@@ -1894,16 +1902,12 @@ uint8_t CDeviceControl::Fsm(void)
             // Перезапускаем поток
             m_pxAnalogueMeasureArchiveWriteThread = std::make_shared<std::thread>(&CDeviceControl::AnalogueMeasureArchiveWrite, this);
 
-            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
-            SetFsmNextStateDoneOk(ANALOGUE_MEASURE_ARCHIVE_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
-            SetFsmNextStateReadyWaitingError(ANALOGUE_MEASURE_ARCHIVE_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
-            SetFsmNextStateDoneWaitingError(ANALOGUE_MEASURE_ARCHIVE_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
-            SetFsmNextStateDoneWaitingDoneError(ANALOGUE_MEASURE_ARCHIVE_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmState(ANALOGUE_MEASURE_ARCHIVE_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
         }
         break;
 
     case ANALOGUE_MEASURE_ARCHIVE_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
-        std::cout << "CDeviceControl::Fsm ANALOGUE_MEASURE_ARCHIVE_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm ANALOGUE_MEASURE_ARCHIVE_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
         {
 //            CDataContainerDataBase* pxCustomerDataContainer =
 //                (CDataContainerDataBase*)GetCustomerDataContainerPointer();
@@ -1922,7 +1926,7 @@ uint8_t CDeviceControl::Fsm(void)
         break;
 
     case ANALOGUE_MEASURE_ARCHIVE_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
-        std::cout << "CDeviceControl::Fsm ANALOGUE_MEASURE_ARCHIVE_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm ANALOGUE_MEASURE_ARCHIVE_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
         {
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
             SetFsmState(DONE_ERROR);
@@ -1931,7 +1935,7 @@ uint8_t CDeviceControl::Fsm(void)
 
 //-------------------------------------------------------------------------------
     case ANALOGUE_MEASURE_ARCHIVE_WRITE_STATE_REQUEST_START:
-        std::cout << "CDeviceControl::Fsm ANALOGUE_MEASURE_ARCHIVE_WRITE_STATE_REQUEST_START"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm ANALOGUE_MEASURE_ARCHIVE_WRITE_STATE_REQUEST_START"  << std::endl;
         {
 //            CDataContainerDataBase* pxDataContainer =
 //                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
@@ -1940,16 +1944,12 @@ uint8_t CDeviceControl::Fsm(void)
 //                CConfigurationCreate::CONFIGURATION_REQUEST_START;
 //            pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
 
-            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
-            SetFsmNextStateDoneOk(ANALOGUE_MEASURE_ARCHIVE_WRITE_STATE_REQUEST_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
-            SetFsmNextStateReadyWaitingError(ANALOGUE_MEASURE_ARCHIVE_WRITE_STATE_REQUEST_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
-            SetFsmNextStateDoneWaitingError(ANALOGUE_MEASURE_ARCHIVE_WRITE_STATE_REQUEST_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
-            SetFsmNextStateDoneWaitingDoneError(ANALOGUE_MEASURE_ARCHIVE_WRITE_STATE_REQUEST_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmState(ANALOGUE_MEASURE_ARCHIVE_WRITE_STATE_REQUEST_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
         }
         break;
 
     case ANALOGUE_MEASURE_ARCHIVE_WRITE_STATE_REQUEST_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
-        std::cout << "CDeviceControl::Fsm ANALOGUE_MEASURE_ARCHIVE_WRITE_STATE_REQUEST_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm ANALOGUE_MEASURE_ARCHIVE_WRITE_STATE_REQUEST_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
         {
             CDataContainerDataBase* pxCustomerDataContainer =
                 (CDataContainerDataBase*)GetCustomerDataContainerPointer();
@@ -1966,7 +1966,7 @@ uint8_t CDeviceControl::Fsm(void)
         break;
 
     case ANALOGUE_MEASURE_ARCHIVE_WRITE_STATE_REQUEST_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
-        std::cout << "CDeviceControl::Fsm ANALOGUE_MEASURE_ARCHIVE_WRITE_STATE_REQUEST_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm ANALOGUE_MEASURE_ARCHIVE_WRITE_STATE_REQUEST_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
         {
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
             SetFsmState(DONE_ERROR);
@@ -1975,7 +1975,7 @@ uint8_t CDeviceControl::Fsm(void)
 
 //-------------------------------------------------------------------------------
     case MODBUS_FUNCTION_5_HANDLER_INPUT_SET_TOP_OR_BOTTOM_OF_SCALE_COMAND_START:
-        std::cout << "CDeviceControl::Fsm MODBUS_FUNCTION_5_HANDLER_INPUT_SET_TOP_OR_BOTTOM_OF_SCALE_COMAND_START"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm MODBUS_FUNCTION_5_HANDLER_INPUT_SET_TOP_OR_BOTTOM_OF_SCALE_COMAND_START"  << std::endl;
         {
             m_uiInternalModuleMuvrId =
                 GetResources() ->
@@ -1997,7 +1997,7 @@ uint8_t CDeviceControl::Fsm(void)
         break;
 
     case MODBUS_FUNCTION_5_HANDLER_INPUT_SET_TOP_OR_BOTTOM_OF_SCALE_COMAND_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
-        std::cout << "CDeviceControl::Fsm MODBUS_FUNCTION_5_HANDLER_INPUT_SET_TOP_OR_BOTTOM_OF_SCALE_COMAND_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm MODBUS_FUNCTION_5_HANDLER_INPUT_SET_TOP_OR_BOTTOM_OF_SCALE_COMAND_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
         {
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(DONE_OK);
@@ -2005,7 +2005,7 @@ uint8_t CDeviceControl::Fsm(void)
         break;
 
     case MODBUS_FUNCTION_5_HANDLER_INPUT_SET_TOP_OR_BOTTOM_OF_SCALE_COMAND_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
-        std::cout << "CDeviceControl::Fsm MODBUS_FUNCTION_5_HANDLER_INPUT_SET_TOP_OR_BOTTOM_OF_SCALE_COMAND_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm MODBUS_FUNCTION_5_HANDLER_INPUT_SET_TOP_OR_BOTTOM_OF_SCALE_COMAND_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
         {
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
             SetFsmState(DONE_ERROR);
@@ -2014,7 +2014,7 @@ uint8_t CDeviceControl::Fsm(void)
 
 //-------------------------------------------------------------------------------
     case MODBUS_FUNCTION_5_HANDLER_INPUT_CALIBRATION_COMAND_START:
-        std::cout << "CDeviceControl::Fsm MODBUS_FUNCTION_5_HANDLER_INPUT_CALIBRATION_COMAND_START"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm MODBUS_FUNCTION_5_HANDLER_INPUT_CALIBRATION_COMAND_START"  << std::endl;
         {
             m_uiInternalModuleMuvrId =
                 GetResources() ->
@@ -2036,7 +2036,7 @@ uint8_t CDeviceControl::Fsm(void)
         break;
 
     case MODBUS_FUNCTION_5_HANDLER_INPUT_CALIBRATION_COMAND_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
-        std::cout << "CDeviceControl::Fsm MODBUS_FUNCTION_5_HANDLER_INPUT_CALIBRATION_COMAND_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm MODBUS_FUNCTION_5_HANDLER_INPUT_CALIBRATION_COMAND_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
         {
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(DONE_OK);
@@ -2044,7 +2044,7 @@ uint8_t CDeviceControl::Fsm(void)
         break;
 
     case MODBUS_FUNCTION_5_HANDLER_INPUT_CALIBRATION_COMAND_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
-        std::cout << "CDeviceControl::Fsm MODBUS_FUNCTION_5_HANDLER_INPUT_CALIBRATION_COMAND_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm MODBUS_FUNCTION_5_HANDLER_INPUT_CALIBRATION_COMAND_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
         {
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
             SetFsmState(DONE_ERROR);
@@ -2053,7 +2053,7 @@ uint8_t CDeviceControl::Fsm(void)
 
 //-------------------------------------------------------------------------------
     case MODBUS_FUNCTION_5_HANDLER_START:
-        std::cout << "CDeviceControl::Fsm MODBUS_FUNCTION_5_HANDLER_START"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm MODBUS_FUNCTION_5_HANDLER_START"  << std::endl;
         {
             if (ModbusFunction5Handler())
             {
@@ -2067,7 +2067,7 @@ uint8_t CDeviceControl::Fsm(void)
         break;
 
     case MODBUS_FUNCTION_5_HANDLER_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
-//        std::cout << "CDeviceControl::Fsm MODBUS_FUNCTION_5_HANDLER_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+//        //std::cout << "CDeviceControl::Fsm MODBUS_FUNCTION_5_HANDLER_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
     {
 //            CDataContainerDataBase* pxExecutorDataContainer =
 //                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
@@ -2086,7 +2086,7 @@ uint8_t CDeviceControl::Fsm(void)
     break;
 
     case MODBUS_FUNCTION_5_HANDLER_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
-        std::cout << "CDeviceControl::Fsm MODBUS_FUNCTION_5_HANDLER_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm MODBUS_FUNCTION_5_HANDLER_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
         {
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
             SetFsmState(DONE_ERROR);
@@ -2095,7 +2095,7 @@ uint8_t CDeviceControl::Fsm(void)
 
 //-------------------------------------------------------------------------------
     case TIME_SET_START:
-        std::cout << "CDeviceControl::Fsm TIME_SET_START"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm TIME_SET_START"  << std::endl;
         {
             CurrentTimeSet();
             SetFsmState(TIME_SET_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
@@ -2103,7 +2103,7 @@ uint8_t CDeviceControl::Fsm(void)
         break;
 
     case TIME_SET_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
-        std::cout << "CDeviceControl::Fsm TIME_SET_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm TIME_SET_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
         {
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(DONE_OK);
@@ -2111,7 +2111,7 @@ uint8_t CDeviceControl::Fsm(void)
         break;
 
     case TIME_SET_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
-        std::cout << "CDeviceControl::Fsm TIME_SET_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm TIME_SET_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
         {
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
             SetFsmState(DONE_ERROR);
@@ -2120,7 +2120,7 @@ uint8_t CDeviceControl::Fsm(void)
 
 //-------------------------------------------------------------------------------
     case TIME_UPDATE_START:
-//        std::cout << "CDeviceControl::Fsm TIME_UPDATE_START"  << std::endl;
+//        //std::cout << "CDeviceControl::Fsm TIME_UPDATE_START"  << std::endl;
     {
         CurrentTimeUpdate();
         SetFsmState(TIME_UPDATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
@@ -2128,7 +2128,7 @@ uint8_t CDeviceControl::Fsm(void)
     break;
 
     case TIME_UPDATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
-//        std::cout << "CDeviceControl::Fsm TIME_UPDATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+//        //std::cout << "CDeviceControl::Fsm TIME_UPDATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
     {
         ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
         SetFsmState(DONE_OK);
@@ -2136,7 +2136,7 @@ uint8_t CDeviceControl::Fsm(void)
     break;
 
     case TIME_UPDATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
-        std::cout << "CDeviceControl::Fsm TIME_UPDATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm TIME_UPDATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
         {
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
             SetFsmState(DONE_ERROR);
@@ -2145,7 +2145,7 @@ uint8_t CDeviceControl::Fsm(void)
 
 //-------------------------------------------------------------------------------
     case ONLINE_DATA_READ_START:
-        std::cout << "CDeviceControl::Fsm ONLINE_DATA_READ_START"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm ONLINE_DATA_READ_START"  << std::endl;
         {
             OnlineDataRead();
             SetFsmState(ONLINE_DATA_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
@@ -2153,7 +2153,7 @@ uint8_t CDeviceControl::Fsm(void)
         break;
 
     case ONLINE_DATA_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
-        std::cout << "CDeviceControl::Fsm ONLINE_DATA_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm ONLINE_DATA_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
         {
 //            CDataContainerDataBase* pxExecutorDataContainer =
 //                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
@@ -2172,7 +2172,7 @@ uint8_t CDeviceControl::Fsm(void)
         break;
 
     case ONLINE_DATA_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
-        std::cout << "CDeviceControl::Fsm ONLINE_DATA_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm ONLINE_DATA_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
         {
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
             SetFsmState(DONE_ERROR);
@@ -2181,7 +2181,7 @@ uint8_t CDeviceControl::Fsm(void)
 
 //-------------------------------------------------------------------------------
     case DATA_BASE_BLOCK_READ:
-        std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_READ 1"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_READ 1"  << std::endl;
         {
             m_uiDataStoreId =
                 GetResources() ->
@@ -2209,7 +2209,7 @@ uint8_t CDeviceControl::Fsm(void)
         break;
 
     case DATA_BASE_BLOCK_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
-        std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
         {
             CDataContainerDataBase* pxExecutorDataContainer =
                 (CDataContainerDataBase*)GetExecutorDataContainerPointer();
@@ -2229,7 +2229,7 @@ uint8_t CDeviceControl::Fsm(void)
         break;
 
     case DATA_BASE_BLOCK_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
-        std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
         {
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
             SetFsmState(DONE_ERROR);
@@ -2238,7 +2238,7 @@ uint8_t CDeviceControl::Fsm(void)
 
 //-------------------------------------------------------------------------------
     case DATA_BASE_BLOCK_READ_MODULE_MUVR_DATA_BASE_READ_START:
-        std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_READ_MODULE_MUVR_DATA_BASE_READ_START"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_READ_MODULE_MUVR_DATA_BASE_READ_START"  << std::endl;
         {
             m_uiInternalModuleMuvrId =
                 GetResources() ->
@@ -2265,7 +2265,7 @@ uint8_t CDeviceControl::Fsm(void)
         break;
 
     case DATA_BASE_BLOCK_READ_MODULE_MUVR_DATA_BASE_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
-        std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_READ_MODULE_MUVR_DATA_BASE_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_READ_MODULE_MUVR_DATA_BASE_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
         {
             CDataContainerDataBase* pxExecutorDataContainer =
                 (CDataContainerDataBase*)GetExecutorDataContainerPointer();
@@ -2284,7 +2284,7 @@ uint8_t CDeviceControl::Fsm(void)
         break;
 
     case DATA_BASE_BLOCK_READ_MODULE_MUVR_DATA_BASE_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
-        std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_READ_MODULE_MUVR_DATA_BASE_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_READ_MODULE_MUVR_DATA_BASE_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
         {
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
             SetFsmState(DONE_ERROR);
@@ -2293,7 +2293,7 @@ uint8_t CDeviceControl::Fsm(void)
 
 //-------------------------------------------------------------------------------
     case DATA_BASE_BLOCK_READ_REFERENCE_POINTS_ADC_CODES_MODULE_MUVR_DATA_READ_START:
-        std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_READ_REFERENCE_POINTS_ADC_CODES_MODULE_MUVR_DATA_READ_START"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_READ_REFERENCE_POINTS_ADC_CODES_MODULE_MUVR_DATA_READ_START"  << std::endl;
         {
             m_uiInternalModuleMuvrId =
                 GetResources() ->
@@ -2320,7 +2320,7 @@ uint8_t CDeviceControl::Fsm(void)
         break;
 
     case DATA_BASE_BLOCK_READ_REFERENCE_POINTS_ADC_CODES_MODULE_MUVR_DATA_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
-        std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_READ_REFERENCE_POINTS_ADC_CODES_MODULE_MUVR_DATA_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_READ_REFERENCE_POINTS_ADC_CODES_MODULE_MUVR_DATA_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
         {
             CDataContainerDataBase* pxExecutorDataContainer =
                 (CDataContainerDataBase*)GetExecutorDataContainerPointer();
@@ -2339,7 +2339,7 @@ uint8_t CDeviceControl::Fsm(void)
         break;
 
     case DATA_BASE_BLOCK_READ_REFERENCE_POINTS_ADC_CODES_MODULE_MUVR_DATA_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
-        std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_READ_REFERENCE_POINTS_ADC_CODES_MODULE_MUVR_DATA_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_READ_REFERENCE_POINTS_ADC_CODES_MODULE_MUVR_DATA_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
         {
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
             SetFsmState(DONE_ERROR);
@@ -2351,7 +2351,7 @@ uint8_t CDeviceControl::Fsm(void)
 
 //-------------------------------------------------------------------------------
     case DATA_BASE_BLOCK_WRITE_START:
-        std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_WRITE_START"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_WRITE_START"  << std::endl;
         {
             m_uiDataStoreId =
                 GetResources() ->
@@ -2387,7 +2387,7 @@ uint8_t CDeviceControl::Fsm(void)
         break;
 
     case DATA_BASE_BLOCK_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
-        std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
         {
             // выполним дополнительное действие связанное с записью определённого блока базы данных.
             // например при записи блока модуля аналоговых сигналов запишим блок и в модуль.
@@ -2396,7 +2396,7 @@ uint8_t CDeviceControl::Fsm(void)
         break;
 
     case DATA_BASE_BLOCK_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
-        std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
         {
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
             SetFsmState(DONE_ERROR);
@@ -2405,24 +2405,24 @@ uint8_t CDeviceControl::Fsm(void)
 
 //-------------------------------------------------------------------------------
     case DATA_BASE_BLOCK_WRITE_COMPLETE_CHECK_START:
-        std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_WRITE_COMPLETE_CHECK_START 1"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_WRITE_COMPLETE_CHECK_START 1"  << std::endl;
         {
             if ((GetPreviousFsmState() == DONE_OK) ||
                     (GetPreviousFsmState() == READY))
             {
-                std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_WRITE_COMPLETE_CHECK_START 2"  << std::endl;
+                //std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_WRITE_COMPLETE_CHECK_START 2"  << std::endl;
                 SetFsmState(DATA_BASE_BLOCK_WRITE_COMPLETE_CHECK_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
             }
             else if (GetPreviousFsmState() == DONE_ERROR)
             {
-                std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_WRITE_COMPLETE_CHECK_START 3"  << std::endl;
+                //std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_WRITE_COMPLETE_CHECK_START 3"  << std::endl;
                 SetFsmState(DATA_BASE_BLOCK_WRITE_COMPLETE_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
             }
         }
         break;
 
     case DATA_BASE_BLOCK_WRITE_COMPLETE_CHECK_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
-        std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_WRITE_COMPLETE_CHECK_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_WRITE_COMPLETE_CHECK_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
         {
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(DONE_OK);
@@ -2430,7 +2430,7 @@ uint8_t CDeviceControl::Fsm(void)
         break;
 
     case DATA_BASE_BLOCK_WRITE_COMPLETE_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
-        std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_WRITE_COMPLETE_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_WRITE_COMPLETE_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
         {
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
             SetFsmState(DONE_ERROR);
@@ -2439,7 +2439,7 @@ uint8_t CDeviceControl::Fsm(void)
 
 //-------------------------------------------------------------------------------
     case CONFIGURATION_CONFIRMATION_CHECK_START:
-//        std::cout << "CDeviceControl::Fsm CONFIGURATION_CONFIRMATION_CHECK_START"  << std::endl;
+//        //std::cout << "CDeviceControl::Fsm CONFIGURATION_CONFIRMATION_CHECK_START"  << std::endl;
     {
         // проверим записан ли блок 97 базы данных с идентификатором прибора.
         // при первом запуске конфигурация ещё не сохранена в блоке базы данных
@@ -2462,7 +2462,7 @@ uint8_t CDeviceControl::Fsm(void)
     break;
 
     case CONFIGURATION_CONFIRMATION_CHECK_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
-        std::cout << "CDeviceControl::Fsm CONFIGURATION_CONFIRMATION_CHECK_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm CONFIGURATION_CONFIRMATION_CHECK_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
         {
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(DONE_OK);
@@ -2470,7 +2470,7 @@ uint8_t CDeviceControl::Fsm(void)
         break;
 
     case CONFIGURATION_CONFIRMATION_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
-//        std::cout << "CDeviceControl::Fsm CONFIGURATION_CONFIRMATION_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+//        //std::cout << "CDeviceControl::Fsm CONFIGURATION_CONFIRMATION_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
     {
         ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
         SetFsmState(DONE_ERROR);
@@ -2479,7 +2479,7 @@ uint8_t CDeviceControl::Fsm(void)
 
 //-------------------------------------------------------------------------------
     case DATA_BASE_BLOCK_MODULE_MUVR_WRITE_START:
-        std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_MODULE_MUVR_WRITE_START"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_MODULE_MUVR_WRITE_START"  << std::endl;
         {
             m_uiInternalModuleMuvrId =
                 GetResources() ->
@@ -2502,7 +2502,7 @@ uint8_t CDeviceControl::Fsm(void)
         break;
 
     case DATA_BASE_BLOCK_MODULE_MUVR_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
-        std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_MODULE_MUVR_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_MODULE_MUVR_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
         {
 //            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(DATA_BASE_BLOCK_MODULE_MUVR_WRITE_COMPLETE_CHECK_START);
@@ -2510,7 +2510,7 @@ uint8_t CDeviceControl::Fsm(void)
         break;
 
     case DATA_BASE_BLOCK_MODULE_MUVR_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
-        std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_MODULE_MUVR_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_MODULE_MUVR_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
         {
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
             SetFsmState(DONE_ERROR);
@@ -2519,7 +2519,7 @@ uint8_t CDeviceControl::Fsm(void)
 
 //-------------------------------------------------------------------------------
     case DATA_BASE_BLOCK_MODULE_MUVR_WRITE_COMPLETE_CHECK_START:
-        std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_MODULE_MUVR_WRITE_COMPLETE_CHECK_START"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_MODULE_MUVR_WRITE_COMPLETE_CHECK_START"  << std::endl;
         {
             m_uiInternalModuleMuvrId =
                 GetResources() ->
@@ -2540,7 +2540,7 @@ uint8_t CDeviceControl::Fsm(void)
         break;
 
     case DATA_BASE_BLOCK_MODULE_MUVR_WRITE_COMPLETE_CHECK_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
-        std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_MODULE_MUVR_WRITE_COMPLETE_CHECK_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_MODULE_MUVR_WRITE_COMPLETE_CHECK_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
         {
 //            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(DONE_OK);
@@ -2548,7 +2548,7 @@ uint8_t CDeviceControl::Fsm(void)
         break;
 
     case DATA_BASE_BLOCK_MODULE_MUVR_WRITE_COMPLETE_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
-        std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_MODULE_MUVR_WRITE_COMPLETE_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_MODULE_MUVR_WRITE_COMPLETE_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
         {
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
             SetFsmState(DONE_ERROR);
@@ -2557,12 +2557,12 @@ uint8_t CDeviceControl::Fsm(void)
 
 ////-------------------------------------------------------------------------------
 //    case DATA_BASE_BLOCK_SERIAL_AND_ID_WRITE_START:
-//        std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_SERIAL_AND_ID_WRITE_START"  << std::endl;
+//        //std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_SERIAL_AND_ID_WRITE_START"  << std::endl;
 //        {
 //            uint8_t uiAddress =
 //                ((((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer)[0] +
 //                 CONVERT_INTEGER_TO_NATURAL_NUMBER);
-//            std::cout << "CDeviceControl::Fsm uiAddress "  << (int)uiAddress << std::endl;
+//            //std::cout << "CDeviceControl::Fsm uiAddress "  << (int)uiAddress << std::endl;
 //
 //            CModbusSlave* pxModbusRtuSlaveUpperLevel =
 //                (CModbusSlave*)(GetResources() ->
@@ -2581,7 +2581,7 @@ uint8_t CDeviceControl::Fsm(void)
 //        break;
 //
 //    case DATA_BASE_BLOCK_SERIAL_AND_ID_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
-//        std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_SERIAL_AND_ID_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+//        //std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_SERIAL_AND_ID_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
 //        {
 ////            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
 //            SetFsmState(DONE_OK);
@@ -2589,7 +2589,7 @@ uint8_t CDeviceControl::Fsm(void)
 //        break;
 //
 //    case DATA_BASE_BLOCK_SERIAL_AND_ID_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
-//        std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_SERIAL_AND_ID_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+//        //std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_SERIAL_AND_ID_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
 //        {
 //            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
 //            SetFsmState(DONE_ERROR);
@@ -2598,12 +2598,12 @@ uint8_t CDeviceControl::Fsm(void)
 
 //-------------------------------------------------------------------------------
     case DATA_BASE_BLOCK_NETWORK_ADDRESS_WRITE_START:
-        std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_NETWORK_ADDRESS_WRITE_START"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_NETWORK_ADDRESS_WRITE_START"  << std::endl;
         {
             uint8_t uiAddress =
                 ((((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer)[0] +
                  CONVERT_INTEGER_TO_NATURAL_NUMBER);
-            std::cout << "CDeviceControl::Fsm uiAddress "  << (int)uiAddress << std::endl;
+            //std::cout << "CDeviceControl::Fsm uiAddress "  << (int)uiAddress << std::endl;
 
             CModbusSlave* pxModbusRtuSlaveUpperLevel =
                 (CModbusSlave*)(GetResources() ->
@@ -2622,7 +2622,7 @@ uint8_t CDeviceControl::Fsm(void)
         break;
 
     case DATA_BASE_BLOCK_NETWORK_ADDRESS_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
-        std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_NETWORK_ADDRESS_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_NETWORK_ADDRESS_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
         {
 //            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(DONE_OK);
@@ -2630,7 +2630,7 @@ uint8_t CDeviceControl::Fsm(void)
         break;
 
     case DATA_BASE_BLOCK_NETWORK_ADDRESS_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
-        std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_NETWORK_ADDRESS_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        //std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_NETWORK_ADDRESS_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
         {
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
             SetFsmState(DONE_ERROR);
