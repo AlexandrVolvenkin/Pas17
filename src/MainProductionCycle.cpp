@@ -914,13 +914,13 @@ uint8_t CMainProductionCycle::Fsm(void)
         break;
 
     case DONE_OK:
-        std::cout << "CMainProductionCycle::Fsm DONE_OK"  << std::endl;
+//        std::cout << "CMainProductionCycle::Fsm DONE_OK"  << std::endl;
 //        SetFsmOperationStatus(DONE_OK);
 //        SetFsmState(READY);
         break;
 
     case DONE_ERROR:
-        std::cout << "CMainProductionCycle::Fsm DONE_ERROR"  << std::endl;
+//        std::cout << "CMainProductionCycle::Fsm DONE_ERROR"  << std::endl;
 //        SetFsmOperationStatus(DONE_ERROR);
 //        SetFsmState(READY);
         break;
@@ -1025,7 +1025,7 @@ uint8_t CMainProductionCycle::Fsm(void)
         }
         else if (uiFsmState == DONE_ERROR)
         {
-//            std::cout << "CMainProductionCycle::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 3"  << std::endl;
+            std::cout << "CMainProductionCycle::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 3"  << std::endl;
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
             SetFsmState(GetFsmNextStateDoneWaitingDoneError());
         }
@@ -1448,9 +1448,12 @@ uint8_t CMainProductionCycle::Fsm(void)
 
         SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
         SetFsmNextStateDoneOk(INTERNAL_MODULES_DATA_EXCHANGE_EXECUTOR_ANSWER_PROCESSING);
-        SetFsmNextStateReadyWaitingError(DONE_ERROR);
-        SetFsmNextStateDoneWaitingError(DONE_ERROR);
-        SetFsmNextStateDoneWaitingDoneError(DONE_ERROR);
+        SetFsmNextStateReadyWaitingError(INTERNAL_MODULES_DATA_EXCHANGE_EXECUTOR_ANSWER_PROCESSING);
+        SetFsmNextStateDoneWaitingError(INTERNAL_MODULES_DATA_EXCHANGE_EXECUTOR_ANSWER_PROCESSING);
+        SetFsmNextStateDoneWaitingDoneError(INTERNAL_MODULES_DATA_EXCHANGE_EXECUTOR_ANSWER_PROCESSING);
+//        SetFsmNextStateReadyWaitingError(DONE_ERROR);
+//        SetFsmNextStateDoneWaitingError(DONE_ERROR);
+//        SetFsmNextStateDoneWaitingDoneError(DONE_ERROR);
 
 //        SetFsmState(INTERNAL_MODULES_DATA_EXCHANGE_MAIN_CYCLE_START_WAITING);
     }
