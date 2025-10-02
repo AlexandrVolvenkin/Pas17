@@ -240,7 +240,7 @@ void CDeviceControl::SetInternalModuleMuvrName(std::string sName)
 // Ѕайт 7 Ц день недели 1 Ц 7.
 void CDeviceControl::LinuxCurrentTimeSet(unsigned char *pucSource)
 {
-    //std::cout << "CDeviceControl LinuxCurrentTimeSet 1"  << std::endl;
+//    std::cout << "CDeviceControl LinuxCurrentTimeSet 1"  << std::endl;
 
     time_t rawtime;
     struct tm *timeinfo;
@@ -286,7 +286,7 @@ void CDeviceControl::LinuxCurrentTimeSet(unsigned char *pucSource)
 // Ќа данный запрос SL не отвечает.
 void CDeviceControl::CurrentTimeSet(void)
 {
-    //std::cout << "CDeviceControl CurrentTimeSet 1"  << std::endl;
+//    std::cout << "CDeviceControl CurrentTimeSet 1"  << std::endl;
 
     CDataContainerDataBase* pxDataContainer =
         (CDataContainerDataBase*)GetCustomerDataContainerPointer();

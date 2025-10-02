@@ -342,7 +342,7 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
 
 
         // каждый новый час начинаем запись в fram сначала.
-        m_uiCurrentOffset = FRAM_ANALOGUE_MEASURE_ARCHIVE_ARRAY_OFFSET;//0;
+        m_uiCurrentOffset = 0;//FRAM_ANALOGUE_MEASURE_ARCHIVE_ARRAY_OFFSET;
 
         // блок записи новых ежесекундных данных в fram.
         {
@@ -356,9 +356,17 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
                 return;
             }
 
+//            std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry time save 1 "  << std::endl;
+//            std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry m_uiCurrentOffset "  << (float)m_uiCurrentOffset << std::endl;
+//            // Получаем дату из предыдущих сохранённых данных.
+////            struct tm tstructRead = *gmtime(&now);
+//            struct tm tstructRead = *gmtime(&data.currentTime);
+//            std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry tstructRead.tm_year "  << (float)tstructRead.tm_year << std::endl;
+//            std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry tstructRead.tm_mon "  << (float)tstructRead.tm_mon << std::endl;
+//            std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry tstructRead.tm_mday "  << (float)tstructRead.tm_mday << std::endl;
             // Записываем данные в файл fram
             // установим указатель на данные новой ежесекундной записи.
-            hourArchiveFramOutputStream.seekp(m_uiCurrentOffset, std::ios::beg);
+            hourArchiveFramOutputStream.seekp((m_uiCurrentOffset + FRAM_ANALOGUE_MEASURE_ARCHIVE_ARRAY_OFFSET), std::ios::beg);
             hourArchiveFramOutputStream.write(reinterpret_cast<const char*>(&data), sizeof(TAnalogueSignalsArchiveHourData));
             // Закрываем файл
             hourArchiveFramOutputStream.close();
@@ -487,7 +495,7 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
                 {
                     TAnalogueSignalsArchiveHourData readData;
                     // установим указатель на данные ежесекундной записи.
-                    hourArchiveFramInputStream.seekg((i * sizeof(TAnalogueSignalsArchiveHourData)), std::ios::beg);
+                    hourArchiveFramInputStream.seekg((FRAM_ANALOGUE_MEASURE_ARCHIVE_ARRAY_OFFSET + (i * sizeof(TAnalogueSignalsArchiveHourData))), std::ios::beg);
                     hourArchiveFramInputStream.read(reinterpret_cast<char*>(&readData), sizeof(TAnalogueSignalsArchiveHourData));
 
                     // больше нет данных для чтения?
@@ -497,8 +505,13 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
                         break;
                     }
 
+//                    std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry time read 1 "  << std::endl;
+//                    std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry m_uiCurrentOffset "  << (float)m_uiCurrentOffset << std::endl;
                     // Получаем дату из предыдущих сохранённых данных.
                     struct tm tstructRead = *gmtime(&readData.currentTime);
+//                    std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry tstructRead.tm_year "  << (float)tstructRead.tm_year << std::endl;
+//                    std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry tstructRead.tm_mon "  << (float)tstructRead.tm_mon << std::endl;
+//                    std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry tstructRead.tm_mday "  << (float)tstructRead.tm_mday << std::endl;
 
                     // Форматируем дату и время
                     char dateStr[80];
@@ -525,7 +538,7 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
             }
 
             // каждый новый час начинаем запись в fram сначала.
-            m_uiCurrentOffset = FRAM_ANALOGUE_MEASURE_ARCHIVE_ARRAY_OFFSET;//0;
+            m_uiCurrentOffset = 0;//FRAM_ANALOGUE_MEASURE_ARCHIVE_ARRAY_OFFSET;//0;
 
             // блок записи новых ежесекундных данных в fram.
             {
@@ -541,7 +554,7 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
 
                 // Записываем данные в файл fram
                 // установим указатель на данные новой ежесекундной записи.
-                hourArchiveFramOutputStream.seekp(m_uiCurrentOffset, std::ios::beg);
+                hourArchiveFramOutputStream.seekp((m_uiCurrentOffset + FRAM_ANALOGUE_MEASURE_ARCHIVE_ARRAY_OFFSET), std::ios::beg);
                 hourArchiveFramOutputStream.write(reinterpret_cast<const char*>(&data), sizeof(TAnalogueSignalsArchiveHourData));
                 // Закрываем файл
                 hourArchiveFramOutputStream.close();
@@ -685,9 +698,17 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
                     return;
                 }
 
+//                std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry time save 2 "  << std::endl;
+//                std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry m_uiCurrentOffset "  << (float)m_uiCurrentOffset << std::endl;
+//                // Получаем дату из предыдущих сохранённых данных.
+////                struct tm tstructRead = *gmtime(&now);
+//                struct tm tstructRead = *gmtime(&data.currentTime);
+//                std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry tstructRead.tm_year "  << (float)tstructRead.tm_year << std::endl;
+//                std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry tstructRead.tm_mon "  << (float)tstructRead.tm_mon << std::endl;
+//                std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry tstructRead.tm_mday "  << (float)tstructRead.tm_mday << std::endl;
                 // Записываем данные в файл fram
                 // установим указатель на данные новой ежесекундной записи.
-                hourArchiveFramOutputStream.seekp(m_uiCurrentOffset, std::ios::beg);
+                hourArchiveFramOutputStream.seekp((m_uiCurrentOffset + FRAM_ANALOGUE_MEASURE_ARCHIVE_ARRAY_OFFSET), std::ios::beg);
                 hourArchiveFramOutputStream.write(reinterpret_cast<const char*>(&data), sizeof(TAnalogueSignalsArchiveHourData));
                 // Закрываем файл
                 hourArchiveFramOutputStream.close();
