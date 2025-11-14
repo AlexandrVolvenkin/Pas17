@@ -2181,7 +2181,7 @@ uint8_t CDeviceControl::Fsm(void)
 
 //-------------------------------------------------------------------------------
     case DATA_BASE_BLOCK_READ:
-        //std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_READ 1"  << std::endl;
+        std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_READ 1"  << std::endl;
         {
             m_uiDataStoreId =
                 GetResources() ->

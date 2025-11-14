@@ -793,7 +793,7 @@ uint16_t CModbusSlave::AnalogueMeasureArchiveWriteStateRequest(void)
 //-------------------------------------------------------------------------------
 uint16_t CModbusSlave::DataBaseRead(void)
 {
-    //std::cout << "CModbusSlave::DataBaseRead 1" << std::endl;
+    std::cout << "CModbusSlave::DataBaseRead 1" << std::endl;
 
     uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
     uint8_t * puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
@@ -816,7 +816,7 @@ uint16_t CModbusSlave::DataBaseRead(void)
     }
     else
     {
-        //std::cout << "CModbusSlave::DataBaseRead 3" << std::endl;
+        std::cout << "CModbusSlave::DataBaseRead 3" << std::endl;
 
         m_uiFunctionCode = uiFunctionCode;
 

@@ -34,6 +34,7 @@ CResources::CResources()
 
     m_lpxCommonTasksList.clear();
     m_mpxCommonTaskMap.clear();
+    m_mixCommonTaskIdMap.clear();
     m_lpxDataContainerList.clear();
     m_uiUsedCommonTaskPointersCounter = 0;
     m_xDeviceConfigSearch = {0};
@@ -419,6 +420,29 @@ CTaskInterface* CResources::AddCommonTaskToMap(std::string sTaskName, std::share
     pxTask -> SetTaskName(sTaskName);
     m_mpxCommonTaskMap[sTaskName] = pxTask;
 
+    // ключ найден
+//        std::cout << "CResources::AddCommonTaskToMap 2"  << std::endl;
+    if (m_uiUsedCommonTaskPointersCounter < MAX_TASK_NUMBER)
+    {
+//            std::cout << "CResources::AddCommonTaskToMap 3"  << std::endl;
+//        m_mixCommonTaskIdMap[sTaskName] = (m_uiUsedCommonTaskPointersCounter + 1);
+
+//        m_ppxCommonTaskPointers[m_uiUsedCommonTaskPointersCounter] = pxTask;
+        m_uiUsedCommonTaskPointersCounter++;
+        m_mixCommonTaskIdMap[sTaskName] = m_uiUsedCommonTaskPointersCounter;
+//        // Вернем индекс на указатель в массиве плюс 1. это будет id задачи в системе.
+//        // id задач начинаются с единицы. ноль - задачи не существует.
+//        return m_uiUsedCommonTaskPointersCounter;
+
+        m_ppxCommonTaskPointers[m_uiUsedCommonTaskPointersCounter] = pxTask.get();
+//        return m_ppxCommonTaskPointers[(uiTaskId - 1)];
+    }
+    else
+    {
+        std::cout << "CResources::AddCommonTaskToMap 4"  << std::endl;
+        return 0;
+    }
+
     return pxTask.get();
 }
 
@@ -498,21 +522,23 @@ uint8_t CResources::GetTaskIdByNameFromMap(std::string sTaskName)
     if (pxTask != nullptr)
     {
         // ключ найден
-//        std::cout << "CResources::GetTaskIdByNameFromMap 2"  << std::endl;
-        if (m_uiUsedCommonTaskPointersCounter < MAX_TASK_NUMBER)
-        {
-//            std::cout << "CResources::GetTaskIdByNameFromMap 3"  << std::endl;
-            m_ppxCommonTaskPointers[m_uiUsedCommonTaskPointersCounter] = pxTask;
-            m_uiUsedCommonTaskPointersCounter++;
-            // Вернем индекс на указатель в массиве плюс 1. это будет id задачи в системе.
-            // id задач начинаются с единицы. ноль - задачи не существует.
-            return m_uiUsedCommonTaskPointersCounter;
-        }
-        else
-        {
-            std::cout << "CResources::GetTaskIdByNameFromMap 4"  << std::endl;
-            return 0;
-        }
+        return m_mixCommonTaskIdMap[sTaskName];
+
+////        std::cout << "CResources::GetTaskIdByNameFromMap 2"  << std::endl;
+//        if (m_uiUsedCommonTaskPointersCounter < MAX_TASK_NUMBER)
+//        {
+////            std::cout << "CResources::GetTaskIdByNameFromMap 3"  << std::endl;
+//            m_ppxCommonTaskPointers[m_uiUsedCommonTaskPointersCounter] = pxTask;
+//            m_uiUsedCommonTaskPointersCounter++;
+//            // Вернем индекс на указатель в массиве плюс 1. это будет id задачи в системе.
+//            // id задач начинаются с единицы. ноль - задачи не существует.
+//            return m_uiUsedCommonTaskPointersCounter;
+//        }
+//        else
+//        {
+//            std::cout << "CResources::GetTaskIdByNameFromMap 4"  << std::endl;
+//            return 0;
+//        }
     }
     else
     {
@@ -530,7 +556,8 @@ CTaskInterface* CResources::GetTaskPointerById(uint8_t uiTaskId)
     if (uiTaskId > 0)
     {
 //        std::cout << "CResources::GetTaskPointerById 2"  << std::endl;
-        return m_ppxCommonTaskPointers[(uiTaskId - 1)];
+//        return m_ppxCommonTaskPointers[(uiTaskId - 1)];
+        return m_ppxCommonTaskPointers[(uiTaskId)];
     }
     else
     {

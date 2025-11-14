@@ -153,6 +153,8 @@ public:
 
     // Создаем std::map, где ключ - строка, значение - указатель на объект
     std::map<std::string, std::shared_ptr<CTaskInterface>> m_mpxCommonTaskMap;
+    // Создаем std::map, где ключ - строка, значение - идентификатор объекта
+    std::map<std::string, uint8_t> m_mixCommonTaskIdMap;
     std::string m_sTaskName;
     CTaskInterface** m_ppxCommonTaskPointers;
     uint16_t m_uiUsedCommonTaskPointersCounter;
