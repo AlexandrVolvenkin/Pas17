@@ -219,6 +219,8 @@ public:
 
     std::shared_ptr<CGpio> m_pxGpioSpiChipEnablePin;
     std::shared_ptr<CGpio> m_pxGpioPrdEnablePin;
+    std::shared_ptr<CGpio> m_pxGpioRtsControlPin;
+    std::shared_ptr<CGpio> m_pxGpioSmRtsControlPin;
 
 };
 

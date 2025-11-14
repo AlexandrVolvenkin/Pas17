@@ -27,6 +27,7 @@ class CResources;
 class CDeviceControl;
 class CLinkInterface;
 class CLink;
+class CGpio;
 
 //-------------------------------------------------------------------------------
 class CModbusSlave : public CTask
@@ -211,6 +212,8 @@ public:
     uint8_t* m_puiTxBuffer;
     // Вспомогательный буфер.
     uint8_t* m_puiIntermediateBuff;
+
+    CGpio* m_pxGpioRtsControlPin;
 
     uint8_t* m_puiCoils;
     uint8_t* m_puiDiscreteInputs;

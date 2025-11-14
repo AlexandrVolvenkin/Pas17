@@ -712,6 +712,13 @@ uint8_t CMainProductionCycle::InitTasks(void)
         (CModbusSlave*)(GetResources() ->
                         GetTaskPointerByNameFromMap("ModbusRtuSlaveUpperLevel"));
 
+    (GetResources() -> m_pxGpioRtsControlPin) =
+        CGpio::Create(3,
+                      21,
+                      "RTS_CONTROL_PIN");
+    pxModbusRtuSlaveUpperLevel ->
+    m_pxGpioRtsControlPin = (GetResources() -> m_pxGpioRtsControlPin.get());
+
     pxModbusRtuSlaveUpperLevel ->
     SetOwnAddress(1);
 
@@ -729,6 +736,14 @@ uint8_t CMainProductionCycle::InitTasks(void)
     CModbusSlave* pxModbusTcpSlaveUpperLevel =
         (CModbusSlave*)(GetResources() ->
                         GetTaskPointerByNameFromMap("ModbusTcpSlaveUpperLevel"));
+
+//    pxModbusTcpSlaveUpperLevel ->
+//    m_pxGpioRtsControlPin =
+//        (CGpio::Create(3,
+//                       21,
+//                       "RTS_CONTROL_PIN").get());
+    pxModbusTcpSlaveUpperLevel ->
+    m_pxGpioRtsControlPin = (GetResources() -> m_pxGpioRtsControlPin.get());
 
     pxModbusTcpSlaveUpperLevel ->
     SetOwnAddress(1);
@@ -749,6 +764,16 @@ uint8_t CMainProductionCycle::InitTasks(void)
     CModbusSlave* pxModbusSmSlaveEveDisplay =
         (CModbusSlave*)(GetResources() ->
                         GetTaskPointerByNameFromMap("ModbusSmSlaveEveDisplay"));
+
+    // несуществующий светодиод-заглушка. для всех интерфейсо модас славе один
+    // чтобы светодиод разделяемой памяти не мешал ему нужно присвоить пустой
+    // светодиод чтобы небыло нулевого указателя.
+    (GetResources() -> m_pxGpioSmRtsControlPin) =
+        CGpio::Create(0,
+                      12,
+                      "RTS_CONTROL_PIN");
+    pxModbusSmSlaveEveDisplay ->
+    m_pxGpioRtsControlPin = (GetResources() -> m_pxGpioSmRtsControlPin.get());
 
     pxModbusSmSlaveEveDisplay ->
     SetOwnAddress(1);

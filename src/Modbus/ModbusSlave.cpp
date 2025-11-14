@@ -11,6 +11,7 @@
 
 #include "Configuration.h"
 #include "Task.h"
+#include "Gpio.h"
 #include "Timer.h"
 #include "Resources.h"
 #include "Platform.h"
@@ -2371,6 +2372,8 @@ uint8_t CModbusSlave::Fsm(void)
             if (RequestProcessing())
             {
                 // состо€ние автомата измен€ют вызываемые методы обработчики функций модбас.
+            // зажгЄм сведодиод сигнализации обмена
+                m_pxGpioRtsControlPin -> SetPin();
             }
             else
             {
@@ -2392,6 +2395,8 @@ uint8_t CModbusSlave::Fsm(void)
         if (RequestProcessing())
         {
             // состо€ние автомата измен€ют вызываемые методы обработчики функций модбас.
+            // зажгЄм сведодиод сигнализации обмена
+            m_pxGpioRtsControlPin -> SetPin();
         }
         else
         {
@@ -2418,12 +2423,12 @@ uint8_t CModbusSlave::Fsm(void)
 //    xTimeMeasure.End();
         GetTimerPointer() -> Set(m_uiTransmitDelayTimeout);
 //        SetFsmState(MESSAGE_TRANSMIT_BEFORE_WAITING);
-            GetTimerPointer() -> Set(m_uiConfirmationTimeout);
-            m_pxOperatingDataContainer -> m_uiFsmCommandState =
-                CModbusRtuSlaveLinkLayer::COMMUNICATION_TRANSMIT_START;
-            m_pxModbusSlaveLinkLayer ->
-            SetTaskData(m_pxOperatingDataContainer);
-            SetFsmState(MESSAGE_TRANSMIT_AFTER_WAITING);
+        GetTimerPointer() -> Set(m_uiConfirmationTimeout);
+        m_pxOperatingDataContainer -> m_uiFsmCommandState =
+            CModbusRtuSlaveLinkLayer::COMMUNICATION_TRANSMIT_START;
+        m_pxModbusSlaveLinkLayer ->
+        SetTaskData(m_pxOperatingDataContainer);
+        SetFsmState(MESSAGE_TRANSMIT_AFTER_WAITING);
         break;
 
     case MESSAGE_TRANSMIT_BEFORE_WAITING:
@@ -2450,6 +2455,8 @@ uint8_t CModbusSlave::Fsm(void)
 
         if (uiFsmState == DONE_OK)
         {
+            // погасим сведодиод сигнализации обмена
+            m_pxGpioRtsControlPin -> ClearPin();
 //            xTimeMeasure.End();
             //std::cout << "CModbusSlave::Fsm MESSAGE_TRANSMIT_AFTER_WAITING 2"  << std::endl;
             SetFsmState(COMMUNICATION_RECEIVE_CONTINUE);
