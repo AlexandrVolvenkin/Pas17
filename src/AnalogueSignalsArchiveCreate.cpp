@@ -448,7 +448,8 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
         if (tstructCurrent.tm_hour != m_iLastHour)
         {
             std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 4"  << std::endl;
-            std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry tm_min "  << (float)tstructCurrent.tm_min << std::endl;
+//            std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry tm_min "  << (float)tstructCurrent.tm_min << std::endl;
+            std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry tm_hour "  << (float)tstructCurrent.tm_hour << std::endl;
             // ќбновл€ем значени€ дл€ следующей проверки
 //            m_iLastHour = tstructCurrent.tm_min;
             m_iLastHour = tstructCurrent.tm_hour;
@@ -490,25 +491,42 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
                 size_t numDataObjects = (fileSize / sizeof(TAnalogueSignalsArchiveHourData));
                 std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry numDataObjects "  << (float)numDataObjects << std::endl;
 
+
+
+                TAnalogueSignalsArchiveHourData readData[10000];
+                // установим указатель на данные ежесекундной записи.
+                hourArchiveFramInputStream.seekg((FRAM_ANALOGUE_MEASURE_ARCHIVE_ARRAY_OFFSET), std::ios::beg);
+                hourArchiveFramInputStream.read(reinterpret_cast<char*>(&readData), (numDataObjects * sizeof(TAnalogueSignalsArchiveHourData)));
+
+//                // ѕолучаем дату из предыдущих сохранЄнных данных.
+//                struct tm tstructRead = *gmtime(&readData.currentTime);
+//
+//                // ‘орматируем дату и врем€
+//                char dateStr[80];
+//                strftime(dateStr, sizeof(dateStr), "%Y-%m-%d", &tstructRead);
+//
+//                char timeStr[80];
+//                strftime(timeStr, sizeof(timeStr), "%H:%M:%S", &tstructRead);
+
                 // —читываем и преобразуем данные из fram во флеш.
                 for (size_t i = 0; i < numDataObjects; i++)
                 {
-                    TAnalogueSignalsArchiveHourData readData;
-                    // установим указатель на данные ежесекундной записи.
-                    hourArchiveFramInputStream.seekg((FRAM_ANALOGUE_MEASURE_ARCHIVE_ARRAY_OFFSET + (i * sizeof(TAnalogueSignalsArchiveHourData))), std::ios::beg);
-                    hourArchiveFramInputStream.read(reinterpret_cast<char*>(&readData), sizeof(TAnalogueSignalsArchiveHourData));
-
-                    // больше нет данных дл€ чтени€?
-                    if (!hourArchiveFramInputStream.gcount())
-                    {
-                        std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 5"  << std::endl;
-                        break;
-                    }
+//                    TAnalogueSignalsArchiveHourData readData;
+//                    // установим указатель на данные ежесекундной записи.
+//                    hourArchiveFramInputStream.seekg((FRAM_ANALOGUE_MEASURE_ARCHIVE_ARRAY_OFFSET + (i * sizeof(TAnalogueSignalsArchiveHourData))), std::ios::beg);
+//                    hourArchiveFramInputStream.read(reinterpret_cast<char*>(&readData), sizeof(TAnalogueSignalsArchiveHourData));
+//
+//                    // больше нет данных дл€ чтени€?
+//                    if (!hourArchiveFramInputStream.gcount())
+//                    {
+//                        std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 5"  << std::endl;
+//                        break;
+//                    }
 
 //                    std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry time read 1 "  << std::endl;
 //                    std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry m_uiCurrentOffset "  << (float)m_uiCurrentOffset << std::endl;
                     // ѕолучаем дату из предыдущих сохранЄнных данных.
-                    struct tm tstructRead = *gmtime(&readData.currentTime);
+                    struct tm tstructRead = *gmtime(&readData[i].currentTime);
 //                    std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry tstructRead.tm_year "  << (float)tstructRead.tm_year << std::endl;
 //                    std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry tstructRead.tm_mon "  << (float)tstructRead.tm_mon << std::endl;
 //                    std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry tstructRead.tm_mday "  << (float)tstructRead.tm_mday << std::endl;
@@ -524,10 +542,10 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
                     dailyArchveFlashOutputStream <<
                                                  dateStr << ";" <<
                                                  timeStr << ";" <<
-                                                 readData.fAin1 << ";" <<
-                                                 readData.fAin2 << ";" <<
-                                                 readData.fAin3 << ";" <<
-                                                 readData.fAin4 <<
+                                                 readData[i].fAin1 << ";" <<
+                                                 readData[i].fAin2 << ";" <<
+                                                 readData[i].fAin3 << ";" <<
+                                                 readData[i].fAin4 <<
                                                  std::endl;
                 }
 
@@ -575,8 +593,9 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
             if (tstructCurrent.tm_mday != m_iLastDay)
             {
                 std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 6"  << std::endl;
-                std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry tm_min "  << (float)tstructCurrent.tm_min << std::endl;
-                std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry tm_hour "  << (float)tstructCurrent.tm_hour << std::endl;
+//                std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry tm_min "  << (float)tstructCurrent.tm_min << std::endl;
+//                std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry tm_hour "  << (float)tstructCurrent.tm_hour << std::endl;
+                std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry tm_mday "  << (float)tstructCurrent.tm_mday << std::endl;
 
                 // ќбновл€ем значени€ дл€ следующей проверки
 ////                m_iLastDay = tstructCurrent.tm_hour;
