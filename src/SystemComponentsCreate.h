@@ -64,7 +64,7 @@ public:
 
 private:
     std::string m_sInternalModuleName;
-    uint8_t m_uiInternalModuleId;
+    uint16_t m_uiInternalModuleId;
 
     uint8_t* m_puiIntermediateBuff;
 };

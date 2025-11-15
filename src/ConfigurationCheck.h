@@ -59,10 +59,10 @@ private:
 
 private:
     std::string m_sInternalModuleName;
-    uint8_t m_uiInternalModuleId;
+    uint16_t m_uiInternalModuleId;
 
     std::string m_sDeviceControlName;
-    uint8_t m_uiDeviceControlId;
+    uint16_t m_uiDeviceControlId;
 
     uint8_t* m_puiIntermediateBuff;
 

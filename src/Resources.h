@@ -87,8 +87,8 @@ public:
             std::string sNextTaskDoneErrorName);
     bool CheckCommonTaskMap(void);
     CTaskInterface* GetTaskPointerByNameFromMap(std::string sTaskName);
-    uint8_t GetTaskIdByNameFromMap(std::string sTaskName);
-    CTaskInterface* GetTaskPointerById(uint8_t uiTaskId);
+    uint16_t GetTaskIdByNameFromMap(std::string sTaskName);
+    CTaskInterface* GetTaskPointerById(uint16_t uiTaskId);
     uint8_t* CreateObjectBySize(size_t uiLength);
     CDataContainerInterface* AddDataContainer(std::shared_ptr<CDataContainerInterface> pxDataContainer);
 
@@ -154,7 +154,7 @@ public:
     // Создаем std::map, где ключ - строка, значение - указатель на объект
     std::map<std::string, std::shared_ptr<CTaskInterface>> m_mpxCommonTaskMap;
     // Создаем std::map, где ключ - строка, значение - идентификатор объекта
-    std::map<std::string, uint8_t> m_mixCommonTaskIdMap;
+    std::map<std::string, uint16_t> m_mixCommonTaskIdMap;
     std::string m_sTaskName;
     CTaskInterface** m_ppxCommonTaskPointers;
     uint16_t m_uiUsedCommonTaskPointersCounter;

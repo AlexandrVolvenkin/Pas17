@@ -23,12 +23,12 @@ CDataContainerDataBase::~CDataContainerDataBase()
 }
 
 //-------------------------------------------------------------------------------
-void CDataContainerDataBase::SetTaskId(uint8_t value)
+void CDataContainerDataBase::SetTaskId(uint16_t value)
 {
     m_uiTaskId = value;
 }
 
-uint8_t CDataContainerDataBase::GetTaskId() const
+uint16_t CDataContainerDataBase::GetTaskId() const
 {
     return m_uiTaskId;
 }

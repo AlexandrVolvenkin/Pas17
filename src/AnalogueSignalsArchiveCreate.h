@@ -62,7 +62,7 @@ private:
     struct tm* pxCurrentTime;
 
     std::string m_sInternalModuleName;
-    uint8_t m_uiInternalModuleId;
+    uint16_t m_uiInternalModuleId;
 
     float* m_pfAnalogueInputsValue;
 //    uint8_t* m_puiAnalogueInputsState;

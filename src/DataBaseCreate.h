@@ -165,16 +165,16 @@ private:
 
 private:
     std::string m_sDataStoreName;
-    uint8_t m_uiDataStoreId;
+    uint16_t m_uiDataStoreId;
 
     std::string m_sInternalModuleName;
-    uint8_t m_uiInternalModuleId;
+    uint16_t m_uiInternalModuleId;
 
     std::string m_sInternalModuleMuvrName;
-    uint8_t m_uiInternalModuleMuvrId;
+    uint16_t m_uiInternalModuleMuvrId;
 
     std::string m_sDeviceControlName;
-    uint8_t m_uiDeviceControlId;
+    uint16_t m_uiDeviceControlId;
 
     uint8_t* m_puiIntermediateBuff;
     uint8_t m_uiBlocksCounter;

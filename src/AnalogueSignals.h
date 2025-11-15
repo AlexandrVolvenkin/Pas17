@@ -268,7 +268,7 @@ protected:
 
 private:
     std::string m_sDeviceControlName;
-    uint8_t m_uiDeviceControlId;
+    uint16_t m_uiDeviceControlId;
 
     uint8_t* m_puiIntermediateBuff;
     CDataContainerDataBase* m_pxOperatingDataContainer;

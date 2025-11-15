@@ -212,38 +212,38 @@ private:
     uint8_t* m_puiSerialAndId;
 
     std::string m_sDeviceControlName;
-    uint8_t m_uiDeviceControlId;
+    uint16_t m_uiDeviceControlId;
     CDeviceControl* m_pxDeviceControl;
 
     std::string m_sInternalModuleName;
-    uint8_t m_uiInternalModuleId;
+    uint16_t m_uiInternalModuleId;
 
     std::string m_sInternalModuleMuvrName;
-    uint8_t m_uiInternalModuleMuvrId;
+    uint16_t m_uiInternalModuleMuvrId;
 
     std::string m_sConfigurationCreateName;
-    uint8_t m_uiConfigurationCreateId;
+    uint16_t m_uiConfigurationCreateId;
 
     std::string m_sSystemComponentsCreateName;
-    uint8_t m_uiSystemComponentsCreateId;
+    uint16_t m_uiSystemComponentsCreateId;
 
     std::string m_sDataStoreCheckName;
-    uint8_t m_uiDataStoreCheckId;
+    uint16_t m_uiDataStoreCheckId;
 
     std::string m_sDataBaseCreateName;
-    uint8_t m_uiDataBaseCreateId;
+    uint16_t m_uiDataBaseCreateId;
 
     std::string m_sConfigurationCheckName;
-    uint8_t m_uiConfigurationCheckId;
+    uint16_t m_uiConfigurationCheckId;
 
     std::string m_sSettingsLoadName;
-    uint8_t m_uiSettingsLoadId;
+    uint16_t m_uiSettingsLoadId;
 
     std::string m_sDiscreteSignalsName;
-    uint8_t m_uiDiscreteSignalsId;
+    uint16_t m_uiDiscreteSignalsId;
 
     std::string m_sAnalogueSignalsArchiveCreateName;
-    uint8_t m_uiAnalogueSignalsArchiveCreateId;
+    uint16_t m_uiAnalogueSignalsArchiveCreateId;
     uint8_t m_uiCreateArchiveEntryCounter = 1;
 
     CSpiCommunicationDevice* m_pxSpiCommunicationDevice;

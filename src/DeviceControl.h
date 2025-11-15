@@ -243,13 +243,13 @@ protected:
 
     std::string m_sDataStoreName;
     CDataStore* m_pxDataStore;
-    uint8_t m_uiDataStoreId;
+    uint16_t m_uiDataStoreId;
 
     std::string m_sConfigurationCreateName;
-    uint8_t m_uiConfigurationCreateId;
+    uint16_t m_uiConfigurationCreateId;
 
     std::string m_sInternalModuleMuvrName;
-    uint8_t m_uiInternalModuleMuvrId;
+    uint16_t m_uiInternalModuleMuvrId;
 
     std::string m_sDataStoreLinkName;
     CLinkInterface* m_pxDataStoreLink;

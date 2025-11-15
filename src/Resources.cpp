@@ -507,11 +507,11 @@ CTaskInterface* CResources::GetTaskPointerByNameFromMap(std::string sTaskName)
 }
 
 //-------------------------------------------------------------------------------
-uint8_t CResources::GetTaskIdByNameFromMap(std::string sTaskName)
+uint16_t CResources::GetTaskIdByNameFromMap(std::string sTaskName)
 {
 //    std::cout << "CResources::GetTaskIdByNameFromMap 1"  << std::endl;
 
-    uint8_t uiTaskId = m_mixCommonTaskIdMap[sTaskName];
+    uint16_t uiTaskId = m_mixCommonTaskIdMap[sTaskName];
     if (uiTaskId)
     {
         // ключ найден
@@ -526,7 +526,7 @@ uint8_t CResources::GetTaskIdByNameFromMap(std::string sTaskName)
 }
 
 //-------------------------------------------------------------------------------
-CTaskInterface* CResources::GetTaskPointerById(uint8_t uiTaskId)
+CTaskInterface* CResources::GetTaskPointerById(uint16_t uiTaskId)
 {
 //    std::cout << "CResources::GetTaskPointerById 1"  << std::endl;
 

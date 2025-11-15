@@ -16,8 +16,8 @@ class CDataContainerInterface
 {
 public:
 
-    virtual void SetTaskId(uint8_t value) {};
-    virtual uint8_t GetTaskId() const {};
+    virtual void SetTaskId(uint16_t value) {};
+    virtual uint16_t GetTaskId() const {};
 
     virtual void SetFsmCommandState(uint8_t value) {};
     virtual uint8_t GetFsmCommandState() const {};
@@ -62,8 +62,8 @@ public:
     CDataContainerDataBase();
     virtual ~CDataContainerDataBase();
 
-    void SetTaskId(uint8_t value);
-    uint8_t GetTaskId() const;
+    void SetTaskId(uint16_t value);
+    uint16_t GetTaskId() const;
 
     void SetFsmCommandState(uint8_t value);
     uint8_t GetFsmCommandState() const;
@@ -91,7 +91,7 @@ public:
                           uint32_t uiDataLength);
 
 public:
-    uint8_t m_uiTaskId;
+    uint16_t m_uiTaskId;
     uint8_t m_uiFsmCommandState;
     uint8_t m_uiFsmOperationStatus;
     uint16_t m_uiDataIndex;
