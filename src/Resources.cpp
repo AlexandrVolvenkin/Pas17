@@ -39,6 +39,7 @@ CResources::CResources()
     m_uiUsedCommonTaskPointersCounter = 0;
     m_xDeviceConfigSearch = {0};
     m_xDeviceStateData = {0};
+    m_xRegulatorsDacData = {0};
 
     m_ppxCommonTaskPointers = new CTaskInterface*[MAX_TASK_NUMBER];
     SetResources(this);
@@ -229,6 +230,12 @@ TConfigDataPackOne* CResources::GetDeviceConfigSearchPointer(void)
 TDeviceStateDataPackOne* CResources::GetDeviceStateDataPointer(void)
 {
     return &m_xDeviceStateData;
+}
+
+//-------------------------------------------------------------------------------
+TRegulatorsDacDataPackOne* CResources::GetRegulatorsDacDataPointer(void)
+{
+    return &m_xRegulatorsDacData;
 }
 
 //-------------------------------------------------------------------------------

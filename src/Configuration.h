@@ -562,6 +562,8 @@ enum
     COMMON_INDEX_OFFSET = 0,
 // смещение в промежуточном буфере на команду, например установка типа калибруемой шкалы.  .
     COMMON_COMMAND_CONTROL_OFFSET = 1,
+// смещение в промежуточном буфере на код опции.
+    OPTION_CODE_OFFSET = 0,
 };
 
 enum EModbusFunctionCoilsDataMap

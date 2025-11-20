@@ -92,6 +92,16 @@ struct TDeviceStateDataPackOne
 };
 #pragma pack(pop)
 
+//-----------------------------------------------------------------------------------------------------
+#pragma pack(push)
+#pragma pack(1)
+struct TRegulatorsDacDataPackOne
+{
+    uint16_t uiRegulatorDacData1;
+    uint16_t uiRegulatorDacData2;
+};
+#pragma pack(pop)
+
 
 //-----------------------------------------------------------------------------------------------------
 typedef enum

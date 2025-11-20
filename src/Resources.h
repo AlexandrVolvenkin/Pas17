@@ -97,6 +97,7 @@ public:
 
     TConfigDataPackOne* GetDeviceConfigSearchPointer(void);
     TDeviceStateDataPackOne* GetDeviceStateDataPointer(void);
+    TRegulatorsDacDataPackOne* GetRegulatorsDacDataPointer(void);
     TDiscreteSygnalTextTitle* GetDiscreteSygnalTextTitlesWorkPointer(void);
 
     void ModbusWorkingArraysCreate(uint16_t uiCoilsNumber,
@@ -164,6 +165,8 @@ public:
 
     // объект с состоянием системы.
     TDeviceStateDataPackOne m_xDeviceStateData;
+    // объект с данными ЦАП регуляторов.
+    TRegulatorsDacDataPackOne m_xRegulatorsDacData;
 
     uint8_t* m_puiCoils;
     uint8_t* m_puiDiscreteInputs;
