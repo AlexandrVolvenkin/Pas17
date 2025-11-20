@@ -792,6 +792,70 @@ uint16_t CModbusSlave::AnalogueMeasureArchiveWriteStateRequest(void)
 }
 
 //-------------------------------------------------------------------------------
+uint16_t CModbusSlave::DeviceControlDomainDataWrite(void)
+
+{
+    //std::cout << "CModbusSlave::DeviceControlDomainDataWrite 1" << std::endl;
+
+    uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
+    uint8_t * puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
+    uint8_t * puiResponse = m_pxModbusSlaveLinkLayer -> GetTxBuffer();
+    uint16_t  uiLength = m_pxModbusSlaveLinkLayer -> GetFrameLength();
+
+    int8_t uiSlave = puiRequest[uiPduOffset - 1];
+    int8_t uiFunctionCode = puiRequest[uiPduOffset];
+
+    m_uiFunctionCode = uiFunctionCode;
+
+    CDataContainerDataBase* pxDataContainer =
+        (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+    pxDataContainer -> m_uiTaskId = m_uiDeviceControlId;
+    pxDataContainer -> m_uiFsmCommandState =
+        CDeviceControl::ANALOGUE_MEASURE_ARCHIVE_WRITE_STATE_REQUEST_START;
+    pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+
+    SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+    SetFsmNextStateDoneOk(EXECUTOR_ANSWER_PROCESSING);
+    SetFsmNextStateReadyWaitingError(RESPONSE_EXCEPTION_SLAVE_OR_SERVER_BUSY);
+    SetFsmNextStateDoneWaitingError(RESPONSE_EXCEPTION_SLAVE_OR_SERVER_BUSY);
+    SetFsmNextStateDoneWaitingDoneError(RESPONSE_EXCEPTION_SLAVE_OR_SERVER_FAILURE);
+
+    return uiLength;
+}
+
+//-------------------------------------------------------------------------------
+uint16_t CModbusSlave::DeviceControlDomainDataRead(void)
+
+{
+    //std::cout << "CModbusSlave::DeviceControlDomainDataRead 1" << std::endl;
+
+    uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
+    uint8_t * puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
+    uint8_t * puiResponse = m_pxModbusSlaveLinkLayer -> GetTxBuffer();
+    uint16_t  uiLength = m_pxModbusSlaveLinkLayer -> GetFrameLength();
+
+    int8_t uiSlave = puiRequest[uiPduOffset - 1];
+    int8_t uiFunctionCode = puiRequest[uiPduOffset];
+
+    m_uiFunctionCode = uiFunctionCode;
+
+    CDataContainerDataBase* pxDataContainer =
+        (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+    pxDataContainer -> m_uiTaskId = m_uiDeviceControlId;
+    pxDataContainer -> m_uiFsmCommandState =
+        CDeviceControl::ANALOGUE_MEASURE_ARCHIVE_WRITE_STATE_REQUEST_START;
+    pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+
+    SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+    SetFsmNextStateDoneOk(EXECUTOR_ANSWER_PROCESSING);
+    SetFsmNextStateReadyWaitingError(RESPONSE_EXCEPTION_SLAVE_OR_SERVER_BUSY);
+    SetFsmNextStateDoneWaitingError(RESPONSE_EXCEPTION_SLAVE_OR_SERVER_BUSY);
+    SetFsmNextStateDoneWaitingDoneError(RESPONSE_EXCEPTION_SLAVE_OR_SERVER_FAILURE);
+
+    return uiLength;
+}
+
+//-------------------------------------------------------------------------------
 uint16_t CModbusSlave::DataBaseRead(void)
 {
     std::cout << "CModbusSlave::DataBaseRead 1" << std::endl;
@@ -1104,6 +1168,14 @@ uint16_t CModbusSlave::RequestProcessing(void)
 
     case _FC_ONLINE_DATA_READ:
         uiLength = OnlineDataRead();
+        break;
+
+    case _FC_DEVICE_CONTROL_DOMAIN_DATA_WRITE:
+        uiLength = DeviceControlDomainDataWrite();
+        break;
+
+    case _FC_DEVICE_CONTROL_DOMAIN_DATA_READ:
+        uiLength = DeviceControlDomainDataRead();
         break;
 
     default:
@@ -1773,6 +1845,106 @@ uint16_t CModbusSlave::AnalogueMeasureArchiveWriteStateRequestAnswer(void)
 }
 
 //-------------------------------------------------------------------------------
+uint16_t CModbusSlave::DeviceControlDomainDataWriteAnswer(void)
+
+{
+    //std::cout << "CModbusSlave::DeviceControlDomainDataWriteAnswer 1" << std::endl;
+
+    uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
+    uint8_t * puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
+    uint8_t * puiResponse = m_pxModbusSlaveLinkLayer -> GetTxBuffer();
+    uint16_t  uiLength = m_pxModbusSlaveLinkLayer -> GetFrameLength();
+
+    int8_t uiSlave = puiRequest[uiPduOffset - 1];
+    int8_t uiFunctionCode = puiRequest[uiPduOffset];
+
+//    //std::cout << "CModbusSlave::DeviceControlDomainDataWriteAnswer 2" << std::endl;
+//
+//    //std::cout << "CModbusSlave::DeviceControlDomainDataWriteAnswer uiSlave "  << (int)uiSlave << std::endl;
+//    //std::cout << "CModbusSlave::DeviceControlDomainDataWriteAnswer uiFunctionCode "  << (int)uiFunctionCode << std::endl;
+//
+//
+//    //std::cout << "CModbusSlave::DeviceControlDomainDataWriteAnswer 3" << std::endl;
+
+//    uiLength = m_pxModbusSlaveLinkLayer ->
+//               ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
+    memcpy(puiResponse, puiRequest, uiLength);
+
+    SetFsmState(MESSAGE_TRANSMIT_START);
+
+
+//    CDataContainerDataBase* pxDataContainer =
+//        (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+//    uiLength = pxDataContainer -> m_uiDataLength;
+//
+//    //std::cout << "CModbusSlave::DeviceControlDomainDataWriteAnswer uiLength "  << (int)uiLength << std::endl;
+//
+//    memcpy(&puiResponse[uiPduOffset + 2],
+//           (pxDataContainer -> m_puiDataPointer),
+//           uiLength);
+//
+//    // количество байт в прикладном сообщении массиве конфигурации, не включая остальные.
+//    puiResponse[uiPduOffset + 1] = uiLength;
+//    uiLength++;
+//    uiLength += m_pxModbusSlaveLinkLayer ->
+//                ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
+//
+//    SetFsmState(MESSAGE_TRANSMIT_START);
+
+    return uiLength;
+}
+
+//-------------------------------------------------------------------------------
+uint16_t CModbusSlave::DeviceControlDomainDataReadAnswer(void)
+
+{
+    //std::cout << "CModbusSlave::DeviceControlDomainDataReadAnswer 1" << std::endl;
+
+    uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
+    uint8_t * puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
+    uint8_t * puiResponse = m_pxModbusSlaveLinkLayer -> GetTxBuffer();
+    uint16_t  uiLength = m_pxModbusSlaveLinkLayer -> GetFrameLength();
+
+    int8_t uiSlave = puiRequest[uiPduOffset - 1];
+    int8_t uiFunctionCode = puiRequest[uiPduOffset];
+
+//    //std::cout << "CModbusSlave::DeviceControlDomainDataReadAnswer 2" << std::endl;
+//
+//    //std::cout << "CModbusSlave::DeviceControlDomainDataReadAnswer uiSlave "  << (int)uiSlave << std::endl;
+//    //std::cout << "CModbusSlave::DeviceControlDomainDataReadAnswer uiFunctionCode "  << (int)uiFunctionCode << std::endl;
+//
+//
+//    //std::cout << "CModbusSlave::DeviceControlDomainDataReadAnswer 3" << std::endl;
+
+//    uiLength = m_pxModbusSlaveLinkLayer ->
+//               ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
+    memcpy(puiResponse, puiRequest, uiLength);
+
+    SetFsmState(MESSAGE_TRANSMIT_START);
+
+
+//    CDataContainerDataBase* pxDataContainer =
+//        (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+//    uiLength = pxDataContainer -> m_uiDataLength;
+//
+//    //std::cout << "CModbusSlave::DeviceControlDomainDataReadAnswer uiLength "  << (int)uiLength << std::endl;
+//
+//    memcpy(&puiResponse[uiPduOffset + 2],
+//           (pxDataContainer -> m_puiDataPointer),
+//           uiLength);
+//
+//    // количество байт в прикладном сообщении массиве конфигурации, не включая остальные.
+//    puiResponse[uiPduOffset + 1] = uiLength;
+//    uiLength++;
+//    uiLength += m_pxModbusSlaveLinkLayer ->
+//                ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
+//
+//    SetFsmState(MESSAGE_TRANSMIT_START);
+
+    return uiLength;
+}
+
+//-------------------------------------------------------------------------------
 uint16_t CModbusSlave::DataBaseReadAnswer(void)
 {
     //std::cout << "CModbusSlave::DataBaseReadAnswer 1" << std::endl;
@@ -2046,6 +2218,14 @@ uint16_t CModbusSlave::AnswerProcessing(void)
 
     case _FC_ONLINE_DATA_READ:
         uiLength = OnlineDataReadAnswer();
+        break;
+
+    case _FC_DEVICE_CONTROL_DOMAIN_DATA_WRITE:
+        uiLength = DeviceControlDomainDataWriteAnswer();
+        break;
+
+    case _FC_DEVICE_CONTROL_DOMAIN_DATA_READ:
+        uiLength = DeviceControlDomainDataReadAnswer();
         break;
 
     default:

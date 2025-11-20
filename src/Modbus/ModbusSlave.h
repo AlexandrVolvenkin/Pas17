@@ -105,6 +105,8 @@ public:
     uint16_t StateDataRead(void);
     uint16_t AnalogueMeasureArchiveWrite(void);
     uint16_t AnalogueMeasureArchiveWriteStateRequest(void);
+    uint16_t DeviceControlDomainDataWrite(void);
+    uint16_t DeviceControlDomainDataRead(void);
     uint16_t DataBaseRead(void);
     uint16_t DataBaseWrite(void);
     uint16_t TimeSet(void);
@@ -128,6 +130,8 @@ public:
     uint16_t StateDataReadAnswer(void);
     uint16_t AnalogueMeasureArchiveWriteAnswer(void);
     uint16_t AnalogueMeasureArchiveWriteStateRequestAnswer(void);
+    uint16_t DeviceControlDomainDataWriteAnswer(void);
+    uint16_t DeviceControlDomainDataReadAnswer(void);
     uint16_t DataBaseReadAnswer(void);
     uint16_t DataBaseWriteAnswer(void);
     uint16_t TimeSetAnswer(void);
