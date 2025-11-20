@@ -1979,7 +1979,7 @@ uint8_t CDeviceControl::Fsm(void)
     {
         enum
         {
-            DEVICE_CONTROL_DOMAIN_DATA_WRITE_ANALOGUE_MEASURE_ARCHIVE_WRITE = 0,
+            DEVICE_CONTROL_DOMAIN_DATA_WRITE_ANALOGUE_MEASURE_ARCHIVE_WRITE = 1,
             DEVICE_CONTROL_DOMAIN_DATA_WRITE_REGULATORS_DAC_DATA_WRITE,
         };
 
@@ -1987,7 +1987,8 @@ uint8_t CDeviceControl::Fsm(void)
             (CDataContainerDataBase*)GetCustomerDataContainerPointer();
 
         // получим код опции
-        uint8_t uiDeviceControlDomainFsmState = (pxDataContainer -> m_puiDataPointer[OPTION_CODE_OFFSET]);
+        uint8_t uiDeviceControlDomainFsmState =
+            (pxDataContainer -> m_puiDataPointer[OPTION_CODE_OFFSET]);
 
         switch(uiDeviceControlDomainFsmState)
         {
@@ -2017,10 +2018,19 @@ uint8_t CDeviceControl::Fsm(void)
         case DEVICE_CONTROL_DOMAIN_DATA_WRITE_REGULATORS_DAC_DATA_WRITE:
             cout << "CDeviceControl::Fsm DEVICE_CONTROL_DOMAIN_DATA_WRITE_REGULATORS_DAC_DATA_WRITE" << endl;
             {
-                (GetResources() -> GetRegulatorsDacDataPointer()) ->
-                uiRegulatorDacData1 = 0;
-                (GetResources() -> GetRegulatorsDacDataPointer()) ->
-                uiRegulatorDacData2 = 0;
+                CDataContainerDataBase* pxCustomerDataContainer =
+                    (CDataContainerDataBase*)GetCustomerDataContainerPointer();
+
+                pxCustomerDataContainer -> m_uiDataLength =
+                    sizeof(struct TRegulatorsDacDataPackOne);
+                memcpy((GetResources() -> GetRegulatorsDacDataPointer()),
+                       &(pxCustomerDataContainer -> m_puiDataPointer[DATA_OFFSET]),
+                       pxCustomerDataContainer -> m_uiDataLength);
+
+//                (GetResources() -> GetRegulatorsDacDataPointer()) ->
+//                uiRegulatorDacData1 = 0;
+//                (GetResources() -> GetRegulatorsDacDataPointer()) ->
+//                uiRegulatorDacData2 = 0;
 
                 SetFsmState(DEVICE_CONTROL_DOMAIN_DATA_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
             }

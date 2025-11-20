@@ -260,6 +260,12 @@ void CInternalModuleMuvr::Allocate(void)
         ANALOGUE_INPUT_MODULE_REPER_POINTS_ADC_DATA_BASE_BLOCK_LENGTH;
 
 
+    // Получим указатель на место в массиве данных ADC регуляторов для текущего модуля.
+    m_pxRegulatorsDacData =
+        (GetResources() ->
+         GetRegulatorsDacDataPointer());
+
+
     m_uiBadAnswerCounter = 0;
 }
 
@@ -390,10 +396,15 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
     auiSpiTxBuffer[0] = MUVR_GET_MEASURE_DATA_COMMAND;
     auiSpiTxBuffer[1] = 0;
     // выходы токовые 0-16383 (4б)
-    auiSpiTxBuffer[2] = 0;
-    auiSpiTxBuffer[3] = 0;
-    auiSpiTxBuffer[4] = 0;
-    auiSpiTxBuffer[5] = 0;
+    auiSpiTxBuffer[2] = (uint8_t)(m_pxRegulatorsDacData -> uiRegulatorDacData1);
+    auiSpiTxBuffer[3] = (uint8_t)((m_pxRegulatorsDacData -> uiRegulatorDacData1) >> 8);
+    auiSpiTxBuffer[4] = (uint8_t)(m_pxRegulatorsDacData -> uiRegulatorDacData2);
+    auiSpiTxBuffer[5] = (uint8_t)((m_pxRegulatorsDacData -> uiRegulatorDacData2) >> 8);
+
+//    auiSpiTxBuffer[2] = 0;
+//    auiSpiTxBuffer[3] = 0;
+//    auiSpiTxBuffer[4] = 0;
+//    auiSpiTxBuffer[5] = 0;
 
     uint8_t uiData = 0;
     // заполним требования включения для каждого реле.

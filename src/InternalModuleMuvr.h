@@ -247,6 +247,8 @@ private:
 //    uint8_t m_uiBadAnswerCounter;
     TAnalogueInputDescriptionWork* m_pxAnalogueInputDescriptionWork;
     TDiscreteOutputControl* m_pxDiscreteOutputControl;
+    // указатель на данные ЦАП регуляторов.
+    TRegulatorsDacDataPackOne* m_pxRegulatorsDacData;
 
     CTimer m_xWriteCompleteWaitTimer;
 };
