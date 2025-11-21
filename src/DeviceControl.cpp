@@ -2102,7 +2102,7 @@ uint8_t CDeviceControl::Fsm(void)
 
                 pxCustomerDataContainer -> m_uiDataLength =
                     (sizeof(struct TDeviceStateDataPackOne) + OPTION_CODE_LENGTH);
-                memcpy(pxCustomerDataContainer -> m_puiDataPointer[DATA_OFFSET],
+                memcpy(&(pxCustomerDataContainer -> m_puiDataPointer[DATA_OFFSET]),
                        (GetResources() -> GetDeviceStateDataPointer()),
                        pxCustomerDataContainer -> m_uiDataLength);
 
@@ -2119,7 +2119,7 @@ uint8_t CDeviceControl::Fsm(void)
 
                 pxCustomerDataContainer -> m_uiDataLength =
                     (sizeof(struct TFileSaveStateDataPackOne) + OPTION_CODE_LENGTH);
-                memcpy(pxCustomerDataContainer -> m_puiDataPointer[DATA_OFFSET],
+                memcpy(&(pxCustomerDataContainer -> m_puiDataPointer[DATA_OFFSET]),
                        (uint8_t*)(&xFileSaveStateDataPackOne),
                        pxCustomerDataContainer -> m_uiDataLength);
 

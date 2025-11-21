@@ -795,7 +795,7 @@ uint16_t CModbusSlave::AnalogueMeasureArchiveWriteStateRequest(void)
 uint16_t CModbusSlave::DeviceControlDomainDataWrite(void)
 
 {
-    //std::cout << "CModbusSlave::DeviceControlDomainDataWrite 1" << std::endl;
+    std::cout << "CModbusSlave::DeviceControlDomainDataWrite 1" << std::endl;
     // адрес слейв, код функии, количество байт в pdu включая код опции(1 байт), pdu, crc
 
     uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
@@ -812,6 +812,11 @@ uint16_t CModbusSlave::DeviceControlDomainDataWrite(void)
     memcpy(m_puiIntermediateBuff,
            &puiRequest[uiPduOffset],
            uiLength);
+m_puiIntermediateBuff[0] = 2;
+m_puiIntermediateBuff[1] = 1;
+m_puiIntermediateBuff[2] = 3;
+m_puiIntermediateBuff[3] = 5;
+m_puiIntermediateBuff[4] = 7;
 
     CDataContainerDataBase* pxDataContainer =
         (CDataContainerDataBase*)GetExecutorDataContainerPointer();
