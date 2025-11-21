@@ -564,6 +564,7 @@ enum
     COMMON_COMMAND_CONTROL_OFFSET = 1,
 // смещение в промежуточном буфере на код опции.
     OPTION_CODE_OFFSET = 0,
+    OPTION_CODE_LENGTH = 1,
 // смещение в промежуточном буфере на данные.
     DATA_OFFSET = 1,
 };

@@ -397,6 +397,7 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
     auiSpiTxBuffer[1] = 0;
     // выходы токовые 0-16383 (4б)
     auiSpiTxBuffer[2] = (uint8_t)(m_pxRegulatorsDacData -> uiRegulatorDacData1);
+            std::cout << "CInternalModuleMuvr::DataExchange 13"  << std::endl;
     auiSpiTxBuffer[3] = (uint8_t)((m_pxRegulatorsDacData -> uiRegulatorDacData1) >> 8);
     auiSpiTxBuffer[4] = (uint8_t)(m_pxRegulatorsDacData -> uiRegulatorDacData2);
     auiSpiTxBuffer[5] = (uint8_t)((m_pxRegulatorsDacData -> uiRegulatorDacData2) >> 8);
