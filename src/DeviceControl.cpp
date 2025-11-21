@@ -2034,7 +2034,7 @@ uint8_t CDeviceControl::Fsm(void)
         default:
             cout << "CDeviceControl::Fsm default" << endl;
             {
-                SetFsmState(DEVICE_CONTROL_DOMAIN_DATA_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+                SetFsmState(DEVICE_CONTROL_DOMAIN_DATA_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
             }
             break;
         };
@@ -2061,38 +2061,85 @@ uint8_t CDeviceControl::Fsm(void)
     case DEVICE_CONTROL_DOMAIN_DATA_READ_START:
         //std::cout << "CDeviceControl::Fsm DEVICE_CONTROL_DOMAIN_DATA_READ_START"  << std::endl;
     {
-//            // Ожидаем завершение первого потока (если он еще выполняется)
-//            if (!m_pxAnalogueMeasureArchiveWriteThread || m_pxAnalogueMeasureArchiveWriteThread->joinable())
-//            {
-//                // Разорваем связь между потоком и его владелецом
-//                if (m_pxAnalogueMeasureArchiveWriteThread)
-//                {
-//                    m_pxAnalogueMeasureArchiveWriteThread->detach();
-//                }
-//                m_pxAnalogueMeasureArchiveWriteThread.reset(); // Сбросим указатель
-//            }
-//
-//            // Перезапускаем поток
-//            m_pxAnalogueMeasureArchiveWriteThread = std::make_shared<std::thread>(&CDeviceControl::AnalogueMeasureArchiveWrite, this);
+        enum
+        {
+            DEVICE_CONTROL_DOMAIN_DATA_READ_STATE_DATA_READ = 1,
+            DEVICE_CONTROL_DOMAIN_DATA_READ_ANALOGUE_MEASURE_ARCHIVE_WRITE_STATE_REQUEST,
+        };
 
-        SetFsmState(DEVICE_CONTROL_DOMAIN_DATA_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+        CDataContainerDataBase* pxDataContainer =
+            (CDataContainerDataBase*)GetCustomerDataContainerPointer();
+
+        // получим код опции
+        uint8_t uiDeviceControlDomainFsmState =
+            (pxDataContainer -> m_puiDataPointer[OPTION_CODE_OFFSET]);
+
+        switch(uiDeviceControlDomainFsmState)
+        {
+        // запись архива аналоговых измерений
+        case DEVICE_CONTROL_DOMAIN_DATA_READ_STATE_DATA_READ:
+            cout << "CDeviceControl::Fsm DEVICE_CONTROL_DOMAIN_DATA_READ_STATE_DATA_READ" << endl;
+            {
+                struct stat STAT;
+
+                if(stat("/dev/sda", &STAT) == 0)
+                {
+                    //std::cout << "CDeviceControl::Fsm STATE_DATA_READ_START 2"  << std::endl;
+                    (GetResources() -> GetDeviceStateDataPointer()) ->
+                    uiFlashConnectorStatus =
+                        FLASH_CONNECTOR_INSERTED;
+                }
+                else
+                {
+                    //std::cout << "CDeviceControl::Fsm STATE_DATA_READ_START 3"  << std::endl;
+                    (GetResources() -> GetDeviceStateDataPointer()) ->
+                    uiFlashConnectorStatus =
+                        FLASH_CONNECTOR_EMPTY;
+                }
+
+                CDataContainerDataBase* pxCustomerDataContainer =
+                    (CDataContainerDataBase*)GetCustomerDataContainerPointer();
+
+                pxCustomerDataContainer -> m_uiDataLength =
+                    sizeof(struct TDeviceStateDataPackOne);
+                memcpy(pxCustomerDataContainer -> m_puiDataPointer,
+                       (GetResources() -> GetDeviceStateDataPointer()),
+                       pxCustomerDataContainer -> m_uiDataLength);
+
+                SetFsmState(DEVICE_CONTROL_DOMAIN_DATA_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+            }
+            break;
+
+        // запись данных ADC регуляторов в модуль
+        case DEVICE_CONTROL_DOMAIN_DATA_READ_ANALOGUE_MEASURE_ARCHIVE_WRITE_STATE_REQUEST:
+            cout << "CDeviceControl::Fsm DEVICE_CONTROL_DOMAIN_DATA_READ_ANALOGUE_MEASURE_ARCHIVE_WRITE_STATE_REQUEST" << endl;
+            {
+                CDataContainerDataBase* pxCustomerDataContainer =
+                    (CDataContainerDataBase*)GetCustomerDataContainerPointer();
+
+                pxCustomerDataContainer -> m_uiDataLength =
+                    sizeof(struct TFileSaveStateDataPackOne);
+                memcpy(pxCustomerDataContainer -> m_puiDataPointer,
+                       (uint8_t*)(&xFileSaveStateDataPackOne),
+                       pxCustomerDataContainer -> m_uiDataLength);
+
+                SetFsmState(DEVICE_CONTROL_DOMAIN_DATA_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+            }
+            break;
+
+        default:
+            cout << "CDeviceControl::Fsm default" << endl;
+            {
+                SetFsmState(DEVICE_CONTROL_DOMAIN_DATA_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            }
+            break;
+        };
     }
     break;
 
     case DEVICE_CONTROL_DOMAIN_DATA_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
         //std::cout << "CDeviceControl::Fsm DEVICE_CONTROL_DOMAIN_DATA_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
     {
-//            CDataContainerDataBase* pxCustomerDataContainer =
-//                (CDataContainerDataBase*)GetCustomerDataContainerPointer();
-//            (GetResources() -> GetDeviceStateDataPointer()) ->
-//            uiFlashConnectorStatus =
-//                2;
-//            pxCustomerDataContainer -> m_uiDataLength =
-//                sizeof(struct TDeviceStateDataPackOne);
-//            memcpy(pxCustomerDataContainer -> m_puiDataPointer,
-//                   (GetResources() -> GetDeviceStateDataPointer()),
-//                   pxCustomerDataContainer -> m_uiDataLength);
-
         ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
         SetFsmState(DONE_OK);
     }
