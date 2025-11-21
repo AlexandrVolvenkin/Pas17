@@ -1994,7 +1994,7 @@ uint8_t CDeviceControl::Fsm(void)
         {
         // запись архива аналоговых измерений
         case DEVICE_CONTROL_DOMAIN_DATA_WRITE_ANALOGUE_MEASURE_ARCHIVE_WRITE:
-            cout << "CDeviceControl::Fsm DEVICE_CONTROL_DOMAIN_DATA_WRITE_ANALOGUE_MEASURE_ARCHIVE_WRITE" << endl;
+            //cout << "CDeviceControl::Fsm DEVICE_CONTROL_DOMAIN_DATA_WRITE_ANALOGUE_MEASURE_ARCHIVE_WRITE" << endl;
             {
                 // Ожидаем завершение первого потока (если он еще выполняется)
                 if (!m_pxAnalogueMeasureArchiveWriteThread || m_pxAnalogueMeasureArchiveWriteThread->joinable())
@@ -2016,7 +2016,7 @@ uint8_t CDeviceControl::Fsm(void)
 
         // запись данных ADC регуляторов в модуль
         case DEVICE_CONTROL_DOMAIN_DATA_WRITE_REGULATORS_DAC_DATA_WRITE:
-            cout << "CDeviceControl::Fsm DEVICE_CONTROL_DOMAIN_DATA_WRITE_REGULATORS_DAC_DATA_WRITE" << endl;
+            //cout << "CDeviceControl::Fsm DEVICE_CONTROL_DOMAIN_DATA_WRITE_REGULATORS_DAC_DATA_WRITE" << endl;
             {
                 CDataContainerDataBase* pxCustomerDataContainer =
                     (CDataContainerDataBase*)GetCustomerDataContainerPointer();
@@ -2032,7 +2032,7 @@ uint8_t CDeviceControl::Fsm(void)
             break;
 
         default:
-            cout << "CDeviceControl::Fsm default" << endl;
+            //cout << "CDeviceControl::Fsm default" << endl;
             {
                 SetFsmState(DEVICE_CONTROL_DOMAIN_DATA_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
             }
@@ -2078,7 +2078,7 @@ uint8_t CDeviceControl::Fsm(void)
         {
         // запись архива аналоговых измерений
         case DEVICE_CONTROL_DOMAIN_DATA_READ_STATE_DATA_READ:
-            cout << "CDeviceControl::Fsm DEVICE_CONTROL_DOMAIN_DATA_READ_STATE_DATA_READ" << endl;
+            //cout << "CDeviceControl::Fsm DEVICE_CONTROL_DOMAIN_DATA_READ_STATE_DATA_READ" << endl;
             {
                 struct stat STAT;
 
@@ -2112,7 +2112,7 @@ uint8_t CDeviceControl::Fsm(void)
 
         // запись данных ADC регуляторов в модуль
         case DEVICE_CONTROL_DOMAIN_DATA_READ_ANALOGUE_MEASURE_ARCHIVE_WRITE_STATE_REQUEST:
-            cout << "CDeviceControl::Fsm DEVICE_CONTROL_DOMAIN_DATA_READ_ANALOGUE_MEASURE_ARCHIVE_WRITE_STATE_REQUEST" << endl;
+            //cout << "CDeviceControl::Fsm DEVICE_CONTROL_DOMAIN_DATA_READ_ANALOGUE_MEASURE_ARCHIVE_WRITE_STATE_REQUEST" << endl;
             {
                 CDataContainerDataBase* pxCustomerDataContainer =
                     (CDataContainerDataBase*)GetCustomerDataContainerPointer();

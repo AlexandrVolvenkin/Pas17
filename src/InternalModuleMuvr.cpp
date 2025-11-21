@@ -396,32 +396,16 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
     auiSpiTxBuffer[0] = MUVR_GET_MEASURE_DATA_COMMAND;
     auiSpiTxBuffer[1] = 0;
     // выходы токовые 0-16383 (4б)
-
-//    auiSpiTxBuffer[2] = 0;
-//    auiSpiTxBuffer[3] = 0;
-//    auiSpiTxBuffer[4] = 0;
-//    auiSpiTxBuffer[5] = 0;
-
     auiSpiTxBuffer[2] = (uint8_t)(m_pxRegulatorsDacData -> uiRegulatorDacData1);
-    if (auiSpiTxBuffer[2] == 1)
-    {
-
-        auiSpiTxBuffer[2] = (uint8_t)(m_pxRegulatorsDacData -> uiRegulatorDacData1);
-        std::cout << "CInternalModuleMuvr::DataExchange0 " << (float)auiSpiTxBuffer[2] << std::endl;
-        auiSpiTxBuffer[3] = (uint8_t)((m_pxRegulatorsDacData -> uiRegulatorDacData1) >> 8);
-        std::cout << "CInternalModuleMuvr::DataExchange1 " << (float)auiSpiTxBuffer[3] << std::endl;
-        auiSpiTxBuffer[4] = (uint8_t)(m_pxRegulatorsDacData -> uiRegulatorDacData2);
-        std::cout << "CInternalModuleMuvr::DataExchange2 " << (float)auiSpiTxBuffer[4] << std::endl;
-        auiSpiTxBuffer[5] = (uint8_t)((m_pxRegulatorsDacData -> uiRegulatorDacData2) >> 8);
-        std::cout << "CInternalModuleMuvr::DataExchange3 " << (float)auiSpiTxBuffer[5] << std::endl;
-
-        (m_pxRegulatorsDacData -> uiRegulatorDacData1) = 0;
-        (m_pxRegulatorsDacData -> uiRegulatorDacData2) = 0;
-    }
-    else
-    {
-
-    }
+    //std::cout << "CInternalModuleMuvr::DataExchange0 " << (float)auiSpiTxBuffer[2] << std::endl;
+    auiSpiTxBuffer[3] = (uint8_t)((m_pxRegulatorsDacData -> uiRegulatorDacData1) >> 8);
+    //std::cout << "CInternalModuleMuvr::DataExchange1 " << (float)auiSpiTxBuffer[3] << std::endl;
+    auiSpiTxBuffer[4] = (uint8_t)(m_pxRegulatorsDacData -> uiRegulatorDacData2);
+    //std::cout << "CInternalModuleMuvr::DataExchange2 " << (float)auiSpiTxBuffer[4] << std::endl;
+    auiSpiTxBuffer[5] = (uint8_t)((m_pxRegulatorsDacData -> uiRegulatorDacData2) >> 8);
+    //std::cout << "CInternalModuleMuvr::DataExchange3 " << (float)auiSpiTxBuffer[5] << std::endl;
+//        (m_pxRegulatorsDacData -> uiRegulatorDacData1) = 0;
+//        (m_pxRegulatorsDacData -> uiRegulatorDacData2) = 0;
 
     uint8_t uiData = 0;
     // заполним требования включения для каждого реле.
