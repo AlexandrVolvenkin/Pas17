@@ -796,6 +796,7 @@ uint16_t CModbusSlave::DeviceControlDomainDataWrite(void)
 
 {
     //std::cout << "CModbusSlave::DeviceControlDomainDataWrite 1" << std::endl;
+    // адрес слейв, код функии, количество байт в pdu включа€ код опции(1 байт), pdu, crc
 
     uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
     uint8_t * puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
@@ -807,12 +808,18 @@ uint16_t CModbusSlave::DeviceControlDomainDataWrite(void)
 
     m_uiFunctionCode = uiFunctionCode;
 
+    uiLength = puiRequest[uiPduOffset + 1];
+    memcpy(m_puiIntermediateBuff,
+           &puiRequest[uiPduOffset],
+           uiLength);
+
     CDataContainerDataBase* pxDataContainer =
         (CDataContainerDataBase*)GetExecutorDataContainerPointer();
     pxDataContainer -> m_uiTaskId = m_uiDeviceControlId;
     pxDataContainer -> m_uiFsmCommandState =
         CDeviceControl::DEVICE_CONTROL_DOMAIN_DATA_WRITE_START;
     pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+    pxDataContainer -> m_uiDataLength = uiLength;
 
     SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
     SetFsmNextStateDoneOk(EXECUTOR_ANSWER_PROCESSING);
@@ -828,6 +835,7 @@ uint16_t CModbusSlave::DeviceControlDomainDataRead(void)
 
 {
     //std::cout << "CModbusSlave::DeviceControlDomainDataRead 1" << std::endl;
+    // адрес слейв, код функии, количество байт в pdu включа€ код опции(1 байт), pdu, crc
 
     uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
     uint8_t * puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
@@ -1849,6 +1857,7 @@ uint16_t CModbusSlave::DeviceControlDomainDataWriteAnswer(void)
 
 {
     //std::cout << "CModbusSlave::DeviceControlDomainDataWriteAnswer 1" << std::endl;
+    // адрес слейв, код функии, количество байт в pdu включа€ код опции(1 байт), pdu, crc
 
     uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
     uint8_t * puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
@@ -1858,38 +1867,9 @@ uint16_t CModbusSlave::DeviceControlDomainDataWriteAnswer(void)
     int8_t uiSlave = puiRequest[uiPduOffset - 1];
     int8_t uiFunctionCode = puiRequest[uiPduOffset];
 
-//    //std::cout << "CModbusSlave::DeviceControlDomainDataWriteAnswer 2" << std::endl;
-//
-//    //std::cout << "CModbusSlave::DeviceControlDomainDataWriteAnswer uiSlave "  << (int)uiSlave << std::endl;
-//    //std::cout << "CModbusSlave::DeviceControlDomainDataWriteAnswer uiFunctionCode "  << (int)uiFunctionCode << std::endl;
-//
-//
-//    //std::cout << "CModbusSlave::DeviceControlDomainDataWriteAnswer 3" << std::endl;
-
-//    uiLength = m_pxModbusSlaveLinkLayer ->
-//               ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
-    memcpy(puiResponse, puiRequest, uiLength);
-
+    uiLength = m_pxModbusSlaveLinkLayer ->
+               ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
     SetFsmState(MESSAGE_TRANSMIT_START);
-
-
-//    CDataContainerDataBase* pxDataContainer =
-//        (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-//    uiLength = pxDataContainer -> m_uiDataLength;
-//
-//    //std::cout << "CModbusSlave::DeviceControlDomainDataWriteAnswer uiLength "  << (int)uiLength << std::endl;
-//
-//    memcpy(&puiResponse[uiPduOffset + 2],
-//           (pxDataContainer -> m_puiDataPointer),
-//           uiLength);
-//
-//    // количество байт в прикладном сообщении массиве конфигурации, не включа€ остальные.
-//    puiResponse[uiPduOffset + 1] = uiLength;
-//    uiLength++;
-//    uiLength += m_pxModbusSlaveLinkLayer ->
-//                ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
-//
-//    SetFsmState(MESSAGE_TRANSMIT_START);
 
     return uiLength;
 }
@@ -1899,6 +1879,8 @@ uint16_t CModbusSlave::DeviceControlDomainDataReadAnswer(void)
 
 {
     //std::cout << "CModbusSlave::DeviceControlDomainDataReadAnswer 1" << std::endl;
+    // адрес слейв, код функии, количество байт в pdu включа€ код опции(1 байт), pdu, crc
+
     uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
     uint8_t * puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
     uint8_t * puiResponse = m_pxModbusSlaveLinkLayer -> GetTxBuffer();
@@ -1907,19 +1889,15 @@ uint16_t CModbusSlave::DeviceControlDomainDataReadAnswer(void)
     int8_t uiSlave = puiRequest[uiPduOffset - 1];
     int8_t uiFunctionCode = puiRequest[uiPduOffset];
 
-    //std::cout << "CModbusSlave::DeviceControlDomainDataReadAnswer 2" << std::endl;
-
     CDataContainerDataBase* pxDataContainer =
         (CDataContainerDataBase*)GetExecutorDataContainerPointer();
     uiLength = pxDataContainer -> m_uiDataLength;
-
-    //std::cout << "CModbusSlave::DeviceControlDomainDataReadAnswer uiLength "  << (int)uiLength << std::endl;
 
     memcpy(&puiResponse[uiPduOffset + 2],
            (pxDataContainer -> m_puiDataPointer),
            uiLength);
 
-    // количество байт в прикладном сообщении массиве конфигурации, не включа€ остальные.
+    // количество байт в pdu включа€ код опции
     puiResponse[uiPduOffset + 1] = uiLength;
     uiLength++;
     uiLength += m_pxModbusSlaveLinkLayer ->
@@ -2538,7 +2516,7 @@ uint8_t CModbusSlave::Fsm(void)
             if (RequestProcessing())
             {
                 // состо€ние автомата измен€ют вызываемые методы обработчики функций модбас.
-            // зажгЄм сведодиод сигнализации обмена
+                // зажгЄм сведодиод сигнализации обмена
                 m_pxGpioRtsControlPin -> SetPin();
             }
             else

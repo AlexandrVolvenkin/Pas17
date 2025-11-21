@@ -2027,11 +2027,6 @@ uint8_t CDeviceControl::Fsm(void)
                        &(pxCustomerDataContainer -> m_puiDataPointer[DATA_OFFSET]),
                        pxCustomerDataContainer -> m_uiDataLength);
 
-//                (GetResources() -> GetRegulatorsDacDataPointer()) ->
-//                uiRegulatorDacData1 = 0;
-//                (GetResources() -> GetRegulatorsDacDataPointer()) ->
-//                uiRegulatorDacData2 = 0;
-
                 SetFsmState(DEVICE_CONTROL_DOMAIN_DATA_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
             }
             break;
