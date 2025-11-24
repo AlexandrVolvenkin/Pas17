@@ -417,10 +417,10 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
         }
     }
     // Управление реле для МУВР (1б)
-    auiSpiTxBuffer[6] = uiData;//0xff;//
+    auiSpiTxBuffer[6] = uiData;//0x00;//0xff;//
 //    std::cout << "CInternalModuleMuvr::DataExchange uiData " << (int)uiData << std::endl;
 
-    usData = usCrcSummTwoByteCalculation(&auiSpiTxBuffer[2],                                        5);
+    usData = usCrcSummTwoByteCalculation(&auiSpiTxBuffer[2], 5);
     auiSpiTxBuffer[7] = (uint8_t)usData;
     auiSpiTxBuffer[8] = (uint8_t)(usData >> 8);
 
