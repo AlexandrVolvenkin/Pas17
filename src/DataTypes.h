@@ -420,4 +420,180 @@ struct TAnalogoueSignalsTextTitle
     char acTextDescriptor[ANALOGUE_SYGNAL_NAME_LENGTH + END_OF_STRING_LENGTH];
 };
 
+//-----------------------------------------------------------------------------------------------------
+// структуры сохранения и обмена параметров настроек
+
+//typedef enum
+//{
+//    RS485_HIGH_LEVEL_SET = 1,
+//    RS485_LOW_LEVEL_SET,
+//    ARCHIVE_LOG_SAVE,
+//    ETHERNET_SET,
+//    PROGRAMM_FILE_UPDATE,
+//    DEBUG_LOG_FILE_SAVE
+//};
+//
+//typedef enum
+//{
+//    CHOICE_OPTION_TEXT_LENGTH = 14,
+//    CHOICE_OPTION_TEXT_NUMBER = 2,
+//    ETHERNET_IP_TEXT_LENGTH = 16,
+//};
+
+typedef enum
+{
+    BIT_RATE_9600 = 0,
+    BIT_RATE_19200,
+    BIT_RATE_57600,
+    BIT_RATE_115200,
+};
+
+typedef enum
+{
+    PARITY_NO = 0,
+    PARITY_EVEN,
+    PARITY_ODD,
+    PARITY_NO_ONE_STOP,
+};
+
+//#pragma pack(push)
+//#pragma pack(1)
+//// структура данных запросов.
+//struct TPlcSettingsQueryPackOne
+//{
+//    // тип запрашиваемых данных.
+//    uint8_t ui8Type;
+//};
+//#pragma pack(pop)
+
+// для сериализации, разбора данных полученных по интерфейсам передачи данных.
+#pragma pack(push)
+#pragma pack(1)
+struct TPortSettingsPackOne
+{
+    uint8_t ui8BaudRate;
+    uint8_t ui8StopBits;
+    uint8_t ui8Parity;
+};
+#pragma pack(pop)
+
+// для сериализации, разбора данных полученных по интерфейсам передачи данных.
+#pragma pack(push)
+#pragma pack(1)
+struct TEthernetSettingsPackOne
+{
+    uint8_t ui8IpByte0;
+    uint8_t ui8IpByte1;
+    uint8_t ui8IpByte2;
+    uint8_t ui8IpByte3;
+    uint16_t ui16Port;
+};
+#pragma pack(pop)
+
+// для сериализации, разбора данных полученных по интерфейсам передачи данных.
+#pragma pack(push)
+#pragma pack(1)
+struct TPeripherySettingsPackOne
+{
+    uint8_t ui8ZummerIsOn;
+};
+#pragma pack(pop)
+
+#pragma pack(push)
+#pragma pack(1)
+struct TPlcSettingsPackOne
+{
+    TPortSettingsPackOne xTRs485HighLevelSettingsPackOne;
+    TEthernetSettingsPackOne xTEthernetSettingsPackOne;
+//    TPeripherySettingsPackOne xTPeripherySettingsPackOne;
+};
+#pragma pack(pop)
+
+//#pragma pack(push)
+//#pragma pack(1)
+//struct TChoiceOptionTextData
+//{
+//    // текстовые данные предложения меню.
+//    char acChoiceOptionTextData[CHOICE_OPTION_TEXT_LENGTH + END_OF_STRING_LENGTH];
+//};
+//#pragma pack(pop)
+//
+//// для сериализации, разбора данных полученных по интерфейсам передачи данных.
+//#pragma pack(push)
+//#pragma pack(1)
+//struct TPlcSettingsExchangePackOne
+//{
+//    // тип запрашиваемых данных.
+//    uint8_t ui8Type;
+//    // код ответа.
+//    uint8_t ui8AnswerCode;
+//    union
+//    {
+//        struct
+//        {
+//            uint8_t ui8BaudRate;
+//            uint8_t ui8StopBits;
+//            uint8_t ui8Parity;
+//        };
+//        struct
+//        {
+//            uint8_t ui8IpByte0;
+//            uint8_t ui8IpByte1;
+//            uint8_t ui8IpByte2;
+//            uint8_t ui8IpByte3;
+//            uint16_t ui16Port;
+//        };
+//        struct
+//        {
+//            // номер предложения.
+//            uint8_t ui8ChoiceOption;
+//            // количество предложений.
+//            uint8_t ui8ChoiceOptionNumber;
+//            // текстовые данные предложения меню.
+//            TChoiceOptionTextData axChoiceOptionTextData[CHOICE_OPTION_TEXT_NUMBER];
+//        };
+//        struct
+//        {
+//            uint8_t ui8ZummerIsOn;
+//        };
+//    };
+//};
+//
+//struct TPlcSettingsExchangeClientPackOne
+//{
+//    // тип запрашиваемых данных.
+//    uint8_t ui8Type;
+//    // код ответа.
+//    uint8_t ui8AnswerCode;
+//    union
+//    {
+//        struct
+//        {
+//            uint8_t ui8BaudRate;
+//            uint8_t ui8StopBits;
+//            uint8_t ui8Parity;
+//        };
+//        struct
+//        {
+//            uint8_t ui8IpByte0;
+//            uint8_t ui8IpByte1;
+//            uint8_t ui8IpByte2;
+//            uint8_t ui8IpByte3;
+//            uint16_t ui16Port;
+//        };
+//        struct
+//        {
+//            // номер предложения.
+//            uint8_t ui8ChoiceOption;
+//            // количество предложений.
+//            uint8_t ui8ChoiceOptionNumber;
+//        };
+//        struct
+//        {
+//            uint8_t ui8ZummerIsOn;
+//        };
+//    };
+//};
+//#pragma pack(pop)
+
 #endif // DATATYPES_H_INCLUDED

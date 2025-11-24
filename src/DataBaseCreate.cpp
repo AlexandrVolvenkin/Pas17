@@ -968,6 +968,65 @@ uint8_t CDataBaseCreate::Fsm(void)
         {
 //            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
 //            SetFsmState(DONE_OK);
+            SetFsmState(DATA_BASE_CREATE_SETTINGS_DATA_BASE_BLOCKS_WRITE_START);
+        }
+        break;
+
+//-------------------------------------------------------------------------------
+    case DATA_BASE_CREATE_SETTINGS_DATA_BASE_BLOCKS_WRITE_START:
+        std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_SETTINGS_DATA_BASE_BLOCKS_WRITE_START"  << std::endl;
+        {
+            memset(m_puiIntermediateBuff,
+                   0,
+                   CDataStore::MAX_BLOCK_LENGTH);
+
+            // Создание экземпляров структур
+            TPortSettingsPackOne xPortSettingsPackOne =
+            {
+                BIT_RATE_9600,
+                2,
+                PARITY_NO
+            };
+            TEthernetSettingsPackOne xEthernetSettingsPackOne =
+            {
+                192, 168, 0, 32,
+                502
+            };
+
+            // Создание экземпляра TPlcSettingsPackOne
+            TPlcSettingsPackOne xPlcSettingsPackOne =
+            {
+                xPortSettingsPackOne,
+                xEthernetSettingsPackOne
+            };
+
+            uint16_t  uiLength = sizeof(struct TPlcSettingsPackOne);
+            memcpy(m_puiIntermediateBuff,
+                   &(xPlcSettingsPackOne),
+                   uiLength);
+
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            pxDataContainer -> m_uiTaskId = m_uiDataStoreId;
+            pxDataContainer -> m_uiFsmCommandState =
+                CDataStore::START_WRITE_TEMPORARY_BLOCK_DATA;
+            // сетевой адрес блок 99
+            pxDataContainer -> m_uiDataIndex = SETTINGS_DATA_BASE_BLOCK_OFFSET;
+            pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+            SetFsmNextStateDoneOk(DATA_BASE_CREATE_SETTINGS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING);
+            SetFsmNextStateReadyWaitingError(DONE_ERROR);
+            SetFsmNextStateDoneWaitingError(DONE_ERROR);
+            SetFsmNextStateDoneWaitingDoneError(DONE_ERROR);
+        }
+        break;
+
+    case DATA_BASE_CREATE_SETTINGS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING:
+        std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_SETTINGS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
+        {
+//            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+//            SetFsmState(DONE_OK);
             SetFsmState(DATA_BASE_CREATE_MODULE_MUVR_DATA_BASE_READ_START);
         }
         break;
