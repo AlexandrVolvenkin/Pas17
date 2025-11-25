@@ -163,6 +163,8 @@
 		<Unit filename="src/ServiceMarket.h" />
 		<Unit filename="src/SettingsLoad.cpp" />
 		<Unit filename="src/SettingsLoad.h" />
+		<Unit filename="src/SettingsSet.cpp" />
+		<Unit filename="src/SettingsSet.h" />
 		<Unit filename="src/StorageDevice.cpp" />
 		<Unit filename="src/StorageDevice.h" />
 		<Unit filename="src/SystemComponentsCreate.cpp" />

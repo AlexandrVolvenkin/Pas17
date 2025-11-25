@@ -482,10 +482,10 @@ struct TPortSettingsPackOne
 #pragma pack(1)
 struct TEthernetSettingsPackOne
 {
-    uint8_t ui8IpByte0;
-    uint8_t ui8IpByte1;
-    uint8_t ui8IpByte2;
     uint8_t ui8IpByte3;
+    uint8_t ui8IpByte2;
+    uint8_t ui8IpByte1;
+    uint8_t ui8IpByte0;
     uint16_t ui16Port;
 };
 #pragma pack(pop)
