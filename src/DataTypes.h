@@ -473,8 +473,8 @@ struct TPortSettingsPackOne
 {
     uint8_t ui8BaudRate;
     uint8_t ui8DataBits;
-    uint8_t ui8StopBits;
     uint8_t ui8Parity;
+    uint8_t ui8StopBits;
 };
 #pragma pack(pop)
 

@@ -19,6 +19,8 @@
 #include "ConfigurationCreate.h"
 #include "DataBaseCreate.h"
 #include "ConfigurationCheck.h"
+#include "CommunicationDevice.h"
+#include "SerialPortCommunicationDevice.h"
 #include "ModbusSlave.h"
 #include "SettingsLoad.h"
 
@@ -226,6 +228,7 @@ uint8_t CSettingsLoad::Fsm(void)
         }
         break;
 
+//-------------------------------------------------------------------------------
     case SETTINGS_LOAD_NETWORK_ADDRESS_DATA_BASE_BLOCKS_READ_START:
         std::cout << "CSettingsLoad::Fsm SETTINGS_LOAD_NETWORK_ADDRESS_DATA_BASE_BLOCKS_READ_START"  << std::endl;
         {
@@ -284,6 +287,78 @@ uint8_t CSettingsLoad::Fsm(void)
                                 GetTaskPointerByNameFromMap("ModbusTcpSlaveUpperLevel"));
             pxModbusTcpSlaveUpperLevel ->
             SetOwnAddress(uiAddress);
+
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(DONE_OK);
+        }
+        break;
+
+//-------------------------------------------------------------------------------
+    case SETTINGS_LOAD_SETTINGS_DATA_BASE_BLOCKS_READ_START:
+        std::cout << "CSettingsLoad::Fsm SETTINGS_LOAD_SETTINGS_DATA_BASE_BLOCKS_READ_START"  << std::endl;
+        {
+            m_uiDataStoreId =
+                GetResources() ->
+                GetTaskIdByNameFromMap(m_sDataStoreName);
+
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            pxDataContainer -> m_uiTaskId = m_uiDataStoreId;
+            pxDataContainer -> m_uiFsmCommandState =
+                CDataStore::READ_BLOCK_DATA_START;
+            // параметры настроек блок 101
+            pxDataContainer -> m_uiDataIndex = SETTINGS_DATA_BASE_BLOCK_OFFSET;
+            pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+            SetFsmNextStateDoneOk(SETTINGS_LOAD_SETTINGS_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+            SetFsmNextStateReadyWaitingError(SETTINGS_LOAD_SETTINGS_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingError(SETTINGS_LOAD_SETTINGS_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingDoneError(SETTINGS_LOAD_SETTINGS_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+        }
+        break;
+
+    case SETTINGS_LOAD_SETTINGS_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+        std::cout << "CSettingsLoad::Fsm SETTINGS_LOAD_SETTINGS_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        {
+            SetFsmState(SETTINGS_LOAD_SETTINGS_SET_START);
+        }
+        break;
+
+    case SETTINGS_LOAD_SETTINGS_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+        std::cout << "CSettingsLoad::Fsm SETTINGS_LOAD_SETTINGS_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        {
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+            SetFsmState(DONE_ERROR);
+        }
+        break;
+
+    case SETTINGS_LOAD_SETTINGS_SET_START:
+        std::cout << "CSettingsLoad::Fsm SETTINGS_LOAD_SETTINGS_SET_START"  << std::endl;
+        {
+            TPortSettingsPackOne* pxPortSettingsPackOne =
+                &(((TPlcSettingsPackOne*)(m_puiIntermediateBuff)) ->
+                  xTRs485HighLevelSettingsPackOne);
+
+            CSerialPortCommunicationDevice* pxSerialPortCommunicationDeviceCom1 =
+                (CSerialPortCommunicationDevice*)(GetResources() ->
+                                                  GetTaskPointerByNameFromMap("SerialPortCommunicationDeviceCom1"));
+
+            pxSerialPortCommunicationDeviceCom1 ->
+            SetBaudRate(pxPortSettingsPackOne -> ui8BaudRate);
+            pxSerialPortCommunicationDeviceCom1 ->
+            SetDataBits(pxPortSettingsPackOne -> ui8DataBits);
+            pxSerialPortCommunicationDeviceCom1 ->
+            SetParity(pxPortSettingsPackOne -> ui8Parity);
+            pxSerialPortCommunicationDeviceCom1 ->
+            SetStopBit(pxPortSettingsPackOne -> ui8StopBits);
+
+
+//            CModbusSlave* pxModbusTcpSlaveUpperLevel =
+//                (CModbusSlave*)(GetResources() ->
+//                                GetTaskPointerByNameFromMap("ModbusTcpSlaveUpperLevel"));
+//            pxModbusTcpSlaveUpperLevel ->
+//            SetOwnAddress(uiAddress);
 
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(DONE_OK);
