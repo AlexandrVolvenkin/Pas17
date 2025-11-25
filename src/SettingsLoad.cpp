@@ -294,6 +294,23 @@ uint8_t CSettingsLoad::Fsm(void)
         break;
 
 //-------------------------------------------------------------------------------
+    case SETTINGS_LOAD_STOP_RTU_UPPER_LEVEL_INTERFACE:
+        std::cout << "CSettingsLoad::Fsm SETTINGS_LOAD_STOP_RTU_UPPER_LEVEL_INTERFACE"  << std::endl;
+        {
+            uint8_t uiTaskId =
+                GetResources() ->
+                GetTaskIdByNameFromMap("ModbusRtuSlaveUpperLevel");
+
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            pxDataContainer -> m_uiTaskId = uiTaskId;
+            pxDataContainer -> m_uiFsmCommandState =
+                CModbusSlave::IDDLE;
+
+            SetFsmState(SETTINGS_LOAD_SETTINGS_DATA_BASE_BLOCKS_READ_START);
+        }
+        break;
+
     case SETTINGS_LOAD_SETTINGS_DATA_BASE_BLOCKS_READ_START:
         std::cout << "CSettingsLoad::Fsm SETTINGS_LOAD_SETTINGS_DATA_BASE_BLOCKS_READ_START"  << std::endl;
         {
@@ -359,6 +376,24 @@ uint8_t CSettingsLoad::Fsm(void)
 //                                GetTaskPointerByNameFromMap("ModbusTcpSlaveUpperLevel"));
 //            pxModbusTcpSlaveUpperLevel ->
 //            SetOwnAddress(uiAddress);
+
+//            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+//            SetFsmState(DONE_OK);
+        }
+        break;
+
+    case SETTINGS_LOAD_START_RTU_UPPER_LEVEL_INTERFACE:
+        std::cout << "CSettingsLoad::Fsm SETTINGS_LOAD_START_RTU_UPPER_LEVEL_INTERFACE"  << std::endl;
+        {
+            uint8_t uiTaskId =
+                GetResources() ->
+                GetTaskIdByNameFromMap("ModbusRtuSlaveUpperLevel");
+
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            pxDataContainer -> m_uiTaskId = uiTaskId;
+            pxDataContainer -> m_uiFsmCommandState =
+                CModbusSlave::COMMUNICATION_START;
 
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(DONE_OK);
