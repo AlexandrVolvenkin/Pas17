@@ -36,6 +36,7 @@
 #include "SystemComponentsCreate.h"
 #include "ConfigurationCheck.h"
 #include "SettingsLoad.h"
+#include "SettingsSet.h"
 #include "DiscreteSignals.h"
 #include "AnalogueSignalsArchiveCreate.h"
 #include "StorageDevice.h"
@@ -486,6 +487,24 @@ uint8_t CMainProductionCycle::CreateTasks(void)
 //    m_pxSettingsLoad = pxSettingsLoad;
 
 //-------------------------------------------------------------------------------
+    CSettingsSet* pxSettingsSet = 0;
+    pxSettingsSet =
+        static_cast<CSettingsSet*>(m_xResources.AddCommonTaskToMap("SettingsSet",
+                                    std::make_shared<CSettingsSet>()));
+    pxSettingsSet ->
+    SetResources(&m_xResources);
+    pxSettingsSet ->
+    SetDataStoreName("DataStoreFileSystem");
+//    pxSettingsSet ->
+//    SetInternalModuleName("InternalModuleCommon");
+//    pxSettingsSet ->
+//    SetInternalModuleMuvrName("InternalModuleMuvr0");
+    pxSettingsSet ->
+    SetDeviceControlName("DeviceControlRtuUpperLevel");
+    m_xResources.AddCurrentlyRunningTasksList(pxSettingsSet);
+//    m_pxSettingsSet = pxSettingsSet;
+
+//-------------------------------------------------------------------------------
     CDiscreteSignals* pxDiscreteSignals = 0;
     pxDiscreteSignals =
         static_cast<CDiscreteSignals*>(m_xResources.AddCommonTaskToMap("DiscreteSignals",
@@ -915,6 +934,10 @@ uint8_t CMainProductionCycle::Fsm(void)
             m_uiSettingsLoadId =
                 GetResources() ->
                 GetTaskIdByNameFromMap("SettingsLoad");
+
+            m_uiSettingsSetId =
+                GetResources() ->
+                GetTaskIdByNameFromMap("SettingsSet");
 
             m_uiDiscreteSignalsId =
                 GetResources() ->

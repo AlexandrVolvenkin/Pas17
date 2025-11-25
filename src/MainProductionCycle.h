@@ -43,6 +43,7 @@ class CDataBaseCreate;
 class CSystemComponentsCreate;
 class CConfigurationCheck;
 class CSettingsLoad;
+class CSettingsSet;
 class CDiscreteSignals;
 class CAnalogueSignalsArchiveCreate;
 class CEvents;
@@ -238,6 +239,9 @@ private:
 
     std::string m_sSettingsLoadName;
     uint16_t m_uiSettingsLoadId;
+
+    std::string m_sSettingsSetName;
+    uint16_t m_uiSettingsSetId;
 
     std::string m_sDiscreteSignalsName;
     uint16_t m_uiDiscreteSignalsId;

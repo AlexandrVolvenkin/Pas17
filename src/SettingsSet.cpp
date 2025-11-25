@@ -299,7 +299,7 @@ uint8_t CSettingsSet::Fsm(void)
             pxDataContainer -> m_uiTaskId = m_uiDataStoreId;
             pxDataContainer -> m_uiFsmCommandState =
                 CDataStore::START_WRITE_TEMPORARY_BLOCK_DATA;
-            // сетевой адрес блок 99
+            // параметры настроек блок 101
             pxDataContainer -> m_uiDataIndex = SETTINGS_DATA_BASE_BLOCK_OFFSET;
             pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
 
