@@ -365,16 +365,12 @@ uint8_t CSettingsLoad::Fsm(void)
 
             pxSerialPortCommunicationDeviceCom1 ->
             SetBaudRate(pxPortSettingsPackOne -> uiBaudRate);
-            std::cout << "CSettingsLoad::Fsm uiBaudRate " << (float)(pxPortSettingsPackOne -> uiBaudRate) << std::endl;
             pxSerialPortCommunicationDeviceCom1 ->
             SetDataBits(pxPortSettingsPackOne -> uiDataBits);
-            std::cout << "CSettingsLoad::Fsm uiDataBits " << (float)(pxPortSettingsPackOne -> uiDataBits) << std::endl;
             pxSerialPortCommunicationDeviceCom1 ->
             SetParity(pxPortSettingsPackOne -> uiParity);
-            std::cout << "CSettingsLoad::Fsm uiParity " << (float)(pxPortSettingsPackOne -> uiParity) << std::endl;
             pxSerialPortCommunicationDeviceCom1 ->
             SetStopBit(pxPortSettingsPackOne -> uiStopBits);
-            std::cout << "CSettingsLoad::Fsm uiStopBits " << (float)(pxPortSettingsPackOne -> uiStopBits) << std::endl;
 
             SetFsmState(SETTINGS_LOAD_START_RTU_UPPER_LEVEL_INTERFACE);
         }
