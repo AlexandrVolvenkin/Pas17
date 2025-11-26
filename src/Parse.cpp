@@ -6,7 +6,7 @@ using namespace std;
 
 //CParse xCArchiveSaveParse;
 // признак начала строки с именем диска.
-uint8_t CParse::aui8PartitionNameBeginSign[] =
+uint8_t CParse::auiPartitionNameBeginSign[] =
 {
     0xe2, 0x94, 0x94, 0xe2, 0x94, 0x80
 };
@@ -17,12 +17,12 @@ int8_t CParse::StartSignCheck(FILE *fp)
 {
     char cTemp;
     for (uint8_t i = 0;
-            ((i < sizeof(aui8PartitionNameBeginSign)) &&
+            ((i < sizeof(auiPartitionNameBeginSign)) &&
              (!(feof(fp))));
             i++)
     {
         cTemp = (char)fgetc(fp);
-        if (cTemp != aui8PartitionNameBeginSign[i])
+        if (cTemp != auiPartitionNameBeginSign[i])
         {
             return 0;
         }
@@ -35,9 +35,9 @@ int8_t CParse::StartSignCheck(FILE *fp)
 int8_t CParse::GetColumnSrtingData(FILE *fp, char *pcDestination)
 {
     char cTemp;
-    uint8_t ui8CharIndex;
+    uint8_t uiCharIndex;
 
-    ui8CharIndex = 0;
+    uiCharIndex = 0;
     while (1)
     {
         cTemp = (char)fgetc(fp);
@@ -48,9 +48,9 @@ int8_t CParse::GetColumnSrtingData(FILE *fp, char *pcDestination)
             // файл закончился?
             // длина превосходит максимальную?
             if ((feof(fp)) ||
-                    (ui8CharIndex >= MAX_COLUMN_TEXT_LENGTH))
+                    (uiCharIndex >= MAX_COLUMN_TEXT_LENGTH))
             {
-                pcDestination[ui8CharIndex] = 0;
+                pcDestination[uiCharIndex] = 0;
                 return 0;
             }
         }
@@ -62,14 +62,14 @@ int8_t CParse::GetColumnSrtingData(FILE *fp, char *pcDestination)
             // длина превосходит максимальную?
             if ((cTemp == '\n') ||
                     (feof(fp)) ||
-                    (ui8CharIndex >= MAX_COLUMN_TEXT_LENGTH))
+                    (uiCharIndex >= MAX_COLUMN_TEXT_LENGTH))
             {
-                pcDestination[ui8CharIndex] = 0;
+                pcDestination[uiCharIndex] = 0;
                 return 0;
             }
             else
             {
-                pcDestination[ui8CharIndex++] = cTemp;
+                pcDestination[uiCharIndex++] = cTemp;
                 break;
             }
         }
@@ -82,7 +82,7 @@ int8_t CParse::GetColumnSrtingData(FILE *fp, char *pcDestination)
         if (cTemp == EMPTY_SPASE_SIGHN)
         {
             // слово кончилось.
-            pcDestination[ui8CharIndex] = 0;
+            pcDestination[uiCharIndex] = 0;
             return 1;
         }
         else
@@ -92,14 +92,14 @@ int8_t CParse::GetColumnSrtingData(FILE *fp, char *pcDestination)
             // длина превосходит максимальную?
             if ((cTemp == '\n') ||
                     (feof(fp)) ||
-                    (ui8CharIndex >= MAX_COLUMN_TEXT_LENGTH))
+                    (uiCharIndex >= MAX_COLUMN_TEXT_LENGTH))
             {
-                pcDestination[ui8CharIndex] = 0;
+                pcDestination[uiCharIndex] = 0;
                 return 0;
             }
             else
             {
-                pcDestination[ui8CharIndex++] = cTemp;
+                pcDestination[uiCharIndex++] = cTemp;
             }
         }
     }
@@ -143,26 +143,26 @@ void CParse::GetDiskInfo(void)
     }
 
     uint8_t i;
-    ui8FsmState = 0;
-    ui8DiskIndex = 0;
+    uiFsmState = 0;
+    uiDiskIndex = 0;
 
     // пройдём по дискам, предположительно имеющимся в системе.
     while (!feof(fp) &&
-            (ui8DiskIndex < MAX_PARSE_DISK_NUMBER) &&
-            (ui8FsmState != 3))
+            (uiDiskIndex < MAX_PARSE_DISK_NUMBER) &&
+            (uiFsmState != 3))
     {
-        switch(ui8FsmState)
+        switch(uiFsmState)
         {
         case 0:
             // найден признак начала строки с именем диска?
             if (StartSignCheck(fp))
             {
                 i = 0;
-                ui8FsmState = 1;
+                uiFsmState = 1;
             }
             else
             {
-                ui8FsmState = 2;
+                uiFsmState = 2;
             }
             break;
 
@@ -171,23 +171,23 @@ void CParse::GetDiskInfo(void)
             if (!(GetColumnSrtingData(fp, acTempBuff)))
             {
                 // следующий диск.
-                ui8DiskIndex++;
-                ui8FsmState = 0;
+                uiDiskIndex++;
+                uiFsmState = 0;
             }
             // номер колонки с именем диска?
             if (i == LSBLK_COMMAND_ANSWER_TABLE_NAME_COLUMN)
             {
-                strcpy(axTDiskInfo[ui8DiskIndex].acName, acTempBuff);
+                strcpy(axTDiskInfo[uiDiskIndex].acName, acTempBuff);
             }
             // номер колонки с размером диска?
             else if (i == LSBLK_COMMAND_ANSWER_TABLE_SIZE_COLUMN)
             {
-                strcpy(axTDiskInfo[ui8DiskIndex].acSize, acTempBuff);
+                strcpy(axTDiskInfo[uiDiskIndex].acSize, acTempBuff);
             }
             // номер колонки с точкой монтирования диска?
             else if (i == LSBLK_COMMAND_ANSWER_TABLE_MOUNTPOINT_COLUMN)
             {
-                strcpy(axTDiskInfo[ui8DiskIndex].acMountPoint, acTempBuff);
+                strcpy(axTDiskInfo[uiDiskIndex].acMountPoint, acTempBuff);
             }
             // следующее слово.
             i++;
@@ -196,12 +196,12 @@ void CParse::GetDiskInfo(void)
         case 2:
             if (EndSignCheck(fp))
             {
-                ui8FsmState = 0;
+                uiFsmState = 0;
                 break;
             }
             else
             {
-                ui8FsmState = 0;
+                uiFsmState = 0;
                 break;
             }
 
@@ -226,7 +226,7 @@ void CParse::GetDiskInfo(void)
 // проверяет - Linux загружен с диска mmc0?
 int8_t CParse::CheckMountedDiskMmc0(void)
 {
-    uint8_t ui8Result;
+    uint8_t uiResult;
     char acCommand[128];
     // создадим команду.
     sprintf(acCommand,
@@ -246,7 +246,7 @@ int8_t CParse::CheckMountedDiskMmc0(void)
         exit (1);
     }
 
-    ui8Result = 0;
+    uiResult = 0;
     // получим содержимое первой строки(имя устройства).
     if (fgets(acTempBuff, LSBLK_COMMAND_ANSWER_MAX_NAME_LENGTH, fp))
     {
@@ -256,7 +256,7 @@ int8_t CParse::CheckMountedDiskMmc0(void)
                    7) == 0)
 
         {
-            ui8Result = 1;
+            uiResult = 1;
         }
     }
     else
@@ -264,7 +264,7 @@ int8_t CParse::CheckMountedDiskMmc0(void)
         printf("Cannot read pccParseFileName.\n");
     }
     fclose(fp);
-    return ui8Result;
+    return uiResult;
 }
 
 //-----------------------------------------------------------------------------------------------------
@@ -327,15 +327,15 @@ void CParse::GetDiskInfoNew(void)
             (i < MAX_PARSE_DISK_NUMBER);
             i++)
     {
-        uint8_t ui8NrTemp;
+        uint8_t uiNrTemp;
 
-        ui8NrTemp = ((i + 2));
-//        ui8NrTemp = ((i + 1) * 2);
+        uiNrTemp = ((i + 2));
+//        uiNrTemp = ((i + 1) * 2);
         // создадим команду.
         sprintf(acCommand,
                 "%s%d%s%s",
                 "lsblk | awk '!/в/ && NR == ",
-                ui8NrTemp,
+                uiNrTemp,
                 " {print $1}' > ",
                 pccParseFileName
                );
@@ -364,7 +364,7 @@ void CParse::GetDiskInfoNew(void)
 
 //        printf("GetDiskInfoNew i %d\n\r", i);
 ////        printf("GetDiskInfoNew ((i + 1) * 2) %d\n\r", ((i + 1) * 2));
-////        printf("GetDiskInfoNew ui8NrTemp %d\n\r", ui8NrTemp);
+////        printf("GetDiskInfoNew uiNrTemp %d\n\r", uiNrTemp);
 //        printf("GetDiskInfoNew axTDiskInfo[i].acName %s\n\r", axTDiskInfo[i].acName);
 ////        printf("GetDiskInfoNew axTDiskInfo[i].acSize %s\n\r", axTDiskInfo[i].acSize);
 ////        printf("GetDiskInfoNew acCommand %s\n\r", acCommand);
@@ -379,15 +379,15 @@ void CParse::GetDiskInfoNew(void)
             (i < MAX_PARSE_DISK_NUMBER);
             i++)
     {
-        uint8_t ui8NrTemp;
+        uint8_t uiNrTemp;
 
-        ui8NrTemp = ((i + 2));
-//        ui8NrTemp = ((i + 1) * 2);
+        uiNrTemp = ((i + 2));
+//        uiNrTemp = ((i + 1) * 2);
         // создадим команду.
         sprintf(acCommand,
                 "%s%d%s%s",
                 "lsblk | awk '!/в/ && NR == ",
-                ui8NrTemp,
+                uiNrTemp,
                 " {print $4}' > ",
                 pccParseFileName
                );
@@ -414,7 +414,7 @@ void CParse::GetDiskInfoNew(void)
 
 //        printf("GetDiskInfoNew i %d\n\r", i);
 ////        printf("GetDiskInfoNew ((i + 1) * 2) %d\n\r", ((i + 1) * 2));
-////        printf("GetDiskInfoNew ui8NrTemp %d\n\r", ui8NrTemp);
+////        printf("GetDiskInfoNew uiNrTemp %d\n\r", uiNrTemp);
 ////        printf("GetDiskInfoNew axTDiskInfo[i].acName %s\n\r", axTDiskInfo[i].acName);
 //        printf("GetDiskInfoNew axTDiskInfo[i].acSize %s\n\r", axTDiskInfo[i].acSize);
 ////        printf("GetDiskInfoNew acCommand %s\n\r", acCommand);

@@ -288,8 +288,10 @@ uint8_t CSettingsLoad::Fsm(void)
             pxModbusTcpSlaveUpperLevel ->
             SetOwnAddress(uiAddress);
 
-            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-            SetFsmState(DONE_OK);
+//            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+//            SetFsmState(DONE_OK);
+
+            SetFsmState(SETTINGS_LOAD_STOP_RTU_UPPER_LEVEL_INTERFACE);
         }
         break;
 
@@ -305,7 +307,7 @@ uint8_t CSettingsLoad::Fsm(void)
                 (CDataContainerDataBase*)GetExecutorDataContainerPointer();
             pxDataContainer -> m_uiTaskId = uiTaskId;
             pxDataContainer -> m_uiFsmCommandState =
-                CModbusSlave::IDDLE;
+                CModbusSlave::COMMUNICATION_STOP;
 
             SetFsmState(SETTINGS_LOAD_SETTINGS_DATA_BASE_BLOCKS_READ_START);
         }
@@ -362,23 +364,19 @@ uint8_t CSettingsLoad::Fsm(void)
                                                   GetTaskPointerByNameFromMap("SerialPortCommunicationDeviceCom1"));
 
             pxSerialPortCommunicationDeviceCom1 ->
-            SetBaudRate(pxPortSettingsPackOne -> ui8BaudRate);
+            SetBaudRate(pxPortSettingsPackOne -> uiBaudRate);
+            std::cout << "CSettingsLoad::Fsm uiBaudRate " << (float)(pxPortSettingsPackOne -> uiBaudRate) << std::endl;
             pxSerialPortCommunicationDeviceCom1 ->
-            SetDataBits(pxPortSettingsPackOne -> ui8DataBits);
+            SetDataBits(pxPortSettingsPackOne -> uiDataBits);
+            std::cout << "CSettingsLoad::Fsm uiDataBits " << (float)(pxPortSettingsPackOne -> uiDataBits) << std::endl;
             pxSerialPortCommunicationDeviceCom1 ->
-            SetParity(pxPortSettingsPackOne -> ui8Parity);
+            SetParity(pxPortSettingsPackOne -> uiParity);
+            std::cout << "CSettingsLoad::Fsm uiParity " << (float)(pxPortSettingsPackOne -> uiParity) << std::endl;
             pxSerialPortCommunicationDeviceCom1 ->
-            SetStopBit(pxPortSettingsPackOne -> ui8StopBits);
+            SetStopBit(pxPortSettingsPackOne -> uiStopBits);
+            std::cout << "CSettingsLoad::Fsm uiStopBits " << (float)(pxPortSettingsPackOne -> uiStopBits) << std::endl;
 
-
-//            CModbusSlave* pxModbusTcpSlaveUpperLevel =
-//                (CModbusSlave*)(GetResources() ->
-//                                GetTaskPointerByNameFromMap("ModbusTcpSlaveUpperLevel"));
-//            pxModbusTcpSlaveUpperLevel ->
-//            SetOwnAddress(uiAddress);
-
-//            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-//            SetFsmState(DONE_OK);
+            SetFsmState(SETTINGS_LOAD_START_RTU_UPPER_LEVEL_INTERFACE);
         }
         break;
 

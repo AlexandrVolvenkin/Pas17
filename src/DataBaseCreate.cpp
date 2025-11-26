@@ -984,8 +984,9 @@ uint8_t CDataBaseCreate::Fsm(void)
             TPortSettingsPackOne xPortSettingsPackOne =
             {
                 BIT_RATE_9600,
-                2,
-                PARITY_NO
+                8,
+                PARITY_NO,
+                2
             };
             TEthernetSettingsPackOne xEthernetSettingsPackOne =
             {

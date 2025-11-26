@@ -316,24 +316,24 @@ void CInternalModuleMuvr::Allocate(void)
 //            //std::cout << "CInternalModuleMuvr::GetModuleType 4"  << std::endl;
 ////            // модуль присутствует. увеличим значение переменной -
 ////            // фактическое количество модулей в системе.
-////            (xPlcConfigSearchTemp.ui8ModulesQuantity)++;
+////            (xPlcConfigSearchTemp.uiModulesQuantity)++;
 ////            // сохраним тип модуля в массиве для упорядочивания следования модулей при поиске на SPI.
-////            xPlcConfigSearchTemp.axConfigSearch[ucSlaveAddress].ui8Type =
+////            xPlcConfigSearchTemp.axConfigSearch[ucSlaveAddress].uiType =
 ////                auiSpiRxBuffer[MODULE_TYPE_OFFSET];
 ////            // сохраним адрес модуля в массиве для упорядочивания следования модулей при поиске на SPI.
-////            xPlcConfigSearchTemp.axConfigSearch[ucSlaveAddress].ui8Address =
+////            xPlcConfigSearchTemp.axConfigSearch[ucSlaveAddress].uiAddress =
 ////                ucSlaveAddress;
 ////
 ////            AddSystemComponent(auiSpiRxBuffer[MODULE_TYPE_OFFSET],
 ////                               ucSlaveAddress);
-////            //std::cout << "CInternalModuleMuvr::GetModuleType ucSlaveAddress "  << (int)xPlcConfigSearchTemp.axConfigSearch[ucSlaveAddress].ui8Address << std::endl;
-////            //std::cout << "CInternalModuleMuvr::GetModuleType ui8Type "  << (int)xPlcConfigSearchTemp.axConfigSearch[ucSlaveAddress].ui8Type << std::endl;
+////            //std::cout << "CInternalModuleMuvr::GetModuleType ucSlaveAddress "  << (int)xPlcConfigSearchTemp.axConfigSearch[ucSlaveAddress].uiAddress << std::endl;
+////            //std::cout << "CInternalModuleMuvr::GetModuleType uiType "  << (int)xPlcConfigSearchTemp.axConfigSearch[ucSlaveAddress].uiType << std::endl;
 //        }
 //        else
 //        {
 //            //std::cout << "CInternalModuleMuvr::GetModuleType 5"  << std::endl;
 ////            // сохраним адрес модуля в массиве для упорядочивания следования модулей при поиске на SPI.
-////            xPlcConfigSearchTemp.axConfigSearch[ucSlaveAddress].ui8Address =
+////            xPlcConfigSearchTemp.axConfigSearch[ucSlaveAddress].uiAddress =
 ////                ucSlaveAddress;
 ////
 ////            AddSystemComponent(0,

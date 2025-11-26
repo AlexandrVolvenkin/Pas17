@@ -2314,13 +2314,12 @@ uint8_t CModbusSlave::Fsm(void)
             GetResources() ->
             GetTaskIdByNameFromMap(m_sDeviceControlName);
 
-        SetFsmState(READY);
+        SetFsmState(COMMUNICATION_START);
     }
     break;
 
     case READY:
         //std::cout << "CModbusSlave::Fsm READY"  << std::endl;
-        SetFsmState(COMMUNICATION_START);
         break;
 
     case DONE_OK:

@@ -218,115 +218,122 @@ uint8_t CSettingsSet::Fsm(void)
     }
     break;
 
-//-------------------------------------------------------------------------------
-    case SETTINGS_LOAD_START:
-        std::cout << "CSettingsSet::Fsm SETTINGS_LOAD_START"  << std::endl;
-        {
-            SetFsmState(SETTINGS_LOAD_NETWORK_ADDRESS_DATA_BASE_BLOCKS_READ_START);
-        }
-        break;
+////-------------------------------------------------------------------------------
+//    case SETTINGS_LOAD_START:
+//        std::cout << "CSettingsSet::Fsm SETTINGS_LOAD_START"  << std::endl;
+//        {
+//            SetFsmState(SETTINGS_LOAD_NETWORK_ADDRESS_DATA_BASE_BLOCKS_READ_START);
+//        }
+//        break;
+//
+//    case SETTINGS_LOAD_NETWORK_ADDRESS_DATA_BASE_BLOCKS_READ_START:
+//        std::cout << "CSettingsSet::Fsm SETTINGS_LOAD_NETWORK_ADDRESS_DATA_BASE_BLOCKS_READ_START"  << std::endl;
+//        {
+//            m_uiDataStoreId =
+//                GetResources() ->
+//                GetTaskIdByNameFromMap(m_sDataStoreName);
+//
+//            CDataContainerDataBase* pxDataContainer =
+//                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+//            pxDataContainer -> m_uiTaskId = m_uiDataStoreId;
+//            pxDataContainer -> m_uiFsmCommandState =
+//                CDataStore::READ_BLOCK_DATA_START;
+//            // сетевой адрес блок 99
+//            pxDataContainer -> m_uiDataIndex = NETWORK_ADDRESS_DATA_BASE_BLOCK_OFFSET;
+//            pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+//
+//            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+//            SetFsmNextStateDoneOk(SETTINGS_LOAD_NETWORK_ADDRESS_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+//            SetFsmNextStateReadyWaitingError(SETTINGS_LOAD_NETWORK_ADDRESS_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+//            SetFsmNextStateDoneWaitingError(SETTINGS_LOAD_NETWORK_ADDRESS_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+//            SetFsmNextStateDoneWaitingDoneError(SETTINGS_LOAD_NETWORK_ADDRESS_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+//        }
+//        break;
+//
+//    case SETTINGS_LOAD_NETWORK_ADDRESS_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+//        std::cout << "CSettingsSet::Fsm SETTINGS_LOAD_NETWORK_ADDRESS_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+//        {
+//            SetFsmState(SETTINGS_LOAD_NETWORK_ADDRESS_SET_START);
+//        }
+//        break;
+//
+//    case SETTINGS_LOAD_NETWORK_ADDRESS_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+//        std::cout << "CSettingsSet::Fsm SETTINGS_LOAD_NETWORK_ADDRESS_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+//        {
+//            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+//            SetFsmState(DONE_ERROR);
+//        }
+//        break;
+//
+//    case SETTINGS_LOAD_NETWORK_ADDRESS_SET_START:
+//        std::cout << "CSettingsSet::Fsm SETTINGS_LOAD_NETWORK_ADDRESS_SET_START"  << std::endl;
+//        {
+//            uint8_t uiAddress =
+//                (m_puiIntermediateBuff[0] +
+//                 CONVERT_INTEGER_TO_NATURAL_NUMBER);
+//            std::cout << "CSettingsSet::Fsm uiAddress "  << (int)uiAddress << std::endl;
+//
+//            CModbusSlave* pxModbusRtuSlaveUpperLevel =
+//                (CModbusSlave*)(GetResources() ->
+//                                GetTaskPointerByNameFromMap("ModbusRtuSlaveUpperLevel"));
+//            pxModbusRtuSlaveUpperLevel ->
+//            SetOwnAddress(uiAddress);
+//
+//            CModbusSlave* pxModbusTcpSlaveUpperLevel =
+//                (CModbusSlave*)(GetResources() ->
+//                                GetTaskPointerByNameFromMap("ModbusTcpSlaveUpperLevel"));
+//            pxModbusTcpSlaveUpperLevel ->
+//            SetOwnAddress(uiAddress);
+//
+//            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+//            SetFsmState(DONE_OK);
+//        }
+//        break;
 
-    case SETTINGS_LOAD_NETWORK_ADDRESS_DATA_BASE_BLOCKS_READ_START:
-        std::cout << "CSettingsSet::Fsm SETTINGS_LOAD_NETWORK_ADDRESS_DATA_BASE_BLOCKS_READ_START"  << std::endl;
-        {
-            m_uiDataStoreId =
-                GetResources() ->
-                GetTaskIdByNameFromMap(m_sDataStoreName);
-
-            CDataContainerDataBase* pxDataContainer =
-                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-            pxDataContainer -> m_uiTaskId = m_uiDataStoreId;
-            pxDataContainer -> m_uiFsmCommandState =
-                CDataStore::READ_BLOCK_DATA_START;
-            // сетевой адрес блок 99
-            pxDataContainer -> m_uiDataIndex = NETWORK_ADDRESS_DATA_BASE_BLOCK_OFFSET;
-            pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
-
-            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
-            SetFsmNextStateDoneOk(SETTINGS_LOAD_NETWORK_ADDRESS_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
-            SetFsmNextStateReadyWaitingError(SETTINGS_LOAD_NETWORK_ADDRESS_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
-            SetFsmNextStateDoneWaitingError(SETTINGS_LOAD_NETWORK_ADDRESS_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
-            SetFsmNextStateDoneWaitingDoneError(SETTINGS_LOAD_NETWORK_ADDRESS_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
-        }
-        break;
-
-    case SETTINGS_LOAD_NETWORK_ADDRESS_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
-        std::cout << "CSettingsSet::Fsm SETTINGS_LOAD_NETWORK_ADDRESS_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
-        {
-            SetFsmState(SETTINGS_LOAD_NETWORK_ADDRESS_SET_START);
-        }
-        break;
-
-    case SETTINGS_LOAD_NETWORK_ADDRESS_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
-        std::cout << "CSettingsSet::Fsm SETTINGS_LOAD_NETWORK_ADDRESS_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
-        {
-            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
-            SetFsmState(DONE_ERROR);
-        }
-        break;
-
-    case SETTINGS_LOAD_NETWORK_ADDRESS_SET_START:
-        std::cout << "CSettingsSet::Fsm SETTINGS_LOAD_NETWORK_ADDRESS_SET_START"  << std::endl;
-        {
-            uint8_t uiAddress =
-                (m_puiIntermediateBuff[0] +
-                 CONVERT_INTEGER_TO_NATURAL_NUMBER);
-            std::cout << "CSettingsSet::Fsm uiAddress "  << (int)uiAddress << std::endl;
-
-            CModbusSlave* pxModbusRtuSlaveUpperLevel =
-                (CModbusSlave*)(GetResources() ->
-                                GetTaskPointerByNameFromMap("ModbusRtuSlaveUpperLevel"));
-            pxModbusRtuSlaveUpperLevel ->
-            SetOwnAddress(uiAddress);
-
-            CModbusSlave* pxModbusTcpSlaveUpperLevel =
-                (CModbusSlave*)(GetResources() ->
-                                GetTaskPointerByNameFromMap("ModbusTcpSlaveUpperLevel"));
-            pxModbusTcpSlaveUpperLevel ->
-            SetOwnAddress(uiAddress);
-
-            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-            SetFsmState(DONE_OK);
-        }
-        break;
-
-//-------------------------------------------------------------------------------
-    case SETTINGS_SET_SETTINGS_DATA_BASE_BLOCKS_WRITE_START:
-        std::cout << "CDataBaseCreate::Fsm SETTINGS_SET_SETTINGS_DATA_BASE_BLOCKS_WRITE_START"  << std::endl;
-        {
-            CDataContainerDataBase* pxDataContainer =
-                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-            pxDataContainer -> m_uiTaskId = m_uiDataStoreId;
-            pxDataContainer -> m_uiFsmCommandState =
-                CDataStore::START_WRITE_TEMPORARY_BLOCK_DATA;
-            // параметры настроек блок 101
-            pxDataContainer -> m_uiDataIndex = SETTINGS_DATA_BASE_BLOCK_OFFSET;
-            pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
-
-            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
-            SetFsmNextStateDoneOk(SETTINGS_SET_SETTINGS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
-            SetFsmNextStateReadyWaitingError(SETTINGS_SET_SETTINGS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
-            SetFsmNextStateDoneWaitingError(SETTINGS_SET_SETTINGS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
-            SetFsmNextStateDoneWaitingDoneError(SETTINGS_SET_SETTINGS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
-        }
-        break;
-
-    case SETTINGS_SET_SETTINGS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
-        std::cout << "CSettingsSet::Fsm SETTINGS_SET_SETTINGS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
-        {
-            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-            SetFsmState(DONE_OK);
-        }
-        break;
-
-    case SETTINGS_SET_SETTINGS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
-        std::cout << "CSettingsSet::Fsm SETTINGS_SET_SETTINGS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
-        {
-            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
-            SetFsmState(DONE_ERROR);
-        }
-        break;
-
+////-------------------------------------------------------------------------------
+//    case SETTINGS_SET_SETTINGS_DATA_BASE_BLOCKS_WRITE_START:
+//        std::cout << "CDataBaseCreate::Fsm SETTINGS_SET_SETTINGS_DATA_BASE_BLOCKS_WRITE_START"  << std::endl;
+//        {
+//            m_uiDataStoreId =
+//                GetResources() ->
+//                GetTaskIdByNameFromMap(m_sDataStoreName);
+//
+//            CDataContainerDataBase* pxDataContainer =
+//                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+//            pxDataContainer -> m_uiTaskId = m_uiDataStoreId;
+//            pxDataContainer -> m_uiFsmCommandState =
+//                CDataStore::START_WRITE_TEMPORARY_BLOCK_DATA;
+//            // сетевой адрес блок 99
+//            pxDataContainer -> m_uiDataIndex = SETTINGS_DATA_BASE_BLOCK_OFFSET;
+//            // в буфере m_puiIntermediateBuff приходдят данные начиная с кода опции.
+//            // для записи в базу данных он нам не нужен.
+//            pxDataContainer -> m_puiDataPointer =
+//                &(((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer[DATA_OFFSET]);
+//
+//            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+//            SetFsmNextStateDoneOk(SETTINGS_SET_SETTINGS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+//            SetFsmNextStateReadyWaitingError(SETTINGS_SET_SETTINGS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+//            SetFsmNextStateDoneWaitingError(SETTINGS_SET_SETTINGS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+//            SetFsmNextStateDoneWaitingDoneError(SETTINGS_SET_SETTINGS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+//        }
+//        break;
+//
+//    case SETTINGS_SET_SETTINGS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+//        std::cout << "CSettingsSet::Fsm SETTINGS_SET_SETTINGS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+//        {
+//            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+//            SetFsmState(DONE_OK);
+//        }
+//        break;
+//
+//    case SETTINGS_SET_SETTINGS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+//        std::cout << "CSettingsSet::Fsm SETTINGS_SET_SETTINGS_DATA_BASE_BLOCKS_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+//        {
+//            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+//            SetFsmState(DONE_ERROR);
+//        }
+//        break;
+//
 //-------------------------------------------------------------------------------
     default:
         break;

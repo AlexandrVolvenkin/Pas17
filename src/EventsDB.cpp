@@ -30,8 +30,8 @@ using namespace std;
 char CEventsDB::acQueryDataExchange[];
 uint16_t CEventsDB::aui16QueryDataExchangeIndex[];
 uint16_t CEventsDB::ui16QueryDataExchangeIndex;
-uint8_t CEventsDB::ui8QueryGetRowQuantity;
-uint8_t CEventsDB::ui8QueryGetColumnQuantity;
+uint8_t CEventsDB::uiQueryGetRowQuantity;
+uint8_t CEventsDB::uiQueryGetColumnQuantity;
 
 //-------------------------------------------------------------------------------
 CEventsDB::CEventsDB()
@@ -51,12 +51,12 @@ int CEventsDB::Callback(void *NotUsed, int argc, char **argv, char **azColName)
     // int argc: holds the number of results
     // (array) azColName: holds each column returned
     // (array) argv: holds each value
-    uint8_t ui8Length;
+    uint8_t uiLength;
 
     for(int i = 0; i < argc; i++)
     {
-        ui8Length = strlen(argv[i]);
-        if (ui8Length > EVENTS_DB_QUERY_COLUMN_LENGTH)
+        uiLength = strlen(argv[i]);
+        if (uiLength > EVENTS_DB_QUERY_COLUMN_LENGTH)
         {
             // Return error.
             return 1;
@@ -64,13 +64,13 @@ int CEventsDB::Callback(void *NotUsed, int argc, char **argv, char **azColName)
         // получим строку данных текущей колонки.
         strcpy(&acQueryDataExchange[ui16QueryDataExchangeIndex], argv[i]);
         // сохраним индекс строки данных текущей колонки.
-        aui16QueryDataExchangeIndex[ui8QueryGetColumnQuantity] =
+        aui16QueryDataExchangeIndex[uiQueryGetColumnQuantity] =
             ui16QueryDataExchangeIndex;
         // следующая колонка.
-        ui16QueryDataExchangeIndex += (ui8Length + END_OF_STRING_LENGTH);
-        ui8QueryGetColumnQuantity++;
+        ui16QueryDataExchangeIndex += (uiLength + END_OF_STRING_LENGTH);
+        uiQueryGetColumnQuantity++;
     }
-    ui8QueryGetRowQuantity++;
+    uiQueryGetRowQuantity++;
     // Return successful.
     return 0;
 }
@@ -263,8 +263,8 @@ int CEventsDB::SendQuery(char *pcQuery)
     Cp1251ToUtf8(acQuery, pcQuery);
     // подготовим счётчики к приёму первой строки, первой колонки данных запроса.
     ui16QueryDataExchangeIndex = 0;
-    ui8QueryGetColumnQuantity = 0;
-    ui8QueryGetRowQuantity = 0;
+    uiQueryGetColumnQuantity = 0;
+    uiQueryGetRowQuantity = 0;
 
     rc = sqlite3_exec(db,
                       (const char*)Cp1251ToUtf8(acQuery, acQuery),
@@ -331,8 +331,8 @@ int CEventsDB::DataBaseDataPush(CEvents::TEventDataCommon *pxSource)
             pxSource -> ui16Address,
             accDateStr,
             accTimeStr,
-            pxSource -> ui8Type,
-            pxSource -> ui8State
+            pxSource -> uiType,
+            pxSource -> uiState
            );
 
     //std::cout << "CEventsDB::DataBaseDataPush 3"  << std::endl;
@@ -413,14 +413,14 @@ void CEventsDB::DataBaseIsFullReset(void)
 //
 //    ui16ID = ui16LastFirstID;
 //
-//    switch(CEvents::xEventsLogQueryList.ui8Order)
+//    switch(CEvents::xEventsLogQueryList.uiOrder)
 //    {
 //    case CEvents::REQUESTED_EVENTS_ORDER_DEFAULT:
 //        printf("REQUESTED_EVENTS_ORDER_DEFAULT i16Index %d\n\r", (CEvents::xEventsLogQueryList.i16Index));
 ////        printf("REQUESTED_EVENTS_ORDER_DEFAULT ui16LastFirstID %d\n\r", (ui16LastFirstID));
 ////        printf("REQUESTED_EVENTS_ORDER_DEFAULT ui16LastLastID %d\n\r", (ui16LastLastID));
 //        // создадим строку SQL запроса.
-//        if (CEventLogQuery::ui8DirectionIsForward)
+//        if (CEventLogQuery::uiDirectionIsForward)
 //        {
 //            sprintf((char*)acQuery,
 //                    "%s '%d' %s %s '%d';",
@@ -447,7 +447,7 @@ void CEventsDB::DataBaseIsFullReset(void)
 //        printf("REQUESTED_EVENTS_ORDER_BY_NUMBER ui16Address %d\n\r", (CEvents::xEventsLogQueryList.ui16Address));
 //        // создадим строку SQL запроса.
 //        // направление чтения вперёд(от большего ID к меньшему ID, от ближнего события к дальнему)?
-//        if (CEventLogQuery::ui8DirectionIsForward)
+//        if (CEventLogQuery::uiDirectionIsForward)
 //        {
 //            sprintf((char*)acQuery,
 //                    "%s '%d' %s '%d' %s '%d' %s '%d' %s %s '%d' %s %s '%d';",
@@ -489,15 +489,15 @@ void CEventsDB::DataBaseIsFullReset(void)
 //        break;
 //    case CEvents::REQUESTED_EVENTS_ORDER_BY_DATE:
 //        struct tm xTime;
-//        xTime.tm_mday = CEvents::xEventsLogQueryList.ui8MonthDay;
-//        xTime.tm_mon = CEvents::xEventsLogQueryList.ui8Month - 1;
-//        xTime.tm_year = CEvents::xEventsLogQueryList.ui8Year + 100;
+//        xTime.tm_mday = CEvents::xEventsLogQueryList.uiMonthDay;
+//        xTime.tm_mon = CEvents::xEventsLogQueryList.uiMonth - 1;
+//        xTime.tm_year = CEvents::xEventsLogQueryList.uiYear + 100;
 //        // преобразуем дату и время в нужный формат.
 //        strftime(accDateStr, 100, "%Y-%m-%d", &xTime);// date;
 ////        strftime(accTimeStr, 100, "%H:%M:%S", &(pxSource -> xCurrentTime));// time
 //        // создадим строку SQL запроса.
 //        // направление чтения вперёд(от большего ID к меньшему ID, от ближнего события к дальнему)?
-//        if (CEventLogQuery::ui8DirectionIsForward)
+//        if (CEventLogQuery::uiDirectionIsForward)
 //        {
 //            sprintf((char*)acQuery,
 //                    "%s '%s' %s '%d' %s %s '%d';",
@@ -528,8 +528,8 @@ void CEventsDB::DataBaseIsFullReset(void)
 //
 //    // подготовим счётчики к приёму первой строки, первой колонки данных запроса.
 //    ui16QueryDataExchangeIndex = 0;
-//    ui8QueryGetColumnQuantity = 0;
-//    ui8QueryGetRowQuantity = 0;
+//    uiQueryGetColumnQuantity = 0;
+//    uiQueryGetRowQuantity = 0;
 //    pacQueryDataExchange = acQueryDataExchange;
 //
 //    rc = sqlite3_exec(db,
@@ -550,7 +550,7 @@ void CEventsDB::DataBaseIsFullReset(void)
 //        cout << "DataBaseDataGet successfully" << endl;
 //        pacQueryDataExchange = acQueryDataExchange;
 //        for(int i = 0;
-//                ((i < ui8QueryGetRowQuantity) &&
+//                ((i < uiQueryGetRowQuantity) &&
 //                 (i < EVENTS_DB_QUERY_ROW_QUANTITY));
 //                i++)
 //        {
@@ -563,7 +563,7 @@ void CEventsDB::DataBaseIsFullReset(void)
 //                &aui16QueryDataExchangeIndex[i * EVENTS_DB_QUERY_COLUMN_QUANTITY];
 //
 //            // идём от большего ID к меньшему?
-//            if (CEventLogQuery::ui8DirectionIsForward)
+//            if (CEventLogQuery::uiDirectionIsForward)
 //            {
 //                // идём от большего ID к меньшему.
 //                // сохраним меньший ID в ответе на запрос.
@@ -600,9 +600,9 @@ void CEventsDB::DataBaseIsFullReset(void)
 //                     &pacQueryDataExchange[*pui16QueryDataExchangeIndex++]);
 //            TimeAtoi(&(pxDestination -> xCurrentTime),
 //                     &pacQueryDataExchange[*pui16QueryDataExchangeIndex++]);
-//            pxDestination -> ui8Type =
+//            pxDestination -> uiType =
 //                atoi(&pacQueryDataExchange[*pui16QueryDataExchangeIndex++]);
-//            pxDestination -> ui8State =
+//            pxDestination -> uiState =
 //                atoi(&pacQueryDataExchange[*pui16QueryDataExchangeIndex++]);
 //            pxDestination -> i16Index =
 //                ((i16IndexQuery) + i);
@@ -618,7 +618,7 @@ void CEventsDB::DataBaseIsFullReset(void)
 // возвращает количество принятых записей, при последнем запросе.
 uint8_t CEventsDB::LastQueryRecordsQuantityGet(void)
 {
-    return ui8QueryGetRowQuantity;
+    return uiQueryGetRowQuantity;
 }
 
 //-----------------------------------------------------------------------------------------------------
@@ -626,37 +626,37 @@ int CEventsDB::TimeAtoi(struct tm *pxTimeInt, char *pcTimeString)
 {
     char acTempString[8];
     uint8_t i;
-    uint8_t ui8TimeStringIndex;
+    uint8_t uiTimeStringIndex;
 
-    ui8TimeStringIndex = 0;
+    uiTimeStringIndex = 0;
     // 2 - количество символов в представлении часа.
     for (i = 0; i < 2; i++)
     {
-        acTempString[i] =  pcTimeString[ui8TimeStringIndex++];
+        acTempString[i] =  pcTimeString[uiTimeStringIndex++];
     }
     // поместим признак конца строки.
     acTempString[i] =  0;
     pxTimeInt -> tm_hour = atoi(acTempString);
 
     // пропустим символ - ':'.
-    ui8TimeStringIndex++;
+    uiTimeStringIndex++;
 
     // 2 - количество символов в представлении минуты.
     for (i = 0; i < 2; i++)
     {
-        acTempString[i] =  pcTimeString[ui8TimeStringIndex++];
+        acTempString[i] =  pcTimeString[uiTimeStringIndex++];
     }
     // поместим признак конца строки.
     acTempString[i] =  0;
     pxTimeInt -> tm_min = atoi(acTempString);
 
     // пропустим символ - ':'.
-    ui8TimeStringIndex++;
+    uiTimeStringIndex++;
 
     // 2 - количество символов в представлении секунды.
     for (i = 0; i < 2; i++)
     {
-        acTempString[i] =  pcTimeString[ui8TimeStringIndex++];
+        acTempString[i] =  pcTimeString[uiTimeStringIndex++];
     }
     // поместим признак конца строки.
     acTempString[i] =  0;
@@ -668,40 +668,40 @@ int CEventsDB::DateAtoi(struct tm *pxDateInt, char *pcDateString)
 {
     char acTempString[8];
     uint8_t i;
-    uint8_t ui8DateStringIndex;
+    uint8_t uiDateStringIndex;
 
 
     // начнём с символов десятков года.
-    ui8DateStringIndex = 2;
+    uiDateStringIndex = 2;
     // 2 - нужное количество символов в представлении года.
     // начнём с десятков.
     for (i = 0; i < 2; i++)
     {
-        acTempString[i] =  pcDateString[ui8DateStringIndex++];
+        acTempString[i] =  pcDateString[uiDateStringIndex++];
     }
     // поместим признак конца строки.
     acTempString[i] =  0;
     pxDateInt -> tm_year = (atoi(acTempString) + 100);
 
     // пропустим символ - '-'.
-    ui8DateStringIndex++;
+    uiDateStringIndex++;
 
     // 2 - количество символов в представлении месяца.
     for (i = 0; i < 2; i++)
     {
-        acTempString[i] =  pcDateString[ui8DateStringIndex++];
+        acTempString[i] =  pcDateString[uiDateStringIndex++];
     }
     // поместим признак конца строки.
     acTempString[i] =  0;
     pxDateInt -> tm_mon = (atoi(acTempString) - 1);
 
     // пропустим символ - '-'.
-    ui8DateStringIndex++;
+    uiDateStringIndex++;
 
     // 2 - количество символов в представлении дня.
     for (i = 0; i < 2; i++)
     {
-        acTempString[i] =  pcDateString[ui8DateStringIndex++];
+        acTempString[i] =  pcDateString[uiDateStringIndex++];
     }
     // поместим признак конца строки.
     acTempString[i] =  0;

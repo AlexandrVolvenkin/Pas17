@@ -69,8 +69,8 @@ public:
             EVENTS_DB_QUERY_ROW_QUANTITY)];
 
     static uint16_t ui16QueryDataExchangeIndex;
-    static uint8_t ui8QueryGetRowQuantity;
-    static uint8_t ui8QueryGetColumnQuantity;
+    static uint8_t uiQueryGetRowQuantity;
+    static uint8_t uiQueryGetColumnQuantity;
     uint16_t ui16TotalRecordsNumber;
     uint16_t i16IndexQuery;
     // больший id в предыдущем запросе.
@@ -137,7 +137,7 @@ public:
     CArchiveEventsDB()
     {
         pccEventsDataBaseName = "/home/debian/Pas17ArchiveDataBase.db";
-        ui8QueryGetRowQuantity = 0;
+        uiQueryGetRowQuantity = 0;
         bDataBaseIsFull = false;
     }
 

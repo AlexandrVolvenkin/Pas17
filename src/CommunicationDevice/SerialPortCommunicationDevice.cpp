@@ -166,7 +166,7 @@ const char* CSerialPortCommunicationDevice::GetDeviceName(void)
 }
 
 //-------------------------------------------------------------------------------
-void CSerialPortCommunicationDevice::SetBaudRate(uint32_t uiBaudRate)
+void CSerialPortCommunicationDevice::SetBaudRate(uint8_t uiBaudRate)
 {
     speed_t speed;
 
@@ -175,37 +175,19 @@ void CSerialPortCommunicationDevice::SetBaudRate(uint32_t uiBaudRate)
     */
     switch (uiBaudRate)
     {
-    case 110:
-        speed = B110;
-        break;
-    case 300:
-        speed = B300;
-        break;
-    case 600:
-        speed = B600;
-        break;
-    case 1200:
-        speed = B1200;
-        break;
-    case 2400:
-        speed = B2400;
-        break;
-    case 4800:
-        speed = B4800;
-        break;
-    case 9600:
+    case BIT_RATE_9600:
         speed = B9600;
         break;
-    case 19200:
+    case BIT_RATE_19200:
         speed = B19200;
         break;
-    case 38400:
+    case BIT_RATE_38400:
         speed = B38400;
         break;
-    case 57600:
+    case BIT_RATE_57600:
         speed = B57600;
         break;
-    case 115200:
+    case BIT_RATE_115200:
         speed = B115200;
         break;
     default:
@@ -249,16 +231,16 @@ void CSerialPortCommunicationDevice::SetDataBits(uint8_t uiDataBits)
 }
 
 //-------------------------------------------------------------------------------
-void CSerialPortCommunicationDevice::SetParity(char cParity)
+void CSerialPortCommunicationDevice::SetParity(uint8_t uiParity)
 {
     /* PARENB       Enable parity bit
        PARODD       Use odd parity instead of even */
-    if (cParity == 'N')
+    if (uiParity == PARITY_NO)
     {
         /* None */
         m_xTios.c_cflag &=~ PARENB;
     }
-    else if (cParity == 'E')
+    else if (uiParity == PARITY_EVEN)
     {
         /* Even */
         m_xTios.c_cflag |= PARENB;
@@ -289,7 +271,7 @@ void CSerialPortCommunicationDevice::SetParity(char cParity)
        IUCLC        Map uppercase to lowercase
        IMAXBEL      Echo BEL on input line too long
     */
-    if (cParity == 'N')
+    if (uiParity == PARITY_NO)
     {
         /* None */
         m_xTios.c_iflag &= ~INPCK;

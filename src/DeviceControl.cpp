@@ -362,9 +362,9 @@ void CDeviceControl::CurrentTimeUpdate(void)
 //        return;
 
 ////    // прошла минута?
-////    if (ui8CurrentTimeSaveDelayCounter != tstructCurrent.tm_min)
+////    if (uiCurrentTimeSaveDelayCounter != tstructCurrent.tm_min)
 ////    {
-////        ui8CurrentTimeSaveDelayCounter = tstructCurrent.tm_min;
+////        uiCurrentTimeSaveDelayCounter = tstructCurrent.tm_min;
 ////        // сохраним текущее время в FRAM.
 ////        iFramWrite(FRAM_LAST_SAVED_TIME_OFFSET,
 ////                   (uint8_t*)&xCurrentTime,
@@ -1209,8 +1209,8 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
 //					  AIN_OFF_BIT_ARRAY_LENGTH)))
 //	{
 //		// перед этим кто либо другой не вывел из обработки аналоговый вход?
-//		if ((xMainFlagRegister.ui8AinOffProcessOwnerIndex == AIN_OFF_PROCESS_OWNER_IS_NONE) ||
-//				(xMainFlagRegister.ui8AinOffProcessOwnerIndex == AIN_OFF_PROCESS_OWNER_IS_HMI))
+//		if ((xMainFlagRegister.uiAinOffProcessOwnerIndex == AIN_OFF_PROCESS_OWNER_IS_NONE) ||
+//				(xMainFlagRegister.uiAinOffProcessOwnerIndex == AIN_OFF_PROCESS_OWNER_IS_HMI))
 //		{
 //			// вычислим индекс модуля в массиве контекста, к которому поступила команда.
 //			nucIndexNumber =  ((((xPlcConfigService.xPlcConfigServiceData.ucLastAnalogueInputModuleIndex) + 1) -
@@ -1267,11 +1267,11 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
 //					// выведем аналоговый вход из обработки.
 //					aucCoilsArray[(pxModbusMapping -> current_message_address_bits) -
 //								  COILS_ARRAY_MODBUS_BEGIN_ADDRESS] = 1;
-//					xMainFlagRegister.ui8AinOffProcessOwnerIndex = AIN_OFF_PROCESS_OWNER_IS_HMI;
+//					xMainFlagRegister.uiAinOffProcessOwnerIndex = AIN_OFF_PROCESS_OWNER_IS_HMI;
 //
 ////                    aucDoValueBlockByteArray[(pxModbusMapping -> current_message_address_bits) -
 ////                                             COILS_ARRAY_MODBUS_BEGIN_ADDRESS - AIN_OFF_BIT_ARRAY_OFFSET] = 1;
-////                    ui8TempCommand = xAllModulesContext.axAllModulesContext[nucIndexNumber].
+////                    uiTempCommand = xAllModulesContext.axAllModulesContext[nucIndexNumber].
 ////                                     xModuleContextDinamic.
 ////                                     ucCommonIndex;
 //				}
@@ -1279,11 +1279,11 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
 //				{
 //					// выключение режима калибровки.
 //					cout << "AIN_OFF_BIT_ARRAY_OFFSET 0" << endl;
-//					xMainFlagRegister.ui8AinOffProcessOwnerIndex = AIN_OFF_PROCESS_OWNER_IS_NONE;
+//					xMainFlagRegister.uiAinOffProcessOwnerIndex = AIN_OFF_PROCESS_OWNER_IS_NONE;
 //
 ////                    aucDoValueBlockByteArray[(pxModbusMapping -> current_message_address_bits) -
 ////                                             COILS_ARRAY_MODBUS_BEGIN_ADDRESS - AIN_OFF_BIT_ARRAY_OFFSET] = 0;
-////                    ui8TempCommand = 0;
+////                    uiTempCommand = 0;
 //				}
 //			}
 //
@@ -1909,17 +1909,6 @@ uint8_t CDeviceControl::Fsm(void)
     case ANALOGUE_MEASURE_ARCHIVE_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
         //std::cout << "CDeviceControl::Fsm ANALOGUE_MEASURE_ARCHIVE_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
     {
-//            CDataContainerDataBase* pxCustomerDataContainer =
-//                (CDataContainerDataBase*)GetCustomerDataContainerPointer();
-//            (GetResources() -> GetDeviceStateDataPointer()) ->
-//            uiFlashConnectorStatus =
-//                2;
-//            pxCustomerDataContainer -> m_uiDataLength =
-//                sizeof(struct TDeviceStateDataPackOne);
-//            memcpy(pxCustomerDataContainer -> m_puiDataPointer,
-//                   (GetResources() -> GetDeviceStateDataPointer()),
-//                   pxCustomerDataContainer -> m_uiDataLength);
-
         ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
         SetFsmState(DONE_OK);
     }
@@ -1937,13 +1926,6 @@ uint8_t CDeviceControl::Fsm(void)
     case ANALOGUE_MEASURE_ARCHIVE_WRITE_STATE_REQUEST_START:
         //std::cout << "CDeviceControl::Fsm ANALOGUE_MEASURE_ARCHIVE_WRITE_STATE_REQUEST_START"  << std::endl;
     {
-//            CDataContainerDataBase* pxDataContainer =
-//                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-//            pxDataContainer -> m_uiTaskId = m_uiConfigurationCreateId;
-//            pxDataContainer -> m_uiFsmCommandState =
-//                CConfigurationCreate::CONFIGURATION_REQUEST_START;
-//            pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
-
         SetFsmState(ANALOGUE_MEASURE_ARCHIVE_WRITE_STATE_REQUEST_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
     }
     break;
@@ -2386,11 +2368,6 @@ uint8_t CDeviceControl::Fsm(void)
             GetResources() ->
             GetTaskIdByNameFromMap(m_sDataStoreName);
 
-//        uint16_t  uiLength = sizeof(struct TPlcSettingsPackOne);
-//        memcpy(m_puiIntermediateBuff,
-//               &(xPlcSettingsPackOne),
-//               uiLength);
-
         CDataContainerDataBase* pxDataContainer =
             (CDataContainerDataBase*)GetExecutorDataContainerPointer();
         pxDataContainer -> m_uiTaskId = m_uiDataStoreId;
@@ -2398,7 +2375,10 @@ uint8_t CDeviceControl::Fsm(void)
             CDataStore::START_WRITE_TEMPORARY_BLOCK_DATA;
         // сетевой адрес блок 99
         pxDataContainer -> m_uiDataIndex = SETTINGS_DATA_BASE_BLOCK_OFFSET;
-        pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+        // в буфере m_puiIntermediateBuff приходдят данные начиная с кода опции.
+        // для записи в базу данных он нам не нужен.
+        pxDataContainer -> m_puiDataPointer =
+            &(((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer[DATA_OFFSET]);
 
         SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
         SetFsmNextStateDoneOk(SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
@@ -2411,15 +2391,6 @@ uint8_t CDeviceControl::Fsm(void)
     case SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
         std::cout << "CDeviceControl::Fsm SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
         {
-            CDataContainerDataBase* pxCustomerDataContainer =
-                (CDataContainerDataBase*)GetCustomerDataContainerPointer();
-
-            pxCustomerDataContainer -> m_uiDataLength =
-                (sizeof(struct TPortSettingsPackOne) + OPTION_CODE_LENGTH);
-            memcpy(&(pxCustomerDataContainer -> m_puiDataPointer[DATA_OFFSET]),
-                   (uint8_t*)(&(((TPlcSettingsPackOne*)(m_puiIntermediateBuff)) -> xTRs485HighLevelSettingsPackOne)),
-                   (sizeof(struct TPortSettingsPackOne)));
-
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(DONE_OK);
         }

@@ -421,10 +421,12 @@ uint8_t CModbusRtuSlaveLinkLayer::Fsm(void)
 
     case DONE_OK:
 //        //std::cout << "CModbusRtuSlaveLinkLayer::Fsm DONE_OK"  << std::endl;
+//        SetFsmOperationStatus(DONE_OK);
         break;
 
     case DONE_ERROR:
 //        //std::cout << "CModbusRtuSlaveLinkLayer::Fsm DONE_ERROR"  << std::endl;
+//        SetFsmOperationStatus(DONE_ERROR);
         break;
 
     case COMMUNICATION_START:
@@ -599,7 +601,8 @@ uint8_t CModbusRtuSlaveLinkLayer::Fsm(void)
     case COMMUNICATION_STOP:
         //std::cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_STOP"  << std::endl;
         m_pxCommunicationDevice -> Close();
-        SetFsmState(READY);
+//        SetFsmState(READY);
+        SetFsmState(DONE_OK);
         break;
 
     default:

@@ -45,11 +45,11 @@ public:
 
     std::ifstream indata;
     const char *pccParseFileName;
-    static uint8_t aui8PartitionNameBeginSign[];
+    static uint8_t auiPartitionNameBeginSign[];
     TDiskInfo axTDiskInfo[MAX_PARSE_DISK_NUMBER];
-    uint8_t ui8DiskIndex;
+    uint8_t uiDiskIndex;
     // положение автомата.
-    uint8_t ui8FsmState;
+    uint8_t uiFsmState;
 
 public:
     CParse()

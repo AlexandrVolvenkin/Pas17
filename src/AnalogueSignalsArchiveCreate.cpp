@@ -281,9 +281,9 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
 //        return;
 
 ////    // прошла минута?
-////    if (ui8CurrentTimeSaveDelayCounter != tstructCurrent.tm_min)
+////    if (uiCurrentTimeSaveDelayCounter != tstructCurrent.tm_min)
 ////    {
-////        ui8CurrentTimeSaveDelayCounter = tstructCurrent.tm_min;
+////        uiCurrentTimeSaveDelayCounter = tstructCurrent.tm_min;
 ////        // сохраним текущее время в FRAM.
 ////        iFramWrite(FRAM_LAST_SAVED_TIME_OFFSET,
 ////                   (uint8_t*)&xCurrentTime,

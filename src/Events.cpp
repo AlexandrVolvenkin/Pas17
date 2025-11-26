@@ -213,7 +213,7 @@ void CEvents::Allocate(void)
 void CEvents::EventReset(int16_t ui16EventIndex)
 {
     // событие по текущему индексу не активно. сбросим флаг состояния(не новое событие).
-    pui8EventsControlState[ui16EventIndex] = 0;
+    puiEventsControlState[ui16EventIndex] = 0;
 }
 
 //-----------------------------------------------------------------------------------------------------
@@ -230,18 +230,18 @@ CEvents::EventGetBuffer(void)
 CEvents::TEventDataCommon*
 CEvents::EventDataPushRequest(int16_t ui16EventIndex)
 {
-    uint8_t *pui8EventState;
-    pui8EventState = &pui8EventsControlState[ui16EventIndex];
+    uint8_t *puiEventState;
+    puiEventState = &puiEventsControlState[ui16EventIndex];
     // событие новое?
     // или событие фиксируется при каждом появлении?
     // (если установлен флаг - CEvents::EVENT_FIXED_ONCE, то событие фиксируется
     // только если оно перед этим исчезало).
-    if ((!(*pui8EventState)) ||
-            !((ui8EventTypeSetting) &
+    if ((!(*puiEventState)) ||
+            !((uiEventTypeSetting) &
               (1 << CEvents::EVENT_FIXED_ONCE)))
     {
         // событие по текущему индексу активно. установим флаг состояния(не новое событие).
-        *pui8EventState = 1;
+        *puiEventState = 1;
         // проверим, индекс события вышел за границы массива - журнал событий.
         // если да, то установим индекс события на начало массива - журнал событий.
         // для работы этого механизма, количество сохраняемых событий(ui16RecordedEventsQuantity),
@@ -265,15 +265,15 @@ CEvents::EventDataPushRequest(int16_t ui16EventIndex)
 // проверяет, активное состояние события ещё не зарегистрировано?
 uint8_t CEvents::EventOnIsNotRegistered(
     uint16_t ui16GroupIndex,
-    uint8_t ui8EventOffset)
+    uint8_t uiEventOffset)
 {
-    uint8_t *pui8EventState;
-    pui8EventState = &pui8EventsControlState[(ui16GroupIndex * HANDLED_EVENTS_QUANTITY) + ui8EventOffset];
+    uint8_t *puiEventState;
+    puiEventState = &puiEventsControlState[(ui16GroupIndex * HANDLED_EVENTS_QUANTITY) + uiEventOffset];
     // событие неактивно?
-    if (!(*pui8EventState))
+    if (!(*puiEventState))
     {
         // событие по текущему индексу неактивно. изменим состояние на - активно.
-        *pui8EventState = 1;
+        *puiEventState = 1;
         return 1;
     }
     else
@@ -287,7 +287,7 @@ uint8_t CEvents::EventOnIsNotRegistered(
 // проверяет, неактивное состояние события ещё не зарегистрировано?
 uint8_t CEvents::EventOffIsNotRegistered(
     uint16_t ui16GroupIndex,
-    uint8_t ui8EventOffset)
+    uint8_t uiEventOffset)
 {
 //    // получим имя класса.
 //    sprintf((char*)pcFileName,
@@ -295,26 +295,26 @@ uint8_t CEvents::EventOffIsNotRegistered(
 //            typeid(*this).name(),
 //            ".map");
 //    printf("EventOffIsNotRegistered name %s\n\r", (typeid(*this).name()));
-//    printf("EventOffIsNotRegistered sizeof %d\n\r", (sizeof(aui8EventsControlState)));
-//    printf("EventOffIsNotRegistered sizeof %d\n\r", (sizeof(xCInternalModuleErrorEvent.aui8EventsControlState)));
+//    printf("EventOffIsNotRegistered sizeof %d\n\r", (sizeof(auiEventsControlState)));
+//    printf("EventOffIsNotRegistered sizeof %d\n\r", (sizeof(xCInternalModuleErrorEvent.auiEventsControlState)));
 //
-//    printf("EventOffIsNotRegistered ui8EventOffset %d\n\r", (ui8EventOffset));
+//    printf("EventOffIsNotRegistered uiEventOffset %d\n\r", (uiEventOffset));
 //    printf("EventOffIsNotRegistered HANDLED_EVENTS_QUANTITY %d\n\r", (HANDLED_EVENTS_QUANTITY));
 //    printf("EventOffIsNotRegistered HANDLED_EVENTS_QUANTITY %d\n\r", (xCInternalModuleErrorEvent.HANDLED_EVENTS_QUANTITY));
-//    printf("EventOffIsNotRegistered ui16GroupIndex %d\n\r", ((ui16GroupIndex * HANDLED_EVENTS_QUANTITY) + ui8EventOffset));
-    uint8_t *pui8EventState;
-    pui8EventState = &pui8EventsControlState[(ui16GroupIndex * HANDLED_EVENTS_QUANTITY) + ui8EventOffset];
+//    printf("EventOffIsNotRegistered ui16GroupIndex %d\n\r", ((ui16GroupIndex * HANDLED_EVENTS_QUANTITY) + uiEventOffset));
+    uint8_t *puiEventState;
+    puiEventState = &puiEventsControlState[(ui16GroupIndex * HANDLED_EVENTS_QUANTITY) + uiEventOffset];
     // событие активно?
-    if (*pui8EventState)
+    if (*puiEventState)
     {
-        printf("EventOffIsNotRegistered active %d\n\r", (*pui8EventState));
+        printf("EventOffIsNotRegistered active %d\n\r", (*puiEventState));
         // событие по текущему индексу активно. изменим состояние на - неактивно.
-        *pui8EventState = 0;
+        *puiEventState = 0;
         return 1;
     }
     else
     {
-        printf("CEvents EventOffIsNotRegistered no active %d\n\r", (*pui8EventState));
+        printf("CEvents EventOffIsNotRegistered no active %d\n\r", (*puiEventState));
         return 0;
     }
 }
@@ -426,7 +426,7 @@ void CEvents::NoEventsFlagSet(void)
 
 //-------------------------------------------------------------------------------------------------
 // ищет требуемое событие в массиве данных полученных по запросу.
-CEvents::TEventDataCommon* CEvents::RequestedEventSearch(uint8_t ui8EventIndex)
+CEvents::TEventDataCommon* CEvents::RequestedEventSearch(uint8_t uiEventIndex)
 {
 //    // между отправкой запроса с требуемыми событиями
 //    // и получением ответа с данными, проходит время - (MAIN_CYCLE_TIME).
@@ -449,7 +449,7 @@ CEvents::TEventDataCommon* CEvents::RequestedEventSearch(uint8_t ui8EventIndex)
 //            i++)
 //    {
 //        // в массиве принятых событий есть требуемое?
-//        if (axEventDataCommon[i].i16Index == ui8EventIndex)
+//        if (axEventDataCommon[i].i16Index == uiEventIndex)
 //        {
 //            // в массиве принятых событий найдено требуемое.
 //            // получим указатель на найденное событие
@@ -468,20 +468,20 @@ CEvents::TEventDataCommon* CEvents::RequestedEventSearch(uint8_t ui8EventIndex)
 // обнуляет количество событий произошедших в одном цикле.
 void CEvents::OccuredEventsControlReset(void)
 {
-    xOccuredEventsControl.ui8OccuredEventsNumber = 0;
+    xOccuredEventsControl.uiOccuredEventsNumber = 0;
 }
 
 //-----------------------------------------------------------------------------------------------------
 // регистрирует событие.
 void CEvents::EventRegistration(
     uint16_t ui16GroupIndex,
-    uint8_t ui8EventType,
-    uint8_t ui8EventCode,
+    uint8_t uiEventType,
+    uint8_t uiEventCode,
     char* pcTextDescriptor)
 {
     std::cout << "CEvents::EventRegistration 1"  << std::endl;
     // не превысили максимальное количество событий произошедших в одном цикле?
-    if (xOccuredEventsControl.ui8OccuredEventsNumber <
+    if (xOccuredEventsControl.uiOccuredEventsNumber <
             (ONE_CYCLE_OCCURED_EVENTS_MAXIMUM_NUMBER - CONVERT_NATURAL_NUMBER_TO_INTEGER))
     {
         std::cout << "CEvents::EventRegistration 2"  << std::endl;
@@ -490,18 +490,18 @@ void CEvents::EventRegistration(
         // получим указатель на место для сохранения данных произошедшего события.
         pxOccuredEventsDataBriefly =
             &(xOccuredEventsControl.
-              axOccuredEventsData[xOccuredEventsControl.ui8OccuredEventsNumber &
+              axOccuredEventsData[xOccuredEventsControl.uiOccuredEventsNumber &
                                                                                (ONE_CYCLE_OCCURED_EVENTS_MAXIMUM_NUMBER - CONVERT_NATURAL_NUMBER_TO_INTEGER)]);
         // сохраним индекс группы породившей событие(например номер модуля).
         pxOccuredEventsDataBriefly -> ui16GroupIndex = ui16GroupIndex;
         // сохраним тип произошедшего события.
-        pxOccuredEventsDataBriefly -> ui8EventType = ui8EventType;
+        pxOccuredEventsDataBriefly -> uiEventType = uiEventType;
         // сохраним состояние произошедшего события.
-        pxOccuredEventsDataBriefly -> ui8EventCode = ui8EventCode;
+        pxOccuredEventsDataBriefly -> uiEventCode = uiEventCode;
         // сохраним текстовый описатель произошедшего события.
         pxOccuredEventsDataBriefly -> pcTextDescriptor = pcTextDescriptor;
         // увеличим счётчик событий произошедших в одном цикле.
-        xOccuredEventsControl.ui8OccuredEventsNumber += 1;
+        xOccuredEventsControl.uiOccuredEventsNumber += 1;
     }
 }
 
@@ -510,31 +510,31 @@ void CEvents::EventRegistration(
 void CEvents::EventsHandler(void)
 {
     //std::cout << "CEvents::EventsHandler 1"  << std::endl;
-    uint8_t ui8EventsNumber;
+    uint8_t uiEventsNumber;
     TOccuredEventsDataBriefly* pxOccuredEventsDataBriefly;
 //    TModuleContext *pxModuleContext;
 
     // получим количество событий произошедших в одном цикле.
-    ui8EventsNumber = xOccuredEventsControl.ui8OccuredEventsNumber;
+    uiEventsNumber = xOccuredEventsControl.uiOccuredEventsNumber;
     // в текущем цикле произошли события?
-    if (ui8EventsNumber)
+    if (uiEventsNumber)
     {
         //std::cout << "CEvents::EventsHandler 2"  << std::endl;
-        printf("EventsHandler ui8EventsNumber %d\n\r", (ui8EventsNumber));
+        printf("EventsHandler uiEventsNumber %d\n\r", (uiEventsNumber));
         CEvents::TEventDataCommon *pxEventData;
 
         // получим указатель на данные события произошедшего в одном цикле.
         pxOccuredEventsDataBriefly = xOccuredEventsControl.axOccuredEventsData;
         // обработаем события произошедшие в одном цикле.
         for (int i = 0;
-                i < (ui8EventsNumber);
+                i < (uiEventsNumber);
                 i++)
         {
             //std::cout << "CEvents::EventsHandler 3"  << std::endl;
 //            // получим указатель на контекст модуля.
 //            pxModuleContext = &xAllModulesContext.axAllModulesContext[pxOccuredEventsDataBriefly -> ui16GroupIndex];
             // какой тип события?
-            switch ((pxOccuredEventsDataBriefly -> ui8EventType) &
+            switch ((pxOccuredEventsDataBriefly -> uiEventType) &
                     ~(CEvents::HANDLED_EVENTS_IS_POPUP |
                       HANDLED_EVENTS_IS_SOUND |
                       HANDLED_EVENTS_IS_ARCHIVE |
@@ -575,15 +575,15 @@ void CEvents::EventsHandler(void)
 // проверяет, активное состояние события ещё не зарегистрировано?
 uint8_t CInternalModuleErrorEvent::EventOnIsNotRegistered(
     uint16_t ui16GroupIndex,
-    uint8_t ui8EventOffset)
+    uint8_t uiEventOffset)
 {
-    uint8_t *pui8EventState;
-    pui8EventState = &pui8EventsControlState[(ui16GroupIndex * HANDLED_EVENTS_QUANTITY) + ui8EventOffset];
+    uint8_t *puiEventState;
+    puiEventState = &puiEventsControlState[(ui16GroupIndex * HANDLED_EVENTS_QUANTITY) + uiEventOffset];
     // событие неактивно?
-    if (!(*pui8EventState))
+    if (!(*puiEventState))
     {
         // событие по текущему индексу неактивно. изменим состояние на - активно.
-        *pui8EventState = 1;
+        *puiEventState = 1;
         return 1;
     }
     else
@@ -596,15 +596,15 @@ uint8_t CInternalModuleErrorEvent::EventOnIsNotRegistered(
 // проверяет, неактивное состояние события ещё не зарегистрировано?
 uint8_t CInternalModuleErrorEvent::EventOffIsNotRegistered(
     uint16_t ui16GroupIndex,
-    uint8_t ui8EventOffset)
+    uint8_t uiEventOffset)
 {
-    uint8_t *pui8EventState;
-    pui8EventState = &pui8EventsControlState[(ui16GroupIndex * HANDLED_EVENTS_QUANTITY) + ui8EventOffset];
+    uint8_t *puiEventState;
+    puiEventState = &puiEventsControlState[(ui16GroupIndex * HANDLED_EVENTS_QUANTITY) + uiEventOffset];
     // событие активно?
-    if (*pui8EventState)
+    if (*puiEventState)
     {
         // событие по текущему индексу активно. изменим состояние на - неактивно.
-        *pui8EventState = 0;
+        *puiEventState = 0;
         return 1;
     }
     else
@@ -617,18 +617,18 @@ uint8_t CInternalModuleErrorEvent::EventOffIsNotRegistered(
 // проверяет, активное состояние события ещё не зарегистрировано?
 uint8_t CInternalModuleErrorEvent::EventOnIsNotRegistered(
     uint16_t ui16GroupIndex,
-    uint8_t ui8EventOffset,
-    uint8_t ui8EventCode)
+    uint8_t uiEventOffset,
+    uint8_t uiEventCode)
 {
-    uint8_t *pui8EventState;
-    pui8EventState = &pui8EventsControlState[(ui16GroupIndex * HANDLED_EVENTS_QUANTITY) + ui8EventOffset];
+    uint8_t *puiEventState;
+    puiEventState = &puiEventsControlState[(ui16GroupIndex * HANDLED_EVENTS_QUANTITY) + uiEventOffset];
     // событие неактивно?
-    if (!(*pui8EventState & ui8EventCode))
+    if (!(*puiEventState & uiEventCode))
     {
-//        printf("EventOnIsNotRegistered *pui8EventState %d\n\r", (*pui8EventState));
-//        printf("EventOnIsNotRegistered ui8EventCode %d\n\r", (ui8EventCode));
+//        printf("EventOnIsNotRegistered *puiEventState %d\n\r", (*puiEventState));
+//        printf("EventOnIsNotRegistered uiEventCode %d\n\r", (uiEventCode));
         // событие по текущему индексу неактивно. изменим состояние на - активно.
-        *pui8EventState |= ui8EventCode;
+        *puiEventState |= uiEventCode;
         return 1;
     }
     else
@@ -641,18 +641,18 @@ uint8_t CInternalModuleErrorEvent::EventOnIsNotRegistered(
 // проверяет, неактивное состояние события ещё не зарегистрировано?
 uint8_t CInternalModuleErrorEvent::EventOffIsNotRegistered(
     uint16_t ui16GroupIndex,
-    uint8_t ui8EventOffset,
-    uint8_t ui8EventCode)
+    uint8_t uiEventOffset,
+    uint8_t uiEventCode)
 {
-    uint8_t *pui8EventState;
-    pui8EventState = &pui8EventsControlState[(ui16GroupIndex * HANDLED_EVENTS_QUANTITY) + ui8EventOffset];
+    uint8_t *puiEventState;
+    puiEventState = &puiEventsControlState[(ui16GroupIndex * HANDLED_EVENTS_QUANTITY) + uiEventOffset];
     // событие активно?
-    if (*pui8EventState & ui8EventCode)
+    if (*puiEventState & uiEventCode)
     {
-//        printf("EventOffIsNotRegistered *pui8EventState %d\n\r", (*pui8EventState));
-//        printf("EventOffIsNotRegistered ui8EventCode %d\n\r", (ui8EventCode));
+//        printf("EventOffIsNotRegistered *puiEventState %d\n\r", (*puiEventState));
+//        printf("EventOffIsNotRegistered uiEventCode %d\n\r", (uiEventCode));
         // событие по текущему индексу активно. изменим состояние на - неактивно.
-        *pui8EventState &= ~ui8EventCode;
+        *puiEventState &= ~uiEventCode;
         return 1;
     }
     else
@@ -667,18 +667,18 @@ void CInternalModuleErrorEvent::EventsCompleteInformationCreate(TOccuredEventsDa
 {
     std::cout << "CInternalModuleErrorEvent::EventsCompleteInformationCreate 1"  << std::endl;
     TEventDataCommon *pxEventData;
-    uint8_t ui8EventType;
+    uint8_t uiEventType;
 
     // получим тип события.
-    ui8EventType = ((pxOccuredEventsDataBriefly -> ui8EventType) &
+    uiEventType = ((pxOccuredEventsDataBriefly -> uiEventType) &
                     ~(CEvents::HANDLED_EVENTS_IS_POPUP |
                       HANDLED_EVENTS_IS_SOUND |
                       HANDLED_EVENTS_IS_ARCHIVE |
                       HANDLED_EVENTS_IS_OCCURED_ON_START));
 
     // тип обрабатываемых событий - события модулей или системные?
-    if ((ui8EventType == HANDLED_EVENTS_MODULES_EVENTS_TYPE) ||
-            (ui8EventType == HANDLED_EVENTS_SYSTEM_EVENTS_TYPE))
+    if ((uiEventType == HANDLED_EVENTS_MODULES_EVENTS_TYPE) ||
+            (uiEventType == HANDLED_EVENTS_SYSTEM_EVENTS_TYPE))
     {
         // получим указатель на место в кольцевом буфере журнала событий.
         pxEventData = xCAlarmEvent.EventDataPush();
@@ -691,15 +691,15 @@ void CInternalModuleErrorEvent::EventsCompleteInformationCreate(TOccuredEventsDa
     }
 
 //    // событие со звуком и выводом на дисплей?
-//    if (((pxOccuredEventsDataBriefly -> ui8EventType) & HANDLED_EVENTS_IS_POPUP) &&
-//            ((pxOccuredEventsDataBriefly -> ui8EventType) & HANDLED_EVENTS_IS_SOUND))
+//    if (((pxOccuredEventsDataBriefly -> uiEventType) & HANDLED_EVENTS_IS_POPUP) &&
+//            ((pxOccuredEventsDataBriefly -> uiEventType) & HANDLED_EVENTS_IS_SOUND))
 //    {
 //        // установим флаг звуковой сигнализации.
 //        fucZvkMal = COMMAND_SOUND_SIGNAL_TYPE_ERROR;
 //    }
 //    // событие без звука и выводом на дисплей?
-//    else if (((pxOccuredEventsDataBriefly -> ui8EventType) & HANDLED_EVENTS_IS_POPUP) &&
-//             !((pxOccuredEventsDataBriefly -> ui8EventType) & HANDLED_EVENTS_IS_SOUND))
+//    else if (((pxOccuredEventsDataBriefly -> uiEventType) & HANDLED_EVENTS_IS_POPUP) &&
+//             !((pxOccuredEventsDataBriefly -> uiEventType) & HANDLED_EVENTS_IS_SOUND))
 //    {
 //        // установим флаг типа сигнализации и флаг без звука.
 //        fucZvkMal = (COMMAND_SOUND_SIGNAL_TYPE_ERROR | COMMAND_SOUND_SIGNAL_TYPE_NO_SOUND);
@@ -717,15 +717,15 @@ void CInternalModuleErrorEvent::EventsCompleteInformationCreate(TOccuredEventsDa
         1;
 
 // установим тип события.
-    (pxEventData -> ui8Type) =
-        ((pxOccuredEventsDataBriefly -> ui8EventType) &
+    (pxEventData -> uiType) =
+        ((pxOccuredEventsDataBriefly -> uiEventType) &
          ~(CEvents::HANDLED_EVENTS_IS_POPUP |
            HANDLED_EVENTS_IS_SOUND |
            HANDLED_EVENTS_IS_ARCHIVE |
            HANDLED_EVENTS_IS_OCCURED_ON_START));
 
-    if (((pxEventData -> ui8Type) == HANDLED_EVENTS_INTERNAL_MODULES_BAD_TYPE) ||
-            ((pxEventData -> ui8Type) == HANDLED_EVENTS_MODULES_EVENTS_TYPE))
+    if (((pxEventData -> uiType) == HANDLED_EVENTS_INTERNAL_MODULES_BAD_TYPE) ||
+            ((pxEventData -> uiType) == HANDLED_EVENTS_MODULES_EVENTS_TYPE))
     {
         // установим адрес источника события.
         (pxEventData -> ui16Address) =
@@ -739,10 +739,10 @@ void CInternalModuleErrorEvent::EventsCompleteInformationCreate(TOccuredEventsDa
     }
 
 // установим код события.
-    (pxEventData -> ui8State) =
-        pxOccuredEventsDataBriefly -> ui8EventCode;
+    (pxEventData -> uiState) =
+        pxOccuredEventsDataBriefly -> uiEventCode;
 // отказ текущего модуля при старте?
-    if ((pxOccuredEventsDataBriefly -> ui8EventType) &
+    if ((pxOccuredEventsDataBriefly -> uiEventType) &
             HANDLED_EVENTS_IS_OCCURED_ON_START)
     {
         // Получаем текущее время
@@ -767,9 +767,9 @@ void CInternalModuleErrorEvent::EventsCompleteInformationCreate(TOccuredEventsDa
             " ");
 
 // информационное сообщение?
-//    if ((pxEventData -> ui8Type) == HANDLED_EVENTS_SYSTEM_ERROR_TYPE)
-    if (((pxEventData -> ui8Type) == HANDLED_EVENTS_SYSTEM_ERROR_TYPE) ||
-            ((pxEventData -> ui8Type) == HANDLED_EVENTS_SYSTEM_EVENTS_TYPE))
+//    if ((pxEventData -> uiType) == HANDLED_EVENTS_SYSTEM_ERROR_TYPE)
+    if (((pxEventData -> uiType) == HANDLED_EVENTS_SYSTEM_ERROR_TYPE) ||
+            ((pxEventData -> uiType) == HANDLED_EVENTS_SYSTEM_EVENTS_TYPE))
     {
         // создадим текстовый реквизит события.
         sprintf((char*)(pxEventData -> acTextDescriptor),
@@ -777,7 +777,7 @@ void CInternalModuleErrorEvent::EventsCompleteInformationCreate(TOccuredEventsDa
                 pxOccuredEventsDataBriefly -> pcTextDescriptor);
     }
 // информационное сообщение?
-    else if ((pxEventData -> ui8Type) == HANDLED_EVENTS_CONFIGURATION_ERROR_TYPE)
+    else if ((pxEventData -> uiType) == HANDLED_EVENTS_CONFIGURATION_ERROR_TYPE)
     {
         // создадим текстовый реквизит события.
         sprintf((char*)(pxEventData -> acTextDescriptor),
@@ -787,22 +787,22 @@ void CInternalModuleErrorEvent::EventsCompleteInformationCreate(TOccuredEventsDa
 //        // создадим строку с типами модулей текущей конфигурацией.
 //        sprintf((char*)(pxEventData -> acTextData),
 //                "  %X%X%X%X%X%X%X%X%X%X%X%X%X%X%X%X",
-//                (xPlcConfigSearch.axConfigSearch[0].ui8Type),
-//                (xPlcConfigSearch.axConfigSearch[1].ui8Type),
-//                (xPlcConfigSearch.axConfigSearch[2].ui8Type),
-//                (xPlcConfigSearch.axConfigSearch[3].ui8Type),
-//                (xPlcConfigSearch.axConfigSearch[4].ui8Type),
-//                (xPlcConfigSearch.axConfigSearch[5].ui8Type),
-//                (xPlcConfigSearch.axConfigSearch[6].ui8Type),
-//                (xPlcConfigSearch.axConfigSearch[7].ui8Type),
-//                (xPlcConfigSearch.axConfigSearch[8].ui8Type),
-//                (xPlcConfigSearch.axConfigSearch[9].ui8Type),
-//                (xPlcConfigSearch.axConfigSearch[10].ui8Type),
-//                (xPlcConfigSearch.axConfigSearch[11].ui8Type),
-//                (xPlcConfigSearch.axConfigSearch[12].ui8Type),
-//                (xPlcConfigSearch.axConfigSearch[13].ui8Type),
-//                (xPlcConfigSearch.axConfigSearch[14].ui8Type),
-//                (xPlcConfigSearch.axConfigSearch[15].ui8Type));
+//                (xPlcConfigSearch.axConfigSearch[0].uiType),
+//                (xPlcConfigSearch.axConfigSearch[1].uiType),
+//                (xPlcConfigSearch.axConfigSearch[2].uiType),
+//                (xPlcConfigSearch.axConfigSearch[3].uiType),
+//                (xPlcConfigSearch.axConfigSearch[4].uiType),
+//                (xPlcConfigSearch.axConfigSearch[5].uiType),
+//                (xPlcConfigSearch.axConfigSearch[6].uiType),
+//                (xPlcConfigSearch.axConfigSearch[7].uiType),
+//                (xPlcConfigSearch.axConfigSearch[8].uiType),
+//                (xPlcConfigSearch.axConfigSearch[9].uiType),
+//                (xPlcConfigSearch.axConfigSearch[10].uiType),
+//                (xPlcConfigSearch.axConfigSearch[11].uiType),
+//                (xPlcConfigSearch.axConfigSearch[12].uiType),
+//                (xPlcConfigSearch.axConfigSearch[13].uiType),
+//                (xPlcConfigSearch.axConfigSearch[14].uiType),
+//                (xPlcConfigSearch.axConfigSearch[15].uiType));
     }
     else
     {
@@ -813,19 +813,19 @@ void CInternalModuleErrorEvent::EventsCompleteInformationCreate(TOccuredEventsDa
                 "#",
                 (pxEventData -> ui16Address),
                 "E",
-                pxOccuredEventsDataBriefly -> ui8EventCode);
+                pxOccuredEventsDataBriefly -> uiEventCode);
     }
 
 // не тип обрабатываемых событий - события модулей?
-    if ((ui8EventType != HANDLED_EVENTS_MODULES_EVENTS_TYPE) &&
-            (ui8EventType != HANDLED_EVENTS_SYSTEM_EVENTS_TYPE))
+    if ((uiEventType != HANDLED_EVENTS_MODULES_EVENTS_TYPE) &&
+            (uiEventType != HANDLED_EVENTS_SYSTEM_EVENTS_TYPE))
     {
         // поместим в журнал ошибок.
         xCPlcErrorEvent.EventDataPointerPush(pxEventData);
     }
 
 // событие архивируется?
-    if ((pxOccuredEventsDataBriefly -> ui8EventType) & HANDLED_EVENTS_IS_ARCHIVE)
+    if ((pxOccuredEventsDataBriefly -> uiEventType) & HANDLED_EVENTS_IS_ARCHIVE)
     {
         // архивируем событие.
         xCArchiveEventsDB.DataBaseDataPush(pxEventData);
@@ -851,15 +851,15 @@ void CInternalModuleErrorEvent::EventsCompleteInformationCreate(TOccuredEventsDa
 // проверяет, активное состояние события ещё не зарегистрировано?
 uint8_t CAlarmEvent::EventOnIsNotRegistered(
     uint16_t ui16GroupIndex,
-    uint8_t ui8EventOffset)
+    uint8_t uiEventOffset)
 {
-    uint8_t *pui8EventState;
-    pui8EventState = &pui8EventsControlState[(ui16GroupIndex * HANDLED_EVENTS_QUANTITY) + ui8EventOffset];
+    uint8_t *puiEventState;
+    puiEventState = &puiEventsControlState[(ui16GroupIndex * HANDLED_EVENTS_QUANTITY) + uiEventOffset];
     // событие неактивно?
-    if (!(*pui8EventState))
+    if (!(*puiEventState))
     {
         // событие по текущему индексу неактивно. изменим состояние на - активно.
-        *pui8EventState = 1;
+        *puiEventState = 1;
         return 1;
     }
     else
@@ -872,15 +872,15 @@ uint8_t CAlarmEvent::EventOnIsNotRegistered(
 // проверяет, неактивное состояние события ещё не зарегистрировано?
 uint8_t CAlarmEvent::EventOffIsNotRegistered(
     uint16_t ui16GroupIndex,
-    uint8_t ui8EventOffset)
+    uint8_t uiEventOffset)
 {
-    uint8_t *pui8EventState;
-    pui8EventState = &pui8EventsControlState[(ui16GroupIndex * HANDLED_EVENTS_QUANTITY) + ui8EventOffset];
+    uint8_t *puiEventState;
+    puiEventState = &puiEventsControlState[(ui16GroupIndex * HANDLED_EVENTS_QUANTITY) + uiEventOffset];
     // событие активно?
-    if (*pui8EventState)
+    if (*puiEventState)
     {
         // событие по текущему индексу активно. изменим состояние на - неактивно.
-        *pui8EventState = 0;
+        *puiEventState = 0;
         return 1;
     }
     else
@@ -896,8 +896,8 @@ void CAlarmEvent::EventsCompleteInformationCreate(TOccuredEventsDataBriefly* pxO
     TEventDataCommon *pxEventData;
 //    TAlarmHmi *pxAlarmHmi;
     int i;
-    uint8_t ui8EventType;
-    uint8_t ui8EventCode;
+    uint8_t uiEventType;
+    uint8_t uiEventCode;
 //    // получим указатель на объект конфигурации.
 //    TConfigDataPackOne* pxDeviceConfigSearch =
 //        (GetResources() -> GetDeviceConfigSearchPointer());
@@ -906,19 +906,19 @@ void CAlarmEvent::EventsCompleteInformationCreate(TOccuredEventsDataBriefly* pxO
     pxEventData = EventDataPush();
 
     // получим тип события.
-    ui8EventType = ((pxOccuredEventsDataBriefly -> ui8EventType) &
+    uiEventType = ((pxOccuredEventsDataBriefly -> uiEventType) &
                     ~(CEvents::HANDLED_EVENTS_IS_POPUP |
                       HANDLED_EVENTS_IS_SOUND |
                       HANDLED_EVENTS_IS_ARCHIVE |
                       HANDLED_EVENTS_IS_OCCURED_ON_START));
     // получим состояние события.
-    ui8EventCode = pxOccuredEventsDataBriefly -> ui8EventCode;
+    uiEventCode = pxOccuredEventsDataBriefly -> uiEventCode;
 
     // получим индекс события.
     i = (int)(pxOccuredEventsDataBriefly -> ui16GroupIndex);
 
 //    // обрабатываем событие функционального блока?
-//    if (ui8EventType == HANDLED_EVENTS_FUNCTION_BLOCKS_TYPE)
+//    if (uiEventType == HANDLED_EVENTS_FUNCTION_BLOCKS_TYPE)
 //    {
 //        // сместимся на место событий функциональных блоков.
 //        i += (xPlcConfigService.xPlcConfigServiceData.
@@ -926,7 +926,7 @@ void CAlarmEvent::EventsCompleteInformationCreate(TOccuredEventsDataBriefly* pxO
 //    }
 
     // сигнализация аварийная?
-    if (ui8EventCode == EMERGENCY)
+    if (uiEventCode == EMERGENCY)
     {
 //        fucZvkMal = COMMAND_SOUND_SIGNAL_TYPE_ALARM;
         sprintf((char*)(pxEventData -> acTextDescriptorAdditional),
@@ -934,7 +934,7 @@ void CAlarmEvent::EventsCompleteInformationCreate(TOccuredEventsDataBriefly* pxO
                 "Аварийная");
     }
     // сигнализация предупредительная?
-    else if (ui8EventCode == PREVENTIVE)
+    else if (uiEventCode == PREVENTIVE)
     {
         // предупредительная сигнализация.
 //        fucZvkMal = COMMAND_SOUND_SIGNAL_TYPE_WARNING;
@@ -943,7 +943,7 @@ void CAlarmEvent::EventsCompleteInformationCreate(TOccuredEventsDataBriefly* pxO
                 "Предупредительная");
     }
     // сигнализация в норме?
-    else if (ui8EventCode == NORMAL)
+    else if (uiEventCode == NORMAL)
     {
         // сигнализация в норме.
 //        fucZvkMal = COMMAND_SOUND_SIGNAL_TYPE_WARNING;
@@ -961,14 +961,14 @@ void CAlarmEvent::EventsCompleteInformationCreate(TOccuredEventsDataBriefly* pxO
 //    }
 
 //    // событие со звуком и выводом на дисплей?
-//    if (((pxOccuredEventsDataBriefly -> ui8EventType) & HANDLED_EVENTS_IS_POPUP) &&
-//            ((pxOccuredEventsDataBriefly -> ui8EventType) & HANDLED_EVENTS_IS_SOUND))
+//    if (((pxOccuredEventsDataBriefly -> uiEventType) & HANDLED_EVENTS_IS_POPUP) &&
+//            ((pxOccuredEventsDataBriefly -> uiEventType) & HANDLED_EVENTS_IS_SOUND))
 //    {
 //        // установим флаг звуковой сигнализации.
 //    }
 //    // событие без звука и выводом на дисплей?
-//    else if (((pxOccuredEventsDataBriefly -> ui8EventType) & HANDLED_EVENTS_IS_POPUP) &&
-//             !((pxOccuredEventsDataBriefly -> ui8EventType) & HANDLED_EVENTS_IS_SOUND))
+//    else if (((pxOccuredEventsDataBriefly -> uiEventType) & HANDLED_EVENTS_IS_POPUP) &&
+//             !((pxOccuredEventsDataBriefly -> uiEventType) & HANDLED_EVENTS_IS_SOUND))
 //    {
 //        // установим флаг без звука.
 //        fucZvkMal |= COMMAND_SOUND_SIGNAL_TYPE_NO_SOUND;
@@ -985,14 +985,14 @@ void CAlarmEvent::EventsCompleteInformationCreate(TOccuredEventsDataBriefly* pxO
     (pxEventData -> ui16ID) =
         1;
     // установим тип события.
-    (pxEventData -> ui8Type) =
-        ui8EventType;
+    (pxEventData -> uiType) =
+        uiEventType;
     // установим адрес источника события.
     (pxEventData -> ui16Address) =
         (i + CONVERT_INTEGER_TO_NATURAL_NUMBER);
     // установим код события.
-    (pxEventData -> ui8State) =
-        ui8EventCode;
+    (pxEventData -> uiState) =
+        uiEventCode;
     // Получаем текущее время
     time_t now = time(nullptr);
     // Получаем текущую дату
@@ -1021,7 +1021,7 @@ void CAlarmEvent::EventsCompleteInformationCreate(TOccuredEventsDataBriefly* pxO
 //    }
 
     // событие архивируется?
-    if ((pxOccuredEventsDataBriefly -> ui8EventType) & HANDLED_EVENTS_IS_ARCHIVE)
+    if ((pxOccuredEventsDataBriefly -> uiEventType) & HANDLED_EVENTS_IS_ARCHIVE)
     {
         // архивируем событие.
         xCArchiveEventsDB.DataBaseDataPush(pxEventData);

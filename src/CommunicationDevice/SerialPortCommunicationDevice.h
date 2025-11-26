@@ -46,9 +46,9 @@ public:
     void Init(void);
     void SetDeviceName(const char* pccDeviceName);
     const char* GetDeviceName(void);
-    void SetBaudRate(uint32_t uiBaudRate);
+    void SetBaudRate(uint8_t uiBaudRate);
     void SetDataBits(uint8_t uiDataBits);
-    void SetParity(char cParity);
+    void SetParity(uint8_t uiParity);
     void SetStopBit(uint8_t uiStopBit);
     int8_t Open(void);
     int8_t Close(void);

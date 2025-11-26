@@ -335,7 +335,7 @@ void CSpiCommunicationDevice::ChipSelectPinDelete(void)
 
 //-------------------------------------------------------------------------------
 // массив сопоставления номера посадочного слота модуля с адресом на шине SPI.
-const uint8_t CSpiCommunicationDevice::aui8ModuleSlotNumberToSpiAddressMatching[] =
+const uint8_t CSpiCommunicationDevice::auiModuleSlotNumberToSpiAddressMatching[] =
 {
 //    0x0F,
 //    0x07,
@@ -363,7 +363,7 @@ void CSpiCommunicationDevice::ChipSelectAddressSet(uint8_t ucAddress)
 
     m_pxGpioPrdEnablePin -> SetPin();
 
-    ucAddressLocal = aui8ModuleSlotNumberToSpiAddressMatching[ucAddress];
+    ucAddressLocal = auiModuleSlotNumberToSpiAddressMatching[ucAddress];
 
     if (ucAddressLocal & 0x01)
     {

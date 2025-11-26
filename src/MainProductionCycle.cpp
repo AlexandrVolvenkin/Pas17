@@ -578,12 +578,12 @@ void CMainProductionCycle::PlcOnOffEvetnsCreate(void)
     (pxEventData -> ui16ID) =
         1;
     // установим тип события.
-    (pxEventData -> ui8Type) =
+    (pxEventData -> uiType) =
         CEvents::HANDLED_EVENTS_SYSTEM_EVENTS_TYPE;
     // установим адрес источника события.
     (pxEventData -> ui16Address) = 0;
     // установим код события.
-    (pxEventData -> ui8State) =
+    (pxEventData -> uiState) =
         0;
 
     // получим последнее сохранённое время в FRAM.
@@ -666,12 +666,12 @@ void CMainProductionCycle::PlcOnOffEvetnsCreate(void)
     (pxEventData -> ui16ID) =
         1;
     // установим тип события.
-    (pxEventData -> ui8Type) =
+    (pxEventData -> uiType) =
         CEvents::HANDLED_EVENTS_SYSTEM_EVENTS_TYPE;
     // установим адрес источника события.
     (pxEventData -> ui16Address) = 0;
     // установим код события.
-    (pxEventData -> ui8State) =
+    (pxEventData -> uiState) =
         0;
 
     // установим время события.
@@ -720,10 +720,9 @@ uint8_t CMainProductionCycle::InitTasks(void)
 
     pxSerialPortCommunicationDeviceCom1 -> Init();
     pxSerialPortCommunicationDeviceCom1 -> SetDeviceName("/dev/ttyO1");
-    pxSerialPortCommunicationDeviceCom1 -> SetBaudRate(9600);
-//    pxSerialPortCommunicationDeviceCom1 -> SetBaudRate(115200);
+    pxSerialPortCommunicationDeviceCom1 -> SetBaudRate(BIT_RATE_9600);
     pxSerialPortCommunicationDeviceCom1 -> SetDataBits(8);
-    pxSerialPortCommunicationDeviceCom1 -> SetParity('N');
+    pxSerialPortCommunicationDeviceCom1 -> SetParity(PARITY_NO);
     pxSerialPortCommunicationDeviceCom1 -> SetStopBit(2);
 
 //-------------------------------------------------------------------------------

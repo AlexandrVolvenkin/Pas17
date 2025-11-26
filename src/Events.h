@@ -151,7 +151,7 @@ public:
         // ID в таблице базы данных.
         uint16_t ui16ID;
         // тип запрашиваемых событий.
-        uint8_t ui8Type;
+        uint8_t uiType;
         // индекс события.
         int16_t i16Index;
         union
@@ -162,14 +162,14 @@ public:
                 // адрес источника события.
                 uint16_t ui16Address;
                 // состояние события.
-                uint8_t ui8State;
+                uint8_t uiState;
                 // время события.
-                uint8_t ui8Second;
-                uint8_t ui8Minute;
-                uint8_t ui8Hour;
-                uint8_t ui8MonthDay;
-                uint8_t ui8Month;
-                uint8_t ui8Year;
+                uint8_t uiSecond;
+                uint8_t uiMinute;
+                uint8_t uiHour;
+                uint8_t uiMonthDay;
+                uint8_t uiMonth;
+                uint8_t uiYear;
             };
             // текстовые данные события.
             char acTextData[CEvents::EVENT_TEXT_DATA_LENGTH + END_OF_STRING_LENGTH];
@@ -179,9 +179,9 @@ public:
                 // адрес первого запрашиваемого аналогового измерения.
                 // адрес сигнала (№ входа, адрес в
                 // (измеренные значения входных аналоговых сигналов - AI_VALUE_BYTE_ARRAY_OFFSET)
-                uint8_t ui8Address;
+                uint8_t uiAddress;
                 // состояние канала аналогового измерения.
-                uint8_t ui8Status;
+                uint8_t uiStatus;
                 // значение аналогового измерения.
                 float fData;
                 // Текстовый реквизит размерности измеряемого параметра КРЗМ.
@@ -198,7 +198,7 @@ public:
         // ID в таблице базы данных.
         uint16_t ui16ID;
 //        // тип запрашиваемых событий.
-//        uint8_t ui8Type;
+//        uint8_t uiType;
         // индекс события.
         int16_t i16Index;
         union
@@ -208,9 +208,9 @@ public:
                 //                // адрес первого запрашиваемого аналогового измерения.
 //                // адрес сигнала (№ входа, адрес в
 //                // (измеренные значения входных аналоговых сигналов - AI_VALUE_BYTE_ARRAY_OFFSET)
-//                uint8_t ui8Address;
+//                uint8_t uiAddress;
                 // состояние канала аналогового измерения.
-                uint8_t ui8Status;
+                uint8_t uiStatus;
                 // значение аналогового измерения.
                 float fData;
             };
@@ -226,7 +226,7 @@ public:
         // адрес источника события.
         uint16_t ui16Address;
         // состояние события.
-        uint8_t ui8State;
+        uint8_t uiState;
         // текстовый реквизит источника события.
         char acTextDescriptor[CEvents::EVENT_NAME_LENGTH + END_OF_STRING_LENGTH];
         // время события.
@@ -239,7 +239,7 @@ public:
         // ID в таблице базы данных.
         uint16_t ui16ID;
         // тип запрашиваемых событий.
-        uint8_t ui8Type;
+        uint8_t uiType;
         // индекс события.
         int16_t i16Index;
         union
@@ -250,7 +250,7 @@ public:
                 // адрес источника события.
                 uint16_t ui16Address;
                 // состояние события.
-                uint8_t ui8State;
+                uint8_t uiState;
                 // время события.
                 struct tm xCurrentTime;
             };
@@ -262,9 +262,9 @@ public:
                 // адрес первого запрашиваемого аналогового измерения.
                 // адрес сигнала (№ входа, адрес в
                 // (измеренные значения входных аналоговых сигналов - AI_VALUE_BYTE_ARRAY_OFFSET)
-                uint8_t ui8Address;
+                uint8_t uiAddress;
                 // состояние канала аналогового измерения.
-                uint8_t ui8Status;
+                uint8_t uiStatus;
                 // значение аналогового измерения.
                 float fData;
                 // Текстовый реквизит размерности измеряемого параметра КРЗМ.
@@ -285,30 +285,30 @@ public:
         // индекс первого запрашиваемого события в массиве(журнала событий).
         int16_t i16Index;
         // тип запрашиваемых событий.
-        uint8_t ui8Type;
+        uint8_t uiType;
         // порядок представления события.
-        uint8_t ui8Order;
+        uint8_t uiOrder;
         // адрес источника события.
         union
         {
-            uint8_t ui8Address;
+            uint8_t uiAddress;
             uint16_t ui16Address;
             struct
             {
                 // время  первого запрашиваемого события.
-//        uint8_t ui8Second;
-//        uint8_t ui8Minute;
-//        uint8_t ui8Hour;
-                uint8_t ui8MonthDay;
-                uint8_t ui8Month;
-                uint8_t ui8Year;
+//        uint8_t uiSecond;
+//        uint8_t uiMinute;
+//        uint8_t uiHour;
+                uint8_t uiMonthDay;
+                uint8_t uiMonth;
+                uint8_t uiYear;
             };
         };
         // количество запрашиваемых событий.
         union
         {
-            uint8_t ui8Quantity;
-            uint8_t ui8Length;
+            uint8_t uiQuantity;
+            uint8_t uiLength;
         };
     };
 #pragma pack(pop)
@@ -317,15 +317,15 @@ public:
     struct TOccuredEventsData
     {
         // тип группы породившей событие(например номер модуля).
-        uint8_t ui8GroupType;
+        uint8_t uiGroupType;
         // индекс группы породившей событие(например номер модуля).
         uint16_t ui16GroupIndex;
         // тип произошедшего события.
-        uint8_t ui8EventType;
+        uint8_t uiEventType;
         // код произошедшего события.
-        uint8_t ui8EventCode;
+        uint8_t uiEventCode;
         // состояние произошедшего события(1 - активно, 0 - переход в норму).
-        uint8_t ui8State;
+        uint8_t uiState;
         // указатель на текстовое описание события.
         char* pcTextDescriptor;
     };
@@ -336,9 +336,9 @@ public:
         // индекс группы породившей событие(например номер модуля).
         uint16_t ui16GroupIndex;
         // тип произошедшего события.
-        uint8_t ui8EventType;
+        uint8_t uiEventType;
         // состояние произошедшего события.
-        uint8_t ui8EventCode;
+        uint8_t uiEventCode;
         // указатель на текстовое описание события.
         char* pcTextDescriptor;
     };
@@ -347,7 +347,7 @@ public:
     struct TOccuredEventsControl
     {
         // количество событий произошедших в одном цикле.
-        uint8_t ui8OccuredEventsNumber;
+        uint8_t uiOccuredEventsNumber;
         // массив с данными событий произошедших в одном цикле.
         TOccuredEventsDataBriefly axOccuredEventsData[ONE_CYCLE_OCCURED_EVENTS_MAXIMUM_NUMBER];
     };
@@ -394,11 +394,11 @@ public:
 //    static int16_t i16EventsLogQueryListQuantity;
 
     // массив состояния событий(если - 0, событие новое. если - 1, событие не новое.);
-    uint8_t aui8EventsControlState[HANDLED_EVENTS_QUANTITY];
+    uint8_t auiEventsControlState[HANDLED_EVENTS_QUANTITY];
     // указатель на массив состояния событий.
-    uint8_t *pui8EventsControlState;
+    uint8_t *puiEventsControlState;
     // установки типа события.
-    uint8_t ui8EventTypeSetting;
+    uint8_t uiEventTypeSetting;
     // массив даных событий.
     CEvents::TEventDataCommon axEventDataCommon[RECORDED_EVENTS_QUANTITY];
     // указатель на массив даных событий.
@@ -452,13 +452,13 @@ public:
     struct TOneGroupEventsControl
     {
         // массив состояния типов событий(если - 0, событие новое. если - 1, событие не новое.);
-        uint8_t aui8EventsTypesControlState[HANDLED_EVENTS_QUANTITY];
+        uint8_t auiEventsTypesControlState[HANDLED_EVENTS_QUANTITY];
     };
 
 //-----------------------------------------------------------------------------------------------------
 //private:
     // массив состояния событий.
-    uint8_t aui8EventsControlState[MAX_MODULE_QUANTITY * HANDLED_EVENTS_QUANTITY];
+    uint8_t auiEventsControlState[MAX_MODULE_QUANTITY * HANDLED_EVENTS_QUANTITY];
     TOneGroupEventsControl axAllGroupsEventsControl[MAX_MODULE_QUANTITY];
     // массив даных событий.
     CEvents::TEventDataCommon axEventDataCommon[RECORDED_EVENTS_QUANTITY];
@@ -476,10 +476,10 @@ public:
     CInternalModuleErrorEvent()
     {
         ui16RecordedEventsQuantity = RECORDED_EVENTS_QUANTITY;
-        pui8EventsControlState = aui8EventsControlState;
+        puiEventsControlState = auiEventsControlState;
         pxEventDataCommon = axEventDataCommon;
         ui16EventDataCommonPushIndex = 0;
-        ui8EventTypeSetting = (1 << CEvents::EVENT_FIXED_ONCE);
+        uiEventTypeSetting = (1 << CEvents::EVENT_FIXED_ONCE);
         // пометим события маркером - нет события.
         for (int i = 0;
                 i < (ui16RecordedEventsQuantity);
@@ -492,7 +492,7 @@ public:
                 i < (MAX_MODULE_QUANTITY * HANDLED_EVENTS_QUANTITY);
                 i++)
         {
-            aui8EventsControlState[i] = 0;
+            auiEventsControlState[i] = 0;
         }
 
 //        for (int i = 0;
@@ -503,7 +503,7 @@ public:
 //                    j < (HANDLED_EVENTS_QUANTITY);
 //                    j++)
 //            {
-//                axAllGroupsEventsControl[i].aui8EventsTypesControlState[j] = 0;
+//                axAllGroupsEventsControl[i].auiEventsTypesControlState[j] = 0;
 //            }
 //        }
     }
@@ -525,7 +525,7 @@ public:
 //-----------------------------------------------------------------------------------------------------
 private:
     // массив состояния событий(если - 0, событие новое. если - 1, событие не новое.);
-    uint8_t aui8EventsControlState[HANDLED_EVENTS_QUANTITY];
+    uint8_t auiEventsControlState[HANDLED_EVENTS_QUANTITY];
     // массив даных событий.
     CEvents::TEventDataCommon axEventDataCommon[RECORDED_EVENTS_QUANTITY];
 
@@ -535,10 +535,10 @@ public:
     CExternalModuleErrorEvent()
     {
         ui16RecordedEventsQuantity = RECORDED_EVENTS_QUANTITY;
-        pui8EventsControlState = aui8EventsControlState;
+        puiEventsControlState = auiEventsControlState;
         pxEventDataCommon = axEventDataCommon;
         ui16EventDataCommonPushIndex = 0;
-        ui8EventTypeSetting = (1 << CEvents::EVENT_FIXED_ONCE);
+        uiEventTypeSetting = (1 << CEvents::EVENT_FIXED_ONCE);
         // пометим события маркером - нет события.
         for (int i = 0;
                 i < (ui16RecordedEventsQuantity);
@@ -565,7 +565,7 @@ public:
 //-----------------------------------------------------------------------------------------------------
 private:
     // массив состояния событий(если - 0, событие новое. если - 1, событие не новое.);
-    uint8_t aui8EventsControlState[HANDLED_EVENTS_QUANTITY];
+    uint8_t auiEventsControlState[HANDLED_EVENTS_QUANTITY];
     // массив даных событий.
     CEvents::TEventDataCommon axEventDataCommon[RECORDED_EVENTS_QUANTITY];
 
@@ -575,10 +575,10 @@ public:
     CPlcConfigurationErrorEvent()
     {
         ui16RecordedEventsQuantity = RECORDED_EVENTS_QUANTITY;
-        pui8EventsControlState = aui8EventsControlState;
+        puiEventsControlState = auiEventsControlState;
         pxEventDataCommon = axEventDataCommon;
         ui16EventDataCommonPushIndex = 0;
-        ui8EventTypeSetting = (1 << CEvents::EVENT_FIXED_ONCE);
+        uiEventTypeSetting = (1 << CEvents::EVENT_FIXED_ONCE);
         // пометим события маркером - нет события.
         for (int i = 0;
                 i < (ui16RecordedEventsQuantity);
@@ -605,7 +605,7 @@ public:
 //-----------------------------------------------------------------------------------------------------
 private:
     // массив состояния событий(если - 0, событие новое. если - 1, событие не новое.);
-    uint8_t aui8EventsControlState[HANDLED_EVENTS_QUANTITY];
+    uint8_t auiEventsControlState[HANDLED_EVENTS_QUANTITY];
     // массив даных событий.
     CEvents::TEventDataCommon axEventDataCommon[RECORDED_EVENTS_QUANTITY];
 
@@ -615,10 +615,10 @@ public:
     CPlcDataBaseErrorEvent()
     {
         ui16RecordedEventsQuantity = RECORDED_EVENTS_QUANTITY;
-        pui8EventsControlState = aui8EventsControlState;
+        puiEventsControlState = auiEventsControlState;
         pxEventDataCommon = axEventDataCommon;
         ui16EventDataCommonPushIndex = 0;
-        ui8EventTypeSetting = (1 << CEvents::EVENT_FIXED_ONCE);
+        uiEventTypeSetting = (1 << CEvents::EVENT_FIXED_ONCE);
         // пометим события маркером - нет события.
         for (int i = 0;
                 i < (ui16RecordedEventsQuantity);
@@ -644,7 +644,7 @@ public:
 //-----------------------------------------------------------------------------------------------------
 private:
     // массив состояния событий(если - 0, событие новое. если - 1, событие не новое.);
-    uint8_t aui8EventsControlState[(MAX_HANDLED_DISCRETE_INPUT +
+    uint8_t auiEventsControlState[(MAX_HANDLED_DISCRETE_INPUT +
                                     MAX_HANDLED_FUNCTION_BLOCK) * HANDLED_EVENTS_QUANTITY];
     // массив даных событий.
     CEvents::TEventDataCommon axEventDataCommon[RECORDED_EVENTS_QUANTITY];
@@ -660,10 +660,10 @@ public:
     CAlarmEvent()
     {
         ui16RecordedEventsQuantity = RECORDED_EVENTS_QUANTITY;
-        pui8EventsControlState = aui8EventsControlState;
+        puiEventsControlState = auiEventsControlState;
         pxEventDataCommon = axEventDataCommon;
         ui16EventDataCommonPushIndex = 0;
-        ui8EventTypeSetting = (1 << CEvents::EVENT_FIXED_ONCE);
+        uiEventTypeSetting = (1 << CEvents::EVENT_FIXED_ONCE);
         // пометим события маркером - нет события.
         for (int i = 0;
                 i < (ui16RecordedEventsQuantity);
@@ -677,7 +677,7 @@ public:
                      MAX_HANDLED_FUNCTION_BLOCK);
                 i++)
         {
-            aui8EventsControlState[i] = 0;
+            auiEventsControlState[i] = 0;
         }
     }
 };
@@ -697,7 +697,7 @@ public:
 //-----------------------------------------------------------------------------------------------------
 private:
     // массив состояния событий(если - 0, событие новое. если - 1, событие не новое.);
-    uint8_t aui8EventsControlState[HANDLED_EVENTS_QUANTITY];
+    uint8_t auiEventsControlState[HANDLED_EVENTS_QUANTITY];
     // массив даных событий.
     CEvents::TEventDataCommon axEventDataCommon[RECORDED_EVENTS_QUANTITY];
 
@@ -707,10 +707,10 @@ public:
     CInfoEvent()
     {
         ui16RecordedEventsQuantity = RECORDED_EVENTS_QUANTITY;
-        pui8EventsControlState = aui8EventsControlState;
+        puiEventsControlState = auiEventsControlState;
         pxEventDataCommon = axEventDataCommon;
         ui16EventDataCommonPushIndex = 0;
-//        ui8EventTypeSetting = (1 << CEvents::EVENT_FIXED_ONCE);
+//        uiEventTypeSetting = (1 << CEvents::EVENT_FIXED_ONCE);
         // пометим события маркером - нет события.
         for (int i = 0;
                 i < (ui16RecordedEventsQuantity);

@@ -161,7 +161,7 @@ struct TAnalogueSignalsArchiveHourData
 //        // ID в таблице базы данных.
 //        uint16_t ui16ID;
 //        // тип запрашиваемых событий.
-//        uint8_t ui8Type;
+//        uint8_t uiType;
 //        // индекс события.
 //        int16_t i16Index;
 //        union
@@ -172,14 +172,14 @@ struct TAnalogueSignalsArchiveHourData
 //                // адрес источника события.
 //                uint16_t ui16Address;
 //                // состояние события.
-//                uint8_t ui8State;
+//                uint8_t uiState;
 //                // время события.
-//                uint8_t ui8Second;
-//                uint8_t ui8Minute;
-//                uint8_t ui8Hour;
-//                uint8_t ui8MonthDay;
-//                uint8_t ui8Month;
-//                uint8_t ui8Year;
+//                uint8_t uiSecond;
+//                uint8_t uiMinute;
+//                uint8_t uiHour;
+//                uint8_t uiMonthDay;
+//                uint8_t uiMonth;
+//                uint8_t uiYear;
 //            };
 //            // текстовые данные события.
 //            char acTextData[CEvents::EVENT_TEXT_DATA_LENGTH + END_OF_STRING_LENGTH];
@@ -189,9 +189,9 @@ struct TAnalogueSignalsArchiveHourData
 //                // адрес первого запрашиваемого аналогового измерения.
 //                // адрес сигнала (№ входа, адрес в
 //                // (измеренные значения входных аналоговых сигналов - AI_VALUE_BYTE_ARRAY_OFFSET)
-//                uint8_t ui8Address;
+//                uint8_t uiAddress;
 //                // состояние канала аналогового измерения.
-//                uint8_t ui8Status;
+//                uint8_t uiStatus;
 //                // значение аналогового измерения.
 //                float fData;
 //                // Текстовый реквизит размерности измеряемого параметра КРЗМ.
@@ -208,7 +208,7 @@ struct TAnalogueSignalsArchiveHourData
 //        // ID в таблице базы данных.
 //        uint16_t ui16ID;
 ////        // тип запрашиваемых событий.
-////        uint8_t ui8Type;
+////        uint8_t uiType;
 //        // индекс события.
 //        int16_t i16Index;
 //        union
@@ -218,9 +218,9 @@ struct TAnalogueSignalsArchiveHourData
 //                //                // адрес первого запрашиваемого аналогового измерения.
 ////                // адрес сигнала (№ входа, адрес в
 ////                // (измеренные значения входных аналоговых сигналов - AI_VALUE_BYTE_ARRAY_OFFSET)
-////                uint8_t ui8Address;
+////                uint8_t uiAddress;
 //                // состояние канала аналогового измерения.
-//                uint8_t ui8Status;
+//                uint8_t uiStatus;
 //                // значение аналогового измерения.
 //                float fData;
 //            };
@@ -236,7 +236,7 @@ struct TAnalogueSignalsArchiveHourData
 //        // адрес источника события.
 //        uint16_t ui16Address;
 //        // состояние события.
-//        uint8_t ui8State;
+//        uint8_t uiState;
 //        // текстовый реквизит источника события.
 //        char acTextDescriptor[CEvents::EVENT_NAME_LENGTH + END_OF_STRING_LENGTH];
 //        // время события.
@@ -249,7 +249,7 @@ struct TAnalogueSignalsArchiveHourData
 //        // ID в таблице базы данных.
 //        uint16_t ui16ID;
 //        // тип запрашиваемых событий.
-//        uint8_t ui8Type;
+//        uint8_t uiType;
 //        // индекс события.
 //        int16_t i16Index;
 //        union
@@ -260,7 +260,7 @@ struct TAnalogueSignalsArchiveHourData
 //                // адрес источника события.
 //                uint16_t ui16Address;
 //                // состояние события.
-//                uint8_t ui8State;
+//                uint8_t uiState;
 //                // время события.
 //                struct tm xCurrentTime;
 //            };
@@ -272,9 +272,9 @@ struct TAnalogueSignalsArchiveHourData
 //                // адрес первого запрашиваемого аналогового измерения.
 //                // адрес сигнала (№ входа, адрес в
 //                // (измеренные значения входных аналоговых сигналов - AI_VALUE_BYTE_ARRAY_OFFSET)
-//                uint8_t ui8Address;
+//                uint8_t uiAddress;
 //                // состояние канала аналогового измерения.
-//                uint8_t ui8Status;
+//                uint8_t uiStatus;
 //                // значение аналогового измерения.
 //                float fData;
 //                // Текстовый реквизит размерности измеряемого параметра КРЗМ.
@@ -295,30 +295,30 @@ struct TAnalogueSignalsArchiveHourData
 //        // индекс первого запрашиваемого события в массиве(журнала событий).
 //        int16_t i16Index;
 //        // тип запрашиваемых событий.
-//        uint8_t ui8Type;
+//        uint8_t uiType;
 //        // порядок представления события.
-//        uint8_t ui8Order;
+//        uint8_t uiOrder;
 //        // адрес источника события.
 //        union
 //        {
-//            uint8_t ui8Address;
+//            uint8_t uiAddress;
 //            uint16_t ui16Address;
 //            struct
 //            {
 //                // время  первого запрашиваемого события.
-////        uint8_t ui8Second;
-////        uint8_t ui8Minute;
-////        uint8_t ui8Hour;
-//                uint8_t ui8MonthDay;
-//                uint8_t ui8Month;
-//                uint8_t ui8Year;
+////        uint8_t uiSecond;
+////        uint8_t uiMinute;
+////        uint8_t uiHour;
+//                uint8_t uiMonthDay;
+//                uint8_t uiMonth;
+//                uint8_t uiYear;
 //            };
 //        };
 //        // количество запрашиваемых событий.
 //        union
 //        {
-//            uint8_t ui8Quantity;
-//            uint8_t ui8Length;
+//            uint8_t uiQuantity;
+//            uint8_t uiLength;
 //        };
 //    };
 //#pragma pack(pop)
@@ -327,15 +327,15 @@ struct TAnalogueSignalsArchiveHourData
 //    struct TOccuredEventsData
 //    {
 //        // тип группы породившей событие(например номер модуля).
-//        uint8_t ui8GroupType;
+//        uint8_t uiGroupType;
 //        // индекс группы породившей событие(например номер модуля).
 //        uint16_t ui16GroupIndex;
 //        // тип произошедшего события.
-//        uint8_t ui8EventType;
+//        uint8_t uiEventType;
 //        // код произошедшего события.
-//        uint8_t ui8EventCode;
+//        uint8_t uiEventCode;
 //        // состояние произошедшего события(1 - активно, 0 - переход в норму).
-//        uint8_t ui8State;
+//        uint8_t uiState;
 //        // указатель на текстовое описание события.
 //        char* pcTextDescriptor;
 //    };
@@ -346,9 +346,9 @@ struct TAnalogueSignalsArchiveHourData
 //        // индекс группы породившей событие(например номер модуля).
 //        uint16_t ui16GroupIndex;
 //        // тип произошедшего события.
-//        uint8_t ui8EventType;
+//        uint8_t uiEventType;
 //        // состояние произошедшего события.
-//        uint8_t ui8EventCode;
+//        uint8_t uiEventCode;
 //        // указатель на текстовое описание события.
 //        char* pcTextDescriptor;
 //    };
@@ -357,7 +357,7 @@ struct TAnalogueSignalsArchiveHourData
 //    struct TOccuredEventsControl
 //    {
 //        // количество событий произошедших в одном цикле.
-//        uint8_t ui8OccuredEventsNumber;
+//        uint8_t uiOccuredEventsNumber;
 //        // массив с данными событий произошедших в одном цикле.
 //        TOccuredEventsDataBriefly axOccuredEventsData[ONE_CYCLE_OCCURED_EVENTS_MAXIMUM_NUMBER];
 //    };
@@ -444,6 +444,7 @@ typedef enum
 {
     BIT_RATE_9600 = 0,
     BIT_RATE_19200,
+    BIT_RATE_38400,
     BIT_RATE_57600,
     BIT_RATE_115200,
 };
@@ -462,7 +463,7 @@ typedef enum
 //struct TPlcSettingsQueryPackOne
 //{
 //    // тип запрашиваемых данных.
-//    uint8_t ui8Type;
+//    uint8_t uiType;
 //};
 //#pragma pack(pop)
 
@@ -471,10 +472,10 @@ typedef enum
 #pragma pack(1)
 struct TPortSettingsPackOne
 {
-    uint8_t ui8BaudRate;
-    uint8_t ui8DataBits;
-    uint8_t ui8Parity;
-    uint8_t ui8StopBits;
+    uint8_t uiBaudRate;
+    uint8_t uiDataBits;
+    uint8_t uiParity;
+    uint8_t uiStopBits;
 };
 #pragma pack(pop)
 
@@ -483,10 +484,10 @@ struct TPortSettingsPackOne
 #pragma pack(1)
 struct TEthernetSettingsPackOne
 {
-    uint8_t ui8IpByte3;
-    uint8_t ui8IpByte2;
-    uint8_t ui8IpByte1;
-    uint8_t ui8IpByte0;
+    uint8_t uiIpByte3;
+    uint8_t uiIpByte2;
+    uint8_t uiIpByte1;
+    uint8_t uiIpByte0;
     uint16_t ui16Port;
 };
 #pragma pack(pop)
@@ -496,7 +497,7 @@ struct TEthernetSettingsPackOne
 #pragma pack(1)
 struct TPeripherySettingsPackOne
 {
-    uint8_t ui8ZummerIsOn;
+    uint8_t uiZummerIsOn;
 };
 #pragma pack(pop)
 
@@ -525,37 +526,37 @@ struct TPlcSettingsPackOne
 //struct TPlcSettingsExchangePackOne
 //{
 //    // тип запрашиваемых данных.
-//    uint8_t ui8Type;
+//    uint8_t uiType;
 //    // код ответа.
-//    uint8_t ui8AnswerCode;
+//    uint8_t uiAnswerCode;
 //    union
 //    {
 //        struct
 //        {
-//            uint8_t ui8BaudRate;
-//            uint8_t ui8StopBits;
-//            uint8_t ui8Parity;
+//            uint8_t uiBaudRate;
+//            uint8_t uiStopBits;
+//            uint8_t uiParity;
 //        };
 //        struct
 //        {
-//            uint8_t ui8IpByte0;
-//            uint8_t ui8IpByte1;
-//            uint8_t ui8IpByte2;
-//            uint8_t ui8IpByte3;
+//            uint8_t uiIpByte0;
+//            uint8_t uiIpByte1;
+//            uint8_t uiIpByte2;
+//            uint8_t uiIpByte3;
 //            uint16_t ui16Port;
 //        };
 //        struct
 //        {
 //            // номер предложения.
-//            uint8_t ui8ChoiceOption;
+//            uint8_t uiChoiceOption;
 //            // количество предложений.
-//            uint8_t ui8ChoiceOptionNumber;
+//            uint8_t uiChoiceOptionNumber;
 //            // текстовые данные предложения меню.
 //            TChoiceOptionTextData axChoiceOptionTextData[CHOICE_OPTION_TEXT_NUMBER];
 //        };
 //        struct
 //        {
-//            uint8_t ui8ZummerIsOn;
+//            uint8_t uiZummerIsOn;
 //        };
 //    };
 //};
@@ -563,35 +564,35 @@ struct TPlcSettingsPackOne
 //struct TPlcSettingsExchangeClientPackOne
 //{
 //    // тип запрашиваемых данных.
-//    uint8_t ui8Type;
+//    uint8_t uiType;
 //    // код ответа.
-//    uint8_t ui8AnswerCode;
+//    uint8_t uiAnswerCode;
 //    union
 //    {
 //        struct
 //        {
-//            uint8_t ui8BaudRate;
-//            uint8_t ui8StopBits;
-//            uint8_t ui8Parity;
+//            uint8_t uiBaudRate;
+//            uint8_t uiStopBits;
+//            uint8_t uiParity;
 //        };
 //        struct
 //        {
-//            uint8_t ui8IpByte0;
-//            uint8_t ui8IpByte1;
-//            uint8_t ui8IpByte2;
-//            uint8_t ui8IpByte3;
+//            uint8_t uiIpByte0;
+//            uint8_t uiIpByte1;
+//            uint8_t uiIpByte2;
+//            uint8_t uiIpByte3;
 //            uint16_t ui16Port;
 //        };
 //        struct
 //        {
 //            // номер предложения.
-//            uint8_t ui8ChoiceOption;
+//            uint8_t uiChoiceOption;
 //            // количество предложений.
-//            uint8_t ui8ChoiceOptionNumber;
+//            uint8_t uiChoiceOptionNumber;
 //        };
 //        struct
 //        {
-//            uint8_t ui8ZummerIsOn;
+//            uint8_t uiZummerIsOn;
 //        };
 //    };
 //};
