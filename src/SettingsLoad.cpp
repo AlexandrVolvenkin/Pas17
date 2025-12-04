@@ -308,6 +308,7 @@ uint8_t CSettingsLoad::Fsm(void)
             pxDataContainer -> m_uiTaskId = uiTaskId;
             pxDataContainer -> m_uiFsmCommandState =
                 CModbusSlave::COMMUNICATION_STOP;
+            SetTaskDataNoStateCheck(pxDataContainer);
 
             SetFsmState(SETTINGS_LOAD_SETTINGS_DATA_BASE_BLOCKS_READ_START);
         }
@@ -363,14 +364,20 @@ uint8_t CSettingsLoad::Fsm(void)
                 (CSerialPortCommunicationDevice*)(GetResources() ->
                                                   GetTaskPointerByNameFromMap("SerialPortCommunicationDeviceCom1"));
 
+//            pxSerialPortCommunicationDeviceCom1 ->
+//            SetBaudRate(BIT_RATE_38400);
             pxSerialPortCommunicationDeviceCom1 ->
             SetBaudRate(pxPortSettingsPackOne -> uiBaudRate);
+            std::cout << "CSettingsLoad::Fsm uiBaudRate " << (float)(pxPortSettingsPackOne -> uiBaudRate) << std::endl;
             pxSerialPortCommunicationDeviceCom1 ->
             SetDataBits(pxPortSettingsPackOne -> uiDataBits);
+            std::cout << "CSettingsLoad::Fsm uiDataBits " << (float)(pxPortSettingsPackOne -> uiDataBits) << std::endl;
             pxSerialPortCommunicationDeviceCom1 ->
             SetParity(pxPortSettingsPackOne -> uiParity);
+            std::cout << "CSettingsLoad::Fsm uiParity " << (float)(pxPortSettingsPackOne -> uiParity) << std::endl;
             pxSerialPortCommunicationDeviceCom1 ->
             SetStopBit(pxPortSettingsPackOne -> uiStopBits);
+            std::cout << "CSettingsLoad::Fsm uiStopBits " << (float)(pxPortSettingsPackOne -> uiStopBits) << std::endl;
 
             SetFsmState(SETTINGS_LOAD_START_RTU_UPPER_LEVEL_INTERFACE);
         }
@@ -388,6 +395,7 @@ uint8_t CSettingsLoad::Fsm(void)
             pxDataContainer -> m_uiTaskId = uiTaskId;
             pxDataContainer -> m_uiFsmCommandState =
                 CModbusSlave::COMMUNICATION_START;
+            SetTaskDataNoStateCheck(pxDataContainer);
 
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(DONE_OK);

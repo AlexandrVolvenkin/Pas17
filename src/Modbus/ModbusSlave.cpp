@@ -2319,7 +2319,7 @@ uint8_t CModbusSlave::Fsm(void)
     break;
 
     case READY:
-        //std::cout << "CModbusSlave::Fsm READY"  << std::endl;
+        std::cout << "CModbusSlave::Fsm READY"  << std::endl;
         break;
 
     case DONE_OK:
@@ -2439,7 +2439,7 @@ uint8_t CModbusSlave::Fsm(void)
 
 //-------------------------------------------------------------------------------
     case COMMUNICATION_START:
-        //std::cout << "CModbusSlave::Fsm COMMUNICATION_START"  << std::endl;
+        std::cout << "CModbusSlave::Fsm COMMUNICATION_START"  << std::endl;
 //        CDataContainerDataBase* pxDataContainer =
 //            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
 //        pxDataContainer -> m_uiTaskId = m_uiModbusSlaveLinkLayerId;
@@ -2455,10 +2455,14 @@ uint8_t CModbusSlave::Fsm(void)
 //        SetFsmNextStateDoneWaitingError(RESPONSE_EXCEPTION_SLAVE_OR_SERVER_FAILURE);
 //        SetFsmNextStateDoneWaitingDoneError(RESPONSE_EXCEPTION_SLAVE_OR_SERVER_FAILURE);
 //
+//        m_pxModbusSlaveLinkLayer ->
+//        StartNewThread();
+//        usleep(10000);
         m_pxOperatingDataContainer -> m_uiFsmCommandState =
             CModbusRtuSlaveLinkLayer::COMMUNICATION_START;
         m_pxModbusSlaveLinkLayer ->
         SetTaskData(m_pxOperatingDataContainer);
+//        SetTaskDataNoStateCheck(m_pxOperatingDataContainer);
         SetFsmState(MESSAGE_RECEIVE_WAITING);
         break;
 
@@ -2682,11 +2686,14 @@ uint8_t CModbusSlave::Fsm(void)
         break;
 
     case COMMUNICATION_STOP:
-        ////std::cout << "CModbusSlave::Fsm COMMUNICATION_STOP"  << std::endl;
+        std::cout << "CModbusSlave::Fsm COMMUNICATION_STOP"  << std::endl;
+//        m_pxModbusSlaveLinkLayer ->
+//        DestroyThread();
         m_pxOperatingDataContainer -> m_uiFsmCommandState =
             CModbusRtuSlaveLinkLayer::COMMUNICATION_STOP;
         m_pxModbusSlaveLinkLayer ->
         SetTaskData(m_pxOperatingDataContainer);
+//        SetTaskDataNoStateCheck(m_pxOperatingDataContainer);
         SetFsmState(READY);
         break;
 

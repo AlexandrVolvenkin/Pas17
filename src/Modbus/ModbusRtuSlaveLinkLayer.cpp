@@ -29,8 +29,9 @@ CModbusRtuSlaveLinkLayer::CModbusRtuSlaveLinkLayer()
     m_pxCommunicationDevice = 0;
     SetFsmState(START);
 
-    m_pxThread = new std::thread(CModbusRtuSlaveLinkLayer::Process, this);
-    std::thread::id th_id = m_pxThread -> get_id();
+//    m_pxThread = new std::thread(CModbusRtuSlaveLinkLayer::Process, this);
+    m_pxThread = std::make_shared<std::thread>(CModbusRtuSlaveLinkLayer::Process, this);
+//    std::thread::id th_id = m_pxThread -> get_id();
     //std::cout << "CModbusRtuSlaveLinkLayer th_id" << " " << th_id << std::endl;
     // не ждем завершения работы функции
     m_pxThread -> detach();
@@ -46,7 +47,7 @@ CModbusRtuSlaveLinkLayer::~CModbusRtuSlaveLinkLayer()
     {
         m_pxThread -> join();
     }
-    delete m_pxThread;
+//    delete m_pxThread;
 }
 
 //-------------------------------------------------------------------------------
@@ -60,20 +61,30 @@ uint8_t CModbusRtuSlaveLinkLayer::Init(void)
 //-------------------------------------------------------------------------------
 bool CModbusRtuSlaveLinkLayer::SetTaskData(CDataContainerDataBase* pxDataContainer)
 {
+    std::cout << "CModbusRtuSlaveLinkLayer::SetTaskData 1" << std::endl;
+
+//    if (IsTaskReady())
+//    {
+    //std::cout << "CModbusRtuSlaveLinkLayer::SetTaskData 2" << std::endl;
+    *m_pxOperatingDataContainer = *pxDataContainer;
+    SetFsmState(m_pxOperatingDataContainer -> m_uiFsmCommandState);
+    return true;
+//    }
+//    else
+//    {
+//        //std::cout << "CModbusRtuSlaveLinkLayer::SetTaskData 3" << std::endl;
+//        return false;
+//    }
+}
+
+//-------------------------------------------------------------------------------
+bool CModbusRtuSlaveLinkLayer::SetTaskDataNoStateCheck(CDataContainerDataBase* pxDataContainer)
+{
 //    //std::cout << "CModbusRtuSlaveLinkLayer::SetTaskData 1" << std::endl;
 
-    if (IsTaskReady())
-    {
-        //std::cout << "CModbusRtuSlaveLinkLayer::SetTaskData 2" << std::endl;
-        *m_pxOperatingDataContainer = *pxDataContainer;
-        SetFsmState(m_pxOperatingDataContainer -> m_uiFsmCommandState);
-        return true;
-    }
-    else
-    {
-        //std::cout << "CModbusRtuSlaveLinkLayer::SetTaskData 3" << std::endl;
-        return false;
-    }
+    //std::cout << "CModbusRtuSlaveLinkLayer::SetTaskData 2" << std::endl;
+    *m_pxOperatingDataContainer = *pxDataContainer;
+    SetFsmState(m_pxOperatingDataContainer -> m_uiFsmCommandState);
 }
 
 //-------------------------------------------------------------------------------
@@ -92,6 +103,31 @@ size_t CModbusRtuSlaveLinkLayer::GetObjectLength(void)
 {
     //std::cout << "CModbusRtuSlaveLinkLayer GetObjectLength"  << std::endl;
     return sizeof(*this);
+}
+
+//-------------------------------------------------------------------------------
+void CModbusRtuSlaveLinkLayer::StartNewThread(void)
+{
+    cout << "CModbusRtuSlaveLinkLayer::StartNewThread 1" << endl;
+    m_pxThread = std::make_shared<std::thread>(CModbusRtuSlaveLinkLayer::Process, this);
+    // не ждем завершения работы функции
+    m_pxThread -> detach();
+}
+
+//-------------------------------------------------------------------------------
+void CModbusRtuSlaveLinkLayer::DestroyThread(void)
+{
+    cout << "CModbusRtuSlaveLinkLayer::DestroyThread 1" << endl;
+        // Ожидаем завершение первого потока (если он еще выполняется)
+        if (!m_pxThread || m_pxThread->joinable())
+        {
+            // Разорваем связь между потоком и его владелецом
+            if (m_pxThread)
+            {
+                m_pxThread->detach();
+            }
+            m_pxThread.reset(); // Сбросим указатель
+        }
 }
 
 //-------------------------------------------------------------------------------
@@ -365,7 +401,7 @@ int8_t CModbusRtuSlaveLinkLayer::FrameCheck(uint8_t *puiSourse, uint16_t uiLengt
 //-------------------------------------------------------------------------------
 uint8_t CModbusRtuSlaveLinkLayer::Fsm(void)
 {
-//    //std::cout << "CModbusRtuSlaveLinkLayer::Fsm 1"  << std::endl;
+//    std::cout << "CModbusRtuSlaveLinkLayer::Fsm 1"  << std::endl;
     switch (GetFsmState())
     {
         int16_t iBytesNumber;
@@ -416,7 +452,7 @@ uint8_t CModbusRtuSlaveLinkLayer::Fsm(void)
     break;
 
     case READY:
-//        //std::cout << "CModbusRtuSlaveLinkLayer::Fsm READY"  << std::endl;
+        std::cout << "CModbusRtuSlaveLinkLayer::Fsm READY"  << std::endl;
         break;
 
     case DONE_OK:
@@ -430,7 +466,7 @@ uint8_t CModbusRtuSlaveLinkLayer::Fsm(void)
         break;
 
     case COMMUNICATION_START:
-        //std::cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_START"  << std::endl;
+        std::cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_START"  << std::endl;
         m_pxCommunicationDevice -> Open();
         m_uiFrameLength = 0;
         SetFsmState(COMMUNICATION_RECEIVE_START);
@@ -599,10 +635,10 @@ uint8_t CModbusRtuSlaveLinkLayer::Fsm(void)
         break;
 
     case COMMUNICATION_STOP:
-        //std::cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_STOP"  << std::endl;
+        std::cout << "CModbusRtuSlaveLinkLayer::Fsm COMMUNICATION_STOP"  << std::endl;
         m_pxCommunicationDevice -> Close();
-//        SetFsmState(READY);
-        SetFsmState(DONE_OK);
+        SetFsmState(READY);
+//        SetFsmState(DONE_OK);
         break;
 
     default:

@@ -229,6 +229,39 @@ bool CTask::SetTaskData(CDataContainerInterface* pxDataContainer)
     }
 }
 
+//-------------------------------------------------------------------------------
+bool CTask::SetTaskDataNoStateCheck(CDataContainerInterface* pxDataContainer)
+{
+    std::cout << "CTask::SetTaskDataNoStateCheck 1" << std::endl;
+
+//    std::cout << "CTask::SetTaskDataNoStateCheck TaskId "  << (int)pxDataContainer ->
+//              GetTaskId() << std::endl;
+    CTaskInterface* pxTask =
+        GetResources() ->
+        GetTaskPointerById(pxDataContainer ->
+                           GetTaskId());
+
+    std::cout << "CTask::SetTaskDataNoStateCheck m_sTaskName "  << pxTask ->
+              GetTaskName() << std::endl;
+
+    if (pxTask)
+    {
+            std::cout << "CTask::SetTaskDataNoStateCheck 2" << std::endl;
+            pxTask -> SetCustomerDataContainer(pxDataContainer);
+            // сохраним текущее состояние автомата.
+            pxTask -> SetPreviousFsmState(pxTask ->
+                                          GetFsmState());
+            pxTask -> SetFsmState(pxDataContainer ->
+                                  GetFsmCommandState());
+            return true;
+    }
+    else
+    {
+        std::cout << "CTask::SetTaskDataNoStateCheck 4" << std::endl;
+        return false;
+    }
+}
+
 
 
 

@@ -234,6 +234,7 @@ public:
     CDataContainerInterface* GetCurrentExecutorDataContainerPointer(void);
 
     bool SetTaskData(CDataContainerInterface* pxDataContainer);
+    bool SetTaskDataNoStateCheck(CDataContainerInterface* pxDataContainer);
     bool SetTaskData(uint8_t uiTaskId, CDataContainerInterface* pxDataContainer);
 //    CDataContainerInterface* GetTaskData(void);
 

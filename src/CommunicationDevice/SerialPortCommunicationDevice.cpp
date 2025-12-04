@@ -341,6 +341,7 @@ int8_t CSerialPortCommunicationDevice::Open(void)
 //-------------------------------------------------------------------------------
 int8_t CSerialPortCommunicationDevice::Close(void)
 {
+    cout << "CSerialPortCommunicationDevice::Close m_pccDeviceName " << m_pccDeviceName << endl;
     close(m_iDeviceDescriptorServer);
 }
 

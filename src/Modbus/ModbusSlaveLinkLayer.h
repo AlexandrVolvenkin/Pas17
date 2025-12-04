@@ -48,6 +48,8 @@ public:
                                  uint16_t uiPort) {};
     virtual bool SetTaskData(CDataContainerDataBase* pxDataContainer) {};
     virtual bool GetTaskData(CDataContainerDataBase* pxDataContainer) {};
+    virtual void StartNewThread(void) {};
+    virtual void DestroyThread(void) {};
     uint8_t Fsm(void) {};
 
     virtual uint8_t* GetRxBuffer(void) {};
