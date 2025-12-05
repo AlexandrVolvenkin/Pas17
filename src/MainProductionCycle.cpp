@@ -718,12 +718,12 @@ uint8_t CMainProductionCycle::InitTasks(void)
         (CSerialPortCommunicationDevice*)(GetResources() ->
                                           GetTaskPointerByNameFromMap("SerialPortCommunicationDeviceCom1"));
 
-    pxSerialPortCommunicationDeviceCom1 -> Init();
     pxSerialPortCommunicationDeviceCom1 -> SetDeviceName("/dev/ttyO1");
-    pxSerialPortCommunicationDeviceCom1 -> SetBaudRate(BIT_RATE_9600);
-    pxSerialPortCommunicationDeviceCom1 -> SetDataBits(8);
-    pxSerialPortCommunicationDeviceCom1 -> SetParity(PARITY_NO);
-    pxSerialPortCommunicationDeviceCom1 -> SetStopBit(2);
+//    pxSerialPortCommunicationDeviceCom1 -> SetBaudRate(BIT_RATE_9600);
+//    pxSerialPortCommunicationDeviceCom1 -> SetDataBits(8);
+//    pxSerialPortCommunicationDeviceCom1 -> SetParity(PARITY_NO);
+//    pxSerialPortCommunicationDeviceCom1 -> SetStopBit(2);
+//    pxSerialPortCommunicationDeviceCom1 -> Init();
 
 //-------------------------------------------------------------------------------
     CModbusSlave* pxModbusRtuSlaveUpperLevel =

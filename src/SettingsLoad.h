@@ -26,6 +26,7 @@ class CCommunicationDevice;
 class CCommunicationDeviceInterface;
 class CSpiCommunicationDevice;
 class CSerialPortCommunicationDevice;
+class CTcpCommunicationDevice;
 class CDataContainerInterface;
 class CDataContainerDataBase;
 class CInternalModule;

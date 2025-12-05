@@ -159,6 +159,7 @@ private:
     uint16_t m_uiFrameLength;
 //    std::thread* m_pxThread;
     std::shared_ptr<std::thread> m_pxThread;
+    uint8_t m_uiThreadInProgress = 1;
     CDataContainerDataBase* m_pxOperatingDataContainer;
 };
 

@@ -21,6 +21,7 @@
 #include "ConfigurationCheck.h"
 #include "CommunicationDevice.h"
 #include "SerialPortCommunicationDevice.h"
+#include "TcpCommunicationDevice.h"
 #include "ModbusSlave.h"
 #include "SettingsLoad.h"
 
@@ -299,16 +300,31 @@ uint8_t CSettingsLoad::Fsm(void)
     case SETTINGS_LOAD_STOP_RTU_UPPER_LEVEL_INTERFACE:
         std::cout << "CSettingsLoad::Fsm SETTINGS_LOAD_STOP_RTU_UPPER_LEVEL_INTERFACE"  << std::endl;
         {
-            uint8_t uiTaskId =
-                GetResources() ->
-                GetTaskIdByNameFromMap("ModbusRtuSlaveUpperLevel");
+            {
+                uint8_t uiTaskId =
+                    GetResources() ->
+                    GetTaskIdByNameFromMap("ModbusRtuSlaveUpperLevel");
 
-            CDataContainerDataBase* pxDataContainer =
-                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-            pxDataContainer -> m_uiTaskId = uiTaskId;
-            pxDataContainer -> m_uiFsmCommandState =
-                CModbusSlave::COMMUNICATION_STOP;
-            SetTaskDataNoStateCheck(pxDataContainer);
+                CDataContainerDataBase* pxDataContainer =
+                    (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+                pxDataContainer -> m_uiTaskId = uiTaskId;
+                pxDataContainer -> m_uiFsmCommandState =
+                    CModbusSlave::COMMUNICATION_STOP;
+                SetTaskDataNoStateCheck(pxDataContainer);
+            }
+
+            {
+                uint8_t uiTaskId =
+                    GetResources() ->
+                    GetTaskIdByNameFromMap("ModbusTcpSlaveUpperLevel");
+
+                CDataContainerDataBase* pxDataContainer =
+                    (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+                pxDataContainer -> m_uiTaskId = uiTaskId;
+                pxDataContainer -> m_uiFsmCommandState =
+                    CModbusSlave::COMMUNICATION_STOP;
+                SetTaskDataNoStateCheck(pxDataContainer);
+            }
 
             SetFsmState(SETTINGS_LOAD_SETTINGS_DATA_BASE_BLOCKS_READ_START);
         }
@@ -364,6 +380,7 @@ uint8_t CSettingsLoad::Fsm(void)
                 (CSerialPortCommunicationDevice*)(GetResources() ->
                                                   GetTaskPointerByNameFromMap("SerialPortCommunicationDeviceCom1"));
 
+            pxSerialPortCommunicationDeviceCom1 -> Init();
 //            pxSerialPortCommunicationDeviceCom1 ->
 //            SetBaudRate(BIT_RATE_38400);
             pxSerialPortCommunicationDeviceCom1 ->
@@ -379,6 +396,14 @@ uint8_t CSettingsLoad::Fsm(void)
             SetStopBit(pxPortSettingsPackOne -> uiStopBits);
             std::cout << "CSettingsLoad::Fsm uiStopBits " << (float)(pxPortSettingsPackOne -> uiStopBits) << std::endl;
 
+
+            CTcpCommunicationDevice* pxTcpCommunicationDeviceUpperLevel =
+                (CTcpCommunicationDevice*)(GetResources() ->
+                                           GetTaskPointerByNameFromMap("TcpCommunicationDeviceUpperLevel"));
+            pxTcpCommunicationDeviceUpperLevel -> Init();
+            pxTcpCommunicationDeviceUpperLevel -> SetIpAddress("127.0.0.1");
+            pxTcpCommunicationDeviceUpperLevel -> SetPort(502);
+
             SetFsmState(SETTINGS_LOAD_START_RTU_UPPER_LEVEL_INTERFACE);
         }
         break;
@@ -386,16 +411,31 @@ uint8_t CSettingsLoad::Fsm(void)
     case SETTINGS_LOAD_START_RTU_UPPER_LEVEL_INTERFACE:
         std::cout << "CSettingsLoad::Fsm SETTINGS_LOAD_START_RTU_UPPER_LEVEL_INTERFACE"  << std::endl;
         {
-            uint8_t uiTaskId =
-                GetResources() ->
-                GetTaskIdByNameFromMap("ModbusRtuSlaveUpperLevel");
+            {
+                uint8_t uiTaskId =
+                    GetResources() ->
+                    GetTaskIdByNameFromMap("ModbusRtuSlaveUpperLevel");
 
-            CDataContainerDataBase* pxDataContainer =
-                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-            pxDataContainer -> m_uiTaskId = uiTaskId;
-            pxDataContainer -> m_uiFsmCommandState =
-                CModbusSlave::COMMUNICATION_START;
-            SetTaskDataNoStateCheck(pxDataContainer);
+                CDataContainerDataBase* pxDataContainer =
+                    (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+                pxDataContainer -> m_uiTaskId = uiTaskId;
+                pxDataContainer -> m_uiFsmCommandState =
+                    CModbusSlave::COMMUNICATION_START;
+                SetTaskDataNoStateCheck(pxDataContainer);
+            }
+
+            {
+                uint8_t uiTaskId =
+                    GetResources() ->
+                    GetTaskIdByNameFromMap("ModbusTcpSlaveUpperLevel");
+
+                CDataContainerDataBase* pxDataContainer =
+                    (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+                pxDataContainer -> m_uiTaskId = uiTaskId;
+                pxDataContainer -> m_uiFsmCommandState =
+                    CModbusSlave::COMMUNICATION_START;
+                SetTaskDataNoStateCheck(pxDataContainer);
+            }
 
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(DONE_OK);

@@ -68,6 +68,8 @@ public:
     uint8_t Init(void);
     size_t GetObjectLength(void);
 
+    void StartNewThread(void);
+    void DestroyThread(void);
     static void Process(CModbusTcpSlaveLinkLayer* pxModbusSlaveLinkLayer);
     void CommunicationDeviceInit(const char* pccIpAddress,
                                  uint16_t uiPort);
@@ -155,7 +157,9 @@ private:
     uint8_t m_auiRxBuffer[MODBUS_TCP_MAX_ADU_LENGTH];
     uint8_t m_auiTxBuffer[MODBUS_TCP_MAX_ADU_LENGTH];
     uint16_t m_uiFrameLength;
-    std::thread* m_pxThread;
+//    std::thread* m_pxThread;
+    std::shared_ptr<std::thread> m_pxThread;
+    uint8_t m_uiThreadInProgress = 1;
     CDataContainerDataBase* m_pxOperatingDataContainer;
 };
 
