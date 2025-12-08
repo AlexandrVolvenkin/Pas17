@@ -23,6 +23,7 @@ class CAnalogueSignals;
 class CDataContainerInterface;
 class CDataContainerDataBase;
 class CConfigurationCreate;
+class CSettingsSet;
 
 
 //-------------------------------------------------------------------------------

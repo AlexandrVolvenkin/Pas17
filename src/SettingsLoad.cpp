@@ -437,6 +437,19 @@ uint8_t CSettingsLoad::Fsm(void)
                 SetTaskDataNoStateCheck(pxDataContainer);
             }
 
+            {
+                uint8_t uiTaskId =
+                    GetResources() ->
+                    GetTaskIdByNameFromMap("ModbusSmSlaveEveDisplay");
+
+                CDataContainerDataBase* pxDataContainer =
+                    (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+                pxDataContainer -> m_uiTaskId = uiTaskId;
+                pxDataContainer -> m_uiFsmCommandState =
+                    CModbusSlave::COMMUNICATION_START;
+                SetTaskDataNoStateCheck(pxDataContainer);
+            }
+
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(DONE_OK);
         }

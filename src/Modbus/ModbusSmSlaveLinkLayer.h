@@ -59,6 +59,9 @@ public:
 
     uint8_t Init(void);
     size_t GetObjectLength(void);
+
+    void StartNewThread(void);
+    void DestroyThread(void);
     static void Process(CModbusSmSlaveLinkLayer* pxModbusSlaveLinkLayer);
 //    void CommunicationDeviceInit(const char* pccDeviceName,
 //                                 uint32_t uiBaudRate,
@@ -66,6 +69,7 @@ public:
 //                                 char cParity,
 //                                 uint8_t uiStopBit);
     bool SetTaskData(CDataContainerDataBase* pxDataContainer);
+    bool SetTaskDataNoStateCheck(CDataContainerDataBase* pxDataContainer);
     bool GetTaskData(CDataContainerDataBase* pxDataContainer);
     uint8_t Fsm(void);
 
@@ -146,7 +150,9 @@ private:
     uint8_t m_auiTxBuffer[MODBUS_SM_MAX_ADU_LENGTH];
 //    uint16_t m_uiRxBytesNumber;
     uint16_t m_uiFrameLength;
-    std::thread* m_pxThread;
+//    std::thread* m_pxThread;
+    std::shared_ptr<std::thread> m_pxThread;
+    uint8_t m_uiThreadInProgress = 1;
     CDataContainerDataBase* m_pxOperatingDataContainer;
 };
 

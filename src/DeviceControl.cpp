@@ -31,6 +31,7 @@
 #include "InternalModuleMuvr.h"
 #include "ModbusSlave.h"
 #include "Parse.h"
+#include "SettingsSet.h"
 #include "DeviceControl.h"
 
 using namespace std;
@@ -2364,21 +2365,23 @@ uint8_t CDeviceControl::Fsm(void)
     case SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_START:
         //cout << "CDeviceControl::Fsm SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_START" << endl;
     {
-        m_uiDataStoreId =
+        uint8_t uiTaskId =
             GetResources() ->
-            GetTaskIdByNameFromMap(m_sDataStoreName);
+            GetTaskIdByNameFromMap("SettingsSet");
 
         CDataContainerDataBase* pxDataContainer =
             (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-        pxDataContainer -> m_uiTaskId = m_uiDataStoreId;
+        pxDataContainer -> m_uiTaskId = uiTaskId;
         pxDataContainer -> m_uiFsmCommandState =
-            CDataStore::START_WRITE_TEMPORARY_BLOCK_DATA;
-        // сетевой адрес блок 99
-        pxDataContainer -> m_uiDataIndex = SETTINGS_DATA_BASE_BLOCK_OFFSET;
+            CSettingsSet::SETTINGS_SET_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_READ_START;
+
         // в буфере m_puiIntermediateBuff приходдят данные начиная с кода опции.
         // для записи в базу данных он нам не нужен.
         pxDataContainer -> m_puiDataPointer =
             &(((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer[DATA_OFFSET]);
+        pxDataContainer -> m_uiDataLength =
+            // минус один байт - код опции
+            ((((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiDataLength) - 1);
 
         SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
         SetFsmNextStateDoneOk(SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
