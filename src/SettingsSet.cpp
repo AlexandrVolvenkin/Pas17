@@ -20,6 +20,7 @@
 #include "DataBaseCreate.h"
 #include "ConfigurationCheck.h"
 #include "ModbusSlave.h"
+#include "SettingsLoad.h"
 #include "SettingsSet.h"
 
 using namespace std;
@@ -341,7 +342,7 @@ uint8_t CSettingsSet::Fsm(void)
 
 //-------------------------------------------------------------------------------
     case SETTINGS_SET_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_START:
-        std::cout << "CDataBaseCreate::Fsm SETTINGS_SET_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_START"  << std::endl;
+        std::cout << "CSettingsSet::Fsm SETTINGS_SET_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_START"  << std::endl;
         {
             m_uiDataStoreId =
                 GetResources() ->
@@ -367,13 +368,50 @@ uint8_t CSettingsSet::Fsm(void)
     case SETTINGS_SET_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
         std::cout << "CSettingsSet::Fsm SETTINGS_SET_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
         {
-            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-            SetFsmState(DONE_OK);
+            SetFsmState(SETTINGS_SET_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_INTERFACE_RESTART_START);
         }
         break;
 
     case SETTINGS_SET_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
         std::cout << "CSettingsSet::Fsm SETTINGS_SET_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        {
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+            SetFsmState(DONE_ERROR);
+        }
+        break;
+
+//-------------------------------------------------------------------------------
+    case SETTINGS_SET_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_INTERFACE_RESTART_START:
+        std::cout << "CSettingsSet::Fsm SETTINGS_SET_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_INTERFACE_RESTART_START"  << std::endl;
+        {
+            uint8_t uiTaskId =
+                GetResources() ->
+                GetTaskIdByNameFromMap("SettingsLoad");
+
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            pxDataContainer -> m_uiTaskId = uiTaskId;
+            pxDataContainer -> m_uiFsmCommandState =
+                CSettingsLoad::SETTINGS_LOAD_STOP_RTU_UPPER_LEVEL_INTERFACE;
+
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+            SetFsmNextStateDoneOk(SETTINGS_SET_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_INTERFACE_RESTART_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+            SetFsmNextStateReadyWaitingError(SETTINGS_SET_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_INTERFACE_RESTART_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingError(SETTINGS_SET_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_INTERFACE_RESTART_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingDoneError(SETTINGS_SET_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_INTERFACE_RESTART_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+        }
+        break;
+
+    case SETTINGS_SET_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_INTERFACE_RESTART_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+        std::cout << "CSettingsSet::Fsm SETTINGS_SET_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_INTERFACE_RESTART_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        {
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(DONE_OK);
+        }
+        break;
+
+    case SETTINGS_SET_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_INTERFACE_RESTART_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+        std::cout << "CSettingsSet::Fsm SETTINGS_SET_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_INTERFACE_RESTART_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
         {
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
             SetFsmState(DONE_ERROR);
