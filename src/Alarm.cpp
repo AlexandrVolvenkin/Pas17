@@ -49,7 +49,7 @@ CAlarmDfa::~CAlarmDfa()
 //-------------------------------------------------------------------------------
 uint8_t CAlarmDfa::Init(void)
 {
-    //std::cout << "CAlarmDfa Init"  << std::endl;
+    std::cout << "CAlarmDfa Init"  << std::endl;
     SetExecutorDataContainer(static_cast<CDataContainerDataBase*>(GetResources() ->
                              AddDataContainer(std::make_shared<CDataContainerDataBase>())));
     SetCustomerDataContainer(GetExecutorDataContainerPointer());

@@ -50,7 +50,7 @@ void CInternalModuleMuvr::SetCommunicationDevice(CCommunicationDeviceInterface* 
 //-------------------------------------------------------------------------------
 uint8_t CInternalModuleMuvr::Init(void)
 {
-    //std::cout << "CInternalModuleMuvr Init"  << std::endl;
+    std::cout << "CInternalModuleMuvr Init"  << std::endl;
     SetExecutorDataContainer(static_cast<CDataContainerDataBase*>(GetResources() ->
                              AddDataContainer(std::make_shared<CDataContainerDataBase>())));
     SetCustomerDataContainer(GetExecutorDataContainerPointer());

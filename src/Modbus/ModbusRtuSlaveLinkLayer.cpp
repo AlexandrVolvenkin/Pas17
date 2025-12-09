@@ -53,7 +53,7 @@ CModbusRtuSlaveLinkLayer::~CModbusRtuSlaveLinkLayer()
 //-------------------------------------------------------------------------------
 uint8_t CModbusRtuSlaveLinkLayer::Init(void)
 {
-    //std::cout << "CModbusRtuSlaveLinkLayer Init"  << std::endl;
+    std::cout << "CModbusRtuSlaveLinkLayer Init"  << std::endl;
     m_pxOperatingDataContainer = static_cast<CDataContainerDataBase*>(GetResources() ->
                                  AddDataContainer(std::make_shared<CDataContainerDataBase>()));
 }

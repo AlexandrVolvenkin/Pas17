@@ -37,7 +37,7 @@ CSharedMemoryCommunicationDevice::~CSharedMemoryCommunicationDevice()
 //-------------------------------------------------------------------------------
 void CSharedMemoryCommunicationDevice::Init(void)
 {
-    //std::cout << "CSharedMemoryCommunicationDevice::Init 1"  << std::endl;
+    std::cout << "CSharedMemoryCommunicationDevice::Init 1"  << std::endl;
 
     SetFsmState(READY);
 }

@@ -54,7 +54,7 @@ CDeviceControl::~CDeviceControl()
 //-------------------------------------------------------------------------------
 uint8_t CDeviceControl::Init(void)
 {
-    //std::cout << "CDeviceControl Init"  << std::endl;
+    std::cout << "CDeviceControl Init"  << std::endl;
 //    m_pxCommandDataContainer = static_cast<CDataContainerDataBase*>(GetResources() ->
 //                               AddDataContainer(std::make_shared<CDataContainerDataBase>()));
     m_pxOperatingDataContainer = static_cast<CDataContainerDataBase*>(GetResources() ->

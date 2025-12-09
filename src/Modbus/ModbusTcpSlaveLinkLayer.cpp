@@ -51,7 +51,7 @@ CModbusTcpSlaveLinkLayer::~CModbusTcpSlaveLinkLayer()
 //-------------------------------------------------------------------------------
 uint8_t CModbusTcpSlaveLinkLayer::Init(void)
 {
-    //std::cout << "CModbusTcpSlaveLinkLayer Init"  << std::endl;
+    std::cout << "CModbusTcpSlaveLinkLayer Init"  << std::endl;
     m_pxOperatingDataContainer = static_cast<CDataContainerDataBase*>(GetResources() ->
                                  AddDataContainer(std::make_shared<CDataContainerDataBase>()));
 }

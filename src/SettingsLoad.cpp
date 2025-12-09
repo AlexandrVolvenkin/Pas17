@@ -369,6 +369,7 @@ uint8_t CSettingsLoad::Fsm(void)
         }
         break;
 
+//-------------------------------------------------------------------------------
     case SETTINGS_LOAD_SETTINGS_SET_START:
         std::cout << "CSettingsLoad::Fsm SETTINGS_LOAD_SETTINGS_SET_START"  << std::endl;
         {

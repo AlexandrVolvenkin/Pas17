@@ -41,7 +41,7 @@ CModbusSmSlaveLinkLayer::~CModbusSmSlaveLinkLayer()
 //-------------------------------------------------------------------------------
 uint8_t CModbusSmSlaveLinkLayer::Init(void)
 {
-    //std::cout << "CModbusSmSlaveLinkLayer Init"  << std::endl;
+    std::cout << "CModbusSmSlaveLinkLayer Init"  << std::endl;
     m_pxOperatingDataContainer = static_cast<CDataContainerDataBase*>(GetResources() ->
                                  AddDataContainer(std::make_shared<CDataContainerDataBase>()));
 }
@@ -98,9 +98,9 @@ void CModbusSmSlaveLinkLayer::StartNewThread(void)
 {
     cout << "CModbusSmSlaveLinkLayer::StartNewThread 1" << endl;
     m_uiThreadInProgress = 1;
-    m_pxThread = std::make_shared<std::thread>(CModbusSmSlaveLinkLayer::Process, this);
-    // не ждем завершения работы функции
-    m_pxThread -> detach();
+//    m_pxThread = std::make_shared<std::thread>(CModbusSmSlaveLinkLayer::Process, this);
+//    // не ждем завершения работы функции
+//    m_pxThread -> detach();
 }
 
 //-------------------------------------------------------------------------------
@@ -109,17 +109,17 @@ void CModbusSmSlaveLinkLayer::DestroyThread(void)
     cout << "CModbusSmSlaveLinkLayer::DestroyThread 1" << endl;
 
     m_uiThreadInProgress = 0;
-    // Ожидаем завершение первого потока (если он еще выполняется)
-    if (!m_pxThread || m_pxThread->joinable())
-    {
-//        m_pxThread -> join();
-        // Разорваем связь между потоком и его владелецом
-        if (m_pxThread)
-        {
-            m_pxThread->detach();
-        }
-        m_pxThread.reset(); // Сбросим указатель
-    }
+//    // Ожидаем завершение первого потока (если он еще выполняется)
+//    if (!m_pxThread || m_pxThread->joinable())
+//    {
+////        m_pxThread -> join();
+//        // Разорваем связь между потоком и его владелецом
+//        if (m_pxThread)
+//        {
+//            m_pxThread->detach();
+//        }
+//        m_pxThread.reset(); // Сбросим указатель
+//    }
 }
 
 //-------------------------------------------------------------------------------
@@ -370,9 +370,9 @@ int8_t CModbusSmSlaveLinkLayer::FrameCheck(uint8_t *puiSourse, uint16_t uiLength
 //-------------------------------------------------------------------------------
 uint8_t CModbusSmSlaveLinkLayer::Fsm(void)
 {
-//    //std::cout << "CModbusSmSlaveLinkLayer::Fsm 1"  << std::endl;
-    while (m_uiThreadInProgress)
-    {
+//    std::cout << "CModbusSmSlaveLinkLayer::Fsm 1"  << std::endl;
+//    while (m_uiThreadInProgress)
+//    {
         switch (GetFsmState())
         {
             int16_t iBytesNumber;
@@ -614,7 +614,7 @@ uint8_t CModbusSmSlaveLinkLayer::Fsm(void)
         default:
             break;
         }
-    }
+//    }
 }
 
 //-------------------------------------------------------------------------------
