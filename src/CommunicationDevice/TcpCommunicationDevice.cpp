@@ -300,9 +300,10 @@ void CTcpCommunicationDevice::CloseClient(void)
 //-------------------------------------------------------------------------------
 int8_t CTcpCommunicationDevice::Close(void)
 {
-    //std::cout << "CTcpCommunicationDevice::Close 1"  << std::endl;
+    std::cout << "CTcpCommunicationDevice::Close 1"  << std::endl;
     close(m_iDeviceDescriptorServer);
     close(m_iDeviceDescriptorClient);
+    usleep(100000);
 }
 
 //-------------------------------------------------------------------------------

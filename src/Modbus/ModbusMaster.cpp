@@ -187,7 +187,7 @@ int8_t CModbusMaster::ReadDiscreteInputsRequest(uint8_t uiSlaveAddress,
     {
         if (IsTaskReady())
         {
-            uint8_t * puiResponse = m_pxModbusMasterLinkLayer -> GetTxBuffer();
+            uint8_t* puiResponse = m_pxModbusMasterLinkLayer -> GetTxBuffer();
 
             m_uiFunctionCode = _FC_READ_DISCRETE_INPUTS;
             m_uiAddress = uiAddress;
@@ -220,7 +220,7 @@ uint16_t CModbusMaster::ReadDiscreteInputsAnswer(void)
     std::cout << "CModbusMaster::ReadDiscreteInputsAnswer 1" << std::endl;
 
     uint16_t uiPduOffset = m_pxModbusMasterLinkLayer -> GetPduOffset();
-    uint8_t * puiRequest = m_pxModbusMasterLinkLayer -> GetRxBuffer();
+    uint8_t* puiRequest = m_pxModbusMasterLinkLayer -> GetRxBuffer();
 
 
     {
@@ -273,8 +273,8 @@ uint16_t CModbusMaster::ReportSlaveID(void)
     std::cout << "CModbusMaster::ReportSlaveID 1" << std::endl;
 
 //    uint16_t uiPduOffset = m_pxModbusMasterLinkLayer -> GetPduOffset();
-//    uint8_t * puiRequest = m_pxModbusMasterLinkLayer -> GetRxBuffer();
-//    uint8_t * puiResponse = m_pxModbusMasterLinkLayer -> GetTxBuffer();
+//    uint8_t* puiRequest = m_pxModbusMasterLinkLayer -> GetRxBuffer();
+//    uint8_t* puiResponse = m_pxModbusMasterLinkLayer -> GetTxBuffer();
 //    uint16_t  uiLength = m_pxModbusMasterLinkLayer -> GetFrameLength();
 //
 //    int8_t uiSlave = puiRequest[uiPduOffset - 1];
@@ -312,8 +312,8 @@ uint16_t CModbusMaster::ReportSlaveID(void)
 //
 ////        {
 ////            uint16_t uiPduOffset = m_pxModbusMasterLinkLayer -> GetPduOffset();
-////            uint8_t * puiRequest = m_pxModbusMasterLinkLayer -> GetRxBuffer();
-////            uint8_t * puiResponse = (m_pxModbusMasterLinkLayer -> GetTxBuffer());
+////            uint8_t* puiRequest = m_pxModbusMasterLinkLayer -> GetRxBuffer();
+////            uint8_t* puiResponse = (m_pxModbusMasterLinkLayer -> GetTxBuffer());
 ////            uint16_t  uiLength = m_pxModbusMasterLinkLayer -> GetFrameLength();
 ////
 ////            int8_t uiSlave = 1;//puiRequest[uiPduOffset - 1];
@@ -361,8 +361,8 @@ uint16_t CModbusMaster::ReportSlaveIDAnswer(void)
     std::cout << "CModbusMaster::ReportSlaveIDAnswer 1" << std::endl;
 
 //    uint16_t uiPduOffset = m_pxModbusMasterLinkLayer -> GetPduOffset();
-//    uint8_t * puiRequest = m_pxModbusMasterLinkLayer -> GetRxBuffer();
-//    uint8_t * puiResponse = m_pxModbusMasterLinkLayer -> GetTxBuffer();
+//    uint8_t* puiRequest = m_pxModbusMasterLinkLayer -> GetRxBuffer();
+//    uint8_t* puiResponse = m_pxModbusMasterLinkLayer -> GetTxBuffer();
 //    uint16_t  uiLength = m_pxModbusMasterLinkLayer -> GetFrameLength();
 //
 //    int8_t uiSlave = puiRequest[uiPduOffset - 1];
@@ -403,8 +403,8 @@ uint16_t CModbusMaster::AnswerProcessing(void)
     std::cout << "CModbusMaster::AnswerProcessing 1" << std::endl;
 
     uint16_t uiPduOffset = m_pxModbusMasterLinkLayer -> GetPduOffset();
-    uint8_t * puiRequest = m_pxModbusMasterLinkLayer -> GetRxBuffer();
-    uint8_t * puiResponse = m_pxModbusMasterLinkLayer -> GetTxBuffer();
+    uint8_t* puiRequest = m_pxModbusMasterLinkLayer -> GetRxBuffer();
+    uint8_t* puiResponse = m_pxModbusMasterLinkLayer -> GetTxBuffer();
     uint16_t  uiLength = m_pxModbusMasterLinkLayer -> GetFrameLength();
 
     int8_t uiSlave = puiRequest[uiPduOffset - 1];

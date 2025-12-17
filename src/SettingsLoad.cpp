@@ -292,7 +292,8 @@ uint8_t CSettingsLoad::Fsm(void)
 //            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
 //            SetFsmState(DONE_OK);
 
-            SetFsmState(SETTINGS_LOAD_STOP_RTU_UPPER_LEVEL_INTERFACE);
+//            SetFsmState(SETTINGS_LOAD_STOP_RTU_UPPER_LEVEL_INTERFACE);
+            SetFsmState(SETTINGS_LOAD_SETTINGS_DATA_BASE_BLOCKS_READ_START);
         }
         break;
 
@@ -317,6 +318,19 @@ uint8_t CSettingsLoad::Fsm(void)
                 uint8_t uiTaskId =
                     GetResources() ->
                     GetTaskIdByNameFromMap("ModbusTcpSlaveUpperLevel");
+
+                CDataContainerDataBase* pxDataContainer =
+                    (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+                pxDataContainer -> m_uiTaskId = uiTaskId;
+                pxDataContainer -> m_uiFsmCommandState =
+                    CModbusSlave::COMMUNICATION_STOP;
+                SetTaskDataNoStateCheck(pxDataContainer);
+            }
+
+            {
+                uint8_t uiTaskId =
+                    GetResources() ->
+                    GetTaskIdByNameFromMap("ModbusSmSlaveEveDisplay");
 
                 CDataContainerDataBase* pxDataContainer =
                     (CDataContainerDataBase*)GetExecutorDataContainerPointer();

@@ -152,7 +152,7 @@ public:
                            uint16_t );
     void SetByteFromBits(uint8_t *, uint16_t, const uint8_t );
     void SetBytesFromBits(uint8_t *, uint16_t, uint16_t,
-                          const uint8_t * );
+                          const uint8_t* );
     uint8_t GetByteFromBits(const uint8_t *, uint16_t,
                             uint16_t );
     float GetFloat(const uint16_t * );

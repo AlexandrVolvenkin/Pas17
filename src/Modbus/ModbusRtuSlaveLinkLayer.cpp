@@ -113,6 +113,7 @@ void CModbusRtuSlaveLinkLayer::StartNewThread(void)
     m_pxThread = std::make_shared<std::thread>(CModbusRtuSlaveLinkLayer::Process, this);
     // не ждем завершени€ работы функции
     m_pxThread -> detach();
+    SetFsmState(START);
 }
 
 //-------------------------------------------------------------------------------
@@ -120,6 +121,7 @@ void CModbusRtuSlaveLinkLayer::DestroyThread(void)
 {
     cout << "CModbusRtuSlaveLinkLayer::DestroyThread 1" << endl;
 
+    m_pxCommunicationDevice -> Close();
     m_uiThreadInProgress = 0;
     // ќжидаем завершение первого потока (если он еще выполн€етс€)
     if (!m_pxThread || m_pxThread->joinable())

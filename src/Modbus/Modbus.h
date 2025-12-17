@@ -261,13 +261,13 @@ typedef enum
 //                                  uint16_t uiAddress,
 //                                  uint16_t uiBitNumber,
 //                                  uint8_t *puiRequest) = 0;
-//    virtual uint16_t ResponseBasis(uint8_t, uint8_t, uint8_t * ) = 0;
-//    uint16_t ResponseException(uint8_t, uint8_t, uint8_t, uint8_t * );
+//    virtual uint16_t ResponseBasis(uint8_t, uint8_t, uint8_t* ) = 0;
+//    uint16_t ResponseException(uint8_t, uint8_t, uint8_t, uint8_t* );
 //    uint16_t SendMessage(uint8_t *, uint16_t );
 //    virtual uint16_t Send(uint8_t *, uint16_t ) = 0;
 //    void SetByteFromBits(uint8_t *, uint16_t, const uint8_t );
 //    void SetBytesFromBits(uint8_t *, uint16_t, uint16_t,
-//                          const uint8_t * );
+//                          const uint8_t* );
 //    uint8_t GetByteFromBits(const uint8_t *, uint16_t,
 //                            uint16_t );
 //    float GetFloat(const uint16_t * );
@@ -390,20 +390,20 @@ typedef enum
 //    static const char *ModbusStringError(int errnum);
 //    void SlaveSet(uint8_t );
 //
-//    uint16_t ReadCoils(uint8_t * , uint8_t * , uint16_t );
-//    uint16_t ReadDiscreteInputs(uint8_t * , uint8_t * , uint16_t );
-//    uint16_t ReadHoldingRegisters(uint8_t * , uint8_t * , uint16_t );
-//    uint16_t ReadInputRegisters(uint8_t * , uint8_t * , uint16_t );
-//    uint16_t WriteSingleCoil(uint8_t * , uint8_t * , uint16_t );
-//    uint16_t WriteSingleRegister(uint8_t * , uint8_t * , uint16_t );
-//    uint16_t WriteMultipleCoils(uint8_t * , uint8_t * , uint16_t );
-//    uint16_t WriteMultipleRegisters(uint8_t * , uint8_t * , uint16_t );
-//    uint16_t ReadExceptionStatus(uint8_t * , uint8_t * , uint16_t );
-//    uint16_t ReportSlaveID(uint8_t * , uint8_t * , uint16_t );
-//    uint16_t WriteAndReadRegisters(uint8_t * , uint8_t * , uint16_t );
-//    uint16_t Programming(uint8_t * , uint8_t * , uint16_t );
-//    uint16_t PollProgramming(uint8_t * , uint8_t * , uint16_t );
-//    uint16_t RequestProcessing(uint8_t * , uint8_t * , uint16_t );
+//    uint16_t ReadCoils(uint8_t* , uint8_t* , uint16_t );
+//    uint16_t ReadDiscreteInputs(uint8_t* , uint8_t* , uint16_t );
+//    uint16_t ReadHoldingRegisters(uint8_t* , uint8_t* , uint16_t );
+//    uint16_t ReadInputRegisters(uint8_t* , uint8_t* , uint16_t );
+//    uint16_t WriteSingleCoil(uint8_t* , uint8_t* , uint16_t );
+//    uint16_t WriteSingleRegister(uint8_t* , uint8_t* , uint16_t );
+//    uint16_t WriteMultipleCoils(uint8_t* , uint8_t* , uint16_t );
+//    uint16_t WriteMultipleRegisters(uint8_t* , uint8_t* , uint16_t );
+//    uint16_t ReadExceptionStatus(uint8_t* , uint8_t* , uint16_t );
+//    uint16_t ReportSlaveID(uint8_t* , uint8_t* , uint16_t );
+//    uint16_t WriteAndReadRegisters(uint8_t* , uint8_t* , uint16_t );
+//    uint16_t Programming(uint8_t* , uint8_t* , uint16_t );
+//    uint16_t PollProgramming(uint8_t* , uint8_t* , uint16_t );
+//    uint16_t RequestProcessing(uint8_t* , uint8_t* , uint16_t );
 //
 //
 //protected:
@@ -416,20 +416,20 @@ typedef enum
 //                           uint16_t );
 //    virtual bool IsDataWrited(void) = 0;
 //    int8_t MessengerIsReady(void);
-//    virtual uint16_t Tail(uint8_t * , uint16_t ) = 0;
+//    virtual uint16_t Tail(uint8_t* , uint16_t ) = 0;
 //    virtual uint16_t RequestBasis(uint8_t uiSlave,
 //                                  uint8_t uiFunctionCode,
 //                                  uint16_t uiAddress,
 //                                  uint16_t uiBitNumber,
 //                                  uint8_t *puiRequest) = 0;
-//    virtual uint16_t ResponseBasis(uint8_t , uint8_t , uint8_t * ) = 0;
-//    uint16_t ResponseException(uint8_t , uint8_t , uint8_t , uint8_t * );
-//    uint16_t SendMessage(uint8_t * , uint16_t );
-//    virtual uint16_t Send(uint8_t * , uint16_t ) = 0;
-//    void SetByteFromBits(uint8_t * , uint16_t , const uint8_t );
-//    void SetBytesFromBits(uint8_t * , uint16_t , uint16_t ,
-//                          const uint8_t * );
-//    uint8_t GetByteFromBits(const uint8_t * , uint16_t ,
+//    virtual uint16_t ResponseBasis(uint8_t , uint8_t , uint8_t* ) = 0;
+//    uint16_t ResponseException(uint8_t , uint8_t , uint8_t , uint8_t* );
+//    uint16_t SendMessage(uint8_t* , uint16_t );
+//    virtual uint16_t Send(uint8_t* , uint16_t ) = 0;
+//    void SetByteFromBits(uint8_t* , uint16_t , const uint8_t );
+//    void SetBytesFromBits(uint8_t* , uint16_t , uint16_t ,
+//                          const uint8_t* );
+//    uint8_t GetByteFromBits(const uint8_t* , uint16_t ,
 //                            uint16_t );
 //    float GetFloat(const uint16_t * );
 //    void SetFloat(float , uint16_t * );

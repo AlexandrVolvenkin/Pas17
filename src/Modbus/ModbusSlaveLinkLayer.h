@@ -90,11 +90,11 @@ public:
                                   uint16_t uiAddress,
                                   uint16_t uiBitNumber,
                                   uint8_t *puiRequest) {};
-    virtual uint16_t ResponseBasis(uint8_t, uint8_t, uint8_t * ) {};
-    virtual uint16_t ResponseException(uint8_t, uint8_t, uint8_t, uint8_t * ) {};
+    virtual uint16_t ResponseBasis(uint8_t, uint8_t, uint8_t* ) {};
+    virtual uint16_t ResponseException(uint8_t, uint8_t, uint8_t, uint8_t* ) {};
     virtual uint16_t Tail(uint8_t *, uint16_t ) {};
     virtual uint16_t Send(uint8_t *, uint16_t ) {};
-    virtual int8_t FrameCheck(uint8_t * , uint16_t ) {};
+    virtual int8_t FrameCheck(uint8_t* , uint16_t ) {};
 
     virtual uint16_t GetFrameLength(void) {};
     virtual void SetFrameLength(uint16_t uiData) {};

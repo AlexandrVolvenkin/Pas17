@@ -109,8 +109,8 @@ public:
                           uint16_t uiAddress,
                           uint16_t uiBitNumber,
                           uint8_t *puiRequest);
-    uint16_t ResponseBasis(uint8_t, uint8_t, uint8_t * );
-    uint16_t ResponseException(uint8_t, uint8_t, uint8_t, uint8_t * );
+    uint16_t ResponseBasis(uint8_t, uint8_t, uint8_t* );
+    uint16_t ResponseException(uint8_t, uint8_t, uint8_t, uint8_t* );
 
     uint16_t ByteToBitPack(uint16_t,
                            uint16_t,
@@ -119,7 +119,7 @@ public:
                            uint16_t );
     void SetByteFromBits(uint8_t *, uint16_t, const uint8_t );
     void SetBytesFromBits(uint8_t *, uint16_t, uint16_t,
-                          const uint8_t * );
+                          const uint8_t* );
     uint8_t GetByteFromBits(const uint8_t *, uint16_t,
                             uint16_t );
     float GetFloat(const uint16_t * );

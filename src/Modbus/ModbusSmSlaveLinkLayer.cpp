@@ -101,6 +101,7 @@ void CModbusSmSlaveLinkLayer::StartNewThread(void)
 //    m_pxThread = std::make_shared<std::thread>(CModbusSmSlaveLinkLayer::Process, this);
 //    // не ждем завершения работы функции
 //    m_pxThread -> detach();
+    SetFsmState(START);
 }
 
 //-------------------------------------------------------------------------------
@@ -108,6 +109,7 @@ void CModbusSmSlaveLinkLayer::DestroyThread(void)
 {
     cout << "CModbusSmSlaveLinkLayer::DestroyThread 1" << endl;
 
+//    m_pxCommunicationDevice -> Close();
     m_uiThreadInProgress = 0;
 //    // Ожидаем завершение первого потока (если он еще выполняется)
 //    if (!m_pxThread || m_pxThread->joinable())
