@@ -291,54 +291,54 @@ uint8_t CSettingsSet::Fsm(void)
 //        }
 //        break;
 
-//-------------------------------------------------------------------------------
-    // чтение параметров интерфейса связи верхнего уровня.
-    case SETTINGS_SET_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_READ_START:
-        //cout << "CDeviceControl::Fsm SETTINGS_SET_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_READ_START" << endl;
-    {
-        m_uiDataStoreId =
-            GetResources() ->
-            GetTaskIdByNameFromMap(m_sDataStoreName);
-
-        CDataContainerDataBase* pxDataContainer =
-            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-        pxDataContainer -> m_uiTaskId = m_uiDataStoreId;
-        pxDataContainer -> m_uiFsmCommandState =
-            CDataStore::READ_BLOCK_DATA_START;
-        // параметры настроек блок 101
-        pxDataContainer -> m_uiDataIndex = SETTINGS_DATA_BASE_BLOCK_OFFSET;
-        pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
-
-        SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
-        SetFsmNextStateDoneOk(SETTINGS_SET_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
-        SetFsmNextStateReadyWaitingError(SETTINGS_SET_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
-        SetFsmNextStateDoneWaitingError(SETTINGS_SET_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
-        SetFsmNextStateDoneWaitingDoneError(SETTINGS_SET_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
-    }
-    break;
-
-    case SETTINGS_SET_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
-        std::cout << "CDeviceControl::Fsm SETTINGS_SET_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
-        {
-            CDataContainerDataBase* pxCustomerDataContainer =
-                (CDataContainerDataBase*)GetCustomerDataContainerPointer();
-
-            memcpy(((uint8_t*)(&(((TPlcSettingsPackOne*)(m_puiIntermediateBuff)) ->
-                                 xTRs485HighLevelSettingsPackOne))),
-                   (pxCustomerDataContainer -> m_puiDataPointer),
-                   (sizeof(struct TPortSettingsPackOne)));
-
-            SetFsmState(SETTINGS_SET_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_START);
-        }
-        break;
-
-    case SETTINGS_SET_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
-        std::cout << "CDeviceControl::Fsm SETTINGS_SET_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
-        {
-            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
-            SetFsmState(DONE_ERROR);
-        }
-        break;
+////-------------------------------------------------------------------------------
+//    // чтение параметров интерфейса связи верхнего уровня.
+//    case SETTINGS_SET_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_READ_START:
+//        //cout << "CSettingsSet::Fsm SETTINGS_SET_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_READ_START" << endl;
+//    {
+//        m_uiDataStoreId =
+//            GetResources() ->
+//            GetTaskIdByNameFromMap(m_sDataStoreName);
+//
+//        CDataContainerDataBase* pxDataContainer =
+//            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+//        pxDataContainer -> m_uiTaskId = m_uiDataStoreId;
+//        pxDataContainer -> m_uiFsmCommandState =
+//            CDataStore::READ_BLOCK_DATA_START;
+//        // параметры настроек блок 101
+//        pxDataContainer -> m_uiDataIndex = SETTINGS_DATA_BASE_BLOCK_OFFSET;
+//        pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+//
+//        SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+//        SetFsmNextStateDoneOk(SETTINGS_SET_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+//        SetFsmNextStateReadyWaitingError(SETTINGS_SET_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+//        SetFsmNextStateDoneWaitingError(SETTINGS_SET_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+//        SetFsmNextStateDoneWaitingDoneError(SETTINGS_SET_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+//    }
+//    break;
+//
+//    case SETTINGS_SET_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+//        std::cout << "CSettingsSet::Fsm SETTINGS_SET_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+//        {
+//            CDataContainerDataBase* pxCustomerDataContainer =
+//                (CDataContainerDataBase*)GetCustomerDataContainerPointer();
+//
+//            memcpy(((uint8_t*)(&(((TPlcSettingsPackOne*)(m_puiIntermediateBuff)) ->
+//                                 xTRs485HighLevelSettingsPackOne))),
+//                   (pxCustomerDataContainer -> m_puiDataPointer),
+//                   (sizeof(struct TPortSettingsPackOne)));
+//
+//            SetFsmState(SETTINGS_SET_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_START);
+//        }
+//        break;
+//
+//    case SETTINGS_SET_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+//        std::cout << "CSettingsSet::Fsm SETTINGS_SET_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+//        {
+//            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+//            SetFsmState(DONE_ERROR);
+//        }
+//        break;
 
 //-------------------------------------------------------------------------------
     case SETTINGS_SET_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_START:
@@ -353,7 +353,7 @@ uint8_t CSettingsSet::Fsm(void)
             pxDataContainer -> m_uiTaskId = m_uiDataStoreId;
             pxDataContainer -> m_uiFsmCommandState =
                 CDataStore::START_WRITE_TEMPORARY_BLOCK_DATA;
-            // сетевой адрес блок 99
+            // параметры настроек блок 101
             pxDataContainer -> m_uiDataIndex = SETTINGS_DATA_BASE_BLOCK_OFFSET;
             pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
 

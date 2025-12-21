@@ -808,10 +808,12 @@ uint16_t CModbusSlave::DeviceControlDomainDataWrite(void)
 
     m_uiFunctionCode = uiFunctionCode;
 
-    uiLength = puiRequest[uiPduOffset + 1];
+    uiLength = (puiRequest[uiPduOffset + 1] + PDU_LENGTH_LENGTH);
     memcpy(m_puiIntermediateBuff,
-           &puiRequest[uiPduOffset],
+           &puiRequest[uiPduOffset + 1],
            uiLength);
+
+
 
 
     // Создание экземпляров структур
@@ -839,6 +841,9 @@ uint16_t CModbusSlave::DeviceControlDomainDataWrite(void)
     memcpy(&(m_puiIntermediateBuff[DATA_OFFSET]),
            (uint8_t*)&(xPortSettingsPackOne),
            sizeof(struct TPortSettingsPackOne));
+
+
+
 
     CDataContainerDataBase* pxDataContainer =
         (CDataContainerDataBase*)GetExecutorDataContainerPointer();
@@ -873,6 +878,13 @@ uint16_t CModbusSlave::DeviceControlDomainDataRead(void)
     int8_t uiFunctionCode = puiRequest[uiPduOffset];
 
     m_uiFunctionCode = uiFunctionCode;
+
+    // размер буфера передаваемого исполнителю: размер pdu + 1 байт с размером
+    uiLength = (puiRequest[uiPduOffset + 1] + PDU_LENGTH_LENGTH);
+    // передаём данные исполнителю: размер pdu + 1 байт с размером + данные
+    memcpy(m_puiIntermediateBuff,
+           &puiRequest[uiPduOffset + 1],
+           uiLength);
 
     CDataContainerDataBase* pxDataContainer =
         (CDataContainerDataBase*)GetExecutorDataContainerPointer();
@@ -1920,13 +1932,14 @@ uint16_t CModbusSlave::DeviceControlDomainDataReadAnswer(void)
         (CDataContainerDataBase*)GetExecutorDataContainerPointer();
     uiLength = pxDataContainer -> m_uiDataLength;
 
-    memcpy(&puiResponse[uiPduOffset + 2],
+    // копируем количество байт в pdu, pdu: данные с кодом опции
+    memcpy(&puiResponse[uiPduOffset + 1],
            (pxDataContainer -> m_puiDataPointer),
            uiLength);
 
-    // количество байт в pdu включая код опции
-    puiResponse[uiPduOffset + 1] = uiLength;
-    uiLength++;
+//    // количество байт в pdu включая код опции
+//    puiResponse[uiPduOffset + 1] = uiLength;
+//    uiLength++;
     uiLength += m_pxModbusSlaveLinkLayer ->
                 ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
 
