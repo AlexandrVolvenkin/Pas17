@@ -160,6 +160,17 @@ void CInternalModuleMuvr::Allocate(void)
         MUVR_DISCRETE_SIGNALS_QUANTITY;
 
 
+    // Подключим буфер состояния дискретных выходов.
+    m_puiDiscreteOutputState =
+        &(GetResources() ->
+          m_puiDiscreteOutputState[GetResources() ->
+                                                  m_uiUsedDiscreteOutputState]);
+    // Увеличим общий объём выделенной памяти.
+    GetResources() ->
+    m_uiUsedDiscreteOutputState +=
+        MUVR_MR_DISCRETE_OUTPUT_NUMBER;
+
+
     // Подключим буфер для управления дискретными выходами.
     m_pxDiscreteOutputControl =
         &(GetResources() ->
@@ -414,6 +425,11 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
         if (m_pxDiscreteOutputControl[i].uiRelayActivationRequest)
         {
             uiData |= (1 << i);
+            m_puiDiscreteOutputState[i] = 1;
+        }
+        else
+        {
+            m_puiDiscreteOutputState[i] = 0;
         }
     }
     // Управление реле для МУВР (1б)

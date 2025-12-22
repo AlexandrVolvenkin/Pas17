@@ -580,6 +580,7 @@ enum
 
 enum EModbusFunctionCoilsDataMap
 {
+    DISCRETE_OUTPUT_BIT_ARRAY_OFFSET = 0,
     ANALOGUE_INPUTS_BAD_STATE_OFFSET = 544,
     DISCRETE_INPUTS_BAD_STATE_OFFSET = 1056,
     // в мувр отсутствуют дискретные входы поэтому адреса недостоверности дискретных входов
