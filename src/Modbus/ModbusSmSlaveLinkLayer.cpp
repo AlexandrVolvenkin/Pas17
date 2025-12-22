@@ -372,12 +372,19 @@ int8_t CModbusSmSlaveLinkLayer::FrameCheck(uint8_t *puiSourse, uint16_t uiLength
 //-------------------------------------------------------------------------------
 uint8_t CModbusSmSlaveLinkLayer::Fsm(void)
 {
+<<<<<<< Updated upstream
 //    std::cout << "CModbusSmSlaveLinkLayer::Fsm 1"  << std::endl;
 //    while (m_uiThreadInProgress)
 //    {
         switch (GetFsmState())
         {
             int16_t iBytesNumber;
+=======
+    //std::cout << "CModbusSmSlaveLinkLayer::Fsm 1"  << std::endl;
+    switch (GetFsmState())
+    {
+        int16_t iBytesNumber;
+>>>>>>> Stashed changes
 
         case IDDLE:
 //        //std::cout << "CModbusSmSlaveLinkLayer::Fsm IDDLE"  << std::endl;
