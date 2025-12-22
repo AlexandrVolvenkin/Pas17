@@ -419,6 +419,12 @@ uint8_t CSettingsLoad::Fsm(void)
             pxTcpCommunicationDeviceUpperLevel -> SetIpAddress("127.0.0.1");
             pxTcpCommunicationDeviceUpperLevel -> SetPort(502);
 
+//            CSharedMemoryCommunicationDevice* pxSharedMemoryCommunicationDevice =
+//                (CSharedMemoryCommunicationDevice*)(GetResources() ->
+//                                                  GetTaskPointerByNameFromMap("SharedMemoryCommunicationDeviceEveDisplay"));
+//
+//            pxSharedMemoryCommunicationDevice -> Init();
+
             SetFsmState(SETTINGS_LOAD_START_RTU_UPPER_LEVEL_INTERFACE);
         }
         break;
@@ -469,6 +475,14 @@ uint8_t CSettingsLoad::Fsm(void)
             SetFsmState(DONE_OK);
         }
         break;
+
+//    case SETTINGS_LOAD_SETTINGS_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+//        std::cout << "CSettingsLoad::Fsm SETTINGS_LOAD_SETTINGS_DATA_BASE_BLOCKS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+//        {
+//            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+//            SetFsmState(DONE_ERROR);
+//        }
+//        break;
 
 //-------------------------------------------------------------------------------
     default:

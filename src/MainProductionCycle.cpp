@@ -486,23 +486,23 @@ uint8_t CMainProductionCycle::CreateTasks(void)
     m_xResources.AddCurrentlyRunningTasksList(pxSettingsLoad);
 //    m_pxSettingsLoad = pxSettingsLoad;
 
-//-------------------------------------------------------------------------------
-    CSettingsSet* pxSettingsSet = 0;
-    pxSettingsSet =
-        static_cast<CSettingsSet*>(m_xResources.AddCommonTaskToMap("SettingsSet",
-                                    std::make_shared<CSettingsSet>()));
-    pxSettingsSet ->
-    SetResources(&m_xResources);
-    pxSettingsSet ->
-    SetDataStoreName("DataStoreFileSystem");
+////-------------------------------------------------------------------------------
+//    CSettingsSet* pxSettingsSet = 0;
+//    pxSettingsSet =
+//        static_cast<CSettingsSet*>(m_xResources.AddCommonTaskToMap("SettingsSet",
+//                                    std::make_shared<CSettingsSet>()));
 //    pxSettingsSet ->
-//    SetInternalModuleName("InternalModuleCommon");
+//    SetResources(&m_xResources);
 //    pxSettingsSet ->
-//    SetInternalModuleMuvrName("InternalModuleMuvr0");
-    pxSettingsSet ->
-    SetDeviceControlName("DeviceControlRtuUpperLevel");
-    m_xResources.AddCurrentlyRunningTasksList(pxSettingsSet);
-//    m_pxSettingsSet = pxSettingsSet;
+//    SetDataStoreName("DataStoreFileSystem");
+////    pxSettingsSet ->
+////    SetInternalModuleName("InternalModuleCommon");
+////    pxSettingsSet ->
+////    SetInternalModuleMuvrName("InternalModuleMuvr0");
+//    pxSettingsSet ->
+//    SetDeviceControlName("DeviceControlRtuUpperLevel");
+//    m_xResources.AddCurrentlyRunningTasksList(pxSettingsSet);
+////    m_pxSettingsSet = pxSettingsSet;
 
 //-------------------------------------------------------------------------------
     CDiscreteSignals* pxDiscreteSignals = 0;
