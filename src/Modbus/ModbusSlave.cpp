@@ -2512,7 +2512,7 @@ uint8_t CModbusSlave::Fsm(void)
         break;
 
     case COMMUNICATION_RECEIVE_START:
-        //std::cout << "CModbusSlave::Fsm COMMUNICATION_RECEIVE_START"  << std::endl;
+        std::cout << "CModbusSlave::Fsm COMMUNICATION_RECEIVE_START"  << std::endl;
 //        CDataContainerDataBase* pxDataContainer =
 //            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
 //        pxDataContainer -> m_uiTaskId = m_uiModbusSlaveLinkLayerId;
@@ -2521,7 +2521,7 @@ uint8_t CModbusSlave::Fsm(void)
 //        SetFsmState(MESSAGE_RECEIVE_WAITING);
 
         m_pxOperatingDataContainer -> m_uiFsmCommandState =
-            CModbusRtuSlaveLinkLayer::COMMUNICATION_RECEIVE_START;
+            CModbusRtuSlaveLinkLayer::COMMUNICATION_START;
         m_pxModbusSlaveLinkLayer ->
         SetTaskData(m_pxOperatingDataContainer);
         SetFsmState(MESSAGE_RECEIVE_WAITING);
@@ -2579,7 +2579,7 @@ uint8_t CModbusSlave::Fsm(void)
 //            m_pxModbusSlaveLinkLayer ->
 //            DestroyThread();
 //            usleep(100000);
-            SetFsmState(COMMUNICATION_START);
+            SetFsmState(COMMUNICATION_RECEIVE_START);
         }
     }
     break;
@@ -2659,7 +2659,7 @@ uint8_t CModbusSlave::Fsm(void)
         else if (uiFsmState == DONE_ERROR)
         {
             //std::cout << "CModbusSlave::Fsm MESSAGE_TRANSMIT_AFTER_WAITING 3"  << std::endl;
-            SetFsmState(COMMUNICATION_START);
+            SetFsmState(COMMUNICATION_RECEIVE_START);
         }
         else
         {
