@@ -22,6 +22,7 @@
 #include "CommunicationDevice.h"
 #include "SerialPortCommunicationDevice.h"
 #include "TcpCommunicationDevice.h"
+#include "SharedMemoryCommunicationDevice.h"
 #include "ModbusSlave.h"
 #include "SettingsLoad.h"
 
@@ -419,11 +420,11 @@ uint8_t CSettingsLoad::Fsm(void)
             pxTcpCommunicationDeviceUpperLevel -> SetIpAddress("127.0.0.1");
             pxTcpCommunicationDeviceUpperLevel -> SetPort(502);
 
-//            CSharedMemoryCommunicationDevice* pxSharedMemoryCommunicationDevice =
-//                (CSharedMemoryCommunicationDevice*)(GetResources() ->
-//                                                  GetTaskPointerByNameFromMap("SharedMemoryCommunicationDeviceEveDisplay"));
-//
-//            pxSharedMemoryCommunicationDevice -> Init();
+
+            CSharedMemoryCommunicationDevice* pxSharedMemoryCommunicationDevice =
+                (CSharedMemoryCommunicationDevice*)(GetResources() ->
+                                                  GetTaskPointerByNameFromMap("SharedMemoryCommunicationDeviceEveDisplay"));
+            pxSharedMemoryCommunicationDevice -> Init();
 
             SetFsmState(SETTINGS_LOAD_START_RTU_UPPER_LEVEL_INTERFACE);
         }

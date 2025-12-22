@@ -51,18 +51,18 @@ bool CModbusSmSlaveLinkLayer::SetTaskData(CDataContainerDataBase* pxDataContaine
 {
 //    //std::cout << "CModbusSmSlaveLinkLayer::SetTaskData 1" << std::endl;
 
-    if (IsTaskReady())
-    {
+//    if (IsTaskReady())
+//    {
         //std::cout << "CModbusSmSlaveLinkLayer::SetTaskData 2" << std::endl;
         *m_pxOperatingDataContainer = *pxDataContainer;
         SetFsmState(m_pxOperatingDataContainer -> m_uiFsmCommandState);
         return true;
-    }
-    else
-    {
-        //std::cout << "CModbusSmSlaveLinkLayer::SetTaskData 3" << std::endl;
-        return false;
-    }
+//    }
+//    else
+//    {
+//        //std::cout << "CModbusSmSlaveLinkLayer::SetTaskData 3" << std::endl;
+//        return false;
+//    }
 }
 
 //-------------------------------------------------------------------------------
@@ -373,7 +373,7 @@ int8_t CModbusSmSlaveLinkLayer::FrameCheck(uint8_t *puiSourse, uint16_t uiLength
 uint8_t CModbusSmSlaveLinkLayer::Fsm(void)
 {
 //    std::cout << "CModbusSmSlaveLinkLayer::Fsm 1"  << std::endl;
-//    while (m_uiThreadInProgress)
+//    while (m_uiThreadInProgress)././
 //    {
     //std::cout << "CModbusSmSlaveLinkLayer::Fsm 1"  << std::endl;
     switch (GetFsmState())
@@ -438,14 +438,14 @@ uint8_t CModbusSmSlaveLinkLayer::Fsm(void)
             break;
 
         case COMMUNICATION_START:
-//        //std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_START"  << std::endl;
+        //std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_START"  << std::endl;
             m_pxCommunicationDevice -> Open();
             m_uiFrameLength = 0;
             SetFsmState(COMMUNICATION_RECEIVE_START);
             break;
 
         case COMMUNICATION_RECEIVE_START:
-//        //std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_START"  << std::endl;
+        //std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_START"  << std::endl;
             m_uiFrameLength = 0;
             iBytesNumber =
                 m_pxCommunicationDevice ->
@@ -456,7 +456,7 @@ uint8_t CModbusSmSlaveLinkLayer::Fsm(void)
             {
 
 //    xTimeMeasure.Begin();
-//            //std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_START 2"  << std::endl;
+            //std::cout << "CModbusSmSlaveLinkLayer::Fsm COMMUNICATION_RECEIVE_START 2"  << std::endl;
                 m_uiFrameLength = m_uiFrameLength + iBytesNumber;
                 SetFsmState(COMMUNICATION_FRAME_CHECK);
             }

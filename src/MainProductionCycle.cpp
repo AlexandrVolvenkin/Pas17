@@ -746,9 +746,9 @@ uint8_t CMainProductionCycle::InitTasks(void)
         (CTcpCommunicationDevice*)(GetResources() ->
                                    GetTaskPointerByNameFromMap("TcpCommunicationDeviceUpperLevel"));
 
-    pxTcpCommunicationDeviceUpperLevel -> Init();
-    pxTcpCommunicationDeviceUpperLevel -> SetIpAddress("127.0.0.1");
-    pxTcpCommunicationDeviceUpperLevel -> SetPort(502);
+//    pxTcpCommunicationDeviceUpperLevel -> Init();
+//    pxTcpCommunicationDeviceUpperLevel -> SetIpAddress("127.0.0.1");
+//    pxTcpCommunicationDeviceUpperLevel -> SetPort(502);
 
 //-------------------------------------------------------------------------------
     CModbusSlave* pxModbusTcpSlaveUpperLevel =
@@ -772,8 +772,8 @@ uint8_t CMainProductionCycle::InitTasks(void)
         (CSharedMemoryCommunicationDevice*)(GetResources() ->
                                             GetTaskPointerByNameFromMap("SharedMemoryCommunicationDeviceEveDisplay"));
 
-    pxSharedMemoryCommunicationDeviceEveDisplay -> Init();
-//    pxSharedMemoryCommunicationDeviceEveDisplay -> SetDeviceName("/dev/ttyO1");
+//    pxSharedMemoryCommunicationDeviceEveDisplay -> Init();
+////    pxSharedMemoryCommunicationDeviceEveDisplay -> SetDeviceName("/dev/ttyO1");
 
 //-------------------------------------------------------------------------------
 //    CModbusSmSlave* pxModbusSmSlaveEveDisplay =
