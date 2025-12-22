@@ -531,6 +531,21 @@ int16_t CSerialPortCommunicationDevice::ReceiveContinue(uint8_t *puiDestination,
 int16_t CSerialPortCommunicationDevice::Write(uint8_t *puiSource, uint16_t uiLength)
 {
 //    std::cout << "CSerialPortCommunicationDevice::Write"  << std::endl;
+//    std::cout << "CSerialPortCommunicationDevice::Write uiLength "  << (int)uiLength << std::endl;
+//    {
+//        cout << "puiDestination" << endl;
+//        uint8_t *pucSourceTemp;
+//        pucSourceTemp = (uint8_t*)puiSource;
+//        for(int i=0; i<32; )
+//        {
+//            for(int j=0; j<8; j++)
+//            {
+//                cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+//            }
+//            cout << endl;
+//            i += 8;
+//        }
+//    }
     return write(m_iDeviceDescriptorServer, puiSource, uiLength);
 }
 

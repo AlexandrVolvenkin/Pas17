@@ -2083,7 +2083,9 @@ uint8_t CDeviceControl::Fsm(void)
                 (sizeof(struct TDeviceStateDataPackOne) + PREAMBLE_LENGTH);
             pxCustomerDataContainer -> m_uiDataLength = uiLength;
             // формируем заголовок
-            (pxCustomerDataContainer -> m_puiDataPointer[PDU_LENGTH_OFFSET]) = uiLength;
+            // в протоколе используется только размер pdu. вычтем 1 байт(размер pdu)
+            (pxCustomerDataContainer -> m_puiDataPointer[PDU_LENGTH_OFFSET]) =
+                (uiLength - PDU_LENGTH_LENGTH);
             (pxCustomerDataContainer -> m_puiDataPointer[OPTION_CODE_OFFSET]) =
                 DEVICE_CONTROL_DOMAIN_DATA_READ_STATE_DATA_READ;
             // крпируем данные
@@ -2106,7 +2108,9 @@ uint8_t CDeviceControl::Fsm(void)
                 (sizeof(struct TFileSaveStateDataPackOne) + PREAMBLE_LENGTH);
             pxCustomerDataContainer -> m_uiDataLength = uiLength;
             // формируем заголовок
-            (pxCustomerDataContainer -> m_puiDataPointer[PDU_LENGTH_OFFSET]) = uiLength;
+            // в протоколе используется только размер pdu. вычтем 1 байт(размер pdu)
+            (pxCustomerDataContainer -> m_puiDataPointer[PDU_LENGTH_OFFSET]) =
+                (uiLength - PDU_LENGTH_LENGTH);
             (pxCustomerDataContainer -> m_puiDataPointer[OPTION_CODE_OFFSET]) =
                 DEVICE_CONTROL_DOMAIN_DATA_READ_ANALOGUE_MEASURE_ARCHIVE_WRITE_STATE_REQUEST;
             // крпируем данные
@@ -2403,34 +2407,6 @@ uint8_t CDeviceControl::Fsm(void)
     case SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_WRITE_SETTINGS_BLOCK_DATA_START:
         //cout << "CDeviceControl::Fsm SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_WRITE_SETTINGS_BLOCK_DATA_START" << endl;
     {
-//        uint8_t uiTaskId =
-//            GetResources() ->
-//            GetTaskIdByNameFromMap("SettingsSet");
-//
-//        CDataContainerDataBase* pxDataContainer =
-//            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-//        pxDataContainer -> m_uiTaskId = uiTaskId;
-//        pxDataContainer -> m_uiFsmCommandState =
-//            CSettingsSet::SETTINGS_SET_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_WRITE_SETTINGS_BLOCK_DATA_START;
-//        // в буфере приходдят данные начиная с кода опции.
-//        // для записи в базу данных он нам не нужен.
-//        pxDataContainer -> m_puiDataPointer =
-//            (uint8_t*)(&(((TPlcSettingsPackOne*)(&(((CDataContainerDataBase*)GetCustomerDataContainerPointer()) ->
-//                          m_puiDataPointer[DATA_OFFSET]))) ->
-//                         xTRs485HighLevelSettingsPackOne));
-//        pxDataContainer -> m_uiDataLength =
-//            (sizeof(struct TPortSettingsPackOne));
-
-
-//        pxDataContainer -> m_puiDataPointer =
-//            &(((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer[DATA_OFFSET]);
-//        pxDataContainer -> m_uiDataLength =
-//            // минус один байт - код опции
-//            ((((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiDataLength) - 1);
-
-
-//        pxCustomerDataContainer -> m_uiDataLength =
-//            (sizeof(struct TPortSettingsPackOne) + PREAMBLE_LENGTH);
         memcpy((uint8_t*)(&(((TPlcSettingsPackOne*)(m_puiIntermediateBuff)) -> xTRs485HighLevelSettingsPackOne)),
                &(((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer[DATA_OFFSET]),
                (sizeof(struct TPortSettingsPackOne)));
@@ -2508,7 +2484,9 @@ uint8_t CDeviceControl::Fsm(void)
                 (sizeof(struct TPortSettingsPackOne) + PREAMBLE_LENGTH);
             pxCustomerDataContainer -> m_uiDataLength = uiLength;
             // формируем заголовок
-            (pxCustomerDataContainer -> m_puiDataPointer[PDU_LENGTH_OFFSET]) = uiLength;
+            // в протоколе используется только размер pdu. вычтем 1 байт(размер pdu)
+            (pxCustomerDataContainer -> m_puiDataPointer[PDU_LENGTH_OFFSET]) =
+                (uiLength - PDU_LENGTH_LENGTH);
             (pxCustomerDataContainer -> m_puiDataPointer[OPTION_CODE_OFFSET]) =
                 DEVICE_CONTROL_DOMAIN_DATA_READ_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_READ;
             memcpy(&(pxCustomerDataContainer -> m_puiDataPointer[DATA_OFFSET]),
