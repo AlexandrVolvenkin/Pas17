@@ -272,12 +272,12 @@ void CResources::Allocate(void)
     m_puiDiscreteInputsBadState =
         &m_puiCoils[DISCRETE_INPUTS_BAD_STATE_OFFSET];
 
-//    // Обнулим общий объём выделенной памяти.
-//    m_uiUsedDiscreteOutputState = 0;
-//    // Подключим буфер для хранения состояний дискретных выходов.
-//    m_puiDiscreteOutputState =
-//        &m_puiDiscreteInputs[DISCRETE_OUTPUT_BIT_ARRAY_OFFSET];
-//
+    // Обнулим общий объём выделенной памяти.
+    m_uiUsedDiscreteOutputState = 0;
+    // Подключим буфер для хранения состояний дискретных выходов.
+    m_puiDiscreteOutputState =
+        &m_puiCoils[DISCRETE_OUTPUT_BIT_ARRAY_OFFSET];
+
     // Обнулим общий объём выделенной памяти.
     m_uiUsedDiscreteOutputControl = 0;
     // Подключим буфер для управления дискретными выходами.

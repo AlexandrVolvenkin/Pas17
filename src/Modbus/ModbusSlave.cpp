@@ -808,37 +808,44 @@ uint16_t CModbusSlave::DeviceControlDomainDataWrite(void)
 
     m_uiFunctionCode = uiFunctionCode;
 
-    uiLength = puiRequest[uiPduOffset + 1];
+    // размер буфера передаваемого исполнителю: размер pdu + 1 байт с размером
+    uiLength = (puiRequest[uiPduOffset + 1] + PDU_LENGTH_LENGTH);
+    // передаём данные исполнителю: размер pdu + 1 байт с размером + данные
     memcpy(m_puiIntermediateBuff,
-           &puiRequest[uiPduOffset],
+           &puiRequest[uiPduOffset + 1],
            uiLength);
 
 
-    // Создание экземпляров структур
-    TPortSettingsPackOne xPortSettingsPackOne =
-    {
-        BIT_RATE_9600,//BIT_RATE_19200,//
-        8,
-        PARITY_NO,
-        2
-    };
-    TEthernetSettingsPackOne xEthernetSettingsPackOne =
-    {
-        192, 168, 0, 32,
-        502
-    };
 
-//            // Создание экземпляра TPlcSettingsPackOne
-//            TPlcSettingsPackOne xPlcSettingsPackOne =
-//            {
-//                xPortSettingsPackOne,
-//                xEthernetSettingsPackOne
-//            };
 
-    m_puiIntermediateBuff[OPTION_CODE_OFFSET] = 3;
-    memcpy(&(m_puiIntermediateBuff[DATA_OFFSET]),
-           (uint8_t*)&(xPortSettingsPackOne),
-           sizeof(struct TPortSettingsPackOne));
+//    // Создание экземпляров структур
+//    TPortSettingsPackOne xPortSettingsPackOne =
+//    {
+//        BIT_RATE_9600,//BIT_RATE_19200,//
+//        8,
+//        PARITY_NO,
+//        2
+//    };
+//    TEthernetSettingsPackOne xEthernetSettingsPackOne =
+//    {
+//        192, 168, 0, 32,
+//        502
+//    };
+//
+////            // Создание экземпляра TPlcSettingsPackOne
+////            TPlcSettingsPackOne xPlcSettingsPackOne =
+////            {
+////                xPortSettingsPackOne,
+////                xEthernetSettingsPackOne
+////            };
+//
+//    m_puiIntermediateBuff[OPTION_CODE_OFFSET] = 3;
+//    memcpy(&(m_puiIntermediateBuff[DATA_OFFSET]),
+//           (uint8_t*)&(xPortSettingsPackOne),
+//           sizeof(struct TPortSettingsPackOne));
+
+
+
 
     CDataContainerDataBase* pxDataContainer =
         (CDataContainerDataBase*)GetExecutorDataContainerPointer();
@@ -861,7 +868,7 @@ uint16_t CModbusSlave::DeviceControlDomainDataWrite(void)
 uint16_t CModbusSlave::DeviceControlDomainDataRead(void)
 
 {
-    //std::cout << "CModbusSlave::DeviceControlDomainDataRead 1" << std::endl;
+    std::cout << "CModbusSlave::DeviceControlDomainDataRead 1" << std::endl;
     // адрес слейв, код функии, количество байт в pdu включая код опции(1 байт), pdu, crc
 
     uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
@@ -873,6 +880,18 @@ uint16_t CModbusSlave::DeviceControlDomainDataRead(void)
     int8_t uiFunctionCode = puiRequest[uiPduOffset];
 
     m_uiFunctionCode = uiFunctionCode;
+
+    // размер буфера передаваемого исполнителю: размер pdu + 1 байт с размером
+    uiLength = (puiRequest[uiPduOffset + 1] + PDU_LENGTH_LENGTH);
+    // передаём данные исполнителю: размер pdu + 1 байт с размером + данные
+    memcpy(m_puiIntermediateBuff,
+           &puiRequest[uiPduOffset + 1],
+           uiLength);
+
+
+//    m_puiIntermediateBuff[PDU_LENGTH_OFFSET] = uiLength;
+    m_puiIntermediateBuff[OPTION_CODE_OFFSET] = 3;
+
 
     CDataContainerDataBase* pxDataContainer =
         (CDataContainerDataBase*)GetExecutorDataContainerPointer();
@@ -1905,13 +1924,13 @@ uint16_t CModbusSlave::DeviceControlDomainDataWriteAnswer(void)
 uint16_t CModbusSlave::DeviceControlDomainDataReadAnswer(void)
 
 {
-    //std::cout << "CModbusSlave::DeviceControlDomainDataReadAnswer 1" << std::endl;
+    std::cout << "CModbusSlave::DeviceControlDomainDataReadAnswer 1" << std::endl;
     // адрес слейв, код функии, количество байт в pdu включая код опции(1 байт), pdu, crc
 
     uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
     uint8_t* puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
     uint8_t* puiResponse = m_pxModbusSlaveLinkLayer -> GetTxBuffer();
-    uint16_t  uiLength = m_pxModbusSlaveLinkLayer -> GetFrameLength();
+    uint16_t uiLength = m_pxModbusSlaveLinkLayer -> GetFrameLength();
 
     int8_t uiSlave = puiRequest[uiPduOffset - 1];
     int8_t uiFunctionCode = puiRequest[uiPduOffset];
@@ -1920,16 +1939,14 @@ uint16_t CModbusSlave::DeviceControlDomainDataReadAnswer(void)
         (CDataContainerDataBase*)GetExecutorDataContainerPointer();
     uiLength = pxDataContainer -> m_uiDataLength;
 
-    memcpy(&puiResponse[uiPduOffset + 2],
+    // копируем 1 байт: количество байт в pdu, pdu: данные с кодом опции
+    memcpy(&puiResponse[uiPduOffset + 1],
            (pxDataContainer -> m_puiDataPointer),
            uiLength);
-
-    // количество байт в pdu включая код опции
-    puiResponse[uiPduOffset + 1] = uiLength;
-    uiLength++;
     uiLength += m_pxModbusSlaveLinkLayer ->
                 ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
 
+    std::cout << "CModbusSlave::DataBaseReadAnswer uiLength "  << (int)uiLength << std::endl;
     SetFsmState(MESSAGE_TRANSMIT_START);
 
     return uiLength;
@@ -2225,7 +2242,7 @@ uint16_t CModbusSlave::AnswerProcessing(void)
         break;
     }
 
-    //std::cout << "CModbusSlave::AnswerProcessing 5" << std::endl;
+    std::cout << "CModbusSlave::AnswerProcessing 5" << std::endl;
     uiLength = m_pxModbusSlaveLinkLayer -> Tail(puiResponse, uiLength);
     m_pxModbusSlaveLinkLayer -> SetFrameLength(uiLength);
     return uiLength;
@@ -2495,7 +2512,7 @@ uint8_t CModbusSlave::Fsm(void)
         break;
 
     case COMMUNICATION_RECEIVE_START:
-        //std::cout << "CModbusSlave::Fsm COMMUNICATION_RECEIVE_START"  << std::endl;
+        std::cout << "CModbusSlave::Fsm COMMUNICATION_RECEIVE_START"  << std::endl;
 //        CDataContainerDataBase* pxDataContainer =
 //            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
 //        pxDataContainer -> m_uiTaskId = m_uiModbusSlaveLinkLayerId;
@@ -2504,7 +2521,7 @@ uint8_t CModbusSlave::Fsm(void)
 //        SetFsmState(MESSAGE_RECEIVE_WAITING);
 
         m_pxOperatingDataContainer -> m_uiFsmCommandState =
-            CModbusRtuSlaveLinkLayer::COMMUNICATION_RECEIVE_START;
+            CModbusRtuSlaveLinkLayer::COMMUNICATION_START;
         m_pxModbusSlaveLinkLayer ->
         SetTaskData(m_pxOperatingDataContainer);
         SetFsmState(MESSAGE_RECEIVE_WAITING);
@@ -2562,7 +2579,7 @@ uint8_t CModbusSlave::Fsm(void)
 //            m_pxModbusSlaveLinkLayer ->
 //            DestroyThread();
 //            usleep(100000);
-            SetFsmState(COMMUNICATION_START);
+            SetFsmState(COMMUNICATION_RECEIVE_START);
         }
     }
     break;
@@ -2642,7 +2659,7 @@ uint8_t CModbusSlave::Fsm(void)
         else if (uiFsmState == DONE_ERROR)
         {
             //std::cout << "CModbusSlave::Fsm MESSAGE_TRANSMIT_AFTER_WAITING 3"  << std::endl;
-            SetFsmState(COMMUNICATION_START);
+            SetFsmState(COMMUNICATION_RECEIVE_START);
         }
         else
         {

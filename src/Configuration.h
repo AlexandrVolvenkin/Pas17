@@ -565,15 +565,22 @@ enum
     COMMON_INDEX_OFFSET = 0,
 // смещение в промежуточном буфере на команду, например установка типа калибруемой шкалы.  .
     COMMON_COMMAND_CONTROL_OFFSET = 1,
+    // смещение на количество байт в pdu
+    PDU_LENGTH_OFFSET = 0,
+    PDU_LENGTH_LENGTH = 1,
 // смещение в промежуточном буфере на код опции.
-    OPTION_CODE_OFFSET = 0,
+    OPTION_CODE_OFFSET = 1,
     OPTION_CODE_LENGTH = 1,
 // смещение в промежуточном буфере на данные.
-    DATA_OFFSET = 1,
+    DATA_OFFSET = 2,
+    DATA_LENGTH = 1,
+    // размер заголовка
+    PREAMBLE_LENGTH = 2,
 };
 
 enum EModbusFunctionCoilsDataMap
 {
+    DISCRETE_OUTPUT_BIT_ARRAY_OFFSET = 0,
     ANALOGUE_INPUTS_BAD_STATE_OFFSET = 544,
     DISCRETE_INPUTS_BAD_STATE_OFFSET = 1056,
     // в мувр отсутствуют дискретные входы поэтому адреса недостоверности дискретных входов
