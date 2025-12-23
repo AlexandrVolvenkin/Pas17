@@ -413,17 +413,60 @@ uint8_t CSettingsLoad::Fsm(void)
             std::cout << "CSettingsLoad::Fsm uiStopBits " << (float)(pxPortSettingsPackOne -> uiStopBits) << std::endl;
 
 
+//-------------------------------------------------------------------------------
+            TEthernetSettingsPackOne* pxEthernetSettingsPackOne =
+                &(((TPlcSettingsPackOne*)(m_puiIntermediateBuff)) ->
+                  xTEthernetSettingsPackOne);
+
+            // Используем стандартный sprintf для форматирования строки
+            char new_ip[INET_ADDRSTRLEN];
+            sprintf(new_ip, "%d.%d.%d.%d", (pxEthernetSettingsPackOne -> uiIpByte3), (pxEthernetSettingsPackOne -> uiIpByte2), (pxEthernetSettingsPackOne -> uiIpByte1), (pxEthernetSettingsPackOne -> uiIpByte0));
+            std::cout << "IP address: " << new_ip << std::endl;
+
+            const char* interface = "eth0"; // Замените на ваше сетевое интерфейс
+//            const char* old_ip = "192.168.0.9";
+//            const char* new_ip = "192.168.0.8";
+            const char* new_netmask = "255.255.255.0";
+
+//            // Создаем сокет для управления сетевыми устройствами
+//            int sock = socket(AF_INET, SOCK_DGRAM, 0);
+//            if (sock < 0)
+//            {
+//                perror("socket");
+//                return 1;
+//            }
+//
+//            struct sockaddr_in addr;
+//            memset(&addr, 0, sizeof(addr));
+//            addr.sin_family = AF_INET;
+//            inet_pton(AF_INET, interface, &addr.sin_addr);
+
+            // Устанавливаем новые настройки IP-адреса и маски подсети
+            char command[256];
+            snprintf(command, sizeof(command), "ip addr del %s dev %s", new_ip, interface);
+            system(command); // Удаление старого IP-адреса
+
+            snprintf(command, sizeof(command), "ip addr add %s/%s dev %s",
+                     new_ip, new_netmask, interface);
+            system(command); // Добавление нового IP-адреса
+
+//            close(sock);
+
+            std::cout << "IP address of " << interface << " has been changed." << std::endl;
+            usleep(10000);
+
             CTcpCommunicationDevice* pxTcpCommunicationDeviceUpperLevel =
                 (CTcpCommunicationDevice*)(GetResources() ->
                                            GetTaskPointerByNameFromMap("TcpCommunicationDeviceUpperLevel"));
             pxTcpCommunicationDeviceUpperLevel -> Init();
             pxTcpCommunicationDeviceUpperLevel -> SetIpAddress("127.0.0.1");
-            pxTcpCommunicationDeviceUpperLevel -> SetPort(502);
+            pxTcpCommunicationDeviceUpperLevel -> SetPort(pxEthernetSettingsPackOne -> ui16Port);
 
 
+//-------------------------------------------------------------------------------
             CSharedMemoryCommunicationDevice* pxSharedMemoryCommunicationDevice =
                 (CSharedMemoryCommunicationDevice*)(GetResources() ->
-                                                  GetTaskPointerByNameFromMap("SharedMemoryCommunicationDeviceEveDisplay"));
+                                                    GetTaskPointerByNameFromMap("SharedMemoryCommunicationDeviceEveDisplay"));
             pxSharedMemoryCommunicationDevice -> Init();
 
             SetFsmState(SETTINGS_LOAD_START_RTU_UPPER_LEVEL_INTERFACE);
