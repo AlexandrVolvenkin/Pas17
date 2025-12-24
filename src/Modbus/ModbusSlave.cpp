@@ -890,8 +890,8 @@ uint16_t CModbusSlave::DeviceControlDomainDataRead(void)
            uiLength);
 
 
-//    m_puiIntermediateBuff[PDU_LENGTH_OFFSET] = uiLength;
-    m_puiIntermediateBuff[OPTION_CODE_OFFSET] = 3;
+////    m_puiIntermediateBuff[PDU_LENGTH_OFFSET] = uiLength;
+//    m_puiIntermediateBuff[OPTION_CODE_OFFSET] = 3;
 
 
     CDataContainerDataBase* pxDataContainer =
