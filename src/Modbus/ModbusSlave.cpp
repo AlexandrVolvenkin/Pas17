@@ -810,39 +810,40 @@ uint16_t CModbusSlave::DeviceControlDomainDataWrite(void)
 
     // размер буфера передаваемого исполнителю: размер pdu + 1 байт с размером
     uiLength = (puiRequest[uiPduOffset + 1] + PDU_LENGTH_LENGTH);
-    // передаём данные исполнителю: размер pdu + 1 байт с размером + данные
-    memcpy(m_puiIntermediateBuff,
-           &puiRequest[uiPduOffset + 1],
-           uiLength);
+//    // передаём данные исполнителю: размер pdu + 1 байт с размером + данные
+//    memcpy(m_puiIntermediateBuff,
+//           &puiRequest[uiPduOffset + 1],
+//           uiLength);
 
 
 
 
-//    // Создание экземпляров структур
-//    TPortSettingsPackOne xPortSettingsPackOne =
-//    {
-//        BIT_RATE_9600,//BIT_RATE_19200,//
-//        8,
-//        PARITY_NO,
-//        2
-//    };
-//    TEthernetSettingsPackOne xEthernetSettingsPackOne =
-//    {
-//        192, 168, 0, 32,
-//        502
-//    };
-//
-////            // Создание экземпляра TPlcSettingsPackOne
-////            TPlcSettingsPackOne xPlcSettingsPackOne =
-////            {
-////                xPortSettingsPackOne,
-////                xEthernetSettingsPackOne
-////            };
-//
-//    m_puiIntermediateBuff[OPTION_CODE_OFFSET] = 3;
-//    memcpy(&(m_puiIntermediateBuff[DATA_OFFSET]),
-//           (uint8_t*)&(xPortSettingsPackOne),
-//           sizeof(struct TPortSettingsPackOne));
+    // Создание экземпляров структур
+    TPortSettingsPackOne xPortSettingsPackOne =
+    {
+        BIT_RATE_19200,//BIT_RATE_9600,//
+        8,
+        PARITY_NO,
+        2
+    };
+    TEthernetSettingsPackOne xEthernetSettingsPackOne =
+    {
+        192, 168, 0, 32,
+        502
+    };
+
+//            // Создание экземпляра TPlcSettingsPackOne
+//            TPlcSettingsPackOne xPlcSettingsPackOne =
+//            {
+//                xPortSettingsPackOne,
+//                xEthernetSettingsPackOne
+//            };
+
+    m_puiIntermediateBuff[PDU_LENGTH_OFFSET] = puiRequest[uiPduOffset + 1];
+    m_puiIntermediateBuff[OPTION_CODE_OFFSET] = 3;
+    memcpy(&(m_puiIntermediateBuff[DATA_OFFSET]),
+           (uint8_t*)&(xPortSettingsPackOne),
+           sizeof(struct TPortSettingsPackOne));
 
 
 
@@ -889,8 +890,8 @@ uint16_t CModbusSlave::DeviceControlDomainDataRead(void)
            uiLength);
 
 
-//    m_puiIntermediateBuff[PDU_LENGTH_OFFSET] = uiLength;
-    m_puiIntermediateBuff[OPTION_CODE_OFFSET] = 3;
+////    m_puiIntermediateBuff[PDU_LENGTH_OFFSET] = uiLength;
+//    m_puiIntermediateBuff[OPTION_CODE_OFFSET] = 3;
 
 
     CDataContainerDataBase* pxDataContainer =
