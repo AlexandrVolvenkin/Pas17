@@ -1569,8 +1569,12 @@ uint16_t CDeviceControl::DataBaseBlockWriteBlockRelatedAction(void)
 
     case CONFIGURATION_DATA_BASE_BLOCK_OFFSET:
         cout << "CDeviceControl::DataBaseBlockWriteBlockRelatedAction CONFIGURATION_DATA_BASE_BLOCK_OFFSET" << endl;
-        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-        SetFsmState(DONE_OK);
+//        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+//        SetFsmState(DONE_OK);
+        {
+            SetFsmState(DATA_BASE_BLOCK_SETTINGS_WRITE_START);
+        }
+
         break;
 
     default:
@@ -3396,6 +3400,44 @@ uint8_t CDeviceControl::Fsm(void)
 
     case DATA_BASE_BLOCK_NETWORK_ADDRESS_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
         //std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_NETWORK_ADDRESS_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+    {
+        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+        SetFsmState(DONE_ERROR);
+    }
+    break;
+
+//-------------------------------------------------------------------------------
+    case DATA_BASE_BLOCK_SETTINGS_WRITE_START:
+        //std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_SETTINGS_WRITE_START"  << std::endl;
+    {
+        uint8_t uiTaskId =
+            GetResources() ->
+            GetTaskIdByNameFromMap("SettingsLoad");
+
+        CDataContainerDataBase* pxDataContainer =
+            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+        pxDataContainer -> m_uiTaskId = uiTaskId;
+        pxDataContainer -> m_uiFsmCommandState =
+            CSettingsLoad::SETTINGS_LOAD_STOP_RTU_UPPER_LEVEL_INTERFACE;
+
+        SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+        SetFsmNextStateDoneOk(DATA_BASE_BLOCK_SETTINGS_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+        SetFsmNextStateReadyWaitingError(DATA_BASE_BLOCK_SETTINGS_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+        SetFsmNextStateDoneWaitingError(DATA_BASE_BLOCK_SETTINGS_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+        SetFsmNextStateDoneWaitingDoneError(DATA_BASE_BLOCK_SETTINGS_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+    }
+    break;
+
+    case DATA_BASE_BLOCK_SETTINGS_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+        //std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_SETTINGS_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+    {
+//            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+        SetFsmState(DONE_OK);
+    }
+    break;
+
+    case DATA_BASE_BLOCK_SETTINGS_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+        //std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_SETTINGS_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
     {
         ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
         SetFsmState(DONE_ERROR);
