@@ -293,8 +293,8 @@ uint8_t CSettingsLoad::Fsm(void)
 //            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
 //            SetFsmState(DONE_OK);
 
-//            SetFsmState(SETTINGS_LOAD_STOP_RTU_UPPER_LEVEL_INTERFACE);
-            SetFsmState(SETTINGS_LOAD_SETTINGS_DATA_BASE_BLOCKS_READ_START);
+            SetFsmState(SETTINGS_LOAD_STOP_RTU_UPPER_LEVEL_INTERFACE);
+//            SetFsmState(SETTINGS_LOAD_SETTINGS_DATA_BASE_BLOCKS_READ_START);
         }
         break;
 
@@ -388,9 +388,28 @@ uint8_t CSettingsLoad::Fsm(void)
     case SETTINGS_LOAD_SETTINGS_SET_START:
         std::cout << "CSettingsLoad::Fsm SETTINGS_LOAD_SETTINGS_SET_START"  << std::endl;
         {
+//-------------------------------------------------------------------------------
+            TSlaveAddressesSettingsPackOne* pxSlaveAddressesSettingsPackOne =
+                &(((TPlcSettingsPackOne*)(m_puiIntermediateBuff)) ->
+                  xSlaveAddressesSettingsPackOne);
+
+            CModbusSlave* pxModbusRtuSlaveUpperLevel =
+                (CModbusSlave*)(GetResources() ->
+                                GetTaskPointerByNameFromMap("ModbusRtuSlaveUpperLevel"));
+            pxModbusRtuSlaveUpperLevel ->
+            SetOwnAddress(pxSlaveAddressesSettingsPackOne -> uiSlaveAddress);
+
+            CModbusSlave* pxModbusTcpSlaveUpperLevel =
+                (CModbusSlave*)(GetResources() ->
+                                GetTaskPointerByNameFromMap("ModbusTcpSlaveUpperLevel"));
+            pxModbusTcpSlaveUpperLevel ->
+            SetOwnAddress(pxSlaveAddressesSettingsPackOne -> uiSlaveAddress);
+            std::cout << "CSettingsLoad::Fsm uiSlaveAddress " << (float)(pxSlaveAddressesSettingsPackOne -> uiSlaveAddress) << std::endl;
+
+//-------------------------------------------------------------------------------
             TPortSettingsPackOne* pxPortSettingsPackOne =
                 &(((TPlcSettingsPackOne*)(m_puiIntermediateBuff)) ->
-                  xTRs485HighLevelSettingsPackOne);
+                  xRs485HighLevelSettingsPackOne);
 
             CSerialPortCommunicationDevice* pxSerialPortCommunicationDeviceCom1 =
                 (CSerialPortCommunicationDevice*)(GetResources() ->
@@ -416,7 +435,7 @@ uint8_t CSettingsLoad::Fsm(void)
 //-------------------------------------------------------------------------------
             TEthernetSettingsPackOne* pxEthernetSettingsPackOne =
                 &(((TPlcSettingsPackOne*)(m_puiIntermediateBuff)) ->
-                  xTEthernetSettingsPackOne);
+                  xEthernetSettingsPackOne);
 
             // »спользуем стандартный sprintf дл€ форматировани€ строки
             char new_ip[INET_ADDRSTRLEN];

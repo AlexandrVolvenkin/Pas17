@@ -470,6 +470,15 @@ typedef enum
 // для сериализации, разбора данных полученных по интерфейсам передачи данных.
 #pragma pack(push)
 #pragma pack(1)
+struct TSlaveAddressesSettingsPackOne
+{
+    uint8_t uiSlaveAddress;
+};
+#pragma pack(pop)
+
+// для сериализации, разбора данных полученных по интерфейсам передачи данных.
+#pragma pack(push)
+#pragma pack(1)
 struct TPortSettingsPackOne
 {
     uint8_t uiBaudRate;
@@ -505,8 +514,9 @@ struct TPeripherySettingsPackOne
 #pragma pack(1)
 struct TPlcSettingsPackOne
 {
-    TPortSettingsPackOne xTRs485HighLevelSettingsPackOne;
-    TEthernetSettingsPackOne xTEthernetSettingsPackOne;
+    TSlaveAddressesSettingsPackOne xSlaveAddressesSettingsPackOne;
+    TPortSettingsPackOne xRs485HighLevelSettingsPackOne;
+    TEthernetSettingsPackOne xEthernetSettingsPackOne;
 //    TPeripherySettingsPackOne xTPeripherySettingsPackOne;
 };
 #pragma pack(pop)

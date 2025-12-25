@@ -27,7 +27,7 @@ using namespace std;
 //-------------------------------------------------------------------------------
 CTcpCommunicationDevice::CTcpCommunicationDevice()
 {
-
+    m_iDeviceDescriptorServer = 0;
 }
 
 //-------------------------------------------------------------------------------
@@ -301,7 +301,10 @@ void CTcpCommunicationDevice::CloseClient(void)
 int8_t CTcpCommunicationDevice::Close(void)
 {
     std::cout << "CTcpCommunicationDevice::Close 1"  << std::endl;
-    close(m_iDeviceDescriptorServer);
+    if (m_iDeviceDescriptorServer != 0)
+    {
+        close(m_iDeviceDescriptorServer);
+    }
     close(m_iDeviceDescriptorClient);
     usleep(100000);
 }

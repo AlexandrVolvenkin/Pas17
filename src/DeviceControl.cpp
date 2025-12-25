@@ -1569,8 +1569,12 @@ uint16_t CDeviceControl::DataBaseBlockWriteBlockRelatedAction(void)
 
     case CONFIGURATION_DATA_BASE_BLOCK_OFFSET:
         cout << "CDeviceControl::DataBaseBlockWriteBlockRelatedAction CONFIGURATION_DATA_BASE_BLOCK_OFFSET" << endl;
-        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-        SetFsmState(DONE_OK);
+//        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+//        SetFsmState(DONE_OK);
+        {
+            SetFsmState(DATA_BASE_BLOCK_SETTINGS_WRITE_START);
+        }
+
         break;
 
     default:
@@ -2009,11 +2013,27 @@ uint8_t CDeviceControl::Fsm(void)
         }
         break;
 
-        // чтение параметров интерфейса связи верхнего уровня.
+        // запись адреса устройства.
+        case DEVICE_CONTROL_DOMAIN_DATA_WRITE_SLAVE_ADDRESS_SETTINGS_WRITE:
+            //cout << "CDeviceControl::Fsm DEVICE_CONTROL_DOMAIN_DATA_WRITE_SLAVE_ADDRESS_SETTINGS_WRITE" << endl;
+        {
+            SetFsmState(SLAVE_ADDRESS_SETTINGS_WRITE_READ_SETTINGS_BLOCK_DATA_START);
+        }
+        break;
+
+        // запись параметров интерфейса связи верхнего уровня.
         case DEVICE_CONTROL_DOMAIN_DATA_WRITE_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE:
             //cout << "CDeviceControl::Fsm DEVICE_CONTROL_DOMAIN_DATA_WRITE_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE" << endl;
         {
             SetFsmState(SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_READ_SETTINGS_BLOCK_DATA_START);
+        }
+        break;
+
+        // запись параметров интерфейса связи верхнего уровня.
+        case DEVICE_CONTROL_DOMAIN_DATA_WRITE_TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE:
+            //cout << "CDeviceControl::Fsm DEVICE_CONTROL_DOMAIN_DATA_WRITE_TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE" << endl;
+        {
+            SetFsmState(TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_READ_SETTINGS_BLOCK_DATA_START);
         }
         break;
 
@@ -2123,11 +2143,27 @@ uint8_t CDeviceControl::Fsm(void)
         }
         break;
 
-        // чтение параметров интерфейса связи верхнего уровня.
+        // чтение адреса устройства.
+        case DEVICE_CONTROL_DOMAIN_DATA_READ_SLAVE_ADDRESS_SETTINGS_READ:
+            //cout << "CDeviceControl::Fsm DEVICE_CONTROL_DOMAIN_DATA_READ_SLAVE_ADDRESS_SETTINGS_READ" << endl;
+        {
+            SetFsmState(SLAVE_ADDRESS_SETTINGS_READ_START);
+        }
+        break;
+
+        // чтение параметров rs485 интерфейса связи верхнего уровня.
         case DEVICE_CONTROL_DOMAIN_DATA_READ_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_READ:
             //cout << "CDeviceControl::Fsm DEVICE_CONTROL_DOMAIN_DATA_READ_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_READ" << endl;
         {
             SetFsmState(SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_READ_START);
+        }
+        break;
+
+        // чтение параметров Eternet интерфейса связи верхнего уровня.
+        case DEVICE_CONTROL_DOMAIN_DATA_READ_TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_READ:
+            //cout << "CDeviceControl::Fsm DEVICE_CONTROL_DOMAIN_DATA_READ_TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_READ" << endl;
+        {
+            SetFsmState(TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_READ_START);
         }
         break;
 
@@ -2364,6 +2400,131 @@ uint8_t CDeviceControl::Fsm(void)
     break;
 
 //-------------------------------------------------------------------------------
+    // чзаписьадреса устройства.
+    case SLAVE_ADDRESS_SETTINGS_WRITE_READ_SETTINGS_BLOCK_DATA_START:
+        //cout << "CDeviceControl::Fsm SLAVE_ADDRESS_SETTINGS_WRITE_READ_SETTINGS_BLOCK_DATA_START" << endl;
+    {
+        m_uiDataStoreId =
+            GetResources() ->
+            GetTaskIdByNameFromMap(m_sDataStoreName);
+
+        CDataContainerDataBase* pxDataContainer =
+            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+        pxDataContainer -> m_uiTaskId = m_uiDataStoreId;
+        pxDataContainer -> m_uiFsmCommandState =
+            CDataStore::READ_BLOCK_DATA_START;
+        // параметры настроек блок 101
+        pxDataContainer -> m_uiDataIndex = SETTINGS_DATA_BASE_BLOCK_OFFSET;
+        pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+
+        SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+        SetFsmNextStateDoneOk(SLAVE_ADDRESS_SETTINGS_WRITE_READ_SETTINGS_BLOCK_DATA_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+        SetFsmNextStateReadyWaitingError(SLAVE_ADDRESS_SETTINGS_WRITE_READ_SETTINGS_BLOCK_DATA_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+        SetFsmNextStateDoneWaitingError(SLAVE_ADDRESS_SETTINGS_WRITE_READ_SETTINGS_BLOCK_DATA_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+        SetFsmNextStateDoneWaitingDoneError(SLAVE_ADDRESS_SETTINGS_WRITE_READ_SETTINGS_BLOCK_DATA_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+    }
+    break;
+
+    case SLAVE_ADDRESS_SETTINGS_WRITE_READ_SETTINGS_BLOCK_DATA_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+        std::cout << "CDeviceControl::Fsm SLAVE_ADDRESS_SETTINGS_WRITE_READ_SETTINGS_BLOCK_DATA_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        {
+            SetFsmState(SLAVE_ADDRESS_SETTINGS_WRITE_WRITE_SETTINGS_BLOCK_DATA_START);
+        }
+        break;
+
+    case SLAVE_ADDRESS_SETTINGS_WRITE_READ_SETTINGS_BLOCK_DATA_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+        std::cout << "CDeviceControl::Fsm SLAVE_ADDRESS_SETTINGS_WRITE_READ_SETTINGS_BLOCK_DATA_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        {
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+            SetFsmState(DONE_ERROR);
+        }
+        break;
+
+    // запись параметров интерфейса связи верхнего уровня.
+    case SLAVE_ADDRESS_SETTINGS_WRITE_WRITE_SETTINGS_BLOCK_DATA_START:
+        //cout << "CDeviceControl::Fsm SLAVE_ADDRESS_SETTINGS_WRITE_WRITE_SETTINGS_BLOCK_DATA_START" << endl;
+    {
+        memcpy((uint8_t*)(&(((TPlcSettingsPackOne*)(m_puiIntermediateBuff)) -> xSlaveAddressesSettingsPackOne)),
+               &(((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer[DATA_OFFSET]),
+               (sizeof(struct TSlaveAddressesSettingsPackOne)));
+
+        uint8_t uiTaskId =
+            GetResources() ->
+            GetTaskIdByNameFromMap(m_sDataStoreName);
+
+        CDataContainerDataBase* pxDataContainer =
+            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+        pxDataContainer -> m_uiTaskId = uiTaskId;
+        pxDataContainer -> m_uiFsmCommandState =
+            CDataStore::START_WRITE_TEMPORARY_BLOCK_DATA;
+        // параметры настроек блок 101
+        pxDataContainer -> m_uiDataIndex = SETTINGS_DATA_BASE_BLOCK_OFFSET;
+        pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+
+        SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+        SetFsmNextStateDoneOk(SLAVE_ADDRESS_SETTINGS_WRITE_WRITE_SETTINGS_BLOCK_DATA_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+        SetFsmNextStateReadyWaitingError(SLAVE_ADDRESS_SETTINGS_WRITE_WRITE_SETTINGS_BLOCK_DATA_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+        SetFsmNextStateDoneWaitingError(SLAVE_ADDRESS_SETTINGS_WRITE_WRITE_SETTINGS_BLOCK_DATA_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+        SetFsmNextStateDoneWaitingDoneError(SLAVE_ADDRESS_SETTINGS_WRITE_WRITE_SETTINGS_BLOCK_DATA_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+    }
+    break;
+
+    case SLAVE_ADDRESS_SETTINGS_WRITE_WRITE_SETTINGS_BLOCK_DATA_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+        std::cout << "CDeviceControl::Fsm SLAVE_ADDRESS_SETTINGS_WRITE_WRITE_SETTINGS_BLOCK_DATA_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        {
+//            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+//            SetFsmState(DONE_OK);
+            SetFsmState(SLAVE_ADDRESS_SETTINGS_WRITE_INTERFACE_RESTART_START);
+        }
+        break;
+
+    case SLAVE_ADDRESS_SETTINGS_WRITE_WRITE_SETTINGS_BLOCK_DATA_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+        std::cout << "CDeviceControl::Fsm SLAVE_ADDRESS_SETTINGS_WRITE_WRITE_SETTINGS_BLOCK_DATA_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        {
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+            SetFsmState(DONE_ERROR);
+        }
+        break;
+
+    // перезагрузка интерфейса.
+    case SLAVE_ADDRESS_SETTINGS_WRITE_INTERFACE_RESTART_START:
+        //cout << "CDeviceControl::Fsm SLAVE_ADDRESS_SETTINGS_WRITE_INTERFACE_RESTART_START" << endl;
+    {
+        uint8_t uiTaskId =
+            GetResources() ->
+            GetTaskIdByNameFromMap("SettingsLoad");
+
+        CDataContainerDataBase* pxDataContainer =
+            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+        pxDataContainer -> m_uiTaskId = uiTaskId;
+        pxDataContainer -> m_uiFsmCommandState =
+            CSettingsLoad::SETTINGS_LOAD_STOP_RTU_UPPER_LEVEL_INTERFACE;
+
+        SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+        SetFsmNextStateDoneOk(SLAVE_ADDRESS_SETTINGS_WRITE_INTERFACE_RESTART_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+        SetFsmNextStateReadyWaitingError(SLAVE_ADDRESS_SETTINGS_WRITE_INTERFACE_RESTART_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+        SetFsmNextStateDoneWaitingError(SLAVE_ADDRESS_SETTINGS_WRITE_INTERFACE_RESTART_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+        SetFsmNextStateDoneWaitingDoneError(SLAVE_ADDRESS_SETTINGS_WRITE_INTERFACE_RESTART_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+    }
+    break;
+
+    case SLAVE_ADDRESS_SETTINGS_WRITE_INTERFACE_RESTART_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+        std::cout << "CDeviceControl::Fsm SLAVE_ADDRESS_SETTINGS_WRITE_INTERFACE_RESTART_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        {
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(DONE_OK);
+        }
+        break;
+
+    case SLAVE_ADDRESS_SETTINGS_WRITE_INTERFACE_RESTART_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+        std::cout << "CDeviceControl::Fsm SLAVE_ADDRESS_SETTINGS_WRITE_INTERFACE_RESTART_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        {
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+            SetFsmState(DONE_ERROR);
+        }
+        break;
+
+//-------------------------------------------------------------------------------
     // чтение параметров интерфейса связи верхнего уровня.
     case SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_READ_SETTINGS_BLOCK_DATA_START:
         //cout << "CDeviceControl::Fsm SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_READ_SETTINGS_BLOCK_DATA_START" << endl;
@@ -2408,7 +2569,7 @@ uint8_t CDeviceControl::Fsm(void)
     case SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_WRITE_SETTINGS_BLOCK_DATA_START:
         //cout << "CDeviceControl::Fsm SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_WRITE_SETTINGS_BLOCK_DATA_START" << endl;
     {
-        memcpy((uint8_t*)(&(((TPlcSettingsPackOne*)(m_puiIntermediateBuff)) -> xTRs485HighLevelSettingsPackOne)),
+        memcpy((uint8_t*)(&(((TPlcSettingsPackOne*)(m_puiIntermediateBuff)) -> xRs485HighLevelSettingsPackOne)),
                &(((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer[DATA_OFFSET]),
                (sizeof(struct TPortSettingsPackOne)));
 
@@ -2489,6 +2650,189 @@ uint8_t CDeviceControl::Fsm(void)
         break;
 
 //-------------------------------------------------------------------------------
+    // чзаписьадреса устройства.
+    case TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_READ_SETTINGS_BLOCK_DATA_START:
+        //cout << "CDeviceControl::Fsm TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_READ_SETTINGS_BLOCK_DATA_START" << endl;
+    {
+        m_uiDataStoreId =
+            GetResources() ->
+            GetTaskIdByNameFromMap(m_sDataStoreName);
+
+        CDataContainerDataBase* pxDataContainer =
+            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+        pxDataContainer -> m_uiTaskId = m_uiDataStoreId;
+        pxDataContainer -> m_uiFsmCommandState =
+            CDataStore::READ_BLOCK_DATA_START;
+        // параметры настроек блок 101
+        pxDataContainer -> m_uiDataIndex = SETTINGS_DATA_BASE_BLOCK_OFFSET;
+        pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+
+        SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+        SetFsmNextStateDoneOk(TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_READ_SETTINGS_BLOCK_DATA_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+        SetFsmNextStateReadyWaitingError(TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_READ_SETTINGS_BLOCK_DATA_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+        SetFsmNextStateDoneWaitingError(TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_READ_SETTINGS_BLOCK_DATA_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+        SetFsmNextStateDoneWaitingDoneError(TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_READ_SETTINGS_BLOCK_DATA_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+    }
+    break;
+
+    case TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_READ_SETTINGS_BLOCK_DATA_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+        std::cout << "CDeviceControl::Fsm TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_READ_SETTINGS_BLOCK_DATA_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        {
+            SetFsmState(TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_WRITE_SETTINGS_BLOCK_DATA_START);
+        }
+        break;
+
+    case TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_READ_SETTINGS_BLOCK_DATA_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+        std::cout << "CDeviceControl::Fsm TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_READ_SETTINGS_BLOCK_DATA_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        {
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+            SetFsmState(DONE_ERROR);
+        }
+        break;
+
+    // запись параметров интерфейса связи верхнего уровня.
+    case TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_WRITE_SETTINGS_BLOCK_DATA_START:
+        //cout << "CDeviceControl::Fsm TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_WRITE_SETTINGS_BLOCK_DATA_START" << endl;
+    {
+        memcpy((uint8_t*)(&(((TPlcSettingsPackOne*)(m_puiIntermediateBuff)) -> xEthernetSettingsPackOne)),
+               &(((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer[DATA_OFFSET]),
+               (sizeof(struct TEthernetSettingsPackOne)));
+
+        uint8_t uiTaskId =
+            GetResources() ->
+            GetTaskIdByNameFromMap(m_sDataStoreName);
+
+        CDataContainerDataBase* pxDataContainer =
+            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+        pxDataContainer -> m_uiTaskId = uiTaskId;
+        pxDataContainer -> m_uiFsmCommandState =
+            CDataStore::START_WRITE_TEMPORARY_BLOCK_DATA;
+        // параметры настроек блок 101
+        pxDataContainer -> m_uiDataIndex = SETTINGS_DATA_BASE_BLOCK_OFFSET;
+        pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+
+        SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+        SetFsmNextStateDoneOk(TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_WRITE_SETTINGS_BLOCK_DATA_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+        SetFsmNextStateReadyWaitingError(TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_WRITE_SETTINGS_BLOCK_DATA_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+        SetFsmNextStateDoneWaitingError(TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_WRITE_SETTINGS_BLOCK_DATA_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+        SetFsmNextStateDoneWaitingDoneError(TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_WRITE_SETTINGS_BLOCK_DATA_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+    }
+    break;
+
+    case TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_WRITE_SETTINGS_BLOCK_DATA_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+        std::cout << "CDeviceControl::Fsm TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_WRITE_SETTINGS_BLOCK_DATA_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        {
+//            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+//            SetFsmState(DONE_OK);
+            SetFsmState(TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_INTERFACE_RESTART_START);
+        }
+        break;
+
+    case TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_WRITE_SETTINGS_BLOCK_DATA_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+        std::cout << "CDeviceControl::Fsm TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_WRITE_SETTINGS_BLOCK_DATA_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        {
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+            SetFsmState(DONE_ERROR);
+        }
+        break;
+
+    // перезагрузка интерфейса.
+    case TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_INTERFACE_RESTART_START:
+        //cout << "CDeviceControl::Fsm TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_INTERFACE_RESTART_START" << endl;
+    {
+        uint8_t uiTaskId =
+            GetResources() ->
+            GetTaskIdByNameFromMap("SettingsLoad");
+
+        CDataContainerDataBase* pxDataContainer =
+            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+        pxDataContainer -> m_uiTaskId = uiTaskId;
+        pxDataContainer -> m_uiFsmCommandState =
+            CSettingsLoad::SETTINGS_LOAD_STOP_RTU_UPPER_LEVEL_INTERFACE;
+
+        SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+        SetFsmNextStateDoneOk(TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_INTERFACE_RESTART_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+        SetFsmNextStateReadyWaitingError(TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_INTERFACE_RESTART_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+        SetFsmNextStateDoneWaitingError(TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_INTERFACE_RESTART_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+        SetFsmNextStateDoneWaitingDoneError(TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_INTERFACE_RESTART_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+    }
+    break;
+
+    case TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_INTERFACE_RESTART_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+        std::cout << "CDeviceControl::Fsm TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_INTERFACE_RESTART_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        {
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(DONE_OK);
+        }
+        break;
+
+    case TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_INTERFACE_RESTART_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+        std::cout << "CDeviceControl::Fsm TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_INTERFACE_RESTART_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        {
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+            SetFsmState(DONE_ERROR);
+        }
+        break;
+
+//-------------------------------------------------------------------------------
+    // чтение адреса устройства.
+    case SLAVE_ADDRESS_SETTINGS_READ_START:
+        //cout << "CDeviceControl::Fsm SLAVE_ADDRESS_SETTINGS_READ_START" << endl;
+    {
+        m_uiDataStoreId =
+            GetResources() ->
+            GetTaskIdByNameFromMap(m_sDataStoreName);
+
+        CDataContainerDataBase* pxDataContainer =
+            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+        pxDataContainer -> m_uiTaskId = m_uiDataStoreId;
+        pxDataContainer -> m_uiFsmCommandState =
+            CDataStore::READ_BLOCK_DATA_START;
+        // параметры настроек блок 101
+        pxDataContainer -> m_uiDataIndex = SETTINGS_DATA_BASE_BLOCK_OFFSET;
+        pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+
+        SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+        SetFsmNextStateDoneOk(SLAVE_ADDRESS_SETTINGS_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+        SetFsmNextStateReadyWaitingError(SLAVE_ADDRESS_SETTINGS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+        SetFsmNextStateDoneWaitingError(SLAVE_ADDRESS_SETTINGS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+        SetFsmNextStateDoneWaitingDoneError(SLAVE_ADDRESS_SETTINGS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+    }
+    break;
+
+    case SLAVE_ADDRESS_SETTINGS_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+        std::cout << "CDeviceControl::Fsm SLAVE_ADDRESS_SETTINGS_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        {
+            CDataContainerDataBase* pxCustomerDataContainer =
+                (CDataContainerDataBase*)GetCustomerDataContainerPointer();
+
+            uint16_t  uiLength =
+                (sizeof(struct TSlaveAddressesSettingsPackOne) + PREAMBLE_LENGTH);
+            pxCustomerDataContainer -> m_uiDataLength = uiLength;
+            // формируем заголовок
+            // в протоколе используется только размер pdu. вычтем 1 байт(размер pdu)
+            (pxCustomerDataContainer -> m_puiDataPointer[PDU_LENGTH_OFFSET]) =
+                (uiLength - PDU_LENGTH_LENGTH);
+            (pxCustomerDataContainer -> m_puiDataPointer[OPTION_CODE_OFFSET]) =
+                DEVICE_CONTROL_DOMAIN_DATA_READ_SLAVE_ADDRESS_SETTINGS_READ;
+            memcpy(&(pxCustomerDataContainer -> m_puiDataPointer[DATA_OFFSET]),
+                   (uint8_t*)(&(((TPlcSettingsPackOne*)(m_puiIntermediateBuff)) -> xSlaveAddressesSettingsPackOne)),
+                   (sizeof(struct TSlaveAddressesSettingsPackOne)));
+
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(DONE_OK);
+        }
+        break;
+
+    case SLAVE_ADDRESS_SETTINGS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+        std::cout << "CDeviceControl::Fsm SLAVE_ADDRESS_SETTINGS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        {
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+            SetFsmState(DONE_ERROR);
+        }
+        break;
+
+//-------------------------------------------------------------------------------
     // чтение параметров интерфейса связи верхнего уровня.
     case SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_READ_START:
         //cout << "CDeviceControl::Fsm SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_READ_START" << endl;
@@ -2530,7 +2874,7 @@ uint8_t CDeviceControl::Fsm(void)
             (pxCustomerDataContainer -> m_puiDataPointer[OPTION_CODE_OFFSET]) =
                 DEVICE_CONTROL_DOMAIN_DATA_READ_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_READ;
             memcpy(&(pxCustomerDataContainer -> m_puiDataPointer[DATA_OFFSET]),
-                   (uint8_t*)(&(((TPlcSettingsPackOne*)(m_puiIntermediateBuff)) -> xTRs485HighLevelSettingsPackOne)),
+                   (uint8_t*)(&(((TPlcSettingsPackOne*)(m_puiIntermediateBuff)) -> xRs485HighLevelSettingsPackOne)),
                    (sizeof(struct TPortSettingsPackOne)));
 
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
@@ -2540,6 +2884,64 @@ uint8_t CDeviceControl::Fsm(void)
 
     case SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
         std::cout << "CDeviceControl::Fsm SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        {
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+            SetFsmState(DONE_ERROR);
+        }
+        break;
+
+//-------------------------------------------------------------------------------
+    // чтение параметров интерфейса связи верхнего уровня.
+    case TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_READ_START:
+        //cout << "CDeviceControl::Fsm TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_READ_START" << endl;
+    {
+        m_uiDataStoreId =
+            GetResources() ->
+            GetTaskIdByNameFromMap(m_sDataStoreName);
+
+        CDataContainerDataBase* pxDataContainer =
+            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+        pxDataContainer -> m_uiTaskId = m_uiDataStoreId;
+        pxDataContainer -> m_uiFsmCommandState =
+            CDataStore::READ_BLOCK_DATA_START;
+        // параметры настроек блок 101
+        pxDataContainer -> m_uiDataIndex = SETTINGS_DATA_BASE_BLOCK_OFFSET;
+        pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+
+        SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+        SetFsmNextStateDoneOk(TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+        SetFsmNextStateReadyWaitingError(TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+        SetFsmNextStateDoneWaitingError(TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+        SetFsmNextStateDoneWaitingDoneError(TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+    }
+    break;
+
+    case TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+        std::cout << "CDeviceControl::Fsm TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        {
+            CDataContainerDataBase* pxCustomerDataContainer =
+                (CDataContainerDataBase*)GetCustomerDataContainerPointer();
+
+            uint16_t  uiLength =
+                (sizeof(struct TEthernetSettingsPackOne) + PREAMBLE_LENGTH);
+            pxCustomerDataContainer -> m_uiDataLength = uiLength;
+            // формируем заголовок
+            // в протоколе используется только размер pdu. вычтем 1 байт(размер pdu)
+            (pxCustomerDataContainer -> m_puiDataPointer[PDU_LENGTH_OFFSET]) =
+                (uiLength - PDU_LENGTH_LENGTH);
+            (pxCustomerDataContainer -> m_puiDataPointer[OPTION_CODE_OFFSET]) =
+                DEVICE_CONTROL_DOMAIN_DATA_READ_TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_READ;
+            memcpy(&(pxCustomerDataContainer -> m_puiDataPointer[DATA_OFFSET]),
+                   (uint8_t*)(&(((TPlcSettingsPackOne*)(m_puiIntermediateBuff)) -> xEthernetSettingsPackOne)),
+                   (sizeof(struct TEthernetSettingsPackOne)));
+
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(DONE_OK);
+        }
+        break;
+
+    case TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+        std::cout << "CDeviceControl::Fsm TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
         {
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
             SetFsmState(DONE_ERROR);
@@ -2998,6 +3400,44 @@ uint8_t CDeviceControl::Fsm(void)
 
     case DATA_BASE_BLOCK_NETWORK_ADDRESS_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
         //std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_NETWORK_ADDRESS_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+    {
+        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+        SetFsmState(DONE_ERROR);
+    }
+    break;
+
+//-------------------------------------------------------------------------------
+    case DATA_BASE_BLOCK_SETTINGS_WRITE_START:
+        //std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_SETTINGS_WRITE_START"  << std::endl;
+    {
+        uint8_t uiTaskId =
+            GetResources() ->
+            GetTaskIdByNameFromMap("SettingsLoad");
+
+        CDataContainerDataBase* pxDataContainer =
+            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+        pxDataContainer -> m_uiTaskId = uiTaskId;
+        pxDataContainer -> m_uiFsmCommandState =
+            CSettingsLoad::SETTINGS_LOAD_STOP_RTU_UPPER_LEVEL_INTERFACE;
+
+        SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+        SetFsmNextStateDoneOk(DATA_BASE_BLOCK_SETTINGS_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+        SetFsmNextStateReadyWaitingError(DATA_BASE_BLOCK_SETTINGS_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+        SetFsmNextStateDoneWaitingError(DATA_BASE_BLOCK_SETTINGS_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+        SetFsmNextStateDoneWaitingDoneError(DATA_BASE_BLOCK_SETTINGS_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+    }
+    break;
+
+    case DATA_BASE_BLOCK_SETTINGS_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+        //std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_SETTINGS_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+    {
+//            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+        SetFsmState(DONE_OK);
+    }
+    break;
+
+    case DATA_BASE_BLOCK_SETTINGS_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+        //std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_SETTINGS_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
     {
         ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
         SetFsmState(DONE_ERROR);

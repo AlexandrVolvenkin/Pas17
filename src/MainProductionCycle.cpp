@@ -1072,7 +1072,7 @@ uint8_t CMainProductionCycle::Fsm(void)
         }
         else if (uiFsmState == DONE_ERROR)
         {
-            std::cout << "CMainProductionCycle::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 3"  << std::endl;
+//            std::cout << "CMainProductionCycle::Fsm SUBTASK_EXECUTOR_DONE_CHECK_WAITING 3"  << std::endl;
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
             SetFsmState(GetFsmNextStateDoneWaitingDoneError());
         }
@@ -1786,7 +1786,7 @@ uint8_t CMainProductionCycle::Fsm(void)
     break;
 
     case CONFIGURATION_CONFIRMATION_WAITING_ERROR_HANDLER_COMMAND_SEND_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
-        std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CONFIRMATION_WAITING_ERROR_HANDLER_COMMAND_SEND_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+//        std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CONFIRMATION_WAITING_ERROR_HANDLER_COMMAND_SEND_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
         {
             CurrentlyRunningTasksExecution();
 
