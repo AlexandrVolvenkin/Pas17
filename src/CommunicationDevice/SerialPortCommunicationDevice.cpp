@@ -19,6 +19,7 @@ using namespace std;
 CSerialPortCommunicationDevice::CSerialPortCommunicationDevice()
 {
     std::cout << "CSerialPortCommunicationDevice constructor"  << std::endl;
+    m_iDeviceDescriptorServer = 0;
 //    // получим имя класса.
 //    sprintf(GetTaskNamePointer(),
 //            "%s",
@@ -341,8 +342,12 @@ int8_t CSerialPortCommunicationDevice::Open(void)
 //-------------------------------------------------------------------------------
 int8_t CSerialPortCommunicationDevice::Close(void)
 {
-    cout << "CSerialPortCommunicationDevice::Close m_pccDeviceName " << m_pccDeviceName << endl;
-    close(m_iDeviceDescriptorServer);
+    std::cout << "CSerialPortCommunicationDevice::Close 1"  << std::endl;
+//    cout << "CSerialPortCommunicationDevice::Close m_pccDeviceName " << m_pccDeviceName << endl;
+    if (m_iDeviceDescriptorServer != 0)
+    {
+        close(m_iDeviceDescriptorServer);
+    }
 }
 
 ////-------------------------------------------------------------------------------

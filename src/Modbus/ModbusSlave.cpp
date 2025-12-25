@@ -810,27 +810,51 @@ uint16_t CModbusSlave::DeviceControlDomainDataWrite(void)
 
     // размер буфера передаваемого исполнителю: размер pdu + 1 байт с размером
     uiLength = (puiRequest[uiPduOffset + 1] + PDU_LENGTH_LENGTH);
-//    // передаём данные исполнителю: размер pdu + 1 байт с размером + данные
-//    memcpy(m_puiIntermediateBuff,
-//           &puiRequest[uiPduOffset + 1],
-//           uiLength);
+    // передаём данные исполнителю: размер pdu + 1 байт с размером + данные
+    memcpy(m_puiIntermediateBuff,
+           &puiRequest[uiPduOffset + 1],
+           uiLength);
 
 
 
 
-    // Создание экземпляров структур
-    TPortSettingsPackOne xPortSettingsPackOne =
-    {
-        BIT_RATE_19200,//BIT_RATE_9600,//
-        8,
-        PARITY_NO,
-        2
-    };
-    TEthernetSettingsPackOne xEthernetSettingsPackOne =
-    {
-        192, 168, 0, 32,
-        502
-    };
+////    // Создание экземпляров структур
+//    TSlaveAddressesSettingsPackOne xSlaveAddressesSettingsPackOne =
+//    {
+//        7
+//    };
+//
+//    m_puiIntermediateBuff[PDU_LENGTH_OFFSET] = puiRequest[uiPduOffset + 1];
+//    m_puiIntermediateBuff[OPTION_CODE_OFFSET] = 3;
+//    memcpy(&(m_puiIntermediateBuff[DATA_OFFSET]),
+//           (uint8_t*)&(xSlaveAddressesSettingsPackOne),
+//           sizeof(struct TSlaveAddressesSettingsPackOne));
+
+//    TPortSettingsPackOne xPortSettingsPackOne =
+//    {
+//        BIT_RATE_19200,//BIT_RATE_9600,//
+//        8,
+//        PARITY_NO,
+//        2
+//    };
+//
+//    m_puiIntermediateBuff[PDU_LENGTH_OFFSET] = puiRequest[uiPduOffset + 1];
+//    m_puiIntermediateBuff[OPTION_CODE_OFFSET] = 4;
+//    memcpy(&(m_puiIntermediateBuff[DATA_OFFSET]),
+//           (uint8_t*)&(xPortSettingsPackOne),
+//           sizeof(struct TPortSettingsPackOne));
+
+//    TEthernetSettingsPackOne xEthernetSettingsPackOne =
+//    {
+//        192, 168, 0, 17,
+//        502
+//    };
+//
+//    m_puiIntermediateBuff[PDU_LENGTH_OFFSET] = puiRequest[uiPduOffset + 1];
+//    m_puiIntermediateBuff[OPTION_CODE_OFFSET] = 5;
+//    memcpy(&(m_puiIntermediateBuff[DATA_OFFSET]),
+//           (uint8_t*)&(xEthernetSettingsPackOne),
+//           sizeof(struct TEthernetSettingsPackOne));
 
 //            // Создание экземпляра TPlcSettingsPackOne
 //            TPlcSettingsPackOne xPlcSettingsPackOne =
@@ -838,12 +862,6 @@ uint16_t CModbusSlave::DeviceControlDomainDataWrite(void)
 //                xPortSettingsPackOne,
 //                xEthernetSettingsPackOne
 //            };
-
-    m_puiIntermediateBuff[PDU_LENGTH_OFFSET] = puiRequest[uiPduOffset + 1];
-    m_puiIntermediateBuff[OPTION_CODE_OFFSET] = 3;
-    memcpy(&(m_puiIntermediateBuff[DATA_OFFSET]),
-           (uint8_t*)&(xPortSettingsPackOne),
-           sizeof(struct TPortSettingsPackOne));
 
 
 
@@ -2243,7 +2261,7 @@ uint16_t CModbusSlave::AnswerProcessing(void)
         break;
     }
 
-    std::cout << "CModbusSlave::AnswerProcessing 5" << std::endl;
+//    std::cout << "CModbusSlave::AnswerProcessing 5" << std::endl;
     uiLength = m_pxModbusSlaveLinkLayer -> Tail(puiResponse, uiLength);
     m_pxModbusSlaveLinkLayer -> SetFrameLength(uiLength);
     return uiLength;

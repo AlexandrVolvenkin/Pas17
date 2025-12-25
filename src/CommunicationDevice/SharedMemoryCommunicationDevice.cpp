@@ -22,6 +22,7 @@ using namespace std;
 CSharedMemoryCommunicationDevice::CSharedMemoryCommunicationDevice()
 {
     //std::cout << "CSharedMemoryCommunicationDevice constructor"  << std::endl;
+    m_iDeviceDescriptorServer = 0;
 //    // получим имя класса.
 //    sprintf(GetTaskNamePointer(),
 //            "%s",

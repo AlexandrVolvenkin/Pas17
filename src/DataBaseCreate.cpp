@@ -981,6 +981,11 @@ uint8_t CDataBaseCreate::Fsm(void)
                    CDataStore::MAX_BLOCK_LENGTH);
 
             // Создание экземпляров структур
+            TSlaveAddressesSettingsPackOne xSlaveAddressesSettingsPackOne =
+            {
+                1
+            };
+
             TPortSettingsPackOne xPortSettingsPackOne =
             {
                 BIT_RATE_9600,
@@ -997,6 +1002,7 @@ uint8_t CDataBaseCreate::Fsm(void)
             // Создание экземпляра TPlcSettingsPackOne
             TPlcSettingsPackOne xPlcSettingsPackOne =
             {
+                xSlaveAddressesSettingsPackOne,
                 xPortSettingsPackOne,
                 xEthernetSettingsPackOne
             };
@@ -1011,7 +1017,7 @@ uint8_t CDataBaseCreate::Fsm(void)
             pxDataContainer -> m_uiTaskId = m_uiDataStoreId;
             pxDataContainer -> m_uiFsmCommandState =
                 CDataStore::START_WRITE_TEMPORARY_BLOCK_DATA;
-            // сетевой адрес блок 99
+        // параметры настроек блок 101
             pxDataContainer -> m_uiDataIndex = SETTINGS_DATA_BASE_BLOCK_OFFSET;
             pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
 

@@ -28,6 +28,7 @@ using namespace std;
 CModbusSmSlaveLinkLayer::CModbusSmSlaveLinkLayer()
 {
     //std::cout << "CModbusSmSlaveLinkLayer constructor"  << std::endl;
+    m_pxThread = 0;
     m_pxCommunicationDevice = 0;
     SetFsmState(START);
 }

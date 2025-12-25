@@ -324,7 +324,7 @@ uint8_t CSettingsSet::Fsm(void)
 //                (CDataContainerDataBase*)GetCustomerDataContainerPointer();
 //
 //            memcpy(((uint8_t*)(&(((TPlcSettingsPackOne*)(m_puiIntermediateBuff)) ->
-//                                 xTRs485HighLevelSettingsPackOne))),
+//                                 xRs485HighLevelSettingsPackOne))),
 //                   (pxCustomerDataContainer -> m_puiDataPointer),
 //                   (sizeof(struct TPortSettingsPackOne)));
 //

@@ -26,6 +26,7 @@ using namespace std;
 CModbusRtuSlaveLinkLayer::CModbusRtuSlaveLinkLayer()
 {
     //std::cout << "CModbusRtuSlaveLinkLayer constructor"  << std::endl;
+    m_pxThread = 0;
     m_pxCommunicationDevice = 0;
     SetFsmState(START);
 
@@ -65,10 +66,10 @@ bool CModbusRtuSlaveLinkLayer::SetTaskData(CDataContainerDataBase* pxDataContain
 
 //    if (IsTaskReady())
 //    {
-        //std::cout << "CModbusRtuSlaveLinkLayer::SetTaskData 2" << std::endl;
-        *m_pxOperatingDataContainer = *pxDataContainer;
-        SetFsmState(m_pxOperatingDataContainer -> m_uiFsmCommandState);
-        return true;
+    //std::cout << "CModbusRtuSlaveLinkLayer::SetTaskData 2" << std::endl;
+    *m_pxOperatingDataContainer = *pxDataContainer;
+    SetFsmState(m_pxOperatingDataContainer -> m_uiFsmCommandState);
+    return true;
 //    }
 //    else
 //    {
@@ -120,19 +121,25 @@ void CModbusRtuSlaveLinkLayer::StartNewThread(void)
 void CModbusRtuSlaveLinkLayer::DestroyThread(void)
 {
     cout << "CModbusRtuSlaveLinkLayer::DestroyThread 1" << endl;
-
-    m_pxCommunicationDevice -> Close();
-    m_uiThreadInProgress = 0;
-    // Ожидаем завершение первого потока (если он еще выполняется)
-    if (!m_pxThread || m_pxThread->joinable())
+    if (m_pxCommunicationDevice)
     {
-//        m_pxThread -> join();
-        // Разорваем связь между потоком и его владелецом
-        if (m_pxThread)
+        m_pxCommunicationDevice -> Close();
+    }
+
+    m_uiThreadInProgress = 0;
+    if (m_pxThread)
+    {
+        // Ожидаем завершение первого потока (если он еще выполняется)
+        if (!m_pxThread || m_pxThread->joinable())
         {
-            m_pxThread->detach();
+//        m_pxThread -> join();
+            // Разорваем связь между потоком и его владелецом
+            if (m_pxThread)
+            {
+                m_pxThread->detach();
+            }
+            m_pxThread.reset(); // Сбросим указатель
         }
-        m_pxThread.reset(); // Сбросим указатель
     }
 }
 
