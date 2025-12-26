@@ -226,7 +226,8 @@ uint8_t CSettingsLoad::Fsm(void)
     case SETTINGS_LOAD_START:
         std::cout << "CSettingsLoad::Fsm SETTINGS_LOAD_START"  << std::endl;
         {
-            SetFsmState(SETTINGS_LOAD_NETWORK_ADDRESS_DATA_BASE_BLOCKS_READ_START);
+//            SetFsmState(SETTINGS_LOAD_NETWORK_ADDRESS_DATA_BASE_BLOCKS_READ_START);
+            SetFsmState(SETTINGS_LOAD_STOP_RTU_UPPER_LEVEL_INTERFACE);
         }
         break;
 
