@@ -1149,20 +1149,20 @@ uint16_t CModbusSlave::RequestProcessing(void)
     int8_t uiSlave = puiRequest[uiPduOffset - 1];
     int8_t uiFunctionCode = puiRequest[uiPduOffset];
 
-    //std::cout << "CModbusSlave::RequestProcessing uiSlave "  << (int)uiSlave << std::endl;
-    //std::cout << "CModbusSlave::RequestProcessing m_uiOwnAddress "  << (int)m_uiOwnAddress << std::endl;
-    //std::cout << "CModbusSlave::RequestProcessing uiFunctionCode "  << (int)uiFunctionCode << std::endl;
+//    std::cout << "CModbusSlave::RequestProcessing uiSlave "  << (int)uiSlave << std::endl;
+//    std::cout << "CModbusSlave::RequestProcessing m_uiOwnAddress "  << (int)m_uiOwnAddress << std::endl;
+//    std::cout << "CModbusSlave::RequestProcessing uiFunctionCode "  << (int)uiFunctionCode << std::endl;
 
     /* Filter on the Modbus unit identifier (slave) in RTU mode */
     if (uiSlave != m_uiOwnAddress && uiSlave != MODBUS_BROADCAST_ADDRESS)
     {
-        //std::cout << "CModbusSlave::RequestProcessing 2" << std::endl;
+//        std::cout << "CModbusSlave::RequestProcessing 2" << std::endl;
         return 0;
     }
 
     switch (uiFunctionCode)
     {
-    //std::cout << "CModbusSlave::RequestProcessing 3" << std::endl;
+//    std::cout << "CModbusSlave::RequestProcessing 3" << std::endl;
     case _FC_READ_COILS:
         //std::cout << "CModbusSlave::RequestProcessing _FC_READ_COILS"  << std::endl;
         uiLength = ReadCoils();
@@ -1257,7 +1257,7 @@ uint16_t CModbusSlave::RequestProcessing(void)
         break;
     }
 
-    //std::cout << "CModbusSlave::RequestProcessing 5" << std::endl;
+//    std::cout << "CModbusSlave::RequestProcessing 5" << std::endl;
     uiLength = m_pxModbusSlaveLinkLayer -> Tail(puiResponse, uiLength);
     m_pxModbusSlaveLinkLayer -> SetFrameLength(uiLength);
     return uiLength;
@@ -2588,7 +2588,8 @@ uint8_t CModbusSlave::Fsm(void)
             }
             else
             {
-                SetFsmState(MESSAGE_RECEIVE_WAITING);
+//                SetFsmState(MESSAGE_RECEIVE_WAITING);
+                SetFsmState(COMMUNICATION_RECEIVE_CONTINUE);
             }
 //        xTimeMeasure.End();
         }
@@ -2614,7 +2615,8 @@ uint8_t CModbusSlave::Fsm(void)
         }
         else
         {
-            SetFsmState(MESSAGE_RECEIVE_WAITING);
+            //            SetFsmState(MESSAGE_RECEIVE_WAITING);
+            SetFsmState(COMMUNICATION_RECEIVE_CONTINUE);
         }
 
         break;
@@ -2627,7 +2629,8 @@ uint8_t CModbusSlave::Fsm(void)
         }
         else
         {
-            SetFsmState(MESSAGE_RECEIVE_WAITING);
+//            SetFsmState(MESSAGE_RECEIVE_WAITING);
+            SetFsmState(COMMUNICATION_RECEIVE_CONTINUE);
         }
         break;
 
