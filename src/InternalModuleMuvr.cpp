@@ -22,6 +22,24 @@
 
 using namespace std;
 
+//-----------------------------------------------------------------------------------------------------
+// преобразовывает данные для передачи по сети.
+// в рабочих массивах программы используется LittleEndian, в сети BigEndian.
+void vLittleToBigEndianFloatConverter(unsigned char* pucDestination, unsigned char* pucSource, unsigned int nuiLength)
+{
+    int i;
+
+    for (i = 0; i < nuiLength; i++)
+    {
+        pucDestination[2] = pucSource[0];
+        pucDestination[3] = pucSource[1];
+        pucDestination[0] = pucSource[2];
+        pucDestination[1] = pucSource[3];
+        pucSource += sizeof(float);
+        pucDestination += sizeof(float);
+    }
+}
+
 //-------------------------------------------------------------------------------
 CInternalModuleMuvr::CInternalModuleMuvr()
 {
@@ -190,6 +208,16 @@ void CInternalModuleMuvr::Allocate(void)
     // Увеличим общий объём выделенной памяти.
     GetResources() ->
     m_uiUsedAnalogueInputsValue +=
+        MUVR_ANALOG_INPUT_QUANTITY;
+
+    // Получим указатель на место в массиве аналоговых входов для текущего модуля.
+    m_pfAnalogueInputsHoldingRegistersValue =
+        &(GetResources() ->
+          m_pfAnalogueInputsHoldingRegistersValue[GetResources() ->
+                                 m_uiUsedAnalogueInputsHoldingRegistersValue]);
+    // Увеличим общий объём выделенной памяти.
+    GetResources() ->
+    m_uiUsedAnalogueInputsHoldingRegistersValue +=
         MUVR_ANALOG_INPUT_QUANTITY;
 
 
@@ -565,6 +593,10 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                     memset(&(m_pfAnalogueInputsValue[i]),
                            0,
                            sizeof(float));
+                    // данные входа недостоверны, обнулим их в массиве модбас.
+                    memset(&(m_pfAnalogueInputsHoldingRegistersValue[i]),
+                           0,
+                           sizeof(float));
                     //std::cout << "CInternalModuleMuvr::DataExchange 31"  << std::endl;
                     // установим флаг недостоверности - вход недостоверен.
                     m_puiAnalogueInputsBadState[i] = 1;
@@ -592,6 +624,14 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                     memcpy(&(m_pfAnalogueInputsValue[i]),
                            (uint8_t*)&fData,
                            sizeof(float));
+                    // поместим его в рабочий массив.
+//                    memcpy(&(m_pfAnalogueInputsHoldingRegistersValue[i]),
+//                           (uint8_t*)&fData,
+//                           sizeof(float));
+                    vLittleToBigEndianFloatConverter((uint8_t*)&(m_pfAnalogueInputsHoldingRegistersValue[i]),
+                                                     (uint8_t*)&fData,
+                                                     1);
+
                     // установим флаг недостоверности - вход недостоверен.
                     m_puiAnalogueInputsBadState[i] = 1;
                     // дискретные данные входа недостоверны, обнулим их.
@@ -612,6 +652,10 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                         //std::cout << "CInternalModuleMuvr::DataExchange 51"  << std::endl;
                         // данные входов модуля выведены из обработки, обнулим их.
                         memset(&(m_pfAnalogueInputsValue[i]),
+                               0,
+                               sizeof(float));
+                        // данные входа недостоверны, обнулим их в массиве модбас.
+                        memset(&(m_pfAnalogueInputsHoldingRegistersValue[i]),
                                0,
                                sizeof(float));
                         // установим флаг недостоверности - вход недостоверен.
@@ -635,6 +679,13 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                         memcpy(&(m_pfAnalogueInputsValue[i]),
                                (uint8_t*)&fData,
                                sizeof(float));
+                        // поместим его в рабочий массив.
+//                        memcpy(&(m_pfAnalogueInputsHoldingRegistersValue[i]),
+//                               (uint8_t*)&fData,
+//                               sizeof(float));
+                        vLittleToBigEndianFloatConverter((uint8_t*)&(m_pfAnalogueInputsHoldingRegistersValue[i]),
+                                                         (uint8_t*)&fData,
+                                                         1);
                         // сбросим флаг недостоверности - вход достоверен.
                         m_puiAnalogueInputsBadState[i] = 0;
                         // сбросим флаги уставок LL, L, H, HH.
@@ -755,6 +806,10 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
 
         // данные входов модуля недостоверны, обнулим их.
         memset(m_pfAnalogueInputsValue,
+               0,
+               MUVR_ANALOG_INPUT_QUANTITY * sizeof(float));
+        // данные входа недостоверны, обнулим их в массиве модбас.
+        memset(m_pfAnalogueInputsHoldingRegistersValue,
                0,
                MUVR_ANALOG_INPUT_QUANTITY * sizeof(float));
         // установим флаги недостоверности - входы недостоверны.

@@ -238,6 +238,7 @@ private:
     uint8_t* m_puiDiscreteInputsBadState;
     uint8_t* m_puiDiscreteOutputState;
     float* m_pfAnalogueInputsValue;
+    float* m_pfAnalogueInputsHoldingRegistersValue;
     uint8_t* m_puiAnalogueInputsState;
     uint8_t* m_puiAnalogueInputsOff;
     uint8_t* m_puiAnalogueInputsBadState;

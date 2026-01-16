@@ -192,6 +192,8 @@ public:
 //    uint8_t* m_puiDiscreteOutputControl;
     uint8_t m_uiUsedDiscreteOutputControl;
 
+    float* m_pfAnalogueInputsHoldingRegistersValue;
+    uint32_t m_uiUsedAnalogueInputsHoldingRegistersValue;
     float* m_pfAnalogueInputsValue;
     uint32_t m_uiUsedAnalogueInputsValue;
     uint8_t* m_puiAnalogueInputsState;
