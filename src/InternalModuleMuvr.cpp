@@ -625,9 +625,6 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                            (uint8_t*)&fData,
                            sizeof(float));
                     // поместим его в рабочий массив.
-//                    memcpy(&(m_pfAnalogueInputsHoldingRegistersValue[i]),
-//                           (uint8_t*)&fData,
-//                           sizeof(float));
                     vLittleToBigEndianFloatConverter((uint8_t*)&(m_pfAnalogueInputsHoldingRegistersValue[i]),
                                                      (uint8_t*)&fData,
                                                      1);
@@ -680,9 +677,6 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                                (uint8_t*)&fData,
                                sizeof(float));
                         // поместим его в рабочий массив.
-//                        memcpy(&(m_pfAnalogueInputsHoldingRegistersValue[i]),
-//                               (uint8_t*)&fData,
-//                               sizeof(float));
                         vLittleToBigEndianFloatConverter((uint8_t*)&(m_pfAnalogueInputsHoldingRegistersValue[i]),
                                                          (uint8_t*)&fData,
                                                          1);
