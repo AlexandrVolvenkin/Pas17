@@ -50,6 +50,7 @@ CResources::~CResources()
 {
     delete[] m_ppxCommonTaskPointers;
     delete[] m_puiReperPointsAdcBuffer;
+    delete[] m_pfAnalogueInputsValue;
     delete[] m_puiAnalogueInputsState;
     delete[] m_puiAnalogueInputsOff;
     delete[] m_pxAnalogueInputDescriptionWork;
@@ -289,9 +290,25 @@ void CResources::Allocate(void)
 
 
     // Обнулим общий объём выделенной памяти.
+    m_uiUsedAnalogueInputsState = 0;
+    // Подключим буфер для хранения состояний аналоговых входов.
+    m_puiAnalogueInputsState =
+        new uint8_t[MAX_HANDLED_ANALOGUE_INPUT];
+
+    // Обнулим общий объём выделенной памяти.
     m_uiUsedAnalogueInputsValue = 0;
     // Подключим буфер для хранения измеренных значений аналоговых входов.
     m_pfAnalogueInputsValue =
+        new float[MAX_HANDLED_ANALOGUE_INPUT * sizeof(float)];
+    memset(m_pfAnalogueInputsValue,
+           0,
+           (MAX_HANDLED_ANALOGUE_INPUT * sizeof(float)));
+//        (float*)&m_puiHoldingRegisters[ANALOGUE_INPUTS_VALUE_OFFSET];
+
+    // Обнулим общий объём выделенной памяти.
+    m_uiUsedAnalogueInputsHoldingRegistersValue = 0;
+    // Подключим буфер для хранения измеренных значений аналоговых входов.
+    m_pfAnalogueInputsHoldingRegistersValue =
         (float*)&m_puiHoldingRegisters[ANALOGUE_INPUTS_VALUE_OFFSET];
 
     // Обнулим общий объём выделенной памяти.
