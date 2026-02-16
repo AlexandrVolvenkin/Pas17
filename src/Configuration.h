@@ -585,12 +585,13 @@ enum EModbusFunctionCoilsDataMap
     DISCRETE_INPUTS_BAD_STATE_OFFSET = 1056,
     // в мувр отсутствуют дискретные входы поэтому адреса недостоверности дискретных входов
     // и адреса недостоверности дискретных сигналов порождаемых аналоговыми входами совпадают
-    ANALOGUE_INPUTS_DISCRETE_SIGNALS_BAD_STATE_OFFSET = 1056,
+    ANALOGUE_INPUTS_DISCRETE_SIGNALS_BAD_STATE_OFFSET = 1062,
 };
 
 enum EModbusFunctionDiscreteInputsDataMap
 {
     DISCRETE_INPUTS_STATE_OFFSET = 0,
+    ANALOGUE_INPUTS_DISCRETE_INPUTS_STATE_OFFSET = 6,
 };
 
 enum EModbusFunctionHoldingRegistersDataMap
