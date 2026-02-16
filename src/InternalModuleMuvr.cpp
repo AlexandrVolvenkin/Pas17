@@ -156,15 +156,15 @@ void CInternalModuleMuvr::Allocate(void)
 //    m_puiTxBuffer = xMemoryAllocationContext.puiTxBuffer;
 //    m_puiErrorCode = xMemoryAllocationContext.puiErrorCode;
 
-    // Получим указатель на место в массиве дискретных входов для текущего модуля.
-    m_puiDiscreteInputsState =
-        &(GetResources() ->
-          m_puiDiscreteInputsState[GetResources() ->
-                                                  m_uiUsedDiscreteInputsState]);
-    // Увеличим общий объём выделенной памяти.
-    GetResources() ->
-    m_uiUsedDiscreteInputsState +=
-        MUVR_DISCRETE_SIGNALS_QUANTITY;
+//    // Получим указатель на место в массиве дискретных входов для текущего модуля.
+//    m_puiDiscreteInputsState =
+//        &(GetResources() ->
+//          m_puiDiscreteInputsState[GetResources() ->
+//                                                  m_uiUsedDiscreteInputsState]);
+//    // Увеличим общий объём выделенной памяти.
+//    GetResources() ->
+//    m_uiUsedDiscreteInputsState +=
+//        MUVR_DISCRETE_SIGNALS_QUANTITY;
 
 
     // Получим указатель на место в массиве достоверности дискретных входов для текущего модуля.
@@ -228,7 +228,7 @@ void CInternalModuleMuvr::Allocate(void)
                                                   m_uiUsedAnalogueInputsState]);
     // Увеличим общий объём выделенной памяти.
     GetResources() ->
-    m_uiUsedAnalogueInputsBadState +=
+    m_uiUsedAnalogueInputsState +=
         MUVR_ANALOG_INPUT_QUANTITY;
 
 
@@ -588,7 +588,7 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                 if ((auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_LINE_BREAK) ||
                         (auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_CALCULATION_OVERFLOW))
                 {
-                    //std::cout << "CInternalModuleMuvr::DataExchange 3"  << std::endl;
+                    //std::cout << "CInternalModuleMuvr::DataExchange 3"  << (int)i  << std::endl;
                     // данные входа недостоверны, обнулим их.
                     memset(&(m_pfAnalogueInputsValue[i]),
                            0,
@@ -616,7 +616,7 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                      ((auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_CALCULATION_OVERFLOW) == 0)) &&
                     ((auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_CHANNEL_CALIBRATION)))
                 {
-                    //std::cout << "CInternalModuleMuvr::DataExchange 4"  << std::endl;
+                    //std::cout << "CInternalModuleMuvr::DataExchange 4"  << (int)i  << std::endl;
                     // получим измеренное значение и преобразуем.
                     fData = fStep5ToFloat(&auiSpiRxBuffer[SPI_DATA_BYTE_OFFSET +
                                                                                (i * MUVR_ONE_ANALOG_INPUT_DATA_BYTE_QUANTITY)]);
@@ -625,9 +625,6 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                            (uint8_t*)&fData,
                            sizeof(float));
                     // поместим его в рабочий массив.
-//                    memcpy(&(m_pfAnalogueInputsHoldingRegistersValue[i]),
-//                           (uint8_t*)&fData,
-//                           sizeof(float));
                     vLittleToBigEndianFloatConverter((uint8_t*)&(m_pfAnalogueInputsHoldingRegistersValue[i]),
                                                      (uint8_t*)&fData,
                                                      1);
@@ -645,11 +642,11 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                 }
                 else
                 {
-                    //std::cout << "CInternalModuleMuvr::DataExchange 5"  << std::endl;
+//                    std::cout << "CInternalModuleMuvr::DataExchange 5"  << (int)i  << std::endl;
                     // аналоговый вход выведен из обработки?
                     if (m_puiAnalogueInputsOff[i])
                     {
-                        //std::cout << "CInternalModuleMuvr::DataExchange 51"  << std::endl;
+                        //std::cout << "CInternalModuleMuvr::DataExchange 51"  << (int)i  << std::endl;
                         // данные входов модуля выведены из обработки, обнулим их.
                         memset(&(m_pfAnalogueInputsValue[i]),
                                0,
@@ -671,7 +668,7 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                     }
                     else
                     {
-//                        std::cout << "CInternalModuleMuvr::DataExchange 6 "  << (int)i << std::endl;
+                        //std::cout << "CInternalModuleMuvr::DataExchange 6 "  << (int)i << std::endl;
                         // получим измеренное значение и преобразуем.
                         fData = fStep5ToFloat(&auiSpiRxBuffer[SPI_DATA_BYTE_OFFSET +
                                                                                    (i * MUVR_ONE_ANALOG_INPUT_DATA_BYTE_QUANTITY)]);
@@ -680,9 +677,6 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                                (uint8_t*)&fData,
                                sizeof(float));
                         // поместим его в рабочий массив.
-//                        memcpy(&(m_pfAnalogueInputsHoldingRegistersValue[i]),
-//                               (uint8_t*)&fData,
-//                               sizeof(float));
                         vLittleToBigEndianFloatConverter((uint8_t*)&(m_pfAnalogueInputsHoldingRegistersValue[i]),
                                                          (uint8_t*)&fData,
                                                          1);

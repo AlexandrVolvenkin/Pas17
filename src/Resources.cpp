@@ -265,7 +265,7 @@ void CResources::Allocate(void)
     m_uiUsedDiscreteInputsState = 0;
     // Подключим буфер для хранения состояний дискретных входов.
     m_puiDiscreteInputsState =
-        &m_puiDiscreteInputs[DISCRETE_INPUTS_STATE_OFFSET + MUVR_DISCRETE_INPUT_QUANTITY];
+        &m_puiDiscreteInputs[DISCRETE_INPUTS_STATE_OFFSET];
 
     // Обнулим общий объём выделенной памяти.
     m_uiUsedDiscreteInputsBadState = 0;
@@ -327,7 +327,7 @@ void CResources::Allocate(void)
     m_uiUsedAnalogueInputDiscreteInputsState = 0;
     // Подключим буфер для хранения состояний дискретных сигналов порождаемых аналоговыми входами.
     m_puiAnalogueInputDiscreteInputsState =
-        &m_puiDiscreteInputs[DISCRETE_INPUTS_STATE_OFFSET + MUVR_DISCRETE_INPUT_QUANTITY];
+        &m_puiDiscreteInputs[ANALOGUE_INPUTS_DISCRETE_INPUTS_STATE_OFFSET];
 
     // Обнулим общий объём выделенной памяти.
     m_uiUsedAnalogueInputDiscreteInputsBadState = 0;
