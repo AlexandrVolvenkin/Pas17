@@ -438,41 +438,22 @@ uint8_t CSettingsLoad::Fsm(void)
                 &(((TPlcSettingsPackOne*)(m_puiIntermediateBuff)) ->
                   xEthernetSettingsPackOne);
 
+            // Создаем строку с командой ifconfig
+            char command[256];
             // Используем стандартный sprintf для форматирования строки
             char new_ip[INET_ADDRSTRLEN];
             sprintf(new_ip, "%d.%d.%d.%d", (pxEthernetSettingsPackOne -> uiIpByte3), (pxEthernetSettingsPackOne -> uiIpByte2), (pxEthernetSettingsPackOne -> uiIpByte1), (pxEthernetSettingsPackOne -> uiIpByte0));
             std::cout << "IP address: " << new_ip << std::endl;
 
-            const char* interface = "eth0"; // Замените на ваше сетевое интерфейс
-//            const char* old_ip = "192.168.0.9";
-//            const char* new_ip = "192.168.0.8";
-            const char* new_netmask = "255.255.255.0";
-
-//            // Создаем сокет для управления сетевыми устройствами
-//            int sock = socket(AF_INET, SOCK_DGRAM, 0);
-//            if (sock < 0)
-//            {
-//                perror("socket");
-//                return 1;
-//            }
-//
-//            struct sockaddr_in addr;
-//            memset(&addr, 0, sizeof(addr));
-//            addr.sin_family = AF_INET;
-//            inet_pton(AF_INET, interface, &addr.sin_addr);
-
-            // Устанавливаем новые настройки IP-адреса и маски подсети
-            char command[256];
-            snprintf(command, sizeof(command), "ip addr del %s dev %s", new_ip, interface);
-            system(command); // Удаление старого IP-адреса
-
-            snprintf(command, sizeof(command), "ip addr add %s/%s dev %s",
-                     new_ip, new_netmask, interface);
-            system(command); // Добавление нового IP-адреса
-
-//            close(sock);
-
-            std::cout << "IP address of " << interface << " has been changed." << std::endl;
+            //1. ПОЛНОСТЬЮ очищаем все адреса на интерфейсе (включая алиасы)
+            system("sudo ip addr flush dev eth0");
+// 2. Устанавливаем новый адрес на основной интерфейс (или eth0:1, если нужно)
+            snprintf(command, sizeof(command),
+                     "sudo ip addr add %s/%s dev eth0 label eth0:1",
+                     new_ip, "24"); // 24 — это маска 255.255.255.0
+            system(command);
+// 3. Поднимаем интерфейс
+            system("sudo ip link set eth0 up");
             usleep(10000);
 
             CTcpCommunicationDevice* pxTcpCommunicationDeviceUpperLevel =
