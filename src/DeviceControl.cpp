@@ -518,6 +518,127 @@ void CDeviceControl::AnalogueMeasureArchiveWrite(void)
         // размонтируем выбранный диск.
         system(acCommand);
         usleep(100000);
+
+        EventsArchiveWrite();
+    }
+    else
+    {
+        // ≈сли "sd" не найдено, установим пустую строку
+//        sDiskName = "";
+        xFileSaveStateDataPackOne.uiFileSaveState = WRITE_ERROR;
+    }
+}
+
+//-----------------------------------------------------------------------------------------------------
+void CDeviceControl::EventsArchiveWrite(void)
+{
+    //std::cout << "CDeviceControl EventsArchiveWrite 1"  << std::endl;
+
+    char acCommand[128];
+
+    xFileSaveStateDataPackOne.uiFileSaveState = WRITE_IDDLE;
+
+    CParse xCArchiveSaveParse;
+    xCArchiveSaveParse.GetDiskInfoNew();
+    for (uint8_t i; i < 4; i++)
+    {
+        //std::cout << "CDeviceControl EventsArchiveWrite acName " <<
+//                  (xCArchiveSaveParse.axTDiskInfo[i].acName) << std::endl;
+    }
+
+    std::string sDiskName;
+    sDiskName = xCArchiveSaveParse.axTDiskInfo[1].acName;
+    //std::cout << "CDeviceControl EventsArchiveWrite sDiskName " <<
+//              (sDiskName) << std::endl;
+// Ќачнем поиск имени, начина€ с "sd" в конце строки sDiskName
+    size_t found = sDiskName.rfind("sd");
+    if (found != std::string::npos)
+    {
+        // —копируем часть строки начина€ с найденной позиции
+        sDiskName = sDiskName.substr(found);
+        sDiskName[4] = '\0';  // ƒобавл€ем завершающий ноль
+        //std::cout << "CDeviceControl EventsArchiveWrite sDiskName " <<
+//                  (sDiskName) << std::endl;
+
+        std::string cSerialAndIdStr;
+        //  опируем данные из m_puiSerialAndId в cSerialAndIdStr
+        cSerialAndIdStr.assign((const char*)m_puiSerialAndId, SERIAL_AND_ID_DATA_BASE_BLOCK_LENGTH);
+
+        // —оздаем начальные символы имени файла архива
+        std::string prefix = "EventsArchive_" + cSerialAndIdStr;
+
+        //std::cout << "CDeviceControl EventsArchiveWrite prefix " <<
+//                  (prefix) << std::endl;
+
+        std::vector<std::string> matchingFiles = listFilesByPrefix(prefix);
+
+        // создадим команду размонтировани€ выбранного диска.
+        sprintf(acCommand,
+                "%s",
+                "sudo umount /mnt/usb"
+               );
+        //std::cout << "CDeviceControl EventsArchiveWriteacCommand " << acCommand << std::endl;
+        // размонтируем выбранный диск.
+        system(acCommand);
+        usleep(100000);
+
+        // создадим команду монтировани€ выбранного диска.
+        sprintf(acCommand,
+                "%s%s %s",
+                "sudo mount /dev/",
+                sDiskName.c_str(),
+                "/mnt/usb"
+               );
+        //std::cout << "CDeviceControl EventsArchiveWriteacCommand " << acCommand << std::endl;
+        // примонтируем выбранный диск.
+        system(acCommand);
+        usleep(100000);
+
+        if (!matchingFiles.empty())
+        {
+            std::cout << "»м€ файлов, начинающихс€ с \"" << prefix << "\":" << std::endl;
+            for (const auto& file : matchingFiles)
+            {
+                std::cout << file << std::endl;
+
+                // создадим команду сохранени€
+                sprintf(acCommand,
+                        "%s%s %s%s",
+                        "sudo cp -r -f /home/debian/",
+                        file.c_str(),
+                        "/mnt/usb/",
+                        " && sync");
+                //std::cout << "CDeviceControl EventsArchiveWriteacCommand " << acCommand << std::endl;
+
+                // сохраним файл.
+                // файл сохранЄн успешно?
+                if (!(system(acCommand)))
+                {
+                    //std::cout << "CDeviceControl EventsArchiveWrite 3"  << std::endl;
+                    xFileSaveStateDataPackOne.uiFileSaveState = WRITE_OK;
+                }
+                else
+                {
+                    //std::cout << "CDeviceControl EventsArchiveWrite 4"  << std::endl;
+                    xFileSaveStateDataPackOne.uiFileSaveState = WRITE_ERROR;
+                }
+            }
+        }
+        else
+        {
+            std::cout << "Ќет файлов, начинающихс€ с \"" << prefix << "\"." << std::endl;
+            xFileSaveStateDataPackOne.uiFileSaveState = WRITE_ERROR;
+        }
+
+        // создадим команду размонтировани€ выбранного диска.
+        sprintf(acCommand,
+                "%s",
+                "sudo umount /mnt/usb"
+               );
+        //std::cout << "CDeviceControl EventsArchiveWriteacCommand " << acCommand << std::endl;
+        // размонтируем выбранный диск.
+        system(acCommand);
+        usleep(100000);
     }
     else
     {

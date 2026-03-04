@@ -315,6 +315,7 @@ public:
     void CurrentTimeSet(void);
     void CurrentTimeUpdate(void);
     void AnalogueMeasureArchiveWrite(void);
+    void EventsArchiveWrite(void);
     void OnlineDataRead(void);
     uint8_t ModbusFunction5Handler(void);
     uint16_t DataBaseBlockReadBlockRelatedAction(void);
