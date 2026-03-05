@@ -243,6 +243,18 @@ void CInternalModuleMuvr::Allocate(void)
         MUVR_ANALOG_INPUT_QUANTITY;
 
 
+    // Получим указатель на место в массиве управления состояния регуляторов для текущего модуля.
+    m_puiRegulatorsControlState =
+        &(GetResources() ->
+          m_puiRegulatorsControlState[GetResources() ->
+                                                     m_uiUsedRegulatorsControlState]);
+    // Увеличим общий объём выделенной памяти.
+    GetResources() ->
+    m_uiUsedRegulatorsControlState +=
+        (CONT_ST_REGULATOR_BIT_NUMBER *
+         MUVR_REGULATORS_NUMBER);
+
+
     // Получим указатель на место в массиве состояний дискретных сигналов порождаемых аналоговыми входами.
     m_puiAnalogueInputDiscreteInputsState =
         &(GetResources() ->
@@ -579,6 +591,65 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
             memcpy(m_puiAnalogueInputsState,
                    &auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET],
                    MUVR_ANALOG_INPUT_QUANTITY);
+
+            {
+                uint8_t ui8Data;
+                // получим от модуля байт состояния регуляторов - BadDac:
+//BadDac: .BYTE 1    ;байт состояния Iout и ЦАП
+//          ;D0 - температура ЦАП №1, D2 - обрыв цепи Iout ЦАП №1
+//          ;D3 - температура ЦАП №2, D5 - обрыв цепи Iout ЦАП №2
+//          ;D7 - неисправность цепи обратной связи ЦАП №1 - ЦАП №2
+                // и отправим его в массив состояния регуляторов «CONT_ST».
+                ui8Data = auiSpiRxBuffer[MUVR_BAD_DAC_DATA_OFFSET];
+//                std::cout << "CInternalModuleMuvr::DataExchange ui8Data " << (int)ui8Data << std::endl;
+                // температура ЦАП №1 ?
+                // есть обрыв цепи Iout ЦАП №1 ?
+                // есть неисправность цепи обратной связи ЦАП №1 - ЦАП №2 ?
+                if ((ui8Data & (0x01 << 0)) ||
+                        (ui8Data & (0x01 << 2)) ||
+                        (ui8Data & (0x01 << 7)))
+                {
+                    (m_puiRegulatorsControlState[((0 * CONT_ST_REGULATOR_BIT_NUMBER) +
+                                                                                      MUVR_STAT_DAC_ERROR_BIT)]) = 1;
+                }
+                else
+                {
+                    (m_puiRegulatorsControlState[((0 * CONT_ST_REGULATOR_BIT_NUMBER) +
+                                                                                      MUVR_STAT_DAC_ERROR_BIT)]) = 0;
+                }
+
+                // температура ЦАП №2 ?
+                // есть обрыв цепи Iout ЦАП №2 ?
+                // есть неисправность цепи обратной связи ЦАП №1 - ЦАП №2 ?
+                if ((ui8Data & (0x01 << 3)) ||
+                        (ui8Data & (0x01 << 5)) ||
+                        (ui8Data & (0x01 << 7)))
+                {
+                    (m_puiRegulatorsControlState[((1 * CONT_ST_REGULATOR_BIT_NUMBER) +
+                                                                                      MUVR_STAT_DAC_ERROR_BIT)]) = 1;
+                }
+                else
+                {
+                    (m_puiRegulatorsControlState[((1 * CONT_ST_REGULATOR_BIT_NUMBER) +
+                                                                                      MUVR_STAT_DAC_ERROR_BIT)]) = 0;
+                }
+
+//                // поместим байты состояния регуляторов - STAT в массив модбас:
+//                for (uint8_t i = 0; i < MUVR_REGULATORS_NUMBER; i++)
+//                {
+//                    // есть неисправность цепи обратной связи ЦАП №1 - ЦАП №2 ?
+//                    if (ui8Data & (0x01 << 7))
+//                    {
+//                        (m_puiRegulatorsControlState[((i * CONT_ST_REGULATOR_BIT_NUMBER) +
+//                                                                                          MUVR_STAT_DAC_ERROR_BIT)]) = 1;
+//                    }
+//                    else
+//                    {
+//                        (m_puiRegulatorsControlState[((i * CONT_ST_REGULATOR_BIT_NUMBER) +
+//                                                                                          MUVR_STAT_DAC_ERROR_BIT)]) = 0;
+//                    }
+//                }
+            }
 
             // получим измеренные значения всех аналоговых входов модуля.
             for (uint8_t i = 0; i < MUVR_ANALOG_INPUT_QUANTITY; i++)

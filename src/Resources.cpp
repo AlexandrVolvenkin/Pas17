@@ -324,6 +324,12 @@ void CResources::Allocate(void)
         &m_puiCoils[ANALOGUE_INPUTS_BAD_STATE_OFFSET];
 
     // Обнулим общий объём выделенной памяти.
+    m_uiUsedRegulatorsControlState = 0;
+    // Подключим буфер для хранения состояний дискретных выходов.
+    m_puiRegulatorsControlState =
+        &m_puiCoils[CONT_ST_BIT_ARRAY_OFFSET];
+
+    // Обнулим общий объём выделенной памяти.
     m_uiUsedAnalogueInputDiscreteInputsState = 0;
     // Подключим буфер для хранения состояний дискретных сигналов порождаемых аналоговыми входами.
     m_puiAnalogueInputDiscreteInputsState =

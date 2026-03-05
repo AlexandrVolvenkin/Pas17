@@ -578,10 +578,15 @@ enum
     PREAMBLE_LENGTH = 2,
 };
 
+//// 1360-1455 ƒс–1-ƒс–96 массив состо€ни€ регул€торов ЂCONT_STї по 1 байту на регул€тор, итого 96 байтов.
+//#define CONT_ST_BIT_ARRAY_LENGTH (MAX_HANDLED_ANALOGUE_OUTPUT * 8)
+//// 1360-1455 ƒс–1-ƒс–96 массив состо€ни€ регул€торов ЂCONT_STї по 1 байту на регул€тор, итого 96 байтов.
+//#define CONT_ST_BIT_ARRAY_OFFSET (AIN_OFF_BIT_ARRAY_OFFSET + AIN_OFF_BIT_ARRAY_LENGTH)
 enum EModbusFunctionCoilsDataMap
 {
     DISCRETE_OUTPUT_BIT_ARRAY_OFFSET = 0,
     ANALOGUE_INPUTS_BAD_STATE_OFFSET = 544,
+    CONT_ST_BIT_ARRAY_OFFSET = 784,
     DISCRETE_INPUTS_BAD_STATE_OFFSET = 1056,
     // в мувр отсутствуют дискретные входы поэтому адреса недостоверности дискретных входов
     // и адреса недостоверности дискретных сигналов порождаемых аналоговыми входами совпадают
