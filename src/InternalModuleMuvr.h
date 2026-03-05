@@ -48,6 +48,8 @@ enum
 #define MUVR_AI_VALUE_BYTE_ARRAY_LENGTH (MUVR_ANALOG_INPUT_QUANTITY * sizeof(float))
 #define MUVR_DI_VALUE_BIT_ARRAY_LENGTH MUVR_DISCRETE_INPUT_QUANTITY
 #define MUVR_BAD_AI_BIT_ARRAY_LENGTH MUVR_ANALOG_INPUT_QUANTITY
+#define MUVR_REGULATORS_NUMBER 2
+#define CONT_ST_REGULATOR_BIT_NUMBER 4
 #define MUVR_BAD_DI_BIT_ARRAY_LENGTH (MUVR_ANALOG_INPUT_QUANTITY * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH)
 #define MUVR_STAT_AI_BIT_ARRAY_LENGTH (MUVR_ANALOG_INPUT_QUANTITY * STAT_AI_BIT_QUANTITY)
 #define MUVR_STAT_AI_BYTE_ARRAY_LENGTH MUVR_ANALOG_INPUT_QUANTITY
@@ -101,6 +103,20 @@ enum
 #define MUVR_DATA_BASE_ERROR_OFFSET 0x0B
 // ошибка базы данных модуля МТВИ.
 #define MUVR_REPER_POINTS_DATA_BASE_ERROR_OFFSET 0x0C
+//состояник аналоговых выходов
+//BadDac: .BYTE 1    ;байт состояния Iout и ЦАП
+//          ;D0 - температура ЦАП №1, D2 - обрыв цепи Iout ЦАП №1
+//          ;D3 - температура ЦАП №2, D5 - обрыв цепи Iout ЦАП №2
+//          ;D7 - неисправность цепи обратной связи ЦАП №1 - ЦАП №2
+// биты состояния регуляторов «CONT_ST».
+// D0 - «Р/А» – 0 – ручной, 1 – автоматический;
+#define MUVR_STAT_AUTO_OR_MANUAL_BIT 0
+// D1 - «АП» – 0 - режим АП не включен, 1 - режим АП включен, при включении режима АП автоматически устанавливается бит 0=1;
+#define MUVR_STAT_NO_AP_OR_AP_BIT 1
+// D2 - ошибка ЦАП – 0 – норма, 1 - обрыв линии IOUT, неисправность ЦАП
+#define MUVR_STAT_DAC_ERROR_BIT 2
+// D3 - ошибка PV - 0 – норма, 1 – недостоверность;
+#define MUVR_STAT_PV_ERROR_BIT 3
 
 // $45 - запрос реперных точек и кода АЦП
 #define MUVR_GET_REPER_POINTS_ADC_DATA_COMMAND 0x45
@@ -137,9 +153,13 @@ enum
 // согласно протокола обмена описанного в файле: структ и прот ПАС-17.txt
 // 3. Обмен данными между МЦП и МУВР в цикле.
 #define MUVR_STATE_DATA_OFFSET (MUVR_MEASURE_DATA_OFFSET + (MUVR_ANALOG_INPUT_QUANTITY * MUVR_ONE_ANALOG_INPUT_DATA_BYTE_QUANTITY) + 6)
+// смещение на данные неисправности регуляторов.
+// согласно протокола обмена описанного в файле: структ и прот ПАС-17.txt
+// 3. Обмен данными между МЦП и МУВР в цикле.
+#define MUVR_BAD_DAC_DATA_OFFSET (MUVR_STATE_DATA_OFFSET + MUVR_ANALOG_INPUT_STATE_BYTE_QUANTITY)
 // смещение на данные требования калибровки. передаются в модуль двумя байтами,
 // на месте приёма от модуля двух байт контрольной суммы.
-#define MUVR_CALIBRATION_DATA_OFFSET (MUVR_STATE_DATA_OFFSET + MUVR_ANALOG_INPUT_STATE_BYTE_QUANTITY)
+#define MUVR_CALIBRATION_DATA_OFFSET (MUVR_BAD_DAC_DATA_OFFSET + 2)
 
 // (sizeof(struct TAnalogueInputDescriptionDataBase) * ANALOG_MODULE_INPUT_QUANTITY)// 28х6=168.
 #define ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_LENGTH 168
@@ -242,6 +262,7 @@ private:
     uint8_t* m_puiAnalogueInputsState;
     uint8_t* m_puiAnalogueInputsOff;
     uint8_t* m_puiAnalogueInputsBadState;
+    uint8_t* m_puiRegulatorsControlState;
     uint8_t* m_puiReperPointsAdcBuffer;
     uint8_t* m_puiAnalogueInputDiscreteInputsState;
     uint8_t* m_puiAnalogueInputDiscreteInputsBadState;
