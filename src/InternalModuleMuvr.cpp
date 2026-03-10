@@ -447,13 +447,13 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
     auiSpiTxBuffer[0] = MUVR_GET_MEASURE_DATA_COMMAND;
     auiSpiTxBuffer[1] = 0;
     // выходы токовые 0-16383 (4б)
-    auiSpiTxBuffer[2] = (uint8_t)(m_pxRegulatorsDacData -> uiRegulatorDacData1);
+    auiSpiTxBuffer[2] = (uint8_t)(m_pxRegulatorsDacData -> uiRegulatorDacData2);
     //std::cout << "CInternalModuleMuvr::DataExchange0 " << (float)auiSpiTxBuffer[2] << std::endl;
-    auiSpiTxBuffer[3] = (uint8_t)((m_pxRegulatorsDacData -> uiRegulatorDacData1) >> 8);
+    auiSpiTxBuffer[3] = (uint8_t)((m_pxRegulatorsDacData -> uiRegulatorDacData2) >> 8);
     //std::cout << "CInternalModuleMuvr::DataExchange1 " << (float)auiSpiTxBuffer[3] << std::endl;
-    auiSpiTxBuffer[4] = (uint8_t)(m_pxRegulatorsDacData -> uiRegulatorDacData2);
+    auiSpiTxBuffer[4] = (uint8_t)(m_pxRegulatorsDacData -> uiRegulatorDacData1);
     //std::cout << "CInternalModuleMuvr::DataExchange2 " << (float)auiSpiTxBuffer[4] << std::endl;
-    auiSpiTxBuffer[5] = (uint8_t)((m_pxRegulatorsDacData -> uiRegulatorDacData2) >> 8);
+    auiSpiTxBuffer[5] = (uint8_t)((m_pxRegulatorsDacData -> uiRegulatorDacData1) >> 8);
     //std::cout << "CInternalModuleMuvr::DataExchange3 " << (float)auiSpiTxBuffer[5] << std::endl;
 //        (m_pxRegulatorsDacData -> uiRegulatorDacData1) = 0;
 //        (m_pxRegulatorsDacData -> uiRegulatorDacData2) = 0;
@@ -609,12 +609,12 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                         (ui8Data & (0x01 << 2)) ||
                         (ui8Data & (0x01 << 7)))
                 {
-                    (m_puiRegulatorsControlState[((0 * CONT_ST_REGULATOR_BIT_NUMBER) +
+                    (m_puiRegulatorsControlState[((1 * CONT_ST_REGULATOR_BIT_NUMBER) +
                                                                                       MUVR_STAT_DAC_ERROR_BIT)]) = 1;
                 }
                 else
                 {
-                    (m_puiRegulatorsControlState[((0 * CONT_ST_REGULATOR_BIT_NUMBER) +
+                    (m_puiRegulatorsControlState[((1 * CONT_ST_REGULATOR_BIT_NUMBER) +
                                                                                       MUVR_STAT_DAC_ERROR_BIT)]) = 0;
                 }
 
@@ -625,12 +625,12 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                         (ui8Data & (0x01 << 5)) ||
                         (ui8Data & (0x01 << 7)))
                 {
-                    (m_puiRegulatorsControlState[((1 * CONT_ST_REGULATOR_BIT_NUMBER) +
+                    (m_puiRegulatorsControlState[((0 * CONT_ST_REGULATOR_BIT_NUMBER) +
                                                                                       MUVR_STAT_DAC_ERROR_BIT)]) = 1;
                 }
                 else
                 {
-                    (m_puiRegulatorsControlState[((1 * CONT_ST_REGULATOR_BIT_NUMBER) +
+                    (m_puiRegulatorsControlState[((0 * CONT_ST_REGULATOR_BIT_NUMBER) +
                                                                                       MUVR_STAT_DAC_ERROR_BIT)]) = 0;
                 }
 
