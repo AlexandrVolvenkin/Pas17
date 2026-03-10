@@ -49,7 +49,7 @@ enum
 #define MUVR_DI_VALUE_BIT_ARRAY_LENGTH MUVR_DISCRETE_INPUT_QUANTITY
 #define MUVR_BAD_AI_BIT_ARRAY_LENGTH MUVR_ANALOG_INPUT_QUANTITY
 #define MUVR_REGULATORS_NUMBER 2
-#define CONT_ST_REGULATOR_BIT_NUMBER 4
+#define CONT_ST_REGULATOR_BIT_NUMBER 8
 #define MUVR_BAD_DI_BIT_ARRAY_LENGTH (MUVR_ANALOG_INPUT_QUANTITY * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH)
 #define MUVR_STAT_AI_BIT_ARRAY_LENGTH (MUVR_ANALOG_INPUT_QUANTITY * STAT_AI_BIT_QUANTITY)
 #define MUVR_STAT_AI_BYTE_ARRAY_LENGTH MUVR_ANALOG_INPUT_QUANTITY
@@ -114,9 +114,9 @@ enum
 // D1 - «АП» – 0 - режим АП не включен, 1 - режим АП включен, при включении режима АП автоматически устанавливается бит 0=1;
 #define MUVR_STAT_NO_AP_OR_AP_BIT 1
 // D2 - ошибка ЦАП – 0 – норма, 1 - обрыв линии IOUT, неисправность ЦАП
-#define MUVR_STAT_DAC_ERROR_BIT 2
+#define MUVR_STAT_DAC_ERROR_BIT 6
 // D3 - ошибка PV - 0 – норма, 1 – недостоверность;
-#define MUVR_STAT_PV_ERROR_BIT 3
+#define MUVR_STAT_PV_ERROR_BIT 7
 
 // $45 - запрос реперных точек и кода АЦП
 #define MUVR_GET_REPER_POINTS_ADC_DATA_COMMAND 0x45
