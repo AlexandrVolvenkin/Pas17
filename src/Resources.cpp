@@ -56,6 +56,10 @@ CResources::~CResources()
     delete[] m_pxAnalogueInputDescriptionWork;
     delete[] m_pxDiscreteSignalsDescriptionWork;
     delete[] m_pxDiscreteOutputControl;
+    delete[] m_pfRegulatorsSpOutPvData;
+    delete[] m_puiSerialAndId;
+    delete[] m_pxDiscreteSygnalTextTitlesWork;
+
 
 }
 
@@ -118,8 +122,6 @@ void CResources::ModbusWorkingArraysDestroy(void)
     delete[] m_puiDiscreteInputs;
     delete[] m_puiHoldingRegisters;
     delete[] m_puiInputRegisters;
-    delete[] m_puiSerialAndId;
-    delete[] m_pxDiscreteSygnalTextTitlesWork;
 }
 
 //-------------------------------------------------------------------------------
@@ -310,6 +312,22 @@ void CResources::Allocate(void)
     // Подключим буфер для хранения измеренных значений аналоговых входов.
     m_pfAnalogueInputsHoldingRegistersValue =
         (float*)&m_puiHoldingRegisters[ANALOGUE_INPUTS_VALUE_OFFSET];
+
+    // Обнулим общий объём выделенной памяти.
+    m_uiUsedRegulatorsSpOutPvData = 0;
+    // Подключим буфер для хранения данных регуляторов: SP, OUT, PV.
+    m_pfRegulatorsSpOutPvData =
+        new float[REGULATOR_SP_OUT_PV_DATA_VALUES_NUMBER * MUVR_REGULATORS_NUMBER];
+    memset(m_pfRegulatorsSpOutPvData,
+           0,
+           (REGULATOR_SP_OUT_PV_DATA_VALUES_NUMBER * MUVR_REGULATORS_NUMBER * sizeof(float)));
+
+    // Обнулим общий объём выделенной памяти.
+    m_uiUsedRegulatorsSpOutPvHoldingRegistersData = 0;
+    // Подключим буфер для хранения данных регуляторов: SP, OUT, PV. в массиве модбас.
+    // в  нём данные представлены в сетевом  формате(Big-endian).
+    m_pfRegulatorsSpOutPvHoldingRegistersData =
+        (float*)&m_puiHoldingRegisters[REGULATORS_SP_OUT_PV_DATA_OFFSET];
 
     // Обнулим общий объём выделенной памяти.
     m_uiUsedAnalogueInputsState = 0;

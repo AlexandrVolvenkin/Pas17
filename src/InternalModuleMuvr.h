@@ -50,6 +50,8 @@ enum
 #define MUVR_BAD_AI_BIT_ARRAY_LENGTH MUVR_ANALOG_INPUT_QUANTITY
 #define MUVR_REGULATORS_NUMBER 2
 #define CONT_ST_REGULATOR_BIT_NUMBER 8
+#define REGULATOR_SP_OUT_PV_DATA_BYTES_NUMBER 12
+#define REGULATOR_SP_OUT_PV_DATA_VALUES_NUMBER 3
 #define MUVR_BAD_DI_BIT_ARRAY_LENGTH (MUVR_ANALOG_INPUT_QUANTITY * MUVR_DI_VALUE_ONE_CHANNEL_LENGTH)
 #define MUVR_STAT_AI_BIT_ARRAY_LENGTH (MUVR_ANALOG_INPUT_QUANTITY * STAT_AI_BIT_QUANTITY)
 #define MUVR_STAT_AI_BYTE_ARRAY_LENGTH MUVR_ANALOG_INPUT_QUANTITY
@@ -117,6 +119,11 @@ enum
 #define MUVR_STAT_DAC_ERROR_BIT 6
 // D3 - ошибка PV - 0 Ц норма, 1 Ц недостоверность;
 #define MUVR_STAT_PV_ERROR_BIT 7
+
+// смещени€ на данные регул€торов: SP, OUT, PV.
+#define MUVR_REGULATORS_SP_DATA_OFFSET 0
+#define MUVR_REGULATORS_OUT_DATA_OFFSET 1
+#define MUVR_REGULATORS_PV_DATA_OFFSET 2
 
 // $45 - запрос реперных точек и кода ј÷ѕ
 #define MUVR_GET_REPER_POINTS_ADC_DATA_COMMAND 0x45
@@ -263,6 +270,8 @@ private:
     uint8_t* m_puiAnalogueInputsOff;
     uint8_t* m_puiAnalogueInputsBadState;
     uint8_t* m_puiRegulatorsControlState;
+    float* m_pfRegulatorsSpOutPvData;
+    float* m_pfRegulatorsSpOutPvHoldingRegistersData;
     uint8_t* m_puiReperPointsAdcBuffer;
     uint8_t* m_puiAnalogueInputDiscreteInputsState;
     uint8_t* m_puiAnalogueInputDiscreteInputsBadState;

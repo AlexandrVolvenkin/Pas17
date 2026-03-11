@@ -1932,8 +1932,17 @@ uint16_t CModbusSlave::DeviceControlDomainDataWriteAnswer(void)
     int8_t uiSlave = puiRequest[uiPduOffset - 1];
     int8_t uiFunctionCode = puiRequest[uiPduOffset];
 
-    uiLength = m_pxModbusSlaveLinkLayer ->
-               ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
+    CDataContainerDataBase* pxDataContainer =
+        (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+    uiLength = pxDataContainer -> m_uiDataLength;
+
+    // копируем 1 байт: количество байт в pdu, pdu: данные с кодом опции
+    memcpy(&puiResponse[uiPduOffset + 1],
+           (pxDataContainer -> m_puiDataPointer),
+           uiLength);
+
+    uiLength += m_pxModbusSlaveLinkLayer ->
+                ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
     SetFsmState(MESSAGE_TRANSMIT_START);
 
     return uiLength;

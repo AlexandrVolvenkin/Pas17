@@ -221,6 +221,17 @@ void CInternalModuleMuvr::Allocate(void)
         MUVR_ANALOG_INPUT_QUANTITY;
 
 
+    // Получим указатель на данные регуляторов: SP, OUT, PV. в массиве модбас.
+    m_pfRegulatorsSpOutPvHoldingRegistersData =
+        &(GetResources() ->
+          m_pfRegulatorsSpOutPvHoldingRegistersData[GetResources() ->
+                                 m_uiUsedRegulatorsSpOutPvHoldingRegistersData]);
+    // Увеличим общий объём выделенной памяти.
+    GetResources() ->
+    m_uiUsedRegulatorsSpOutPvHoldingRegistersData +=
+        (REGULATOR_SP_OUT_PV_DATA_VALUES_NUMBER * MUVR_REGULATORS_NUMBER);
+
+
     // Получим указатель на место в массиве состояния аналоговых входов для текущего модуля.
     m_puiAnalogueInputsState =
         &(GetResources() ->
@@ -458,6 +469,24 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
 //        (m_pxRegulatorsDacData -> uiRegulatorDacData1) = 0;
 //        (m_pxRegulatorsDacData -> uiRegulatorDacData2) = 0;
 
+    fData = ((static_cast<float>(8192) / 16383.0f) * 100.0f);
+//    fData = ((static_cast<float>(m_pxRegulatorsDacData -> uiRegulatorDacData1) / 16383.0f) * 100.0f);
+    // поместим его в рабочий массив.
+    vLittleToBigEndianFloatConverter((uint8_t*)&(m_pfRegulatorsSpOutPvHoldingRegistersData[((0 *
+                                     (REGULATOR_SP_OUT_PV_DATA_VALUES_NUMBER)) +
+                                     MUVR_REGULATORS_OUT_DATA_OFFSET)]),
+                                     (uint8_t*)&fData,
+                                     1);
+
+    fData = ((static_cast<float>(8192) / 16383.0f) * 100.0f);
+//    fData = ((static_cast<float>(m_pxRegulatorsDacData -> uiRegulatorDacData2) / 16383.0f) * 100.0f);
+    // поместим его в рабочий массив.
+    vLittleToBigEndianFloatConverter((uint8_t*)&(m_pfRegulatorsSpOutPvHoldingRegistersData[((1 *
+                                     (REGULATOR_SP_OUT_PV_DATA_VALUES_NUMBER)) +
+                                     MUVR_REGULATORS_OUT_DATA_OFFSET)]),
+                                     (uint8_t*)&fData,
+                                     1);
+
     uint8_t uiData = 0;
     // заполним требования включения для каждого реле.
     for (uint8_t i = 0; i < MUVR_MR_DISCRETE_OUTPUT_NUMBER; i++)
@@ -609,12 +638,12 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                         (ui8Data & (0x01 << 2)) ||
                         (ui8Data & (0x01 << 7)))
                 {
-                    (m_puiRegulatorsControlState[((1 * CONT_ST_REGULATOR_BIT_NUMBER) +
+                    (m_puiRegulatorsControlState[((0 * CONT_ST_REGULATOR_BIT_NUMBER) +
                                                                                       MUVR_STAT_DAC_ERROR_BIT)]) = 1;
                 }
                 else
                 {
-                    (m_puiRegulatorsControlState[((1 * CONT_ST_REGULATOR_BIT_NUMBER) +
+                    (m_puiRegulatorsControlState[((0 * CONT_ST_REGULATOR_BIT_NUMBER) +
                                                                                       MUVR_STAT_DAC_ERROR_BIT)]) = 0;
                 }
 
@@ -625,12 +654,12 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                         (ui8Data & (0x01 << 5)) ||
                         (ui8Data & (0x01 << 7)))
                 {
-                    (m_puiRegulatorsControlState[((0 * CONT_ST_REGULATOR_BIT_NUMBER) +
+                    (m_puiRegulatorsControlState[((1 * CONT_ST_REGULATOR_BIT_NUMBER) +
                                                                                       MUVR_STAT_DAC_ERROR_BIT)]) = 1;
                 }
                 else
                 {
-                    (m_puiRegulatorsControlState[((0 * CONT_ST_REGULATOR_BIT_NUMBER) +
+                    (m_puiRegulatorsControlState[((1 * CONT_ST_REGULATOR_BIT_NUMBER) +
                                                                                       MUVR_STAT_DAC_ERROR_BIT)]) = 0;
                 }
 

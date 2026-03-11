@@ -602,6 +602,7 @@ enum EModbusFunctionDiscreteInputsDataMap
 enum EModbusFunctionHoldingRegistersDataMap
 {
     ANALOGUE_INPUTS_VALUE_OFFSET = 0,
+    REGULATORS_SP_OUT_PV_DATA_OFFSET = 672,
     CURRENT_TIME_OFFSET_HOLDING_REGISTERS = 1000,
 };
 
