@@ -469,8 +469,7 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
 //        (m_pxRegulatorsDacData -> uiRegulatorDacData1) = 0;
 //        (m_pxRegulatorsDacData -> uiRegulatorDacData2) = 0;
 
-    fData = ((static_cast<float>(8192) / 16383.0f) * 100.0f);
-//    fData = ((static_cast<float>(m_pxRegulatorsDacData -> uiRegulatorDacData1) / 16383.0f) * 100.0f);
+    fData = ((static_cast<float>(m_pxRegulatorsDacData -> uiRegulatorDacData1) / 16383.0f) * 100.0f);
     // поместим его в рабочий массив.
     vLittleToBigEndianFloatConverter((uint8_t*)&(m_pfRegulatorsSpOutPvHoldingRegistersData[((0 *
                                      (REGULATOR_SP_OUT_PV_DATA_VALUES_NUMBER)) +
@@ -478,8 +477,7 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                                      (uint8_t*)&fData,
                                      1);
 
-    fData = ((static_cast<float>(8192) / 16383.0f) * 100.0f);
-//    fData = ((static_cast<float>(m_pxRegulatorsDacData -> uiRegulatorDacData2) / 16383.0f) * 100.0f);
+    fData = ((static_cast<float>(m_pxRegulatorsDacData -> uiRegulatorDacData2) / 16383.0f) * 100.0f);
     // поместим его в рабочий массив.
     vLittleToBigEndianFloatConverter((uint8_t*)&(m_pfRegulatorsSpOutPvHoldingRegistersData[((1 *
                                      (REGULATOR_SP_OUT_PV_DATA_VALUES_NUMBER)) +
@@ -662,22 +660,6 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                     (m_puiRegulatorsControlState[((1 * CONT_ST_REGULATOR_BIT_NUMBER) +
                                                                                       MUVR_STAT_DAC_ERROR_BIT)]) = 0;
                 }
-
-//                // поместим байты состояния регуляторов - STAT в массив модбас:
-//                for (uint8_t i = 0; i < MUVR_REGULATORS_NUMBER; i++)
-//                {
-//                    // есть неисправность цепи обратной связи ЦАП №1 - ЦАП №2 ?
-//                    if (ui8Data & (0x01 << 7))
-//                    {
-//                        (m_puiRegulatorsControlState[((i * CONT_ST_REGULATOR_BIT_NUMBER) +
-//                                                                                          MUVR_STAT_DAC_ERROR_BIT)]) = 1;
-//                    }
-//                    else
-//                    {
-//                        (m_puiRegulatorsControlState[((i * CONT_ST_REGULATOR_BIT_NUMBER) +
-//                                                                                          MUVR_STAT_DAC_ERROR_BIT)]) = 0;
-//                    }
-//                }
             }
 
             // получим измеренные значения всех аналоговых входов модуля.

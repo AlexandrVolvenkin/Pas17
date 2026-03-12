@@ -86,7 +86,7 @@ class CPlatform;
 #define _RECEIVE_TIMEOUT    15000//2000//
 
 /* Function codes */
-#define _FC_READ_COILS                0x01
+#define _FC_READ_COILS                0x01//0x48//0x49//
 #define _FC_READ_DISCRETE_INPUTS      0x02
 #define _FC_READ_HOLDING_REGISTERS    0x03
 #define _FC_READ_INPUT_REGISTERS      0x04
@@ -116,7 +116,7 @@ class CPlatform;
 #define _FC_ANALOGUE_MEASURE_ARCHIVE_WRITE  0x42
 #define _FC_ANALOGUE_MEASURE_ARCHIVE_WRITE_STATE_REQUEST  0x43//0x05//
 
-#define _FC_DEVICE_CONTROL_DOMAIN_DATA_WRITE  0x48//0x05//
+#define _FC_DEVICE_CONTROL_DOMAIN_DATA_WRITE  0x48//0x01//0x05//
 #define _FC_DEVICE_CONTROL_DOMAIN_DATA_READ  0x49//0x05//
 
 #define _MODBUS_TCP_PI_NODE_LENGTH    1025
