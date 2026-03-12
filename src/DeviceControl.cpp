@@ -2113,6 +2113,19 @@ uint8_t CDeviceControl::Fsm(void)
             // Перезапускаем поток
             m_pxAnalogueMeasureArchiveWriteThread = std::make_shared<std::thread>(&CDeviceControl::AnalogueMeasureArchiveWrite, this);
 
+            CDataContainerDataBase* pxCustomerDataContainer =
+                (CDataContainerDataBase*)GetCustomerDataContainerPointer();
+
+            // размер заголовка суб протокола 2 байта: колчество байт в pdu  и код опци
+            uint16_t  uiLength = PREAMBLE_LENGTH;
+            pxCustomerDataContainer -> m_uiDataLength = uiLength;
+            // формируем заголовок
+            // в протоколе используется только размер pdu. вычтем 1 байт(размер pdu)
+            (pxCustomerDataContainer -> m_puiDataPointer[PDU_LENGTH_OFFSET]) =
+                (uiLength - PDU_LENGTH_LENGTH);
+            (pxCustomerDataContainer -> m_puiDataPointer[OPTION_CODE_OFFSET]) =
+                DEVICE_CONTROL_DOMAIN_DATA_WRITE_ANALOGUE_MEASURE_ARCHIVE_WRITE;
+
             SetFsmState(DEVICE_CONTROL_DOMAIN_DATA_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
         }
         break;
@@ -2129,6 +2142,19 @@ uint8_t CDeviceControl::Fsm(void)
             memcpy((GetResources() -> GetRegulatorsDacDataPointer()),
                    &(pxCustomerDataContainer -> m_puiDataPointer[DATA_OFFSET]),
                    pxCustomerDataContainer -> m_uiDataLength);
+
+//            CDataContainerDataBase* pxCustomerDataContainer =
+//                (CDataContainerDataBase*)GetCustomerDataContainerPointer();
+
+            // размер заголовка суб протокола 2 байта: колчество байт в pdu  и код опци
+            uint16_t  uiLength = PREAMBLE_LENGTH;
+            pxCustomerDataContainer -> m_uiDataLength = uiLength;
+            // формируем заголовок
+            // в протоколе используется только размер pdu. вычтем 1 байт(размер pdu)
+            (pxCustomerDataContainer -> m_puiDataPointer[PDU_LENGTH_OFFSET]) =
+                (uiLength - PDU_LENGTH_LENGTH);
+            (pxCustomerDataContainer -> m_puiDataPointer[OPTION_CODE_OFFSET]) =
+                DEVICE_CONTROL_DOMAIN_DATA_WRITE_REGULATORS_DAC_DATA_WRITE;
 
             SetFsmState(DEVICE_CONTROL_DOMAIN_DATA_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
         }
@@ -2632,6 +2658,19 @@ uint8_t CDeviceControl::Fsm(void)
     case SLAVE_ADDRESS_SETTINGS_WRITE_INTERFACE_RESTART_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
         std::cout << "CDeviceControl::Fsm SLAVE_ADDRESS_SETTINGS_WRITE_INTERFACE_RESTART_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
         {
+            CDataContainerDataBase* pxCustomerDataContainer =
+                (CDataContainerDataBase*)GetCustomerDataContainerPointer();
+
+            // размер заголовка суб протокола 2 байта: колчество байт в pdu  и код опци
+            uint16_t  uiLength = PREAMBLE_LENGTH;
+            pxCustomerDataContainer -> m_uiDataLength = uiLength;
+            // формируем заголовок
+            // в протоколе используется только размер pdu. вычтем 1 байт(размер pdu)
+            (pxCustomerDataContainer -> m_puiDataPointer[PDU_LENGTH_OFFSET]) =
+                (uiLength - PDU_LENGTH_LENGTH);
+            (pxCustomerDataContainer -> m_puiDataPointer[OPTION_CODE_OFFSET]) =
+                DEVICE_CONTROL_DOMAIN_DATA_WRITE_SLAVE_ADDRESS_SETTINGS_WRITE;
+
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(DONE_OK);
         }
@@ -2757,6 +2796,19 @@ uint8_t CDeviceControl::Fsm(void)
     case SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_INTERFACE_RESTART_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
         std::cout << "CDeviceControl::Fsm SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_INTERFACE_RESTART_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
         {
+            CDataContainerDataBase* pxCustomerDataContainer =
+                (CDataContainerDataBase*)GetCustomerDataContainerPointer();
+
+            // размер заголовка суб протокола 2 байта: колчество байт в pdu  и код опци
+            uint16_t  uiLength = PREAMBLE_LENGTH;
+            pxCustomerDataContainer -> m_uiDataLength = uiLength;
+            // формируем заголовок
+            // в протоколе используется только размер pdu. вычтем 1 байт(размер pdu)
+            (pxCustomerDataContainer -> m_puiDataPointer[PDU_LENGTH_OFFSET]) =
+                (uiLength - PDU_LENGTH_LENGTH);
+            (pxCustomerDataContainer -> m_puiDataPointer[OPTION_CODE_OFFSET]) =
+                DEVICE_CONTROL_DOMAIN_DATA_WRITE_SERIAL_PORT_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE;
+
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(DONE_OK);
         }
@@ -2882,6 +2934,19 @@ uint8_t CDeviceControl::Fsm(void)
     case TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_INTERFACE_RESTART_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
         std::cout << "CDeviceControl::Fsm TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE_INTERFACE_RESTART_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
         {
+            CDataContainerDataBase* pxCustomerDataContainer =
+                (CDataContainerDataBase*)GetCustomerDataContainerPointer();
+
+            // размер заголовка суб протокола 2 байта: колчество байт в pdu  и код опци
+            uint16_t  uiLength = PREAMBLE_LENGTH;
+            pxCustomerDataContainer -> m_uiDataLength = uiLength;
+            // формируем заголовок
+            // в протоколе используется только размер pdu. вычтем 1 байт(размер pdu)
+            (pxCustomerDataContainer -> m_puiDataPointer[PDU_LENGTH_OFFSET]) =
+                (uiLength - PDU_LENGTH_LENGTH);
+            (pxCustomerDataContainer -> m_puiDataPointer[OPTION_CODE_OFFSET]) =
+                DEVICE_CONTROL_DOMAIN_DATA_WRITE_TCP_COMMUNICATION_DEVICE_UPPER_LEVEL_SETTINGS_WRITE;
+
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(DONE_OK);
         }

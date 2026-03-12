@@ -808,12 +808,12 @@ uint16_t CModbusSlave::DeviceControlDomainDataWrite(void)
 
     m_uiFunctionCode = uiFunctionCode;
 
-    // размер буфера передаваемого исполнителю: размер pdu + 1 байт с размером
-    uiLength = (puiRequest[uiPduOffset + 1] + PDU_LENGTH_LENGTH);
-    // передаЄм данные исполнителю: размер pdu + 1 байт с размером + данные
-    memcpy(m_puiIntermediateBuff,
-           &puiRequest[uiPduOffset + 1],
-           uiLength);
+//    // размер буфера передаваемого исполнителю: размер pdu + 1 байт с размером
+//    uiLength = (puiRequest[uiPduOffset + 1] + PDU_LENGTH_LENGTH);
+//    // передаЄм данные исполнителю: размер pdu + 1 байт с размером + данные
+//    memcpy(m_puiIntermediateBuff,
+//           &puiRequest[uiPduOffset + 1],
+//           uiLength);
 
 
 
@@ -844,17 +844,18 @@ uint16_t CModbusSlave::DeviceControlDomainDataWrite(void)
 //           (uint8_t*)&(xPortSettingsPackOne),
 //           sizeof(struct TPortSettingsPackOne));
 
-//    TEthernetSettingsPackOne xEthernetSettingsPackOne =
-//    {
-//        192, 168, 0, 17,
-//        502
-//    };
-//
-//    m_puiIntermediateBuff[PDU_LENGTH_OFFSET] = puiRequest[uiPduOffset + 1];
-//    m_puiIntermediateBuff[OPTION_CODE_OFFSET] = 5;
-//    memcpy(&(m_puiIntermediateBuff[DATA_OFFSET]),
-//           (uint8_t*)&(xEthernetSettingsPackOne),
-//           sizeof(struct TEthernetSettingsPackOne));
+    TEthernetSettingsPackOne xEthernetSettingsPackOne =
+    {
+        192, 168, 0, 17,
+        502
+    };
+
+    m_puiIntermediateBuff[PDU_LENGTH_OFFSET] =
+    (sizeof(struct TEthernetSettingsPackOne) + OPTION_CODE_LENGTH);//puiRequest[uiPduOffset + 1];
+    m_puiIntermediateBuff[OPTION_CODE_OFFSET] = 5;
+    memcpy(&(m_puiIntermediateBuff[DATA_OFFSET]),
+           (uint8_t*)&(xEthernetSettingsPackOne),
+           sizeof(struct TEthernetSettingsPackOne));
 
 //            // —оздание экземпл€ра TPlcSettingsPackOne
 //            TPlcSettingsPackOne xPlcSettingsPackOne =
@@ -1932,8 +1933,17 @@ uint16_t CModbusSlave::DeviceControlDomainDataWriteAnswer(void)
     int8_t uiSlave = puiRequest[uiPduOffset - 1];
     int8_t uiFunctionCode = puiRequest[uiPduOffset];
 
-    uiLength = m_pxModbusSlaveLinkLayer ->
-               ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
+    CDataContainerDataBase* pxDataContainer =
+        (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+    uiLength = pxDataContainer -> m_uiDataLength;
+
+    // копируем 1 байт: количество байт в pdu, pdu: данные с кодом опции
+    memcpy(&puiResponse[uiPduOffset + 1],
+           (pxDataContainer -> m_puiDataPointer),
+           uiLength);
+
+    uiLength += m_pxModbusSlaveLinkLayer ->
+                ResponseBasis(uiSlave, uiFunctionCode, puiResponse);
     SetFsmState(MESSAGE_TRANSMIT_START);
 
     return uiLength;

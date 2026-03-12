@@ -204,6 +204,10 @@ public:
     uint32_t m_uiUsedAnalogueInputsBadState;
     uint8_t* m_puiRegulatorsControlState;
     uint32_t m_uiUsedRegulatorsControlState;
+    float* m_pfRegulatorsSpOutPvData;
+    uint32_t m_uiUsedRegulatorsSpOutPvData;
+    float* m_pfRegulatorsSpOutPvHoldingRegistersData;
+    uint32_t m_uiUsedRegulatorsSpOutPvHoldingRegistersData;
     uint8_t* m_puiReperPointsAdcBuffer;
     uint32_t m_uiUsedReperPointsAdcBuffer;
     uint8_t* m_puiAnalogueInputDiscreteInputsState;
