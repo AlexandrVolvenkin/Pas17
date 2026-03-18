@@ -891,8 +891,9 @@ uint8_t CDataBaseCreate::Fsm(void)
     case DATA_BASE_CREATE_CONFIGURATION_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING:
         std::cout << "CDataBaseCreate::Fsm DATA_BASE_CREATE_CONFIGURATION_DATA_BASE_BLOCKS_WRITE_EXECUTOR_ANSWER_PROCESSING"  << std::endl;
         {
-            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-            SetFsmState(DONE_OK);
+//            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+//            SetFsmState(DONE_OK);
+            SetFsmState(DATA_BASE_CREATE_MODULE_MUVR_DATA_BASE_READ_START);
         }
         break;
 
@@ -1017,7 +1018,7 @@ uint8_t CDataBaseCreate::Fsm(void)
             pxDataContainer -> m_uiTaskId = m_uiDataStoreId;
             pxDataContainer -> m_uiFsmCommandState =
                 CDataStore::START_WRITE_TEMPORARY_BLOCK_DATA;
-        // параметры настроек блок 101
+            // параметры настроек блок 101
             pxDataContainer -> m_uiDataIndex = SETTINGS_DATA_BASE_BLOCK_OFFSET;
             pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
 

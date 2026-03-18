@@ -338,6 +338,7 @@ uint8_t CInternalModule::GetModuleType(uint8_t uiAddress)
                                     GET_MODULE_TYPE_COMMAND_LENGTH +
                                     GET_MODULE_TYPE_COMMAND_ANSWER_LENGTH) > 0))
         {
+//            return 0;
 //            std::cout << "CInternalModule::GetModuleType 4"  << std::endl;
             // модуль присутствует.
             return auiSpiRxBuffer[MODULE_TYPE_OFFSET];

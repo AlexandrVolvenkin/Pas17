@@ -956,8 +956,8 @@ uint8_t CMainProductionCycle::Fsm(void)
 
     case READY:
         std::cout << "CMainProductionCycle::Fsm READY"  << std::endl;
-        SetFsmState(CONFIGURATION_CREATE_START);
-//            SetFsmState(DATA_STORE_CHECK_START);
+//        SetFsmState(CONFIGURATION_CREATE_START);
+            SetFsmState(DATA_STORE_CHECK_START);
 
         break;
 
@@ -1121,8 +1121,8 @@ uint8_t CMainProductionCycle::Fsm(void)
 
             // текущая конфигурация и сохранённая в базе данных совпадают.
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-            SetFsmState(DATA_STORE_CHECK_START);
-//            SetFsmState(CONFIGURATION_CHECK_START);
+//            SetFsmState(DATA_STORE_CHECK_START);
+            SetFsmState(CONFIGURATION_CHECK_START);
         }
         break;
 
@@ -1326,8 +1326,8 @@ uint8_t CMainProductionCycle::Fsm(void)
             CurrentlyRunningTasksExecution();
 
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-            SetFsmState(CONFIGURATION_CHECK_START);
-//        SetFsmState(CONFIGURATION_CREATE_START);
+//            SetFsmState(CONFIGURATION_CHECK_START);
+        SetFsmState(CONFIGURATION_CREATE_START);
         }
         break;
 
@@ -1425,7 +1425,8 @@ uint8_t CMainProductionCycle::Fsm(void)
                 "Новая конф. и бд.");
 
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-            SetFsmState(SERIAL_AND_ID_LOAD_START);
+//            SetFsmState(SERIAL_AND_ID_LOAD_START);
+            SetFsmState(MAIN_CYCLE_START);
         }
         break;
 
