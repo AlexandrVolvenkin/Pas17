@@ -130,8 +130,8 @@ public:
     enum
     {
         TASK_NAME_LENGTH = 32,
-        TASK_READY_WAITING_TIME = 500,
-        TASK_READY_WAITING_TIME_LONG = 10000,
+        TASK_READY_WAITING_TIME = 1000,
+        TASK_READY_WAITING_TIME_LONG = 65000,
     };
 
     CTask();

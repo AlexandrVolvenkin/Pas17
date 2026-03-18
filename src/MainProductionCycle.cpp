@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <string.h>
+#include <signal.h>
 
 #include "Task.h"
 #include "Platform.h"
@@ -42,6 +43,7 @@
 #include "StorageDevice.h"
 #include "Events.h"
 #include "EventsDB.h"
+#include "Parse.h"
 
 #include "MainProductionCycle.h"
 
@@ -858,6 +860,51 @@ void CMainProductionCycle::CurrentlyRunningTasksExecution(void)
 //    xTimeMeasure.End();
 }
 
+//-----------------------------------------------------------------------------------------------------
+struct sigaction MainAction;
+uint8_t ui8MainRestart;
+unsigned char nucBlinkCounter;
+bool fbBlinkIsOn;
+bool fbGlobalMmcCopy; // флаг - копирование диска mmc0 на mmc1.
+bool fbGlobalMmcCopyEnd; // флаг - закончено копирование диска mmc0 на mmc1.
+//-----------------------------------------------------------------------------------------------------
+int iHandlerCreate(int signum,
+                   struct sigaction *act,
+                   void (*handler)(int, siginfo_t *, void *))
+{
+    memset(act, 0, sizeof(struct sigaction));
+    act -> sa_flags = SA_SIGINFO;
+    act -> sa_sigaction = handler;
+    sigemptyset(&(act -> sa_mask));
+    if (sigaction(signum, act, NULL) == -1)
+    {
+        return -1;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+// обработчик сигнала посылаемого из сценария копирования диска mmc0 на mmc1(MmcCopy.sh), после его окончания.
+//-----------------------------------------------------------------------------------------------------
+void MainActionHandler(int signo, siginfo_t *info, void *context)
+{
+    ui8MainRestart = 1;
+    cout << "action MainRestart" << endl;
+}
+
+pthread_t xSystemDiskCopyDisplay;
+//-----------------------------------------------------------------------------------------------------
+// поток копирования диска mmc0 на mmc1.
+void *thread_SystemDiskCopyDisplay(void *value)
+{
+//    cout << "thread_SystemDiskCopyDisplay 1" << endl;
+    // запустим сценарий копирования диска mmc0 на mmc1(MmcCopy.sh).
+    // отправим команду.
+    system("sudo /home/debian/MmcCopy.sh");
+}
+
 //-------------------------------------------------------------------------------
 uint8_t CMainProductionCycle::Fsm(void)
 {
@@ -956,9 +1003,9 @@ uint8_t CMainProductionCycle::Fsm(void)
 
     case READY:
         std::cout << "CMainProductionCycle::Fsm READY"  << std::endl;
-//        SetFsmState(CONFIGURATION_CREATE_START);
-            SetFsmState(DATA_STORE_CHECK_START);
 
+        SetFsmState(MAIN_CYCLE_BOOT_SOURCE_CHECK);
+//        SetFsmState(DATA_STORE_CHECK_START);
         break;
 
     case DONE_OK:
@@ -1091,52 +1138,139 @@ uint8_t CMainProductionCycle::Fsm(void)
     break;
 
 //-------------------------------------------------------------------------------
-    case CONFIGURATION_CREATE_START:
-        std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CREATE_START"  << std::endl;
+    case MAIN_CYCLE_BOOT_SOURCE_CHECK:
+//            cout << "MAIN_CYCLE_BOOT_SOURCE_CHECK 1" << endl;
+    {
+        CParse xCArchiveSaveParse;
+        // Linux загружен с диска mmc0?
+        if (xCArchiveSaveParse.CheckMountedDiskMmc0())
+        //if (1)
         {
-            CurrentlyRunningTasksExecution();
+            cout << "CMainProductionCycle::xCArchiveSaveParse.CheckMountedDiskMmc0() 1" << endl;
+            // Linux загружен с диска mmc0.
+            // запустим сценарий копирования диска mmc0 на mmc1.
+            // создадим обработчик сигнала посылаемого из сценария копирования диска mmc0 на mmc1, после его окончания.
+            if (iHandlerCreate(SIGRTMIN+3,
+                               &MainAction,
+                               MainActionHandler) == - 1)
+            {
+                cout << "Failed to create the action MainAction" << endl;
+            }
 
-//            // при старте нужно прочитать из хранилища в поле класса сервиный блок.
-//            m_pxDataStoreFileSystem -> ReadServiceSection();
+            // создадим поток копирования диска mmc0 на mmc1.
+            // create thread, pass reference, addr of the function and data
+            if (pthread_create(&xSystemDiskCopyDisplay,
+                               NULL,
+                               thread_SystemDiskCopyDisplay,
+                               NULL))
+            {
+                cout << "Failed to create the thread_SystemDiskCopyDisplay" << endl;
+            }
 
-            CDataContainerDataBase* pxDataContainer =
-                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-            pxDataContainer -> m_uiTaskId = m_uiConfigurationCreateId;
-            pxDataContainer -> m_uiFsmCommandState =
-                CConfigurationCreate::CONFIGURATION_CREATE_START;
-            pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
-
-            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
-            SetFsmNextStateDoneOk(CONFIGURATION_CREATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
-            SetFsmNextStateReadyWaitingError(CONFIGURATION_CREATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
-            SetFsmNextStateDoneWaitingError(CONFIGURATION_CREATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
-            SetFsmNextStateDoneWaitingDoneError(CONFIGURATION_CREATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            nucBlinkCounter = 0;
+            fbGlobalMmcCopy = false;
+            fbGlobalMmcCopyEnd = false;
+            ui8MainRestart = 0;
+            m_xMainCycle100McTimer.Set(100);
+            SetFsmState(MAIN_CYCLE_DISK_COPY_DISPLAY_READY_WAITING);
         }
+        else
+        {
+            cout << "CMainProductionCycle::xCArchiveSaveParse.CheckMountedDiskMmc0() 2" << endl;
+            // Linux загружен с диска mmc1.
+//            nucBlinkCounter = 0;
+//            fbGlobalMmcCopy = false;
+//            fbGlobalMmcCopyEnd = false;
+//            ui8MainRestart = 0;
+//            m_xMainCycle100McTimer.Set(100);
+            SetFsmState(DATA_STORE_CHECK_START);
+        }
+    }
+    break;
+
+    case MAIN_CYCLE_DISK_COPY_DISPLAY_READY_WAITING:
+//            cout << "MAIN_CYCLE_DISK_COPY_DISPLAY_READY_WAITING 1" << endl;
+        if (m_xMainCycle100McTimer.IsOverflow())
+        {
+//                cout << "CMainProductionCycle::MAIN_CYCLE_DISK_COPY_DISPLAY_READY_WAITING 2" << endl;
+            m_xMainCycle100McTimer.Set(100);
+
+            // ?
+            if (nucBlinkCounter == 5)
+            {
+//                cout << "CMainProductionCycle::MAIN_CYCLE_DISK_COPY_DISPLAY_READY_WAITING 3" << endl;
+                // установим флаг - копирование диска mmc0 на mmc1.
+                fbGlobalMmcCopy = 1;
+                nucBlinkCounter = 0;
+                SetFsmState(MAIN_CYCLE_DISK_COPY_END_WAITING);
+            }
+            else
+            {
+//                    cout << "CMainProductionCycle::MAIN_CYCLE_DISK_COPY_DISPLAY_READY_WAITING 4" << endl;
+                nucBlinkCounter++;
+            }
+        }
+        usleep(1000);
         break;
 
-    case CONFIGURATION_CREATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
-        std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CREATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+    case MAIN_CYCLE_DISK_COPY_END_WAITING:
+//			cout << "CMainProductionCycle::MAIN_CYCLE_DISK_COPY_END_WAITING 1" << endl;
+        if (m_xMainCycle100McTimer.IsOverflow())
         {
-            CurrentlyRunningTasksExecution();
+//                cout << "CMainProductionCycle::MAIN_CYCLE_DISK_COPY_END_WAITING 2" << endl;
+            m_xMainCycle100McTimer.Set(100);
 
-            // текущая конфигурация и сохранённая в базе данных совпадают.
-            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-//            SetFsmState(DATA_STORE_CHECK_START);
-            SetFsmState(CONFIGURATION_CHECK_START);
+            // получим указатель на объект управения пином порта ввода-вывода(синий светодиод)
+            CGpio* pxGpioPrdEnablePin = (GetResources() -> m_pxGpioPrdEnablePin.get());
+
+            if (ui8MainRestart)
+            {
+                cout << "CMainProductionCycle::MAIN_CYCLE_DISK_COPY_END_WAITING 3" << endl;
+                ui8MainRestart = 0;
+                // установим флаг - закончено копирование диска mmc0 на mmc1.
+                fbGlobalMmcCopyEnd = 1;
+                // погасим синий светодиод сигнализирующий об ошибке конфигурации
+                pxGpioPrdEnablePin -> ClearPin();
+                SetFsmState(MAIN_CYCLE_DISK_COPY_END_REBOOT_WAITING);
+            }
+            else
+            {
+                // управление мигающим синим светодиодом.
+                // фаза отсутствия свечения закончилась?
+                if ((!fbBlinkIsOn) && (!nucBlinkCounter))
+                {
+//                    cout << "CMainProductionCycle::MAIN_CYCLE_DISK_COPY_END_WAITING 4" << endl;
+                    nucBlinkCounter = 2;
+                    // фаза свечения.
+                    fbBlinkIsOn = 1;
+                    // зажжём синий светодиод сигнализирующий об ошибке конфигурации
+                    pxGpioPrdEnablePin -> SetPin();
+                }
+                else
+                {
+                    // фаза свечения закончилась?
+                    if ((fbBlinkIsOn) && (!nucBlinkCounter))
+                    {
+//                        cout << "CMainProductionCycle::MAIN_CYCLE_DISK_COPY_END_WAITING 5" << endl;
+                        nucBlinkCounter = 3;
+                        // фаза отсутствия свечения.
+                        fbBlinkIsOn = 0;
+                        // погасим синий светодиод сигнализирующий об ошибке конфигурации
+                        pxGpioPrdEnablePin -> ClearPin();
+                    }
+                    else
+                    {
+                        nucBlinkCounter--;
+                    }
+                }
+            }
         }
+        usleep(1000);
         break;
 
-    case CONFIGURATION_CREATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
-        std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CREATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
-        {
-            CurrentlyRunningTasksExecution();
-
-            // текущая конфигурация и сохранённая в базе данных не совпадают.
-            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
-            SetFsmState(INCORRECT_CONFIGURATION_ERROR_HANDLER_START);
-//            SetFsmState(DATA_STORE_CHECK_START);
-
-        }
+    case MAIN_CYCLE_DISK_COPY_END_REBOOT_WAITING:
+//        cout << "CMainProductionCycle::MAIN_CYCLE_DISK_COPY_END_REBOOT_WAITING 1" << endl;
+        usleep(1000);
         break;
 
 //-------------------------------------------------------------------------------
@@ -1214,49 +1348,6 @@ uint8_t CMainProductionCycle::Fsm(void)
         }
         break;
 
-////-------------------------------------------------------------------------------
-//    case SERIAL_AND_ID_ARCHIVE_FILES_RENAME_START:
-//        std::cout << "CMainProductionCycle::Fsm SERIAL_AND_ID_ARCHIVE_FILES_RENAME_START"  << std::endl;
-//        {
-//            CurrentlyRunningTasksExecution();
-//
-//            // при старте нужно прочитать из хранилища в поле класса сервиный блок.
-//            m_pxDataStoreFileSystem -> ReadServiceSection();
-//
-//            CDataContainerDataBase* pxDataContainer =
-//                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-//            pxDataContainer -> m_uiTaskId = m_uiAnalogueSignalsArchiveCreateId;
-//            pxDataContainer -> m_uiFsmCommandState =
-//                CAnalogueSignalsArchiveCreate::ANALOGUE_SIGNALS_SERIAL_AND_ID_ARCHIVE_FILES_RENAME_START;
-//
-//            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
-//            SetFsmNextStateDoneOk(SERIAL_AND_ID_ARCHIVE_FILES_RENAME_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
-//            SetFsmNextStateReadyWaitingError(SERIAL_AND_ID_ARCHIVE_FILES_RENAME_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
-//            SetFsmNextStateDoneWaitingError(SERIAL_AND_ID_ARCHIVE_FILES_RENAME_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
-//            SetFsmNextStateDoneWaitingDoneError(SERIAL_AND_ID_ARCHIVE_FILES_RENAME_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
-//        }
-//        break;
-//
-//    case SERIAL_AND_ID_ARCHIVE_FILES_RENAME_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
-//        std::cout << "CMainProductionCycle::Fsm SERIAL_AND_ID_ARCHIVE_FILES_RENAME_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
-//        {
-//            CurrentlyRunningTasksExecution();
-//
-//            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-//            SetFsmState(SETTINGS_LOAD_START);
-//        }
-//        break;
-//
-//    case SERIAL_AND_ID_ARCHIVE_FILES_RENAME_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
-//        std::cout << "CMainProductionCycle::Fsm SERIAL_AND_ID_ARCHIVE_FILES_RENAME_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
-//        {
-//            CurrentlyRunningTasksExecution();
-//
-//            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
-//            SetFsmState(INCORRECT_CONFIGURATION_ERROR_HANDLER_START);
-//        }
-//        break;
-
 //-------------------------------------------------------------------------------
     case SERIAL_AND_ID_LOAD_START:
         std::cout << "CMainProductionCycle::Fsm SERIAL_AND_ID_LOAD_START"  << std::endl;
@@ -1296,7 +1387,7 @@ uint8_t CMainProductionCycle::Fsm(void)
             CurrentlyRunningTasksExecution();
 
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
-            SetFsmState(INCORRECT_CONFIGURATION_ERROR_HANDLER_START);
+            SetFsmState(CONFIGURATION_CONFIRMATION_WAITING_ERROR_HANDLER_START);
         }
         break;
 
@@ -1326,8 +1417,7 @@ uint8_t CMainProductionCycle::Fsm(void)
             CurrentlyRunningTasksExecution();
 
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-//            SetFsmState(CONFIGURATION_CHECK_START);
-        SetFsmState(CONFIGURATION_CREATE_START);
+            SetFsmState(CONFIGURATION_CREATE_START);
         }
         break;
 
@@ -1337,7 +1427,54 @@ uint8_t CMainProductionCycle::Fsm(void)
             CurrentlyRunningTasksExecution();
 
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+            SetFsmState(CONFIGURATION_CONFIRMATION_WAITING_ERROR_HANDLER_START);
+        }
+        break;
+
+//-------------------------------------------------------------------------------
+    case CONFIGURATION_CREATE_START:
+        std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CREATE_START"  << std::endl;
+        {
+            CurrentlyRunningTasksExecution();
+
+//            // при старте нужно прочитать из хранилища в поле класса сервиный блок.
+//            m_pxDataStoreFileSystem -> ReadServiceSection();
+
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            pxDataContainer -> m_uiTaskId = m_uiConfigurationCreateId;
+            pxDataContainer -> m_uiFsmCommandState =
+                CConfigurationCreate::CONFIGURATION_CREATE_START;
+            pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+            SetFsmNextStateDoneOk(CONFIGURATION_CREATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+            SetFsmNextStateReadyWaitingError(CONFIGURATION_CREATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingError(CONFIGURATION_CREATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingDoneError(CONFIGURATION_CREATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+        }
+        break;
+
+    case CONFIGURATION_CREATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+        std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CREATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        {
+            CurrentlyRunningTasksExecution();
+
+            // текущая конфигурация и сохранённая в базе данных совпадают.
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+            SetFsmState(CONFIGURATION_CHECK_START);
+        }
+        break;
+
+    case CONFIGURATION_CREATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+        std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CREATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        {
+            CurrentlyRunningTasksExecution();
+
+            // текущая конфигурация и сохранённая в базе данных не совпадают.
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
             SetFsmState(INCORRECT_CONFIGURATION_ERROR_HANDLER_START);
+
         }
         break;
 
@@ -1425,7 +1562,7 @@ uint8_t CMainProductionCycle::Fsm(void)
                 "Новая конф. и бд.");
 
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-            SetFsmState(SERIAL_AND_ID_LOAD_START);
+            SetFsmState(MAIN_CYCLE_START);
         }
         break;
 
@@ -1501,11 +1638,6 @@ uint8_t CMainProductionCycle::Fsm(void)
         SetFsmNextStateReadyWaitingError(INTERNAL_MODULES_DATA_EXCHANGE_EXECUTOR_ANSWER_PROCESSING);
         SetFsmNextStateDoneWaitingError(INTERNAL_MODULES_DATA_EXCHANGE_EXECUTOR_ANSWER_PROCESSING);
         SetFsmNextStateDoneWaitingDoneError(INTERNAL_MODULES_DATA_EXCHANGE_EXECUTOR_ANSWER_PROCESSING);
-//        SetFsmNextStateReadyWaitingError(DONE_ERROR);
-//        SetFsmNextStateDoneWaitingError(DONE_ERROR);
-//        SetFsmNextStateDoneWaitingDoneError(DONE_ERROR);
-
-//        SetFsmState(INTERNAL_MODULES_DATA_EXCHANGE_MAIN_CYCLE_START_WAITING);
     }
     break;
 
@@ -1790,13 +1922,13 @@ uint8_t CMainProductionCycle::Fsm(void)
 
     case CONFIGURATION_CONFIRMATION_WAITING_ERROR_HANDLER_COMMAND_SEND_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
 //        std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CONFIRMATION_WAITING_ERROR_HANDLER_COMMAND_SEND_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
-        {
-            CurrentlyRunningTasksExecution();
+    {
+        CurrentlyRunningTasksExecution();
 
-            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-            SetFsmState(DATA_BASE_CREATE_CONFIGURATION_DATA_BASE_BLOCKS_WRITE_START);
-        }
-        break;
+        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+        SetFsmState(DATA_BASE_CREATE_CONFIGURATION_DATA_BASE_BLOCKS_WRITE_START);
+    }
+    break;
 
     case CONFIGURATION_CONFIRMATION_WAITING_ERROR_HANDLER_COMMAND_SEND_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
 //        std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CONFIRMATION_WAITING_ERROR_HANDLER_COMMAND_SEND_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
