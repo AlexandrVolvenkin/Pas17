@@ -1091,55 +1091,6 @@ uint8_t CMainProductionCycle::Fsm(void)
     break;
 
 //-------------------------------------------------------------------------------
-    case CONFIGURATION_CREATE_START:
-        std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CREATE_START"  << std::endl;
-        {
-            CurrentlyRunningTasksExecution();
-
-//            // при старте нужно прочитать из хранилища в поле класса сервиный блок.
-//            m_pxDataStoreFileSystem -> ReadServiceSection();
-
-            CDataContainerDataBase* pxDataContainer =
-                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
-            pxDataContainer -> m_uiTaskId = m_uiConfigurationCreateId;
-            pxDataContainer -> m_uiFsmCommandState =
-                CConfigurationCreate::CONFIGURATION_CREATE_START;
-            pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
-
-            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
-            SetFsmNextStateDoneOk(CONFIGURATION_CREATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
-            SetFsmNextStateReadyWaitingError(CONFIGURATION_CREATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
-            SetFsmNextStateDoneWaitingError(CONFIGURATION_CREATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
-            SetFsmNextStateDoneWaitingDoneError(CONFIGURATION_CREATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
-        }
-        break;
-
-    case CONFIGURATION_CREATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
-        std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CREATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
-        {
-            CurrentlyRunningTasksExecution();
-
-            // текущая конфигурация и сохранённая в базе данных совпадают.
-            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-//            SetFsmState(DATA_STORE_CHECK_START);
-            SetFsmState(CONFIGURATION_CHECK_START);
-        }
-        break;
-
-    case CONFIGURATION_CREATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
-        std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CREATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
-        {
-            CurrentlyRunningTasksExecution();
-
-            // текущая конфигурация и сохранённая в базе данных не совпадают.
-            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
-            SetFsmState(INCORRECT_CONFIGURATION_ERROR_HANDLER_START);
-//            SetFsmState(DATA_STORE_CHECK_START);
-
-        }
-        break;
-
-//-------------------------------------------------------------------------------
     case DATA_STORE_CHECK_START:
         std::cout << "CMainProductionCycle::Fsm DATA_STORE_CHECK_START"  << std::endl;
         {
@@ -1296,7 +1247,8 @@ uint8_t CMainProductionCycle::Fsm(void)
             CurrentlyRunningTasksExecution();
 
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
-            SetFsmState(INCORRECT_CONFIGURATION_ERROR_HANDLER_START);
+//            SetFsmState(INCORRECT_CONFIGURATION_ERROR_HANDLER_START);
+            SetFsmState(CONFIGURATION_CONFIRMATION_WAITING_ERROR_HANDLER_START);
         }
         break;
 
@@ -1337,7 +1289,57 @@ uint8_t CMainProductionCycle::Fsm(void)
             CurrentlyRunningTasksExecution();
 
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+//            SetFsmState(INCORRECT_CONFIGURATION_ERROR_HANDLER_START);
+            SetFsmState(CONFIGURATION_CONFIRMATION_WAITING_ERROR_HANDLER_START);
+        }
+        break;
+
+//-------------------------------------------------------------------------------
+    case CONFIGURATION_CREATE_START:
+        std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CREATE_START"  << std::endl;
+        {
+            CurrentlyRunningTasksExecution();
+
+//            // при старте нужно прочитать из хранилища в поле класса сервиный блок.
+//            m_pxDataStoreFileSystem -> ReadServiceSection();
+
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            pxDataContainer -> m_uiTaskId = m_uiConfigurationCreateId;
+            pxDataContainer -> m_uiFsmCommandState =
+                CConfigurationCreate::CONFIGURATION_CREATE_START;
+            pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+            SetFsmNextStateDoneOk(CONFIGURATION_CREATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+            SetFsmNextStateReadyWaitingError(CONFIGURATION_CREATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingError(CONFIGURATION_CREATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingDoneError(CONFIGURATION_CREATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+        }
+        break;
+
+    case CONFIGURATION_CREATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+        std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CREATE_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+        {
+            CurrentlyRunningTasksExecution();
+
+            // текущая конфигурация и сохранённая в базе данных совпадают.
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+//            SetFsmState(DATA_STORE_CHECK_START);
+            SetFsmState(CONFIGURATION_CHECK_START);
+        }
+        break;
+
+    case CONFIGURATION_CREATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+        std::cout << "CMainProductionCycle::Fsm CONFIGURATION_CREATE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+        {
+            CurrentlyRunningTasksExecution();
+
+            // текущая конфигурация и сохранённая в базе данных не совпадают.
+            ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
             SetFsmState(INCORRECT_CONFIGURATION_ERROR_HANDLER_START);
+//            SetFsmState(DATA_STORE_CHECK_START);
+
         }
         break;
 
