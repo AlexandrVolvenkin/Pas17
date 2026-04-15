@@ -385,6 +385,10 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
             CStorageDeviceSpiFram::Write(FRAM_ANALOGUE_MEASURE_ARCHIVE_FRAM_POSITION_DATA_OFFSET,
                                          (uint8_t*)(&xAnalogueSignalsArchiveFramPositionData.uiCurrentOffset),
                                          sizeof(struct TAnalogueSignalsArchiveFramPositionData));
+//                // получим текущее положение блоков в FRAM.
+//                CStorageDeviceSpiFram::Read((uint8_t*)(&xAnalogueSignalsArchiveFramPositionData.uiCurrentOffset),
+//                                            FRAM_ANALOGUE_MEASURE_ARCHIVE_FRAM_POSITION_DATA_OFFSET,
+//                                            sizeof(struct TAnalogueSignalsArchiveFramPositionData));
 
 //            // Записываем данные в файл fram
 //            CStorageDeviceSpiFram::Write((uint8_t*)(&data),
@@ -601,6 +605,10 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
                 CStorageDeviceSpiFram::Write(FRAM_ANALOGUE_MEASURE_ARCHIVE_FRAM_POSITION_DATA_OFFSET,
                                              (uint8_t*)(&xAnalogueSignalsArchiveFramPositionData.uiCurrentOffset),
                                              sizeof(struct TAnalogueSignalsArchiveFramPositionData));
+//                // получим текущее положение блоков в FRAM.
+//                CStorageDeviceSpiFram::Read((uint8_t*)(&xAnalogueSignalsArchiveFramPositionData.uiCurrentOffset),
+//                                            FRAM_ANALOGUE_MEASURE_ARCHIVE_FRAM_POSITION_DATA_OFFSET,
+//                                            sizeof(struct TAnalogueSignalsArchiveFramPositionData));
 
 //                // Записываем данные в файл fram
 //                CStorageDeviceSpiFram::Write((uint8_t*)(&data),
@@ -763,6 +771,10 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
                 CStorageDeviceSpiFram::Write(FRAM_ANALOGUE_MEASURE_ARCHIVE_FRAM_POSITION_DATA_OFFSET,
                                              (uint8_t*)(&xAnalogueSignalsArchiveFramPositionData.uiCurrentOffset),
                                              sizeof(struct TAnalogueSignalsArchiveFramPositionData));
+//                // получим текущее положение блоков в FRAM.
+//                CStorageDeviceSpiFram::Read((uint8_t*)(&xAnalogueSignalsArchiveFramPositionData.uiCurrentOffset),
+//                                            FRAM_ANALOGUE_MEASURE_ARCHIVE_FRAM_POSITION_DATA_OFFSET,
+//                                            sizeof(struct TAnalogueSignalsArchiveFramPositionData));
 
 
 //                // Записываем данные в файл fram
