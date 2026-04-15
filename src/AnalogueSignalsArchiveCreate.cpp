@@ -223,6 +223,7 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
 //        float fAin4;       // Переменная четвертого входа
 //    };
 
+//    std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry m_pxSemaphore -> Acquire()"  << std::endl;
     while (m_pxSemaphore -> Acquire() == false);
 
     // Получаем текущее время
@@ -303,7 +304,8 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
     // не наступила новая секунда?
     if (tstructCurrent.tm_sec == m_iLastSecond)
     {
-        return;
+        goto SemaphoreRelease;
+        //                    return;
     }
     else
     {
@@ -358,7 +360,8 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
             if (!hourArchiveFramOutputStream.is_open())
             {
                 std::cerr << "Failed to open for write /dev/mtd0" << std::endl;
-                return;
+                goto SemaphoreRelease;
+//                    return;
             }
 
 //            std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry time save 1 "  << std::endl;
@@ -474,14 +477,16 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
                 if (!hourArchiveFramInputStream.is_open())
                 {
                     std::cerr << "Failed to open for read /dev/mtd0" << std::endl;
-                    return;
+                    goto SemaphoreRelease;
+//                    return;
                 }
                 std::ofstream hourArchiveFramOutputStream(hourArchiveFramFile, std::ios::binary | std::ios::in | std::ios::out);
                 if (!hourArchiveFramOutputStream.is_open())
                 {
                     std::cerr << "Failed to open for write /dev/mtd0" << std::endl;
                     hourArchiveFramInputStream.close();
-                    return;
+                    goto SemaphoreRelease;
+//                    return;
                 }
 
                 // Открываем выходной файл для добавления данных
@@ -491,7 +496,8 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
                     std::cerr << "Failed to open for write: " << m_sCurrentDailyArchveFlashFile << std::endl;
                     hourArchiveFramInputStream.close();
                     hourArchiveFramOutputStream.close();
-                    return;
+                    goto SemaphoreRelease;
+//                    return;
                 }
 
                 // Получаем общую длину файла
@@ -578,7 +584,8 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
                 if (!hourArchiveFramOutputStream.is_open())
                 {
                     std::cerr << "Failed to open for write /dev/mtd0" << std::endl;
-                    return;
+                    goto SemaphoreRelease;
+//                    return;
                 }
 
                 // Записываем данные в файл fram
@@ -731,7 +738,8 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
                 if (!hourArchiveFramOutputStream.is_open())
                 {
                     std::cerr << "Failed to open for write /dev/mtd0" << std::endl;
-                    return;
+                    goto SemaphoreRelease;
+//                    return;
                 }
 
 //                std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry time save 2 "  << std::endl;
@@ -766,6 +774,8 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
         }
     }
 
+SemaphoreRelease:
+//    std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry m_pxSemaphore -> Release()"  << std::endl;
     m_pxSemaphore -> Release();
 }
 
