@@ -30,6 +30,7 @@ class CDataContainerDataBase;
 class CInternalModule;
 class CConfigurationCreate;
 class CStorageDeviceSpiFram;
+class CSemaphore;
 
 //-------------------------------------------------------------------------------
 class CAnalogueSignalsArchiveCreate : public CTask
@@ -85,6 +86,7 @@ private:
 //    int m_iLastDay = 10;
     int m_iCurrentTimeSaveDelayCounter = 100;
     int m_iFileNumberCounter = 0;
+    CSemaphore* m_pxSemaphore;
 };
 
 #endif // ANALOGUESIGNALSARCHIVECREATE_H

@@ -22,6 +22,7 @@
 #include "InternalModule.h"
 #include "ConfigurationCreate.h"
 #include "StorageDevice.h"
+#include "Semaphore.h"
 #include "AnalogueSignalsArchiveCreate.h"
 
 using namespace std;
@@ -31,6 +32,7 @@ CAnalogueSignalsArchiveCreate::CAnalogueSignalsArchiveCreate()
 {
     std::cout << "CAnalogueSignalsArchiveCreate constructor"  << std::endl;
     m_puiIntermediateBuff = new uint8_t[256];
+    m_pxSemaphore = new CSemaphore(12346, 1);
     m_bIsStartState = true;
     SetFsmState(START);
 }
@@ -38,6 +40,7 @@ CAnalogueSignalsArchiveCreate::CAnalogueSignalsArchiveCreate()
 //-------------------------------------------------------------------------------
 CAnalogueSignalsArchiveCreate::~CAnalogueSignalsArchiveCreate()
 {
+    delete m_pxSemaphore;
     delete[] m_puiIntermediateBuff;
 }
 
@@ -219,6 +222,8 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
 //        float fAin3;       // Переменная третьего входа
 //        float fAin4;       // Переменная четвертого входа
 //    };
+
+    while (m_pxSemaphore -> Acquire() == false);
 
     // Получаем текущее время
     time_t now = time(nullptr);
@@ -760,6 +765,8 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
             }
         }
     }
+
+    m_pxSemaphore -> Release();
 }
 
 //-------------------------------------------------------------------------------
