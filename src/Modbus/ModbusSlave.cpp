@@ -422,7 +422,7 @@ uint16_t CModbusSlave::ReadInputRegisters(void)
 //-------------------------------------------------------------------------------
 uint16_t CModbusSlave::WriteSingleCoil(void)
 {
-    //std::cout << "CModbusSlave::WriteSingleCoil 1" << std::endl;
+//    std::cout << "CModbusSlave::WriteSingleCoil 1" << std::endl;
 
     uint16_t uiPduOffset = m_pxModbusSlaveLinkLayer -> GetPduOffset();
     uint8_t* puiRequest = m_pxModbusSlaveLinkLayer -> GetRxBuffer();
