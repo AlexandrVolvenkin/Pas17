@@ -430,7 +430,7 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
         // установим начало шкалы НШК?
         if (GetCommandControl() == MUVR_COMMAND_CONTROL_SET_BOTTOM_OF_SCALE)
         {
-            std::cout << "CInternalModuleMuvr::DataExchange 13"  << std::endl;
+//            std::cout << "CInternalModuleMuvr::DataExchange 13"  << std::endl;
             SetCommandControl(0);
             // добавим команду модулю.
             ucCalibrPlus |= MUVR_SET_BOTTOM_OF_SCALE;
@@ -438,7 +438,7 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
         // установим конец шкалы ВШК?
         else if (GetCommandControl() == MUVR_COMMAND_CONTROL_SET_TOP_OF_SCALE)
         {
-            std::cout << "CInternalModuleMuvr::DataExchange 14"  << std::endl;
+//            std::cout << "CInternalModuleMuvr::DataExchange 14"  << std::endl;
             SetCommandControl(0);
             // добавим команду модулю.
             ucCalibrPlus |= MUVR_SET_TOP_OF_SCALE;
@@ -979,20 +979,20 @@ uint8_t CInternalModuleMuvr::ReperPointsAdcRead(void)
                    pucSource,
                    ANALOGUE_INPUT_MODULE_REPER_POINTS_ADC_DATA_BASE_BLOCK_LENGTH);
 
-            {
-                std::cout << "CInternalModuleMuvr::ReperPointsAdcRead pucDestination"  << std::endl;
-                uint8_t *pucSourceTemp;
-                pucSourceTemp = (uint8_t*)pucDestination;//pxCustomerDataContainer -> m_puiDataPointer;
-                for(int i=0; i<64; )
-                {
-                    for(int j=0; j<8; j++)
-                    {
-                        cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
-                    }
-                    cout << endl;
-                    i += 8;
-                }
-            }
+//            {
+//                std::cout << "CInternalModuleMuvr::ReperPointsAdcRead pucDestination"  << std::endl;
+//                uint8_t *pucSourceTemp;
+//                pucSourceTemp = (uint8_t*)pucDestination;//pxCustomerDataContainer -> m_puiDataPointer;
+//                for(int i=0; i<64; )
+//                {
+//                    for(int j=0; j<8; j++)
+//                    {
+//                        cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+//                    }
+//                    cout << endl;
+//                    i += 8;
+//                }
+//            }
             // всё OK.
             //ucModuleError = 0;
             return 1;
