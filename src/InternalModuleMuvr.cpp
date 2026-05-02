@@ -669,8 +669,9 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                 // есть обрыв линии или переполнение при расчётах текущего входа?
                 if ((auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_LINE_BREAK) ||
                         (auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_CALCULATION_OVERFLOW))
+//                if (0)
                 {
-                    //std::cout << "CInternalModuleMuvr::DataExchange 3"  << (int)i  << std::endl;
+//                    std::cout << "CInternalModuleMuvr::DataExchange 3"  << (int)i  << std::endl;
                     // данные входа недостоверны, обнулим их.
                     memset(&(m_pfAnalogueInputsValue[i]),
                            0,
@@ -697,8 +698,9 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                     (((auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_LINE_BREAK) == 0) &&
                      ((auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_CALCULATION_OVERFLOW) == 0)) &&
                     ((auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_CHANNEL_CALIBRATION)))
+//                else if (0)
                 {
-                    //std::cout << "CInternalModuleMuvr::DataExchange 4"  << (int)i  << std::endl;
+//                    std::cout << "CInternalModuleMuvr::DataExchange 4"  << (int)i  << std::endl;
                     // получим измеренное значение и преобразуем.
                     fData = fStep5ToFloat(&auiSpiRxBuffer[SPI_DATA_BYTE_OFFSET +
                                                                                (i * MUVR_ONE_ANALOG_INPUT_DATA_BYTE_QUANTITY)]);
@@ -750,7 +752,7 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                     }
                     else
                     {
-                        //std::cout << "CInternalModuleMuvr::DataExchange 6 "  << (int)i << std::endl;
+//                        std::cout << "CInternalModuleMuvr::DataExchange 6 "  << (int)i << std::endl;
                         // получим измеренное значение и преобразуем.
                         fData = fStep5ToFloat(&auiSpiRxBuffer[SPI_DATA_BYTE_OFFSET +
                                                                                    (i * MUVR_ONE_ANALOG_INPUT_DATA_BYTE_QUANTITY)]);
@@ -775,6 +777,7 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                         // нарушена уставка LL + L?
                         if ((auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_SET_POINT_VIOLATION_MASK) ==
                                 ANALOGUE_INPUT_SET_POINT_VIOLATION_LL_L)
+//                                if (GetResources() -> m_puiCoils[CONT_ST_BIT_ARRAY_OFFSET])
                         {
 //                        std::cout << "CInternalModuleMuvr::DataExchange 61 "  << (int)i << std::endl;
                             // установим флаг нарушения уставки LL.
@@ -786,8 +789,9 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                                                                                                           ANALOGUE_INPUT_SET_POINT_VIOLATION_L_OFFSET]) = 1;
                         }
                         // нарушена уставка L?
-                        if ((auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_SET_POINT_VIOLATION_MASK) ==
-                                ANALOGUE_INPUT_SET_POINT_VIOLATION_L)
+                        else if ((auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_SET_POINT_VIOLATION_MASK) ==
+                                 ANALOGUE_INPUT_SET_POINT_VIOLATION_L)
+//                                else if (GetResources() -> m_puiCoils[CONT_ST_BIT_ARRAY_OFFSET + 1])
                         {
 //                        std::cout << "CInternalModuleMuvr::DataExchange 62 "  << (int)i << std::endl;
                             // установим флаг нарушения уставки L.
@@ -795,8 +799,9 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                                                                                                           ANALOGUE_INPUT_SET_POINT_VIOLATION_L_OFFSET]) = 1;
                         }
                         // нарушена уставка H?
-                        if ((auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_SET_POINT_VIOLATION_MASK) ==
-                                ANALOGUE_INPUT_SET_POINT_VIOLATION_H)
+                        else if ((auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_SET_POINT_VIOLATION_MASK) ==
+                                 ANALOGUE_INPUT_SET_POINT_VIOLATION_H)
+//                                else if (GetResources() -> m_puiCoils[CONT_ST_BIT_ARRAY_OFFSET + 2])
                         {
 //                        std::cout << "CInternalModuleMuvr::DataExchange 63 "  << (int)i << std::endl;
                             // установим флаг нарушения уставки H.
@@ -804,8 +809,9 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                                                                                                           ANALOGUE_INPUT_SET_POINT_VIOLATION_H_OFFSET]) = 1;
                         }
                         // нарушена уставка HH + H?
-                        if ((auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_SET_POINT_VIOLATION_MASK) ==
-                                ANALOGUE_INPUT_SET_POINT_VIOLATION_HH_H)
+                        else if ((auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_SET_POINT_VIOLATION_MASK) ==
+                                 ANALOGUE_INPUT_SET_POINT_VIOLATION_HH_H)
+//                                else if (GetResources() -> m_puiCoils[CONT_ST_BIT_ARRAY_OFFSET + 3])
                         {
 //                        std::cout << "CInternalModuleMuvr::DataExchange 64 "  << (int)i << std::endl;
                             // установим флаг нарушения уставки HH.
