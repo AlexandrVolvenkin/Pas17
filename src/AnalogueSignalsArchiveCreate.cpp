@@ -259,25 +259,25 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
     }
 
 ////    std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 11"  << std::endl;
-//    pusDestination =
-//        (unsigned short*)&m_puiHoldingRegisters[CURRENT_TIME_OFFSET_HOLDING_REGISTERS];
-//
-//    pusDestination[CURRENT_TIME_SECOND_OFFSET] = tstructCurrent.tm_sec;
-//    pusDestination[CURRENT_TIME_MINUTE_OFFSET] = tstructCurrent.tm_min;
-//    pusDestination[CURRENT_TIME_HOUR_OFFSET] = tstructCurrent.tm_hour;
-//    pusDestination[CURRENT_TIME_MONTH_DAY_OFFSET] = tstructCurrent.tm_mday;
-//    pusDestination[CURRENT_TIME_MONTH_OFFSET] = (tstructCurrent.tm_mon) + 1;
-//    pusDestination[CURRENT_TIME_YEAR_OFFSET] = (tstructCurrent.tm_year) - 100;
-//
-//    // сегодня воскресение?
-//    if ((tstructCurrent.tm_wday) == LINUX_WEEK_DAY_SUNDAY)
-//    {
-//        pusDestination[CURRENT_TIME_WEEK_DAY_OFFSET] = WEEK_DAY_SUNDAY;
-//    }
-//    else
-//    {
-//        pusDestination[CURRENT_TIME_WEEK_DAY_OFFSET] = tstructCurrent.tm_wday;
-//    }
+    pusDestination =
+        (unsigned short*)&m_puiHoldingRegisters[CURRENT_TIME_OFFSET_HOLDING_REGISTERS];
+
+    pusDestination[CURRENT_TIME_SECOND_OFFSET] = tstructCurrent.tm_sec;
+    pusDestination[CURRENT_TIME_MINUTE_OFFSET] = tstructCurrent.tm_min;
+    pusDestination[CURRENT_TIME_HOUR_OFFSET] = tstructCurrent.tm_hour;
+    pusDestination[CURRENT_TIME_MONTH_DAY_OFFSET] = tstructCurrent.tm_mday;
+    pusDestination[CURRENT_TIME_MONTH_OFFSET] = (tstructCurrent.tm_mon) + 1;
+    pusDestination[CURRENT_TIME_YEAR_OFFSET] = (tstructCurrent.tm_year) - 100;
+
+    // сегодня воскресение?
+    if ((tstructCurrent.tm_wday) == LINUX_WEEK_DAY_SUNDAY)
+    {
+        pusDestination[CURRENT_TIME_WEEK_DAY_OFFSET] = WEEK_DAY_SUNDAY;
+    }
+    else
+    {
+        pusDestination[CURRENT_TIME_WEEK_DAY_OFFSET] = tstructCurrent.tm_wday;
+    }
 
 //    std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 111"  << std::endl;
 //    memcpy(&m_puiHoldingRegisters[CURRENT_TIME_OFFSET_HOLDING_REGISTERS],

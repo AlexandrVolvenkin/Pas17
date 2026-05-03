@@ -1161,9 +1161,9 @@ uint16_t CModbusSlave::RequestProcessing(void)
         return 0;
     }
 
+//    std::cout << "CModbusSlave::RequestProcessing uiFunctionCode " << (int)uiFunctionCode << std::endl;
     switch (uiFunctionCode)
     {
-//    std::cout << "CModbusSlave::RequestProcessing 3" << std::endl;
     case _FC_READ_COILS:
         //std::cout << "CModbusSlave::RequestProcessing _FC_READ_COILS"  << std::endl;
         uiLength = ReadCoils();
@@ -2592,6 +2592,7 @@ uint8_t CModbusSlave::Fsm(void)
 //            SetFsmState(REQUEST_PROCESSING);
             if (RequestProcessing())
             {
+//            std::cout << "CModbusSlave::Fsm MESSAGE_RECEIVE_WAITING RequestProcessing"  << std::endl;
                 // состо€ние автомата измен€ют вызываемые методы обработчики функций модбас.
                 // зажгЄм сведодиод сигнализации обмена
                 m_pxGpioRtsControlPin -> SetPin();
