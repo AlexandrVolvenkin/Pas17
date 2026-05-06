@@ -82,7 +82,7 @@ void CDiscreteSignals::Allocate(void)
     // Получим указатель на место в массиве дискретных входов для текущего модуля.
     m_puiDiscreteInputsState =
         (GetResources() ->
-         m_puiDiscreteInputsState);
+         m_puiDiscreteInputsState);//m_puiAnalogueInputDiscreteInputsState);//
 //    // Увеличим общий объём выделенной памяти.
 //    GetResources() ->
 //    m_uiUsedDiscreteInputsState +=

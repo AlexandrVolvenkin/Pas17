@@ -598,7 +598,7 @@ enum EModbusFunctionCoilsDataMap
 enum EModbusFunctionDiscreteInputsDataMap
 {
     DISCRETE_INPUTS_STATE_OFFSET = 0,
-    ANALOGUE_INPUTS_DISCRETE_INPUTS_STATE_OFFSET = 0,
+    ANALOGUE_INPUTS_DISCRETE_INPUTS_STATE_OFFSET = 6,
 };
 
 enum EModbusFunctionHoldingRegistersDataMap

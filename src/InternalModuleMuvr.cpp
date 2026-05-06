@@ -1024,7 +1024,7 @@ uint8_t CInternalModuleMuvr::ReperPointsAdcRead(void)
 //-------------------------------------------------------------------------------
 uint8_t CInternalModuleMuvr::DataBaseRead(void)
 {
-    //std::cout << "CInternalModuleMuvr::DataBaseRead 1"  << std::endl;
+    //std::cout << "CInternalModuleMuvr::DataBaseRead1"  << std::endl;
     uint8_t auiSpiTxBuffer[TX_RX_BUFF_SIZE];
     uint8_t auiSpiRxBuffer[TX_RX_BUFF_SIZE];
 
