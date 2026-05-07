@@ -82,7 +82,7 @@ void CDiscreteSignals::Allocate(void)
     // Получим указатель на место в массиве дискретных входов для текущего модуля.
     m_puiDiscreteInputsState =
         (GetResources() ->
-         m_puiDiscreteInputsState);//m_puiAnalogueInputDiscreteInputsState);//
+         m_puiAnalogueInputDiscreteInputsState);//m_puiDiscreteInputsState);//
 //    // Увеличим общий объём выделенной памяти.
 //    GetResources() ->
 //    m_uiUsedDiscreteInputsState +=
@@ -93,7 +93,7 @@ void CDiscreteSignals::Allocate(void)
     // Получим указатель на место в массиве достоверности дискретных входов для текущего модуля.
     m_puiDiscreteInputsBadState =
         (GetResources() ->
-         m_puiDiscreteInputsBadState);
+         m_puiAnalogueInputDiscreteInputsBadState);//m_puiDiscreteInputsBadState);
 //    // Увеличим общий объём выделенной памяти.
 //    GetResources() ->
 //    m_uiUsedDiscreteInputsBadState +=
@@ -796,6 +796,7 @@ void CDiscreteSignals::CreateAlarmHandler(CResources* res,
     SetResources(res);
     pxAlarmHandler ->
     SetAlarmHandlerIndex(uiAlarmHandlerIndex);
+    std::cout << "CDiscreteSignals::CreateAlarmHandler uiAlarmHandlerIndex " << (int)uiAlarmHandlerIndex << std::endl;
 
     for (uint8_t j = 0; j < DISCRETE_OUTPUT_MODULE_MAX_NUMBER; j++)
     {
