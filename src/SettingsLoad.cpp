@@ -16,6 +16,7 @@
 #include "DeviceControl.h"
 #include "DataContainer.h"
 #include "InternalModule.h"
+#include "InternalModuleMuvr.h"
 #include "ConfigurationCreate.h"
 #include "DataBaseCreate.h"
 #include "ConfigurationCheck.h"
@@ -518,6 +519,7 @@ uint8_t CSettingsLoad::Fsm(void)
 
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
             SetFsmState(DONE_OK);
+//            SetFsmState(SETTINGS_LOAD_MODULE_MUVR_DATA_BASE_BLOCK_READ_START);
         }
         break;
 
@@ -528,6 +530,91 @@ uint8_t CSettingsLoad::Fsm(void)
 //            SetFsmState(DONE_ERROR);
 //        }
 //        break;
+//
+////-------------------------------------------------------------------------------
+//    case SETTINGS_LOAD_MODULE_MUVR_DATA_BASE_BLOCK_READ_START:
+//        std::cout << "CSettingsLoad::Fsm SETTINGS_LOAD_MODULE_MUVR_DATA_BASE_BLOCK_READ_START 1"  << std::endl;
+//        {
+//            uint8_t uiTaskId =
+//                GetResources() ->
+//                GetTaskIdByNameFromMap("DataStoreFileSystem");
+//
+//            uint8_t* puiDataPointer =
+//                (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer);
+//            uint8_t uiBlockIndex =
+//                (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiDataIndex);
+//
+//            CDataContainerDataBase* pxDataContainer =
+//                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+//            pxDataContainer -> m_uiTaskId = uiTaskId;
+//            pxDataContainer -> m_uiFsmCommandState =
+//                CDataStore::READ_BLOCK_DATA_START;
+//            pxDataContainer -> m_uiDataIndex = ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_OFFSET;
+//            pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+//
+//            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+//            SetFsmNextStateDoneOk(SETTINGS_LOAD_MODULE_MUVR_DATA_BASE_BLOCK_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+//            SetFsmNextStateReadyWaitingError(SETTINGS_LOAD_MODULE_MUVR_DATA_BASE_BLOCK_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+//            SetFsmNextStateDoneWaitingError(SETTINGS_LOAD_MODULE_MUVR_DATA_BASE_BLOCK_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+//            SetFsmNextStateDoneWaitingDoneError(SETTINGS_LOAD_MODULE_MUVR_DATA_BASE_BLOCK_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+//        }
+//        break;
+//
+//    case SETTINGS_LOAD_MODULE_MUVR_DATA_BASE_BLOCK_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+//        //std::cout << "CSettingsLoad::Fsm SETTINGS_LOAD_MODULE_MUVR_DATA_BASE_BLOCK_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+//    {
+////        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+////        SetFsmState(DONE_OK);
+//        SetFsmState(SETTINGS_LOAD_DATA_BASE_BLOCK_MODULE_MUVR_WRITE_START);
+//    }
+//    break;
+//
+//    case SETTINGS_LOAD_MODULE_MUVR_DATA_BASE_BLOCK_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+//        //std::cout << "CSettingsLoad::Fsm SETTINGS_LOAD_MODULE_MUVR_DATA_BASE_BLOCK_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+//    {
+//        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+//        SetFsmState(DONE_ERROR);
+//    }
+//    break;
+//
+////-------------------------------------------------------------------------------
+//    case SETTINGS_LOAD_DATA_BASE_BLOCK_MODULE_MUVR_WRITE_START:
+//        //std::cout << "CSettingsLoad::Fsm SETTINGS_LOAD_DATA_BASE_BLOCK_MODULE_MUVR_WRITE_START"  << std::endl;
+//    {
+//        uint8_t uiTaskId =
+//            GetResources() ->
+//            GetTaskIdByNameFromMap("InternalModuleMuvr0");
+//
+//        CDataContainerDataBase* pxDataContainer =
+//            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+//        pxDataContainer -> m_uiTaskId = uiTaskId;
+//        pxDataContainer -> m_uiFsmCommandState =
+//            CInternalModuleMuvr::MUVR_WRITE_DATA_BASE;
+//        pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+//
+//        SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+//        SetFsmNextStateDoneOk(SETTINGS_LOAD_DATA_BASE_BLOCK_MODULE_MUVR_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+//        SetFsmNextStateReadyWaitingError(SETTINGS_LOAD_DATA_BASE_BLOCK_MODULE_MUVR_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+//        SetFsmNextStateDoneWaitingError(SETTINGS_LOAD_DATA_BASE_BLOCK_MODULE_MUVR_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+//        SetFsmNextStateDoneWaitingDoneError(SETTINGS_LOAD_DATA_BASE_BLOCK_MODULE_MUVR_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+//    }
+//    break;
+//
+//    case SETTINGS_LOAD_DATA_BASE_BLOCK_MODULE_MUVR_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+//        //std::cout << "CSettingsLoad::Fsm SETTINGS_LOAD_DATA_BASE_BLOCK_MODULE_MUVR_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+//    {
+//        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+//        SetFsmState(DONE_OK);
+//    }
+//    break;
+//
+//    case SETTINGS_LOAD_DATA_BASE_BLOCK_MODULE_MUVR_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+//        //std::cout << "CSettingsLoad::Fsm SETTINGS_LOAD_DATA_BASE_BLOCK_MODULE_MUVR_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+//    {
+//        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+//        SetFsmState(DONE_ERROR);
+//    }
+//    break;
 
 //-------------------------------------------------------------------------------
     default:

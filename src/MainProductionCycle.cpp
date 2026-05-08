@@ -1144,7 +1144,7 @@ uint8_t CMainProductionCycle::Fsm(void)
         CParse xCArchiveSaveParse;
         // Linux загружен с диска mmc0?
         if (xCArchiveSaveParse.CheckMountedDiskMmc0())
-        //if (1)
+            //if (1)
         {
             cout << "CMainProductionCycle::xCArchiveSaveParse.CheckMountedDiskMmc0() 1" << endl;
             // Linux загружен с диска mmc0.
@@ -1593,9 +1593,107 @@ uint8_t CMainProductionCycle::Fsm(void)
             CurrentlyRunningTasksExecution();
 
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
-            SetFsmState(MAIN_CYCLE_START);
+//            SetFsmState(MAIN_CYCLE_START);
+            SetFsmState(MAIN_CYCLE_MODULE_MUVR_DATA_BASE_BLOCK_READ_START);
         }
         break;
+
+//-------------------------------------------------------------------------------
+    case MAIN_CYCLE_MODULE_MUVR_DATA_BASE_BLOCK_READ_START:
+        std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_MODULE_MUVR_DATA_BASE_BLOCK_READ_START 1"  << std::endl;
+        {
+            CurrentlyRunningTasksExecution();
+
+            uint8_t uiTaskId =
+                GetResources() ->
+                GetTaskIdByNameFromMap("DataStoreFileSystem");
+
+            uint8_t* puiDataPointer =
+                (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_puiDataPointer);
+            uint8_t uiBlockIndex =
+                (((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiDataIndex);
+
+            CDataContainerDataBase* pxDataContainer =
+                (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+            pxDataContainer -> m_uiTaskId = uiTaskId;
+            pxDataContainer -> m_uiFsmCommandState =
+                CDataStore::READ_BLOCK_DATA_START;
+            pxDataContainer -> m_uiDataIndex = ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_OFFSET;
+            pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+
+            SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+            SetFsmNextStateDoneOk(MAIN_CYCLE_MODULE_MUVR_DATA_BASE_BLOCK_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+            SetFsmNextStateReadyWaitingError(MAIN_CYCLE_MODULE_MUVR_DATA_BASE_BLOCK_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingError(MAIN_CYCLE_MODULE_MUVR_DATA_BASE_BLOCK_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+            SetFsmNextStateDoneWaitingDoneError(MAIN_CYCLE_MODULE_MUVR_DATA_BASE_BLOCK_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+        }
+        break;
+
+    case MAIN_CYCLE_MODULE_MUVR_DATA_BASE_BLOCK_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+        //std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_MODULE_MUVR_DATA_BASE_BLOCK_READ_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+    {
+        CurrentlyRunningTasksExecution();
+
+//        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+//        SetFsmState(DONE_OK);
+        SetFsmState(MAIN_CYCLE_DATA_BASE_BLOCK_MODULE_MUVR_WRITE_START);
+    }
+    break;
+
+    case MAIN_CYCLE_MODULE_MUVR_DATA_BASE_BLOCK_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+        //std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_MODULE_MUVR_DATA_BASE_BLOCK_READ_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+    {
+        CurrentlyRunningTasksExecution();
+
+        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+        SetFsmState(DONE_ERROR);
+    }
+    break;
+
+//-------------------------------------------------------------------------------
+    case MAIN_CYCLE_DATA_BASE_BLOCK_MODULE_MUVR_WRITE_START:
+        //std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_DATA_BASE_BLOCK_MODULE_MUVR_WRITE_START"  << std::endl;
+    {
+        CurrentlyRunningTasksExecution();
+
+        uint8_t uiTaskId =
+            GetResources() ->
+            GetTaskIdByNameFromMap("InternalModuleMuvr0");
+
+        CDataContainerDataBase* pxDataContainer =
+            (CDataContainerDataBase*)GetExecutorDataContainerPointer();
+        pxDataContainer -> m_uiTaskId = uiTaskId;
+        pxDataContainer -> m_uiFsmCommandState =
+            CInternalModuleMuvr::MUVR_WRITE_DATA_BASE;
+        pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
+
+        SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
+        SetFsmNextStateDoneOk(MAIN_CYCLE_DATA_BASE_BLOCK_MODULE_MUVR_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+        SetFsmNextStateReadyWaitingError(MAIN_CYCLE_DATA_BASE_BLOCK_MODULE_MUVR_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+        SetFsmNextStateDoneWaitingError(MAIN_CYCLE_DATA_BASE_BLOCK_MODULE_MUVR_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+        SetFsmNextStateDoneWaitingDoneError(MAIN_CYCLE_DATA_BASE_BLOCK_MODULE_MUVR_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
+    }
+    break;
+
+    case MAIN_CYCLE_DATA_BASE_BLOCK_MODULE_MUVR_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
+        //std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_DATA_BASE_BLOCK_MODULE_MUVR_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
+    {
+        CurrentlyRunningTasksExecution();
+
+        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+        SetFsmState(MAIN_CYCLE_START);
+    }
+    break;
+
+    case MAIN_CYCLE_DATA_BASE_BLOCK_MODULE_MUVR_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
+        //std::cout << "CMainProductionCycle::Fsm MAIN_CYCLE_DATA_BASE_BLOCK_MODULE_MUVR_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
+    {
+        CurrentlyRunningTasksExecution();
+
+        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
+        SetFsmState(DONE_ERROR);
+    }
+    break;
 
 //-------------------------------------------------------------------------------
     case MAIN_CYCLE_START:

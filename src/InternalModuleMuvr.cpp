@@ -1239,6 +1239,22 @@ uint8_t CInternalModuleMuvr::DataBaseBlockWrite(void)
            pucSource,
            ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_LENGTH +
            TWO_BYTE_CRC_LENGTH);
+
+//            {
+//                std::cout << "CInternalModuleMuvr::DataBaseBlockWrite m_puiDataPointer"  << std::endl;
+//                uint8_t *pucSourceTemp;
+//                pucSourceTemp = (uint8_t*)&aucTempArray[SPI_DATA_BYTE_OFFSET];//pxCustomerDataContainer -> m_puiDataPointer;
+//                for(int i=0; i<256; )
+//                {
+//                    for(int j=0; j<8; j++)
+//                    {
+//                        cout << hex << uppercase << setw(2) << setfill('0') << (unsigned int)pucSourceTemp[i + j] << " ";
+//                    }
+//                    cout << endl;
+//                    i += 8;
+//                }
+//            }
+
 //    // отправим данные в модуль.
 //    usleep(10000);
     auiSpiTxBuffer[0] = MUVR_SET_DATA_BASE_COMMAND;
