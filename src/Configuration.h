@@ -502,6 +502,9 @@
 #define LINUX_WEEK_DAY_SUNDAY 0
 #define WEEK_DAY_SUNDAY 7
 
+// длина строки имени архива аналоговых измерений.
+#define ANALOGUE_SIGNALS_ARCHIVE_MAX_NAME_LENGTH 80
+
 enum EDataBaseBlockOffsets
 {
     ANALOGUE_INPUT_MODULE_DATA_BASE_BLOCK_OFFSET = 1,

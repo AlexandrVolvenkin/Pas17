@@ -13,6 +13,7 @@
 #include <cstdlib>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <cstring> // Для strncpy
 
 #include "Task.h"
 #include "Resources.h"
@@ -349,8 +350,10 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
             TAnalogueSignalsArchiveFramPositionData xAnalogueSignalsArchiveFramPositionData;
             xAnalogueSignalsArchiveFramPositionData.uiCurrentOffset = m_uiCurrentOffset;
             CStorageDeviceSpiFram::Write(FRAM_ANALOGUE_MEASURE_ARCHIVE_FRAM_POSITION_DATA_OFFSET,
-                                         (uint8_t*)(&xAnalogueSignalsArchiveFramPositionData.uiCurrentOffset),
+                                         (uint8_t*)(&xAnalogueSignalsArchiveFramPositionData),
                                          sizeof(struct TAnalogueSignalsArchiveFramPositionData));
+
+
         }
 
         // блок создания нового файла суточного архива.
@@ -387,6 +390,21 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
             // запомним имя файла текущего суточного архива. при наступлении новых суток создадим
             // сжатый файл архива прошедших с этим именем.
             m_sCurrentDailyArchveFlashFile = dailyArchveFlashFile;
+
+            TAnalogueSignalsArchiveFramPositionData xAnalogueSignalsArchiveFramPositionData;
+// Копируем максимум 39 символов, оставляя 1 байт под ноль
+            std::strncpy(xAnalogueSignalsArchiveFramPositionData.
+                         acCurrentDailyArchveFlashFile,
+                         m_sCurrentDailyArchveFlashFile.c_str(),
+                         ANALOGUE_SIGNALS_ARCHIVE_MAX_NAME_LENGTH);
+// Гарантируем, что строка ВСЕГДА завершается нулем, даже если путь был слишком длинным
+            xAnalogueSignalsArchiveFramPositionData.
+            acCurrentDailyArchveFlashFile[ANALOGUE_SIGNALS_ARCHIVE_MAX_NAME_LENGTH] = '\0';
+            xAnalogueSignalsArchiveFramPositionData.
+            uiCurrentOffset = m_uiCurrentOffset;
+            CStorageDeviceSpiFram::Write(FRAM_ANALOGUE_MEASURE_ARCHIVE_FRAM_POSITION_DATA_OFFSET,
+                                         (uint8_t*)(&xAnalogueSignalsArchiveFramPositionData),
+                                         sizeof(struct TAnalogueSignalsArchiveFramPositionData));
         }
 
         // блок создания заголовка в файле текущего суточного архива.
