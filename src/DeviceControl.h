@@ -326,7 +326,7 @@ public:
     uint8_t Fsm(void);
 
 protected:
-    struct tm* pxCurrentTime;
+    struct tm* m_pxCurrentTime;
 
     std::string m_sDataStoreName;
     CDataStore* m_pxDataStore;

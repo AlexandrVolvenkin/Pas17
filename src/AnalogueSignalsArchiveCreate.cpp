@@ -70,7 +70,7 @@ void CAnalogueSignalsArchiveCreate::Allocate(void)
 {
     std::cout << "CAnalogueSignalsArchiveCreate::Allocate 1"  << std::endl;
 
-    pxCurrentTime = &(GetResources() -> xCurrentTime);
+    m_pxCurrentTime = &(GetResources() -> xCurrentTime);
 
 ////    m_uiAddress = xMemoryAllocationContext.uiAddress;
 ////    m_puiRxBuffer = xMemoryAllocationContext.puiRxBuffer;
@@ -213,15 +213,6 @@ void CAnalogueSignalsArchiveCreate::Allocate(void)
 void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
 {
 //    std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 1"  << std::endl;
-//
-//    struct TAnalogueSignalsArchiveHourData
-//    {
-//        time_t currentTime; // Переменная для хранения текущего времени
-//        float fAin1;       // Переменная первого входа
-//        float fAin2;       // Переменная второго входа
-//        float fAin3;       // Переменная третьего входа
-//        float fAin4;       // Переменная четвертого входа
-//    };
 
 //    std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry m_pxSemaphore -> Acquire()"  << std::endl;
     while (m_pxSemaphore -> Acquire() == false);
@@ -230,7 +221,7 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
     time_t now = time(nullptr);
     // Получаем текущую дату
     struct tm tstructCurrent = *gmtime(&now);
-    pxCurrentTime = &tstructCurrent;
+    m_pxCurrentTime = &tstructCurrent;
 
 
 //-------------------------------------------------------------------------------
@@ -279,22 +270,6 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
         pusDestination[CURRENT_TIME_WEEK_DAY_OFFSET] = tstructCurrent.tm_wday;
     }
 
-//    std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 111"  << std::endl;
-//    memcpy(&m_puiHoldingRegisters[CURRENT_TIME_OFFSET_HOLDING_REGISTERS],
-//           pusDestination,
-//           (CURRENT_TIME_BYTE_QUANTITY * sizeof(short)));
-
-//        return;
-
-////    // прошла минута?
-////    if (uiCurrentTimeSaveDelayCounter != tstructCurrent.tm_min)
-////    {
-////        uiCurrentTimeSaveDelayCounter = tstructCurrent.tm_min;
-////        // сохраним текущее время в FRAM.
-////        iFramWrite(FRAM_LAST_SAVED_TIME_OFFSET,
-////                   (uint8_t*)&xCurrentTime,
-////                   sizeof(xCurrentTime));
-////    }
 //-------------------------------------------------------------------------------
 
 
@@ -363,15 +338,6 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
                 goto SemaphoreRelease;
 //                    return;
             }
-
-//            std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry time save 1 "  << std::endl;
-//            std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry m_uiCurrentOffset "  << (float)m_uiCurrentOffset << std::endl;
-//            // Получаем дату из предыдущих сохранённых данных.
-////            struct tm tstructRead = *gmtime(&now);
-//            struct tm tstructRead = *gmtime(&data.currentTime);
-//            std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry tstructRead.tm_year "  << (float)tstructRead.tm_year << std::endl;
-//            std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry tstructRead.tm_mon "  << (float)tstructRead.tm_mon << std::endl;
-//            std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry tstructRead.tm_mday "  << (float)tstructRead.tm_mday << std::endl;
             // Записываем данные в файл fram
             // установим указатель на данные новой ежесекундной записи.
             hourArchiveFramOutputStream.seekp((m_uiCurrentOffset + FRAM_ANALOGUE_MEASURE_ARCHIVE_ARRAY_OFFSET), std::ios::beg);
@@ -385,16 +351,6 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
             CStorageDeviceSpiFram::Write(FRAM_ANALOGUE_MEASURE_ARCHIVE_FRAM_POSITION_DATA_OFFSET,
                                          (uint8_t*)(&xAnalogueSignalsArchiveFramPositionData.uiCurrentOffset),
                                          sizeof(struct TAnalogueSignalsArchiveFramPositionData));
-//                // получим текущее положение блоков в FRAM.
-//                CStorageDeviceSpiFram::Read((uint8_t*)(&xAnalogueSignalsArchiveFramPositionData.uiCurrentOffset),
-//                                            FRAM_ANALOGUE_MEASURE_ARCHIVE_FRAM_POSITION_DATA_OFFSET,
-//                                            sizeof(struct TAnalogueSignalsArchiveFramPositionData));
-
-//            // Записываем данные в файл fram
-//            CStorageDeviceSpiFram::Write((uint8_t*)(&data),
-//                                         m_uiCurrentOffset,
-//                                         sizeof(TAnalogueSignalsArchiveHourData));
-//            m_uiCurrentOffset += sizeof(TAnalogueSignalsArchiveHourData);
         }
 
         // блок создания нового файла суточного архива.
@@ -413,18 +369,10 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
             std::string cSerialAndIdStr;
             // Копируем данные из m_puiSerialAndId в cSerialAndIdStr
             cSerialAndIdStr.assign((const char*)m_puiSerialAndId, SERIAL_AND_ID_DATA_BASE_BLOCK_LENGTH);
-            //    // Создаем пути к папкам и файлу
-            //    std::string pathToYearFolder = "AnalogueMeasureArchives_" + std::to_string(year);
-            //    std::string pathToMonthFolder = pathToYearFolder + "/" + std::to_string(month);
-            //    std::string dailyArchveFlashFile = pathToMonthFolder + "/AnalogueMeasure_" + dateStr + ".csv";
-
             // Создаем пути к папкам и файлу
             std::string pathToYearFolder = "/home/debian/AnalogueMeasureArchives_" + cSerialAndIdStr + "_" + std::to_string(year);
             std::string pathToMonthFolder = pathToYearFolder + "/" + std::to_string(month);
             std::string dailyArchveFlashFile = pathToMonthFolder + "/AnalogueMeasure_" + dateStr + ".csv";
-//            std::string dailyArchveFlashFile = pathToMonthFolder + "/AnalogueMeasure_" + dateStr + "-" + std::to_string(hour) + ".csv";
-            //        std::string dailyArchveFlashFile = pathToMonthFolder + "/AnalogueMeasure_" + dateStr + "-" + std::to_string(m_iFileNumberCounter) + ".csv";
-
             // Проверка и создание директорий (используем POSIX функции)
             if (mkdir(pathToYearFolder.c_str(), 0755) == -1)
             {
@@ -458,18 +406,9 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
     }
     else
     {
-//        std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 3"  << std::endl;
-        // Если текущий час отличаются от предыдущего,
-        // значит, наступил новый час.
-        // наступил новый час?
-//        if (tstructCurrent.tm_min != m_iLastHour)
         if (tstructCurrent.tm_hour != m_iLastHour)
         {
-            std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 4"  << std::endl;
-//            std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry tm_min "  << (float)tstructCurrent.tm_min << std::endl;
-            std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry tm_hour "  << (float)tstructCurrent.tm_hour << std::endl;
             // Обновляем значения для следующей проверки
-//            m_iLastHour = tstructCurrent.tm_min;
             m_iLastHour = tstructCurrent.tm_hour;
 
             // блок считывания данных из fram и записи в файл текущего суточного архива.
@@ -501,7 +440,6 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
                     hourArchiveFramInputStream.close();
                     hourArchiveFramOutputStream.close();
                     goto SemaphoreRelease;
-//                    return;
                 }
 
                 // Получаем общую длину файла
@@ -519,39 +457,11 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
                 hourArchiveFramInputStream.seekg((FRAM_ANALOGUE_MEASURE_ARCHIVE_ARRAY_OFFSET), std::ios::beg);
                 hourArchiveFramInputStream.read(reinterpret_cast<char*>(&readData), (numDataObjects * sizeof(TAnalogueSignalsArchiveHourData)));
 
-//                // Получаем дату из предыдущих сохранённых данных.
-//                struct tm tstructRead = *gmtime(&readData.currentTime);
-//
-//                // Форматируем дату и время
-//                char dateStr[80];
-//                strftime(dateStr, sizeof(dateStr), "%Y-%m-%d", &tstructRead);
-//
-//                char timeStr[80];
-//                strftime(timeStr, sizeof(timeStr), "%H:%M:%S", &tstructRead);
-
                 // Считываем и преобразуем данные из fram во флеш.
                 for (size_t i = 0; i < numDataObjects; i++)
                 {
-//                    TAnalogueSignalsArchiveHourData readData;
-//                    // установим указатель на данные ежесекундной записи.
-//                    hourArchiveFramInputStream.seekg((FRAM_ANALOGUE_MEASURE_ARCHIVE_ARRAY_OFFSET + (i * sizeof(TAnalogueSignalsArchiveHourData))), std::ios::beg);
-//                    hourArchiveFramInputStream.read(reinterpret_cast<char*>(&readData), sizeof(TAnalogueSignalsArchiveHourData));
-//
-//                    // больше нет данных для чтения?
-//                    if (!hourArchiveFramInputStream.gcount())
-//                    {
-//                        std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 5"  << std::endl;
-//                        break;
-//                    }
-
-//                    std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry time read 1 "  << std::endl;
-//                    std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry m_uiCurrentOffset "  << (float)m_uiCurrentOffset << std::endl;
                     // Получаем дату из предыдущих сохранённых данных.
                     struct tm tstructRead = *gmtime(&readData[i].currentTime);
-//                    std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry tstructRead.tm_year "  << (float)tstructRead.tm_year << std::endl;
-//                    std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry tstructRead.tm_mon "  << (float)tstructRead.tm_mon << std::endl;
-//                    std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry tstructRead.tm_mday "  << (float)tstructRead.tm_mday << std::endl;
-
                     // Форматируем дату и время
                     char dateStr[80];
                     strftime(dateStr, sizeof(dateStr), "%Y-%m-%d", &tstructRead);
@@ -589,7 +499,6 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
                 {
                     std::cerr << "Failed to open for write /dev/mtd0" << std::endl;
                     goto SemaphoreRelease;
-//                    return;
                 }
 
                 // Записываем данные в файл fram
@@ -605,32 +514,15 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
                 CStorageDeviceSpiFram::Write(FRAM_ANALOGUE_MEASURE_ARCHIVE_FRAM_POSITION_DATA_OFFSET,
                                              (uint8_t*)(&xAnalogueSignalsArchiveFramPositionData.uiCurrentOffset),
                                              sizeof(struct TAnalogueSignalsArchiveFramPositionData));
-//                // получим текущее положение блоков в FRAM.
-//                CStorageDeviceSpiFram::Read((uint8_t*)(&xAnalogueSignalsArchiveFramPositionData.uiCurrentOffset),
-//                                            FRAM_ANALOGUE_MEASURE_ARCHIVE_FRAM_POSITION_DATA_OFFSET,
-//                                            sizeof(struct TAnalogueSignalsArchiveFramPositionData));
-
-//                // Записываем данные в файл fram
-//                CStorageDeviceSpiFram::Write((uint8_t*)(&data),
-//                                             m_uiCurrentOffset,
-//                                             sizeof(TAnalogueSignalsArchiveHourData));
-//                m_uiCurrentOffset += sizeof(TAnalogueSignalsArchiveHourData);
             }
 
 
             // Если текущий день отличаются от предыдущего,
             // значит, наступили новые сутки.
             // наступили новые сутки?
-////            if (tstructCurrent.tm_hour != m_iLastDay)
             if (tstructCurrent.tm_mday != m_iLastDay)
             {
-                std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 6"  << std::endl;
-//                std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry tm_min "  << (float)tstructCurrent.tm_min << std::endl;
-//                std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry tm_hour "  << (float)tstructCurrent.tm_hour << std::endl;
-                std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry tm_mday "  << (float)tstructCurrent.tm_mday << std::endl;
-
                 // Обновляем значения для следующей проверки
-////                m_iLastDay = tstructCurrent.tm_hour;
                 m_iLastDay = tstructCurrent.tm_mday;
 
                 // блок сжатия файла текущего суточного архива.
@@ -689,12 +581,6 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
                     std::string cSerialAndIdStr;
                     // Копируем данные из m_puiSerialAndId в cSerialAndIdStr
                     cSerialAndIdStr.assign((const char*)m_puiSerialAndId, SERIAL_AND_ID_DATA_BASE_BLOCK_LENGTH);
-
-                    //    // Создаем пути к папкам и файлу
-                    //    std::string pathToYearFolder = "AnalogueMeasureArchives_" + std::to_string(year);
-                    //    std::string pathToMonthFolder = pathToYearFolder + "/" + std::to_string(month);
-                    //    std::string dailyArchveFlashFile = pathToMonthFolder + "/AnalogueMeasure_" + dateStr + ".csv";
-
                     // Создаем пути к папкам и файлу
                     std::string pathToYearFolder = "/home/debian/AnalogueMeasureArchives_" + cSerialAndIdStr + "_" + std::to_string(year);
                     std::string pathToMonthFolder = pathToYearFolder + "/" + std::to_string(month);
@@ -727,8 +613,6 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
                     }
 
                     // Записываем заголовок
-                    //        output << "Дата;Время;AIn1;AIn2;AIn3;AIn4" << std::endl;
-                    //        output << "   Дата   " << ";" << "   Время   " << ";" << "   AIn1   " << ";" << "   AIn2   " << ";" << "   AIn3   " << ";" << "   AIn4   " << std::endl;
                     dailyArchveFlashOutputStream << "Дата;Время;AIn1;AIn2;AIn3;AIn4" << std::endl;
                     // Закрываем файл
                     dailyArchveFlashOutputStream.close();
@@ -737,7 +621,6 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
         }
         else
         {
-//        std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 10"  << std::endl;
             // блок записи новых ежесекундных данных в fram.
             {
                 const std::string hourArchiveFramFile = "/dev/mtd0";
@@ -749,15 +632,6 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
                     goto SemaphoreRelease;
 //                    return;
                 }
-
-//                std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry time save 2 "  << std::endl;
-//                std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry m_uiCurrentOffset "  << (float)m_uiCurrentOffset << std::endl;
-//                // Получаем дату из предыдущих сохранённых данных.
-////                struct tm tstructRead = *gmtime(&now);
-//                struct tm tstructRead = *gmtime(&data.currentTime);
-//                std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry tstructRead.tm_year "  << (float)tstructRead.tm_year << std::endl;
-//                std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry tstructRead.tm_mon "  << (float)tstructRead.tm_mon << std::endl;
-//                std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry tstructRead.tm_mday "  << (float)tstructRead.tm_mday << std::endl;
                 // Записываем данные в файл fram
                 // установим указатель на данные новой ежесекундной записи.
                 hourArchiveFramOutputStream.seekp((m_uiCurrentOffset + FRAM_ANALOGUE_MEASURE_ARCHIVE_ARRAY_OFFSET), std::ios::beg);
@@ -771,23 +645,12 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
                 CStorageDeviceSpiFram::Write(FRAM_ANALOGUE_MEASURE_ARCHIVE_FRAM_POSITION_DATA_OFFSET,
                                              (uint8_t*)(&xAnalogueSignalsArchiveFramPositionData.uiCurrentOffset),
                                              sizeof(struct TAnalogueSignalsArchiveFramPositionData));
-//                // получим текущее положение блоков в FRAM.
-//                CStorageDeviceSpiFram::Read((uint8_t*)(&xAnalogueSignalsArchiveFramPositionData.uiCurrentOffset),
-//                                            FRAM_ANALOGUE_MEASURE_ARCHIVE_FRAM_POSITION_DATA_OFFSET,
-//                                            sizeof(struct TAnalogueSignalsArchiveFramPositionData));
-
-
-//                // Записываем данные в файл fram
-//                CStorageDeviceSpiFram::Write((uint8_t*)(&data),
-//                                             m_uiCurrentOffset,
-//                                             sizeof(TAnalogueSignalsArchiveHourData));
-//                m_uiCurrentOffset += sizeof(TAnalogueSignalsArchiveHourData);
             }
         }
     }
 
 SemaphoreRelease:
-//    std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry m_pxSemaphore -> Release()"  << std::endl;
+
     m_pxSemaphore -> Release();
 }
 

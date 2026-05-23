@@ -209,7 +209,7 @@ public:
     uint8_t Fsm(void);
 
 private:
-    struct tm* pxCurrentTime;
+    struct tm* m_pxCurrentTime;
 //    std::list<CTaskInterface*> m_lpxCommonTasksList;
 //    std::list<CTaskInterface*>::iterator m_xCommonTasksListIterator;
 //    std::list<CTaskInterface*> m_lpxCurrentlyRunningTasksList;

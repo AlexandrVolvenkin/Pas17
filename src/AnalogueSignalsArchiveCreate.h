@@ -60,7 +60,7 @@ public:
     void CreateArchiveEntry(void);
 
 private:
-    struct tm* pxCurrentTime;
+    struct tm* m_pxCurrentTime;
 
     std::string m_sInternalModuleName;
     uint16_t m_uiInternalModuleId;

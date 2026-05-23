@@ -77,7 +77,7 @@ void CDeviceControl::Allocate(void)
 {
     //std::cout << "CDeviceControl::Allocate 1"  << std::endl;
 
-    pxCurrentTime = &(GetResources() -> xCurrentTime);
+    m_pxCurrentTime = &(GetResources() -> xCurrentTime);
 
 ////    m_uiAddress = xMemoryAllocationContext.uiAddress;
 ////    m_puiRxBuffer = xMemoryAllocationContext.puiRxBuffer;
@@ -308,7 +308,7 @@ void CDeviceControl::CurrentTimeUpdate(void)
     time_t now = time(nullptr);
     // Получаем текущую дату
     struct tm tstructCurrent = *gmtime(&now);
-    pxCurrentTime = &tstructCurrent;
+    m_pxCurrentTime = &tstructCurrent;
 
 //-------------------------------------------------------------------------------
 // обновление текущего времени в массивах модбас.

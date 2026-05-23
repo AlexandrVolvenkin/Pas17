@@ -169,7 +169,7 @@ void CMainProductionCycle::Allocate(void)
 {
     std::cout << "CMainProductionCycle::Allocate 1"  << std::endl;
 
-    pxCurrentTime = &(GetResources() -> xCurrentTime);
+    m_pxCurrentTime = &(GetResources() -> xCurrentTime);
 
 
     // Получим указатель на буфер с серийным номером и идентификатором прибора.
