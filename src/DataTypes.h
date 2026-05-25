@@ -159,6 +159,7 @@ struct TAnalogueSignalsArchiveFramPositionData
     uint32_t uiCurrentOffset;
     // Массив из 40 символов (включая нулевой символ на конце)
     char acCurrentDailyArchveFlashFile[ANALOGUE_SIGNALS_ARCHIVE_MAX_NAME_LENGTH + END_OF_STRING_LENGTH];
+    uint16_t uiCrc;
 };
 
 

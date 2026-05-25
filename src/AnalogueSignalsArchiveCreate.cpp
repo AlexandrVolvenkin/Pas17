@@ -24,6 +24,7 @@
 #include "ConfigurationCreate.h"
 #include "StorageDevice.h"
 #include "Semaphore.h"
+#include "Crc.h"
 #include "AnalogueSignalsArchiveCreate.h"
 
 using namespace std;
@@ -211,6 +212,13 @@ void CAnalogueSignalsArchiveCreate::Allocate(void)
 }
 
 //-------------------------------------------------------------------------------
+bool IsFileExist(const std::string& filename)
+{
+    std::ifstream file(filename);
+    return file.is_open(); // true, если файл существует и доступен для чтения
+}
+
+//-------------------------------------------------------------------------------
 void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
 {
 //    std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry 1"  << std::endl;
@@ -324,6 +332,108 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
         m_iLastDay = tstructCurrent.tm_mday;
 
 
+        // блок считывания данных часового архива накопленного до выключения устройства
+        // из fram, и записи в файл суточного архива с датой
+        // выключения устройства. чтобы не потерять данные призаписи нового часового архива в fram сначала
+        {
+            // имя устройства fram памяти.
+            const std::string hourArchiveFramFile = "/dev/mtd0";
+
+            std::ifstream hourArchiveFramInputStream(hourArchiveFramFile, std::ios::binary | std::ios::in | std::ios::out);
+            if (!hourArchiveFramInputStream.is_open())
+            {
+                std::cerr << "Failed to open for read /dev/mtd0" << std::endl;
+                goto SemaphoreRelease;
+            }
+
+            // получим данные позиции ежесекундной записи в fram.
+            TAnalogueSignalsArchiveFramPositionData xAnalogueSignalsArchiveFramPositionData;
+            // установим указатель на данные позиции ежесекундной записи.
+            hourArchiveFramInputStream.seekg((FRAM_ANALOGUE_MEASURE_ARCHIVE_FRAM_POSITION_DATA_OFFSET),
+                                             std::ios::beg);
+            hourArchiveFramInputStream.read(reinterpret_cast<char*>(&xAnalogueSignalsArchiveFramPositionData),
+                                            (sizeof(TAnalogueSignalsArchiveFramPositionData)));
+
+            // это не первый запуск после сборки, то есть уже существует запись часового архива?
+            if (usCrc16((uint8_t*)(&xAnalogueSignalsArchiveFramPositionData),
+                        (sizeof(TAnalogueSignalsArchiveFramPositionData))) ==
+                    xAnalogueSignalsArchiveFramPositionData.uiCrc)
+            {
+                // перенесём данные часового архива накапливаемые в fram в файл суточного архива во флеш
+                // с датой того дня когда прибор был выключен, чтобы не потерять их.
+
+                // блок считывания данных из fram и записи в файл суточного архива.
+                {
+                    std::string sArchveFlashFileName =
+                        xAnalogueSignalsArchiveFramPositionData.acCurrentDailyArchveFlashFile;
+
+//                        // файл с таким именем существует, то есть, устройство было выключено во
+//                        // время текущих суток?
+//                        if (IsFileExist(sArchveFlashFileName))
+//                        {
+                    // Открываем выходной файл для добавления данных
+                    std::ofstream dailyArchveFlashOutputStream(sArchveFlashFileName,
+                            std::ios::app | std::ios::in | std::ios::out);
+                    if (!dailyArchveFlashOutputStream.is_open())
+                    {
+                        std::cerr << "Failed to open for write: " << sArchveFlashFileName << std::endl;
+                        hourArchiveFramInputStream.close();
+                        goto SemaphoreRelease;
+                    }
+                    //                        }
+//                        else
+//                        {
+//                            // создание заголовка в файле текущего суточного архива.
+//                        }
+
+                    // Получаем общую длину файла
+                    size_t fileSize = xAnalogueSignalsArchiveFramPositionData.uiCurrentOffset;
+                    std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry uiCurrentOffset "  << (float)(xAnalogueSignalsArchiveFramPositionData.uiCurrentOffset) << std::endl;
+
+                    // Вычисляем количество структур TAnalogueSignalsArchiveHourData в файле
+                    size_t numDataObjects = (fileSize / sizeof(TAnalogueSignalsArchiveHourData));
+                    std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry numDataObjects "  << (float)numDataObjects << std::endl;
+
+                    TAnalogueSignalsArchiveHourData readData[10000];
+                    // установим указатель на данные ежесекундной записи.
+                    hourArchiveFramInputStream.seekg((FRAM_ANALOGUE_MEASURE_ARCHIVE_ARRAY_OFFSET), std::ios::beg);
+                    hourArchiveFramInputStream.read(reinterpret_cast<char*>(&readData), (numDataObjects * sizeof(TAnalogueSignalsArchiveHourData)));
+
+                    // Считываем и преобразуем данные из fram во флеш.
+                    for (size_t i = 0; i < numDataObjects; i++)
+                    {
+                        // Получаем дату из предыдущих сохранённых данных.
+                        struct tm tstructRead = *gmtime(&readData[i].currentTime);
+                        // Форматируем дату и время
+                        char dateStr[80];
+                        strftime(dateStr, sizeof(dateStr), "%Y-%m-%d", &tstructRead);
+
+                        char timeStr[80];
+                        strftime(timeStr, sizeof(timeStr), "%H:%M:%S", &tstructRead);
+
+                        // Записываем данные в файл текущего суточного архива.
+                        dailyArchveFlashOutputStream <<
+                                                     dateStr << ";" <<
+                                                     timeStr << ";" <<
+                                                     readData[i].fAin1 << ";" <<
+                                                     readData[i].fAin2 << ";" <<
+                                                     readData[i].fAin3 << ";" <<
+                                                     readData[i].fAin4 << std::endl;
+                    }
+
+                    dailyArchveFlashOutputStream.close();
+                }
+            }
+//                else
+//                {
+//
+//                }
+
+            // Закрываем файл
+            hourArchiveFramInputStream.close();
+        }
+
+
         // каждый новый час начинаем запись в fram сначала.
         m_uiCurrentOffset = 0;//FRAM_ANALOGUE_MEASURE_ARCHIVE_ARRAY_OFFSET;
 
@@ -337,7 +447,6 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
             {
                 std::cerr << "Failed to open for write /dev/mtd0" << std::endl;
                 goto SemaphoreRelease;
-//                    return;
             }
             // Записываем данные в файл fram
             // установим указатель на данные новой ежесекундной записи.
@@ -345,18 +454,11 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
             hourArchiveFramOutputStream.write(reinterpret_cast<const char*>(&data), sizeof(TAnalogueSignalsArchiveHourData));
             // Закрываем файл
             hourArchiveFramOutputStream.close();
+
             m_uiCurrentOffset += sizeof(TAnalogueSignalsArchiveHourData);
-            // сохраним текущее положение блоков в FRAM.
-            TAnalogueSignalsArchiveFramPositionData xAnalogueSignalsArchiveFramPositionData;
-            xAnalogueSignalsArchiveFramPositionData.uiCurrentOffset = m_uiCurrentOffset;
-            CStorageDeviceSpiFram::Write(FRAM_ANALOGUE_MEASURE_ARCHIVE_FRAM_POSITION_DATA_OFFSET,
-                                         (uint8_t*)(&xAnalogueSignalsArchiveFramPositionData),
-                                         sizeof(struct TAnalogueSignalsArchiveFramPositionData));
-
-
         }
 
-        // блок создания нового файла суточного архива.
+        // блок создания имени нового файла суточного архива.
         {
             // создадим файл нового суточного архива.
             // Форматируем дату
@@ -390,37 +492,187 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
             // запомним имя файла текущего суточного архива. при наступлении новых суток создадим
             // сжатый файл архива прошедших с этим именем.
             m_sCurrentDailyArchveFlashFile = dailyArchveFlashFile;
+        }
 
+
+        // файла с таким именем не существует, то есть, устройство было выключено не во
+        // время текущих суток?
+        if (IsFileExist(m_sCurrentDailyArchveFlashFile) == false)
+        {
+            // блок создания нового файла архива текущих суток и заголовка в нём.
+            {
+                // Открываем выходной файл для добавления данных
+                std::ofstream dailyArchveFlashOutputStream(m_sCurrentDailyArchveFlashFile, std::ios::app | std::ios::in | std::ios::out);
+                if (!dailyArchveFlashOutputStream.is_open())
+                {
+                    std::cerr << "Failed to open for write: " << m_sCurrentDailyArchveFlashFile << std::endl;
+                }
+
+                // Записываем заголовок
+                dailyArchveFlashOutputStream << "Дата;Время;AIn1;AIn2;AIn3;AIn4" << std::endl;
+                // Закрываем файл
+                dailyArchveFlashOutputStream.close();
+            }
+        }
+
+        //  блок сохранения данных позиции
+        {
+            // сохраним текущее положение блоков в FRAM.
             TAnalogueSignalsArchiveFramPositionData xAnalogueSignalsArchiveFramPositionData;
-// Копируем максимум 39 символов, оставляя 1 байт под ноль
+            // Копируем максимум 39 символов, оставляя 1 байт под ноль
             std::strncpy(xAnalogueSignalsArchiveFramPositionData.
                          acCurrentDailyArchveFlashFile,
                          m_sCurrentDailyArchveFlashFile.c_str(),
                          ANALOGUE_SIGNALS_ARCHIVE_MAX_NAME_LENGTH);
-// Гарантируем, что строка ВСЕГДА завершается нулем, даже если путь был слишком длинным
+            // Гарантируем, что строка ВСЕГДА завершается нулем, даже если путь был слишком длинным
             xAnalogueSignalsArchiveFramPositionData.
             acCurrentDailyArchveFlashFile[ANALOGUE_SIGNALS_ARCHIVE_MAX_NAME_LENGTH] = '\0';
             xAnalogueSignalsArchiveFramPositionData.
             uiCurrentOffset = m_uiCurrentOffset;
-            CStorageDeviceSpiFram::Write(FRAM_ANALOGUE_MEASURE_ARCHIVE_FRAM_POSITION_DATA_OFFSET,
-                                         (uint8_t*)(&xAnalogueSignalsArchiveFramPositionData),
-                                         sizeof(struct TAnalogueSignalsArchiveFramPositionData));
-        }
+            xAnalogueSignalsArchiveFramPositionData.uiCrc =
+                usCrc16((uint8_t*)(&xAnalogueSignalsArchiveFramPositionData),
+                        (sizeof(TAnalogueSignalsArchiveFramPositionData)));
 
-        // блок создания заголовка в файле текущего суточного архива.
-        {
-            // Открываем выходной файл для добавления данных
-            std::ofstream dailyArchveFlashOutputStream(m_sCurrentDailyArchveFlashFile, std::ios::app | std::ios::in | std::ios::out);
-            if (!dailyArchveFlashOutputStream.is_open())
+            // имя устройства fram памяти.
+            const std::string hourArchiveFramFile = "/dev/mtd0";
+
+            std::ofstream hourArchiveFramOutputStream(hourArchiveFramFile, std::ios::binary | std::ios::in | std::ios::out);
+            if (!hourArchiveFramOutputStream.is_open())
             {
-                std::cerr << "Failed to open for write: " << m_sCurrentDailyArchveFlashFile << std::endl;
+                std::cerr << "Failed to open for write /dev/mtd0" << std::endl;
+                goto SemaphoreRelease;
             }
-
-            // Записываем заголовок
-            dailyArchveFlashOutputStream << "Дата;Время;AIn1;AIn2;AIn3;AIn4" << std::endl;
+            // Записываем данные в файл fram
+            // установим указатель на данные новой ежесекундной записи.
+            hourArchiveFramOutputStream.seekp((FRAM_ANALOGUE_MEASURE_ARCHIVE_FRAM_POSITION_DATA_OFFSET), std::ios::beg);
+            hourArchiveFramOutputStream.write(reinterpret_cast<const char*>(&xAnalogueSignalsArchiveFramPositionData),
+                                              sizeof(TAnalogueSignalsArchiveFramPositionData));
             // Закрываем файл
-            dailyArchveFlashOutputStream.close();
+            hourArchiveFramOutputStream.close();
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//        // каждый новый час начинаем запись в fram сначала.
+//        m_uiCurrentOffset = 0;//FRAM_ANALOGUE_MEASURE_ARCHIVE_ARRAY_OFFSET;
+//
+//        // блок записи новых ежесекундных данных в fram.
+//        {
+//            // имя устройства fram памяти.
+//            const std::string hourArchiveFramFile = "/dev/mtd0";
+//
+//            std::ofstream hourArchiveFramOutputStream(hourArchiveFramFile, std::ios::binary | std::ios::in | std::ios::out);
+//            if (!hourArchiveFramOutputStream.is_open())
+//            {
+//                std::cerr << "Failed to open for write /dev/mtd0" << std::endl;
+//                goto SemaphoreRelease;
+////                    return;
+//            }
+//            // Записываем данные в файл fram
+//            // установим указатель на данные новой ежесекундной записи.
+//            hourArchiveFramOutputStream.seekp((m_uiCurrentOffset + FRAM_ANALOGUE_MEASURE_ARCHIVE_ARRAY_OFFSET), std::ios::beg);
+//            hourArchiveFramOutputStream.write(reinterpret_cast<const char*>(&data), sizeof(TAnalogueSignalsArchiveHourData));
+//            // Закрываем файл
+//            hourArchiveFramOutputStream.close();
+//            m_uiCurrentOffset += sizeof(TAnalogueSignalsArchiveHourData);
+//            // сохраним текущее положение блоков в FRAM.
+//            TAnalogueSignalsArchiveFramPositionData xAnalogueSignalsArchiveFramPositionData;
+//            xAnalogueSignalsArchiveFramPositionData.uiCurrentOffset = m_uiCurrentOffset;
+//            CStorageDeviceSpiFram::Write(FRAM_ANALOGUE_MEASURE_ARCHIVE_FRAM_POSITION_DATA_OFFSET,
+//                                         (uint8_t*)(&xAnalogueSignalsArchiveFramPositionData),
+//                                         sizeof(struct TAnalogueSignalsArchiveFramPositionData));
+//
+//
+//        }
+//
+//        // блок создания нового файла суточного архива.
+//        {
+//            // создадим файл нового суточного архива.
+//            // Форматируем дату
+//            char dateStr[80];
+//            strftime(dateStr, sizeof(dateStr), "%Y-%m-%d", &tstructCurrent);
+//
+//            // Получаем текущий год и месяц
+//            int year = tstructCurrent.tm_year + 1900;
+//            int month = tstructCurrent.tm_mon + 1;
+//            int hour = tstructCurrent.tm_hour;
+//            int minute = tstructCurrent.tm_min;
+//
+//            std::string cSerialAndIdStr;
+//            // Копируем данные из m_puiSerialAndId в cSerialAndIdStr
+//            cSerialAndIdStr.assign((const char*)m_puiSerialAndId, SERIAL_AND_ID_DATA_BASE_BLOCK_LENGTH);
+//            // Создаем пути к папкам и файлу
+//            std::string pathToYearFolder = "/home/debian/AnalogueMeasureArchives_" + cSerialAndIdStr + "_" + std::to_string(year);
+//            std::string pathToMonthFolder = pathToYearFolder + "/" + std::to_string(month);
+//            std::string dailyArchveFlashFile = pathToMonthFolder + "/AnalogueMeasure_" + dateStr + ".csv";
+//            // Проверка и создание директорий (используем POSIX функции)
+//            if (mkdir(pathToYearFolder.c_str(), 0755) == -1)
+//            {
+//                perror("Error creating Year Folder");
+//            }
+//
+//            if (mkdir(pathToMonthFolder.c_str(), 0755) == -1)
+//            {
+//                perror("Error creating Month Folder");
+//            }
+//
+//            // запомним имя файла текущего суточного архива. при наступлении новых суток создадим
+//            // сжатый файл архива прошедших с этим именем.
+//            m_sCurrentDailyArchveFlashFile = dailyArchveFlashFile;
+//
+////            TAnalogueSignalsArchiveFramPositionData xAnalogueSignalsArchiveFramPositionData;
+////// Копируем максимум 39 символов, оставляя 1 байт под ноль
+////            std::strncpy(xAnalogueSignalsArchiveFramPositionData.
+////                         acCurrentDailyArchveFlashFile,
+////                         m_sCurrentDailyArchveFlashFile.c_str(),
+////                         ANALOGUE_SIGNALS_ARCHIVE_MAX_NAME_LENGTH);
+////// Гарантируем, что строка ВСЕГДА завершается нулем, даже если путь был слишком длинным
+////            xAnalogueSignalsArchiveFramPositionData.
+////            acCurrentDailyArchveFlashFile[ANALOGUE_SIGNALS_ARCHIVE_MAX_NAME_LENGTH] = '\0';
+////            xAnalogueSignalsArchiveFramPositionData.
+////            uiCurrentOffset = m_uiCurrentOffset;
+////            CStorageDeviceSpiFram::Write(FRAM_ANALOGUE_MEASURE_ARCHIVE_FRAM_POSITION_DATA_OFFSET,
+////                                         (uint8_t*)(&xAnalogueSignalsArchiveFramPositionData),
+////                                         sizeof(struct TAnalogueSignalsArchiveFramPositionData));
+//
+////                // получим текущее положение блоков в FRAM.
+////                CStorageDeviceSpiFram::Read((uint8_t*)(&xAnalogueSignalsArchiveFramPositionData),
+////                                            FRAM_ANALOGUE_MEASURE_ARCHIVE_FRAM_POSITION_DATA_OFFSET,
+////                                            sizeof(struct TAnalogueSignalsArchiveFramPositionData));
+//
+////            // Записываем данные в файл fram
+////            CStorageDeviceSpiFram::Write((uint8_t*)(&data),
+////                                         m_uiCurrentOffset,
+////                                         sizeof(TAnalogueSignalsArchiveHourData));
+//        }
+//
+//        // блок создания заголовка в файле текущего суточного архива.
+//        {
+//            // Открываем выходной файл для добавления данных
+//            std::ofstream dailyArchveFlashOutputStream(m_sCurrentDailyArchveFlashFile, std::ios::app | std::ios::in | std::ios::out);
+//            if (!dailyArchveFlashOutputStream.is_open())
+//            {
+//                std::cerr << "Failed to open for write: " << m_sCurrentDailyArchveFlashFile << std::endl;
+//            }
+//
+//            // Записываем заголовок
+//            dailyArchveFlashOutputStream << "Дата;Время;AIn1;AIn2;AIn3;AIn4" << std::endl;
+//            // Закрываем файл
+//            dailyArchveFlashOutputStream.close();
+//        }
     }
     else
     {
@@ -439,7 +691,6 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
                 {
                     std::cerr << "Failed to open for read /dev/mtd0" << std::endl;
                     goto SemaphoreRelease;
-//                    return;
                 }
                 std::ofstream hourArchiveFramOutputStream(hourArchiveFramFile, std::ios::binary | std::ios::in | std::ios::out);
                 if (!hourArchiveFramOutputStream.is_open())
@@ -447,7 +698,6 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
                     std::cerr << "Failed to open for write /dev/mtd0" << std::endl;
                     hourArchiveFramInputStream.close();
                     goto SemaphoreRelease;
-//                    return;
                 }
 
                 // Открываем выходной файл для добавления данных
@@ -518,21 +768,42 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
                     std::cerr << "Failed to open for write /dev/mtd0" << std::endl;
                     goto SemaphoreRelease;
                 }
-
                 // Записываем данные в файл fram
                 // установим указатель на данные новой ежесекундной записи.
                 hourArchiveFramOutputStream.seekp((m_uiCurrentOffset + FRAM_ANALOGUE_MEASURE_ARCHIVE_ARRAY_OFFSET), std::ios::beg);
                 hourArchiveFramOutputStream.write(reinterpret_cast<const char*>(&data), sizeof(TAnalogueSignalsArchiveHourData));
                 // Закрываем файл
                 hourArchiveFramOutputStream.close();
+
                 m_uiCurrentOffset += sizeof(TAnalogueSignalsArchiveHourData);
-                // сохраним текущее положение блоков в FRAM.
-                TAnalogueSignalsArchiveFramPositionData xAnalogueSignalsArchiveFramPositionData;
-                xAnalogueSignalsArchiveFramPositionData.uiCurrentOffset = m_uiCurrentOffset;
-                CStorageDeviceSpiFram::Write(FRAM_ANALOGUE_MEASURE_ARCHIVE_FRAM_POSITION_DATA_OFFSET,
-                                             (uint8_t*)(&xAnalogueSignalsArchiveFramPositionData.uiCurrentOffset),
-                                             sizeof(struct TAnalogueSignalsArchiveFramPositionData));
             }
+
+//            // блок записи новых ежесекундных данных в fram.
+//            {
+//                // имя устройства fram памяти.
+//                const std::string hourArchiveFramFile = "/dev/mtd0";
+//
+//                std::ofstream hourArchiveFramOutputStream(hourArchiveFramFile, std::ios::binary | std::ios::in | std::ios::out);
+//                if (!hourArchiveFramOutputStream.is_open())
+//                {
+//                    std::cerr << "Failed to open for write /dev/mtd0" << std::endl;
+//                    goto SemaphoreRelease;
+//                }
+//
+//                // Записываем данные в файл fram
+//                // установим указатель на данные новой ежесекундной записи.
+//                hourArchiveFramOutputStream.seekp((m_uiCurrentOffset + FRAM_ANALOGUE_MEASURE_ARCHIVE_ARRAY_OFFSET), std::ios::beg);
+//                hourArchiveFramOutputStream.write(reinterpret_cast<const char*>(&data), sizeof(TAnalogueSignalsArchiveHourData));
+//                // Закрываем файл
+//                hourArchiveFramOutputStream.close();
+//                m_uiCurrentOffset += sizeof(TAnalogueSignalsArchiveHourData);
+//                // сохраним текущее положение блоков в FRAM.
+//                TAnalogueSignalsArchiveFramPositionData xAnalogueSignalsArchiveFramPositionData;
+//                xAnalogueSignalsArchiveFramPositionData.uiCurrentOffset = m_uiCurrentOffset;
+//                CStorageDeviceSpiFram::Write(FRAM_ANALOGUE_MEASURE_ARCHIVE_FRAM_POSITION_DATA_OFFSET,
+//                                             (uint8_t*)(&xAnalogueSignalsArchiveFramPositionData.uiCurrentOffset),
+//                                             sizeof(struct TAnalogueSignalsArchiveFramPositionData));
+//            }
 
 
             // Если текущий день отличаются от предыдущего,
@@ -636,11 +907,26 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
                     dailyArchveFlashOutputStream.close();
                 }
             }
-        }
-        else
-        {
-            // блок записи новых ежесекундных данных в fram.
+
+            //  блок сохранения данных позиции
             {
+                // сохраним текущее положение блоков в FRAM.
+                TAnalogueSignalsArchiveFramPositionData xAnalogueSignalsArchiveFramPositionData;
+                // Копируем максимум 39 символов, оставляя 1 байт под ноль
+                std::strncpy(xAnalogueSignalsArchiveFramPositionData.
+                             acCurrentDailyArchveFlashFile,
+                             m_sCurrentDailyArchveFlashFile.c_str(),
+                             ANALOGUE_SIGNALS_ARCHIVE_MAX_NAME_LENGTH);
+                // Гарантируем, что строка ВСЕГДА завершается нулем, даже если путь был слишком длинным
+                xAnalogueSignalsArchiveFramPositionData.
+                acCurrentDailyArchveFlashFile[ANALOGUE_SIGNALS_ARCHIVE_MAX_NAME_LENGTH] = '\0';
+                xAnalogueSignalsArchiveFramPositionData.
+                uiCurrentOffset = m_uiCurrentOffset;
+                xAnalogueSignalsArchiveFramPositionData.uiCrc =
+                    usCrc16((uint8_t*)(&xAnalogueSignalsArchiveFramPositionData),
+                            (sizeof(TAnalogueSignalsArchiveFramPositionData)));
+
+                // имя устройства fram памяти.
                 const std::string hourArchiveFramFile = "/dev/mtd0";
 
                 std::ofstream hourArchiveFramOutputStream(hourArchiveFramFile, std::ios::binary | std::ios::in | std::ios::out);
@@ -648,7 +934,54 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
                 {
                     std::cerr << "Failed to open for write /dev/mtd0" << std::endl;
                     goto SemaphoreRelease;
-//                    return;
+                }
+                // Записываем данные в файл fram
+                // установим указатель на данные новой ежесекундной записи.
+                hourArchiveFramOutputStream.seekp((FRAM_ANALOGUE_MEASURE_ARCHIVE_FRAM_POSITION_DATA_OFFSET), std::ios::beg);
+                hourArchiveFramOutputStream.write(reinterpret_cast<const char*>(&xAnalogueSignalsArchiveFramPositionData),
+                                                  sizeof(TAnalogueSignalsArchiveFramPositionData));
+                // Закрываем файл
+                hourArchiveFramOutputStream.close();
+            }
+        }
+        else
+        {
+//            // блок записи новых ежесекундных данных в fram.
+//            {
+//                const std::string hourArchiveFramFile = "/dev/mtd0";
+//
+//                std::ofstream hourArchiveFramOutputStream(hourArchiveFramFile, std::ios::binary | std::ios::in | std::ios::out);
+//                if (!hourArchiveFramOutputStream.is_open())
+//                {
+//                    std::cerr << "Failed to open for write /dev/mtd0" << std::endl;
+//                    goto SemaphoreRelease;
+////                    return;
+//                }
+//                // Записываем данные в файл fram
+//                // установим указатель на данные новой ежесекундной записи.
+//                hourArchiveFramOutputStream.seekp((m_uiCurrentOffset + FRAM_ANALOGUE_MEASURE_ARCHIVE_ARRAY_OFFSET), std::ios::beg);
+//                hourArchiveFramOutputStream.write(reinterpret_cast<const char*>(&data), sizeof(TAnalogueSignalsArchiveHourData));
+//                // Закрываем файл
+//                hourArchiveFramOutputStream.close();
+//                m_uiCurrentOffset += sizeof(TAnalogueSignalsArchiveHourData);
+//                // сохраним текущее положение блоков в FRAM.
+//                TAnalogueSignalsArchiveFramPositionData xAnalogueSignalsArchiveFramPositionData;
+//                xAnalogueSignalsArchiveFramPositionData.uiCurrentOffset = m_uiCurrentOffset;
+//                CStorageDeviceSpiFram::Write(FRAM_ANALOGUE_MEASURE_ARCHIVE_FRAM_POSITION_DATA_OFFSET,
+//                                             (uint8_t*)(&xAnalogueSignalsArchiveFramPositionData.uiCurrentOffset),
+//                                             sizeof(struct TAnalogueSignalsArchiveFramPositionData));
+//            }
+
+            // блок записи новых ежесекундных данных в fram.
+            {
+                // имя устройства fram памяти.
+                const std::string hourArchiveFramFile = "/dev/mtd0";
+
+                std::ofstream hourArchiveFramOutputStream(hourArchiveFramFile, std::ios::binary | std::ios::in | std::ios::out);
+                if (!hourArchiveFramOutputStream.is_open())
+                {
+                    std::cerr << "Failed to open for write /dev/mtd0" << std::endl;
+                    goto SemaphoreRelease;
                 }
                 // Записываем данные в файл fram
                 // установим указатель на данные новой ежесекундной записи.
@@ -656,13 +989,44 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
                 hourArchiveFramOutputStream.write(reinterpret_cast<const char*>(&data), sizeof(TAnalogueSignalsArchiveHourData));
                 // Закрываем файл
                 hourArchiveFramOutputStream.close();
+
                 m_uiCurrentOffset += sizeof(TAnalogueSignalsArchiveHourData);
+            }
+
+            //  блок сохранения данных позиции
+            {
                 // сохраним текущее положение блоков в FRAM.
                 TAnalogueSignalsArchiveFramPositionData xAnalogueSignalsArchiveFramPositionData;
-                xAnalogueSignalsArchiveFramPositionData.uiCurrentOffset = m_uiCurrentOffset;
-                CStorageDeviceSpiFram::Write(FRAM_ANALOGUE_MEASURE_ARCHIVE_FRAM_POSITION_DATA_OFFSET,
-                                             (uint8_t*)(&xAnalogueSignalsArchiveFramPositionData.uiCurrentOffset),
-                                             sizeof(struct TAnalogueSignalsArchiveFramPositionData));
+                // Копируем максимум 39 символов, оставляя 1 байт под ноль
+                std::strncpy(xAnalogueSignalsArchiveFramPositionData.
+                             acCurrentDailyArchveFlashFile,
+                             m_sCurrentDailyArchveFlashFile.c_str(),
+                             ANALOGUE_SIGNALS_ARCHIVE_MAX_NAME_LENGTH);
+                // Гарантируем, что строка ВСЕГДА завершается нулем, даже если путь был слишком длинным
+                xAnalogueSignalsArchiveFramPositionData.
+                acCurrentDailyArchveFlashFile[ANALOGUE_SIGNALS_ARCHIVE_MAX_NAME_LENGTH] = '\0';
+                xAnalogueSignalsArchiveFramPositionData.
+                uiCurrentOffset = m_uiCurrentOffset;
+                xAnalogueSignalsArchiveFramPositionData.uiCrc =
+                    usCrc16((uint8_t*)(&xAnalogueSignalsArchiveFramPositionData),
+                            (sizeof(TAnalogueSignalsArchiveFramPositionData)));
+
+                // имя устройства fram памяти.
+                const std::string hourArchiveFramFile = "/dev/mtd0";
+
+                std::ofstream hourArchiveFramOutputStream(hourArchiveFramFile, std::ios::binary | std::ios::in | std::ios::out);
+                if (!hourArchiveFramOutputStream.is_open())
+                {
+                    std::cerr << "Failed to open for write /dev/mtd0" << std::endl;
+                    goto SemaphoreRelease;
+                }
+                // Записываем данные в файл fram
+                // установим указатель на данные новой ежесекундной записи.
+                hourArchiveFramOutputStream.seekp((FRAM_ANALOGUE_MEASURE_ARCHIVE_FRAM_POSITION_DATA_OFFSET), std::ios::beg);
+                hourArchiveFramOutputStream.write(reinterpret_cast<const char*>(&xAnalogueSignalsArchiveFramPositionData),
+                                                  sizeof(TAnalogueSignalsArchiveFramPositionData));
+                // Закрываем файл
+                hourArchiveFramOutputStream.close();
             }
         }
     }

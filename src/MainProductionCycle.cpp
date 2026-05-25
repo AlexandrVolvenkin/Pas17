@@ -1231,6 +1231,16 @@ uint8_t CMainProductionCycle::Fsm(void)
                 fbGlobalMmcCopyEnd = 1;
                 // погасим синий светодиод сигнализирующий об ошибке конфигурации
                 pxGpioPrdEnablePin -> ClearPin();
+
+                // очистим в fram данные позиции секундной записи архива аналоговых измерений.
+                TAnalogueSignalsArchiveFramPositionData xAnalogueSignalsArchiveFramPositionData;
+                memset((uint8_t*)(&xAnalogueSignalsArchiveFramPositionData),
+                       0xFF,
+                       sizeof(struct TAnalogueSignalsArchiveFramPositionData));
+                CStorageDeviceSpiFram::Write(FRAM_ANALOGUE_MEASURE_ARCHIVE_FRAM_POSITION_DATA_OFFSET,
+                                             (uint8_t*)(&xAnalogueSignalsArchiveFramPositionData),
+                                             sizeof(struct TAnalogueSignalsArchiveFramPositionData));
+
                 SetFsmState(MAIN_CYCLE_DISK_COPY_END_REBOOT_WAITING);
             }
             else
