@@ -152,6 +152,8 @@ struct TAnalogueSignalsArchiveHourData
 };
 
 //-----------------------------------------------------------------------------------------------------
+#pragma pack(push)
+#pragma pack(1)
 struct TAnalogueSignalsArchiveFramPositionData
 {
     // смещение на следующий пустой блок для записи.
@@ -161,6 +163,7 @@ struct TAnalogueSignalsArchiveFramPositionData
     char acCurrentDailyArchveFlashFile[ANALOGUE_SIGNALS_ARCHIVE_MAX_NAME_LENGTH + END_OF_STRING_LENGTH];
     uint16_t uiCrc;
 };
+#pragma pack(pop)
 
 
 ////-----------------------------------------------------------------------------------------------------

@@ -5,6 +5,8 @@
 //  email       : aav-36@mail.ru
 //  GitHub      : https://github.com/AlexandrVolvenkin
 //-------------------------------------------------------------------------------
+#include "math.h"
+
 #include "Timer.h"
 #include "Task.h"
 #include "Platform.h"
@@ -671,15 +673,14 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                         (auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_CALCULATION_OVERFLOW))
 //                if (0)
                 {
-//                    std::cout << "CInternalModuleMuvr::DataExchange 3"  << (int)i  << std::endl;
+//                    std::cout << "CInternalModuleMuvr::DataExchange 3 "  << (int)i  << std::endl;
                     // данные входа недостоверны, обнулим их.
-                    memset(&(m_pfAnalogueInputsValue[i]),
-                           0,
-                           sizeof(float));
+                    m_pfAnalogueInputsValue[i] = NAN;
                     // данные входа недостоверны, обнулим их в массиве модбас.
-                    memset(&(m_pfAnalogueInputsHoldingRegistersValue[i]),
-                           0,
-                           sizeof(float));
+                    m_pfAnalogueInputsHoldingRegistersValue[i] = NAN;
+
+//                    std::cout << "CInternalModuleMuvr::DataExchange 3 NAN "  << (float)NAN  << std::endl;
+//                    std::cout << "CInternalModuleMuvr::DataExchange 3 NAN 2 "  << (float)(m_pfAnalogueInputsHoldingRegistersValue[i])  << std::endl;
                     //std::cout << "CInternalModuleMuvr::DataExchange 31"  << std::endl;
                     // установим флаг недостоверности - вход недостоверен.
                     m_puiAnalogueInputsBadState[i] = 1;
@@ -700,14 +701,16 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                     ((auiSpiRxBuffer[MUVR_STATE_DATA_OFFSET + i] & ANALOGUE_INPUT_CHANNEL_CALIBRATION)))
 //                else if (0)
                 {
-//                    std::cout << "CInternalModuleMuvr::DataExchange 4"  << (int)i  << std::endl;
+//                    std::cout << "CInternalModuleMuvr::DataExchange 4 "  << (int)i  << std::endl;
                     // получим измеренное значение и преобразуем.
                     fData = fStep5ToFloat(&auiSpiRxBuffer[SPI_DATA_BYTE_OFFSET +
                                                                                (i * MUVR_ONE_ANALOG_INPUT_DATA_BYTE_QUANTITY)]);
+
                     // поместим его в рабочий массив.
                     memcpy(&(m_pfAnalogueInputsValue[i]),
                            (uint8_t*)&fData,
                            sizeof(float));
+
                     // поместим его в рабочий массив.
                     vLittleToBigEndianFloatConverter((uint8_t*)&(m_pfAnalogueInputsHoldingRegistersValue[i]),
                                                      (uint8_t*)&fData,
@@ -726,19 +729,15 @@ uint8_t CInternalModuleMuvr::DataExchange(void)
                 }
                 else
                 {
-//                    std::cout << "CInternalModuleMuvr::DataExchange 5"  << (int)i  << std::endl;
+//                    std::cout << "CInternalModuleMuvr::DataExchange 5 "  << (int)i  << std::endl;
                     // аналоговый вход выведен из обработки?
                     if (m_puiAnalogueInputsOff[i])
                     {
-                        //std::cout << "CInternalModuleMuvr::DataExchange 51"  << (int)i  << std::endl;
-                        // данные входов модуля выведены из обработки, обнулим их.
-                        memset(&(m_pfAnalogueInputsValue[i]),
-                               0,
-                               sizeof(float));
+//                        std::cout << "CInternalModuleMuvr::DataExchange 51 "  << (int)i  << std::endl;
+                        // данные входа недостоверны, обнулим их.
+                        m_pfAnalogueInputsValue[i] = NAN;
                         // данные входа недостоверны, обнулим их в массиве модбас.
-                        memset(&(m_pfAnalogueInputsHoldingRegistersValue[i]),
-                               0,
-                               sizeof(float));
+                        m_pfAnalogueInputsHoldingRegistersValue[i] = NAN;
                         // установим флаг недостоверности - вход недостоверен.
                         m_puiAnalogueInputsBadState[i] = 1;
                         // дискретные данные входа недостоверны, обнулим их.

@@ -503,7 +503,7 @@
 #define WEEK_DAY_SUNDAY 7
 
 // длина строки имени архива аналоговых измерений.
-#define ANALOGUE_SIGNALS_ARCHIVE_MAX_NAME_LENGTH 80
+#define ANALOGUE_SIGNALS_ARCHIVE_MAX_NAME_LENGTH 128
 
 enum EDataBaseBlockOffsets
 {
