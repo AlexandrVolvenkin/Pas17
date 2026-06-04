@@ -70,6 +70,9 @@ uint8_t CDeviceControl::Init(void)
     pxDataContainer -> m_puiDataPointer = m_puiIntermediateBuff;
 
     Allocate();
+    // установим нормальное состояние записи блока в базу данных,
+    // то есть блок не записывался или началась запись
+    uiDataBaseBlockWriteState = WRITE_IDDLE;
 }
 
 //-------------------------------------------------------------------------------
@@ -3343,6 +3346,9 @@ uint8_t CDeviceControl::Fsm(void)
         pxDataContainer -> m_uiDataIndex = uiBlockIndex;
         pxDataContainer -> m_puiDataPointer = puiDataPointer;
         pxDataContainer -> m_uiDataLength = uiDataLength;
+        // установим нормальное состояние записи блока в базу данных,
+        // то есть блок не записывался или началась запись
+        uiDataBaseBlockWriteState = WRITE_IDDLE;
 
         SetFsmState(SUBTASK_EXECUTOR_READY_CHECK_START);
         SetFsmNextStateDoneOk(DATA_BASE_BLOCK_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
@@ -3359,6 +3365,9 @@ uint8_t CDeviceControl::Fsm(void)
     case DATA_BASE_BLOCK_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING:
         //std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_WRITE_EXECUTOR_DONE_OK_ANSWER_PROCESSING"  << std::endl;
     {
+        // установим состояние записи блока в базу данных,
+        // запись прошла успешно
+        uiDataBaseBlockWriteState = WRITE_OK;
         // выполним дополнительное действие связанное с записью определённого блока базы данных.
         // например при записи блока модуля аналоговых сигналов запишим блок и в модуль.
         DataBaseBlockWriteBlockRelatedAction();
@@ -3368,6 +3377,9 @@ uint8_t CDeviceControl::Fsm(void)
     case DATA_BASE_BLOCK_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
         //std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
     {
+        // установим состояние записи блока в базу данных,
+        // запись прошла с ошибкой
+        uiDataBaseBlockWriteState = WRITE_ERROR;
         ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
         SetFsmState(DONE_ERROR);
     }
@@ -3377,13 +3389,12 @@ uint8_t CDeviceControl::Fsm(void)
     case DATA_BASE_BLOCK_WRITE_COMPLETE_CHECK_START:
         //std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_WRITE_COMPLETE_CHECK_START 1"  << std::endl;
     {
-        if ((GetPreviousFsmState() == DONE_OK) ||
-                (GetPreviousFsmState() == READY))
+        if (uiDataBaseBlockWriteState == WRITE_OK)
         {
             //std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_WRITE_COMPLETE_CHECK_START 2"  << std::endl;
             SetFsmState(DATA_BASE_BLOCK_WRITE_COMPLETE_CHECK_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
         }
-        else if (GetPreviousFsmState() == DONE_ERROR)
+        else if (uiDataBaseBlockWriteState == WRITE_ERROR)
         {
             //std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_WRITE_COMPLETE_CHECK_START 3"  << std::endl;
             SetFsmState(DATA_BASE_BLOCK_WRITE_COMPLETE_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING);
@@ -3482,6 +3493,9 @@ uint8_t CDeviceControl::Fsm(void)
     case DATA_BASE_BLOCK_MODULE_MUVR_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
         //std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_MODULE_MUVR_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
     {
+        // установим состояние записи блока в базу данных,
+        // запись прошла с ошибкой
+        uiDataBaseBlockWriteState = WRITE_ERROR;
         ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
         SetFsmState(DONE_ERROR);
     }
@@ -3520,6 +3534,9 @@ uint8_t CDeviceControl::Fsm(void)
     case DATA_BASE_BLOCK_MODULE_MUVR_WRITE_COMPLETE_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
         //std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_MODULE_MUVR_WRITE_COMPLETE_CHECK_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
     {
+        // установим состояние записи блока в базу данных,
+        // запись прошла с ошибкой
+        uiDataBaseBlockWriteState = WRITE_ERROR;
         ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
         SetFsmState(DONE_ERROR);
     }
@@ -3627,6 +3644,9 @@ uint8_t CDeviceControl::Fsm(void)
     case DATA_BASE_BLOCK_NETWORK_ADDRESS_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
         //std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_NETWORK_ADDRESS_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
     {
+        // установим состояние записи блока в базу данных,
+        // запись прошла с ошибкой
+        uiDataBaseBlockWriteState = WRITE_ERROR;
         ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
         SetFsmState(DONE_ERROR);
     }
@@ -3667,6 +3687,9 @@ uint8_t CDeviceControl::Fsm(void)
     case DATA_BASE_BLOCK_NETWORK_ADDRESS_WRITE_READ_SETTINGS_BLOCK_DATA_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
         std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_NETWORK_ADDRESS_WRITE_READ_SETTINGS_BLOCK_DATA_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
         {
+            // установим состояние записи блока в базу данных,
+            // запись прошла с ошибкой
+            uiDataBaseBlockWriteState = WRITE_ERROR;
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
             SetFsmState(DONE_ERROR);
         }
@@ -3723,6 +3746,9 @@ uint8_t CDeviceControl::Fsm(void)
     case DATA_BASE_BLOCK_NETWORK_ADDRESS_WRITE_WRITE_SETTINGS_BLOCK_DATA_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
         std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_NETWORK_ADDRESS_WRITE_WRITE_SETTINGS_BLOCK_DATA_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
         {
+            // установим состояние записи блока в базу данных,
+            // запись прошла с ошибкой
+            uiDataBaseBlockWriteState = WRITE_ERROR;
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
             SetFsmState(DONE_ERROR);
         }
@@ -3761,6 +3787,9 @@ uint8_t CDeviceControl::Fsm(void)
     case DATA_BASE_BLOCK_NETWORK_ADDRESS_WRITE_INTERFACE_RESTART_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
         std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_NETWORK_ADDRESS_WRITE_INTERFACE_RESTART_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
         {
+            // установим состояние записи блока в базу данных,
+            // запись прошла с ошибкой
+            uiDataBaseBlockWriteState = WRITE_ERROR;
             ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
             SetFsmState(DONE_ERROR);
         }
@@ -3799,6 +3828,9 @@ uint8_t CDeviceControl::Fsm(void)
     case DATA_BASE_BLOCK_SETTINGS_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING:
         //std::cout << "CDeviceControl::Fsm DATA_BASE_BLOCK_SETTINGS_WRITE_EXECUTOR_DONE_ERROR_ANSWER_PROCESSING"  << std::endl;
     {
+        // установим состояние записи блока в базу данных,
+        // запись прошла с ошибкой
+        uiDataBaseBlockWriteState = WRITE_ERROR;
         ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_ERROR;
         SetFsmState(DONE_ERROR);
     }

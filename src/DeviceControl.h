@@ -354,6 +354,7 @@ protected:
     uint8_t* m_puiIntermediateBuff;
     bool m_fbIsConfigurationConfirmed = false;
     uint8_t uiArchiveFileIsSaveState;
+    uint8_t uiDataBaseBlockWriteState;
     TFileSaveStateDataPackOne xFileSaveStateDataPackOne;
 
     CDataContainerDataBase* m_pxCommandDataContainer;
