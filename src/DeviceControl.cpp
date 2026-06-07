@@ -18,6 +18,8 @@
 #include <thread>
 #include <sys/stat.h>
 //#include <sys/mount.h>
+#include <unistd.h>     // Нужен для sync()
+#include <sys/reboot.h> // Нужен для reboot() и RB_AUTOBOOT
 
 #include "Timer.h"
 #include "Task.h"
@@ -827,6 +829,29 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
     switch(uiAddress -
             COILS_ARRAY_MODBUS_BEGIN_ADDRESS)
     {
+    // блокировка с верхнего уровня.
+    case DEVICE_CONTROL_BLOCK:
+    {
+        CDataContainerDataBase* pxDataContainer =
+            (CDataContainerDataBase*)GetCustomerDataContainerPointer();
+        // бит установлен?
+        if ((pxDataContainer -> m_puiDataPointer[BIT_STATE_OFFSET]))
+        {
+            // если установлен - сбросим.
+            (pxDataContainer -> m_puiDataPointer[BIT_STATE_OFFSET]) = 0;
+            (GetResources() -> m_uiModbusBlocked) = 1;
+        }
+        else
+        {
+            (GetResources() -> m_uiModbusBlocked) = 0;
+        }
+        ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
+        SetFsmState(DONE_OK);
+//        SetFsmState(MODBUS_FUNCTION_5_HANDLER_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
+        return 1;
+    }
+    break;
+
     // квитирование с верхнего уровня.
     case DEVICE_CONTROL_PC_KVIT:
     {
@@ -873,8 +898,8 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
     }
     break;
 
-    // блокировка с верхнего уровня.
-    case DEVICE_CONTROL_BLOCK:
+    // перезагрузка прибора с верхнего уровня.
+    case DEVICE_CONTROL_PC_REBOOT:
     {
         CDataContainerDataBase* pxDataContainer =
             (CDataContainerDataBase*)GetCustomerDataContainerPointer();
@@ -883,15 +908,31 @@ uint8_t CDeviceControl::ModbusFunction5Handler(void)
         {
             // если установлен - сбросим.
             (pxDataContainer -> m_puiDataPointer[BIT_STATE_OFFSET]) = 0;
-            (GetResources() -> m_uiModbusBlocked) = 1;
+
+            // было изменение конфигурации прибора, была запись блока в базу данных?
+            if (uiDataBaseBlockWriteState != WRITE_IDDLE)
+            {
+//            // отправим команду перезагрузка прибора с верхнего уровня.
+//            system("sudo /home/debian/reboot.sh");
+
+                // Сбрасываем буферы файловой системы на диск, чтобы не потерять данные
+                sync();
+
+                // Вызываем перезагрузку
+                if (reboot(RB_AUTOBOOT) == -1)
+                {
+                    std::cerr << "Ошибка: Не удалось выполнить перезагрузку!" << std::endl;
+                    std::cerr << "Убедитесь, что программа запущена с правами root (sudo)." << std::endl;
+                }
+                else
+                {
+                    std::cerr << "Успешно: удалось выполнить перезагрузку!" << std::endl;
+                }
+            }
         }
-        else
-        {
-            (GetResources() -> m_uiModbusBlocked) = 0;
-        }
+
         ((CDataContainerDataBase*)GetCustomerDataContainerPointer()) -> m_uiFsmCommandState = DONE_OK;
         SetFsmState(DONE_OK);
-//        SetFsmState(MODBUS_FUNCTION_5_HANDLER_EXECUTOR_DONE_OK_ANSWER_PROCESSING);
         return 1;
     }
     break;

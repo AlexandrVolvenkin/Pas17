@@ -100,6 +100,8 @@ uint8_t CStorageDeviceFileSystem::Write(void)
         outdata.seekp(uiOffset, ios_base::beg);
         std::cout << "CStorageDeviceFileSystem Write 4"  << std::endl;
         outdata.write((char*)puiDataPointer, uiLength);
+        // —брасываем буферы файловой системы на диск, чтобы не потер€ть данные
+        sync();
 
         std::cout << "CStorageDeviceFileSystem Write 5"  << std::endl;
         // закроем файл.

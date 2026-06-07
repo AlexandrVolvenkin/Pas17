@@ -54,6 +54,8 @@ class CSettingsSet;
 #define DEVICE_CONTROL_PC_KVIT  0x007E
 // сброс с верхнего уровня.
 #define DEVICE_CONTROL_PC_RESET 0x007F
+// перезагрузка прибора с верхнего уровня.
+#define DEVICE_CONTROL_PC_REBOOT 0x0080
 // количество байт в сообщении установки времени.
 #define CURRENT_TIME_BYTE_QUANTITY 7
 
