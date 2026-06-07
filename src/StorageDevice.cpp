@@ -38,6 +38,7 @@ CStorageDeviceFileSystem::~CStorageDeviceFileSystem()
 
 //-------------------------------------------------------------------------------
 // Передаёт данные контекста записи блока автомату устройства хранения и запускает процесс записи.
+// Передаёт данные контекста записи блока автомату устройства хранения и запускает процесс записи.
 bool CStorageDeviceFileSystem::WriteBlock(CDataContainerDataBase* pxDataContainer)
 {
     std::cout << "CStorageDeviceFileSystem WriteBlock 1"  << std::endl;
@@ -51,6 +52,8 @@ bool CStorageDeviceFileSystem::WriteBlock(CDataContainerDataBase* pxDataContaine
     else
     {
         std::cout << "CStorageDeviceFileSystem WriteBlock 3"  << std::endl;
+        SetFsmOperationStatus(DONE_ERROR);
+        SetFsmState(READY);
         return false;
     }
 }
