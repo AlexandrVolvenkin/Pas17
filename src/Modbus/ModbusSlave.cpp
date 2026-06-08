@@ -2377,9 +2377,6 @@ uint8_t CModbusSlave::Fsm(void)
         m_uiModbusSlaveLinkLayerId =
             GetResources() ->
             GetTaskIdByNameFromMap(m_sModbusSlaveLinkLayerName);
-        m_pxModbusSlaveLinkLayer =
-            (CModbusSlaveLinkLayer*)GetResources() ->
-            GetTaskPointerById(m_uiModbusSlaveLinkLayerId);
         SetModbusSlaveLinkLayer(((CModbusSlaveLinkLayer*)(GetResources() ->
                                  GetTaskPointerById(m_uiModbusSlaveLinkLayerId))));
 
