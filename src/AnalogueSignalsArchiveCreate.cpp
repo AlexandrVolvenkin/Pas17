@@ -440,6 +440,9 @@ void CAnalogueSignalsArchiveCreate::CreateArchiveEntry(void)
                         goto SemaphoreRelease;
                     }
 
+                    // Записываем заголовок
+                    dailyArchveFlashOutputStream << "Дата;Время;AIn1;AIn2;AIn3;AIn4" << std::endl;
+
                     // Получаем общую длину файла
                     size_t fileSize = xAnalogueSignalsArchiveFramPositionData.uiCurrentOffset;
 //                    std::cout << "CAnalogueSignalsArchiveCreate::CreateArchiveEntry uiCurrentOffset "  << (float)(xAnalogueSignalsArchiveFramPositionData.uiCurrentOffset) << std::endl;
